@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="onCreationComplete()"
+    title="{'Edit Asset assignment info. Asset:' + assetAssignment.RelatedAsset.Name}"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.events.CollectionEvent;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import common.TypesRegistry;
+        	import App.Domain.BillItemType;
+        	import App.Domain.RateByAssignment;
+        	import App.Domain.Client;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+            import weborb.data.DynamicLoadEvent;
+            import weborb.data.ActiveCollection;
+            import App.Domain.SubAfe;
+            import App.Domain.Afe;
+            import App.Domain.ActiveRecords;
+            import App.Domain.AssetAssignment;
+
+			[Bindable] 
+			private var _countableTypes:ArrayCollection = TypesRegistry.getInstance().countableBillItemTypes;
+			
+			[Bindable]
+			public var rates:ArrayCollection;
+			
+			[Bindable]
+			private var ratesExist:Boolean = true;
+			
+			[Bindable]
+			private var ratesFilled:Boolean = false;
+
+            [Bindable]
+            public var assetAssignment:AssetAssignment;
+            
+            public static function Open(assetAssignment:AssetAssignment, parent:DisplayObject, modal:Boolean = true):AssetAssignmentDetail 
+            {
+                var popup:AssetAssignmentDetail = new AssetAssignmentDetail();
+                popup.assetAssignment = assetAssignment;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function onCreationComplete():void 
+            {
+            	rates = assetAssignment.RelatedRateByAssignment;
+            	
+                if (assetAssignment.AssetAssignmentId != 0) {
+                    init();
+                } else {
+            		ratesExist = false;
+            		rates = new ArrayCollection();
+            		for each (var type:BillItemType in _countableTypes) {
+            			var rate:RateByAssignment = new RateByAssignment();
+            			rate.RelatedBillItemType = type;
+            			rate.RelatedAssetAssignment = assetAssignment;
+            			rate.Deleted = false;
+            			rate.BillRate = 0;
+            			rate.InvoiceRate = 0;
+            			rates.addItem(rate);
+            			
+            			ChangeWatcher.watch(rate, "BillRate", onRateChanged);
+            			ChangeWatcher.watch(rate, "InvoiceRate", onRateChanged);
+            		}
+                }
+            }
+            
+            private function onRateChanged(event:*):void 
+            {
+            	var filled:Boolean = true;
+
+            	for each (var rate:RateByAssignment in rates) {
+            		if (0 == rate.BillRate || 0 == rate.InvoiceRate) {
+            			filled = false;
+            			break;
+            		}
+            	}
+
+            	ratesFilled = filled;
+            }
+
+            private function init():void 
+            {
+            	ratesFilled = true;
+            	
+            	var clients:ActiveCollection = cbClients.dataProvider as ActiveCollection;
+                var afes:ActiveCollection = cbAfes.dataProvider as ActiveCollection;
+                var subAfes:ActiveCollection = cbSubAfes.dataProvider as ActiveCollection;
+
+            	if (clients != null && clients.IsLoaded) {
+            		cbClients.selectedIndex = clients.getItemIndex(assetAssignment.RelatedAfe.RelatedClient);
+            	} else {
+            		clients.addEventListener("loaded", 
+            			function (event:DynamicLoadEvent):void {
+            				cbClients.selectedIndex = clients.getItemIndex(assetAssignment.RelatedAfe.RelatedClient);
+
+			                cbAfes.dataProvider = ActiveRecords.Afe.findByClientId(cbClients.selectedItem.ClientId);
+			                var afes:ActiveCollection = cbAfes.dataProvider as ActiveCollection;
+		                    afes.addEventListener("loaded", 
+		                        function (event:DynamicLoadEvent):void {
+		                            cbAfes.selectedIndex = afes.getItemIndex(assetAssignment.RelatedAfe);
+
+					                cbSubAfes.dataProvider = ActiveRecords.SubAfe.findByAFE(cbAfes.selectedItem.AFE);
+					                var subAfes:ActiveCollection = cbSubAfes.dataProvider as ActiveCollection;
+					                subAfes.addEventListener("loaded", 
+					                    function (event:DynamicLoadEvent):void {
+					                    	var index:int = subAfes.getItemIndex(assetAssignment.RelatedSubAfe);
+					                    	callLater(setSubAfeIndex, [index]);
+					                    });
+		                        });
+            			});
+            	}
+            }
+            
+            private function setSubAfeIndex(index:int):void 
+            {
+				cbSubAfes.selectedIndex = index;
+            }
+            
+            private function getItemType(data:Object, column:DataGridColumn):String {
+            	return RateByAssignment(data).RelatedBillItemType.Name;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%">
+        <mx:HBox>
+            <mx:Label text="Client:" width="120" textAlign="right"/>
+            <mx:ComboBox id="cbClients" width="120" labelField="ClientName"
+                dataProvider="{ActiveRecords.Client.findAll()}"
+                selectedIndex="{cbClients.dataProvider ? -1 : ActiveCollection(cbClients.dataProvider).getItemIndex(assetAssignment.RelatedAfe.RelatedClient)}"
+                />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="AFE:" width="120" textAlign="right"/>
+            <mx:ComboBox id="cbAfes" width="120" labelField="AFEName"
+                dataProvider="{ActiveRecords.Afe.findByClientId(cbClients.selectedItem.ClientId)}"
+                selectedIndex="{cbAfes.dataProvider ? -1 : ActiveCollection(cbAfes.dataProvider).getItemIndex(assetAssignment.RelatedAfe)}"
+                />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Project:" width="120" textAlign="right"/>
+            <mx:ComboBox id="cbSubAfes" width="250" labelField="SubAFE"
+                dataProvider="{ActiveRecords.SubAfe.findByAFE(cbAfes.selectedItem.AFE)}" 
+                selectedIndex="{cbSubAfes.dataProvider ? -1 : ActiveCollection(cbSubAfes.dataProvider).getItemIndex(assetAssignment.RelatedSubAfe)}"
+                />
+        </mx:HBox>
+        
+        <mx:DataGrid
+        	dataProvider="{rates}"
+        	width="100%"
+        	height="100"
+        	editable="true"
+        	visible="{!ratesExist}"
+        	includeInLayout="{!ratesExist}">
+        	<mx:columns>
+        		<mx:DataGridColumn
+        			labelFunction="getItemType"
+        			headerText="Item Type"
+        			editable="false"
+        			fontWeight="bold" />
+        		<mx:DataGridColumn
+        			dataField="BillRate"
+        			headerText="Bill Rate"
+        			editorDataField="text"
+        			editable="true" />
+        		<mx:DataGridColumn
+        			dataField="InvoiceRate"
+        			headerText="Invoice Rate"
+        			editorDataField="text"
+        			editable="true" />
+        	</mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button id="btnSubmit" label="Ok"
+            enabled="{cbAfes.selectedItem != null &amp;&amp; cbSubAfes.selectedItem != null &amp;&amp; (ratesFilled || ratesExist)}"/>
+        <mx:Button id="btnCancel" label="Cancel"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

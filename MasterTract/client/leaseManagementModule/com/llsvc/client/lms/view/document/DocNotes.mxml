@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Document;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _docum:Document;
+			[Bindable]
+			public function get docum():Document {return _docum;}
+			public function set docum(value:Document):void 
+			{
+				_docum = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				docum.note = txtNote.text;
+				
+				return true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="Notes"/>
+	</mx:HBox>
+	
+	<mx:Box width="100%" height="100%"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		<mx:TextArea id="txtNote" 
+			text="{docum.note}"
+			width="100%" height="100%" borderThickness="0" editable="{editable}"
+			change="(docum.note = txtNote.text.toUpperCase())"/>
+	</mx:Box>
+</mx:VBox>

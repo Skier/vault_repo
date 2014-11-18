@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalGap="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.Client;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import weborb.data.ActiveCollection;
+			import common.TypesRegistry;
+			import UI.manager.admin.AdminController;
+			import App.Domain.RateByAssignment;
+			import App.Domain.AssetAssignment;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import App.Domain.Asset;
+			import App.Domain.ActiveRecords;
+
+			public var controller:AssetsController;
+			
+			public function set parentController(parent:AdminController):void 
+			{
+				controller = new AssetsController(this as AssetsView, parent);
+			}
+			
+			public function getAssetById(id:int):Asset 
+			{
+				return controller.getAssetById(id);
+			}
+			
+			private function setAssetLabels(item:Asset, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				switch (column.dataField) {
+					case "type":
+						result = item._Type;
+						break;
+					case "chief":
+						result = controller.getAssetById(item.ChiefAssetId) == null ? "" : Asset(controller.getAssetById(item.ChiefAssetId)).Name;
+						break;
+					case "businessName":
+						result = item.BusinessName;
+						break;
+					case "firstName":
+						result = item.FirstName;
+						break;
+					case "middleName":
+						result = item.MiddleName;
+						break;
+					case "lastName":
+						result = item.LastName;
+						break;
+					case "ssn":
+						result = item.SSN;
+						break;
+				}
+				
+				return result;
+			}
+
+			private function setRateLabels(item:RateByAssignment, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				switch (column.dataField) {
+					case "type":
+						result = item.RelatedBillItemType.Name;
+						break;
+					case "billRate":
+						result = item.BillRate.toFixed(3);
+						break;
+					case "invoiceRate":
+						result = item.InvoiceRate.toFixed(3);
+						break;
+				}
+				
+				return result;
+			}
+			
+			private function setNotExceedRateLabels(item:RateByAssignment, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				switch (column.dataField) {
+					case "type":
+						result = item.RelatedBillItemType.Name;
+						break;
+					case "billRate":
+						result = item.BillRate.toFixed(3);
+						break;
+				}
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Component id="clientRenderer">
+        <mx:Label text="{data.RelatedAfe.RelatedClient.ClientName}" />
+    </mx:Component>
+
+    <mx:Component id="afeRenderer">
+        <mx:Label text="{data.RelatedAfe.AFEName}" />
+    </mx:Component>
+
+    <mx:Component id="subAfeRenderer">
+        <mx:Label text="{data.RelatedSubAfe.SubAFE}" />
+    </mx:Component>
+
+	<mx:VBox width="100%" height="330" backgroundColor="#eeeeee"
+		borderColor="#999999" borderStyle="solid"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		>
+		<mx:HBox width="100%">
+			<mx:Label text="Assets:" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+				visible="{dgAssets.dataProvider != null &amp;&amp; ActiveCollection(dgAssets.dataProvider).IsLoading}"/>
+		</mx:HBox>
+		<mx:DataGrid id="dgAssets" 
+			width="100%" height="100%" minWidth="600"
+			dataProvider="{ActiveRecords.Asset.findByDeleted(false)}"
+			doubleClickEnabled="true" itemDoubleClick="controller.onClickEditAsset()"
+			>
+			<mx:columns>
+				<mx:DataGridColumn headerText="BusinessName" dataField="businessName" labelFunction="setAssetLabels" width="120"/>
+				<mx:DataGridColumn headerText="Chief" dataField="chief" labelFunction="setAssetLabels" width="120"/>
+				<mx:DataGridColumn headerText="First Name" dataField="firstName" labelFunction="setAssetLabels" width="100"/>
+				<mx:DataGridColumn headerText="MidName" dataField="middleName" labelFunction="setAssetLabels" width="80"/>
+				<mx:DataGridColumn headerText="Last Name" dataField="lastName" labelFunction="setAssetLabels" width="100"/>
+				<mx:DataGridColumn headerText="SSN" dataField="ssn" labelFunction="setAssetLabels" width="80"/>
+				<mx:DataGridColumn headerText="Type" dataField="type" labelFunction="setAssetLabels"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button label="New" click="controller.onClickNewAsset()"/>
+			<mx:Button label="Edit" click="controller.onClickEditAsset()" enabled="{dgAssets.selectedItem != null}"/>
+			<mx:Button label="Delete" click="controller.onClickDeleteAsset()" enabled="{dgAssets.selectedItem != null}"/>
+		</mx:HBox>
+	</mx:VBox>
+	<mx:HDividedBox width="100%" height="100%" verticalGap="5" backgroundColor="#eeeeee"
+		borderColor="#999999" borderStyle="solid"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		>
+		<mx:VBox width="100%" height="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="Asset Assignments:" fontWeight="bold"/>
+				<mx:Spacer width="100%"/>
+				<mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+					visible="{dgAssetAssignments.dataProvider != null &amp;&amp; ActiveCollection(dgAssetAssignments.dataProvider).IsLoading}"/>
+			</mx:HBox>
+			<mx:DataGrid id="dgAssetAssignments" 
+				width="100%" height="100%" minWidth="300"
+				doubleClickEnabled="true" itemDoubleClick="controller.onClickEditAssetAssignment()"
+				dataProvider="{dgAssets.selectedItem == null ? new ActiveCollection() : ActiveRecords.AssetAssignment.findByAssetIdAndDeleted(dgAssets.selectedItem.AssetId, false)}"
+				>
+				<mx:columns>
+					<mx:DataGridColumn headerText="Client" itemRenderer="{clientRenderer}" width="150"/>
+					<mx:DataGridColumn headerText="Afe" itemRenderer="{afeRenderer}" width="150"/>
+					<mx:DataGridColumn headerText="Project" itemRenderer="{subAfeRenderer}"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button label="New" click="controller.onClickNewAssetAssignment()" enabled="{dgAssets.selectedItem != null}"/>
+				<mx:Button label="Edit" click="controller.onClickEditAssetAssignment()" enabled="{dgAssetAssignments.selectedItem != null}"/>
+				<mx:Button label="Delete" click="controller.onClickDeleteAssetAssignment()" enabled="{(dgAssetAssignments.selectedItem != null)}"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox width="100%" height="100%">
+			<mx:VBox width="100%" height="40%">
+				<mx:HBox width="100%">
+					<mx:Label text="Rates:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+						visible="{dgRates.dataProvider != null &amp;&amp; ActiveCollection(dgRates.dataProvider).IsLoading}"/>
+				</mx:HBox>
+				<mx:DataGrid id="dgRates" 
+					width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="controller.onClickEditRate()"
+					dataProvider="{dgAssetAssignments.selectedItem == null ? new ActiveCollection() : ActiveRecords.RateByAssignment.findByAssetAssignmentIdAndShouldNotExceedRate(dgAssetAssignments.selectedItem.AssetAssignmentId, 0)}"
+					>
+					<mx:columns>
+						<mx:DataGridColumn headerText="Bill Item Type" dataField="type" labelFunction="setRateLabels"/>
+						<mx:DataGridColumn headerText="Bill Rate" dataField="billRate" labelFunction="setRateLabels" width="100" textAlign="right"/>
+						<mx:DataGridColumn headerText="Invoice Rate" dataField="invoiceRate" labelFunction="setRateLabels" width="100" textAlign="right"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="Edit" click="controller.onClickEditRate()" enabled="{dgRates.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="100%" height="60%">
+				<mx:HBox width="100%">
+					<mx:Label text="Not Exceed Rates:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+						visible="{dgNotExceedRates.dataProvider != null &amp;&amp; ActiveCollection(dgNotExceedRates.dataProvider).IsLoading}"/>
+				</mx:HBox>
+				<mx:DataGrid id="dgNotExceedRates"
+					width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="controller.onClickEditNotExceedRate()"
+					dataProvider="{dgAssetAssignments.selectedItem == null ? new ActiveCollection() : ActiveRecords.RateByAssignment.findByAssetAssignmentIdAndShouldNotExceedRate(dgAssetAssignments.selectedItem.AssetAssignmentId, 1)}"
+					>
+					<mx:columns>
+						<mx:DataGridColumn headerText="Bill Item Type" dataField="type" labelFunction="setRateLabels"/>
+						<mx:DataGridColumn headerText="Not Exceed Rate" dataField="billRate" labelFunction="setNotExceedRateLabels" width="150" textAlign="right"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="New" click="controller.onClickNewNotExceedRate()" enabled="{dgAssets.selectedItem != null &amp;&amp; dgAssetAssignments.selectedItem != null}"/>
+					<mx:Button label="Edit" click="controller.onClickEditNotExceedRate()" enabled="{dgNotExceedRates.selectedItem != null}"/>
+					<mx:Button label="Delete" click="controller.onClickDeleteNotExceedRate()" enabled="{dgNotExceedRates.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:HDividedBox>
+
+</mx:VDividedBox>

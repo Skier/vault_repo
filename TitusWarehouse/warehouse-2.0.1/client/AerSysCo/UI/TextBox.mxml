@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+
+			private var loader:URLLoader;
+			
+			[Bindable] private var content:String;
+
+			private var _source:String;
+			public function get source():String {return _source;}
+			public function set source(value:String):void 
+			{
+				_source = value;
+				
+				load();
+			}
+			
+			private function load():void 
+			{
+				if (loader == null) 
+					initLoader();
+				
+				content = null;
+				loader.load(new URLRequest(_source));
+			}
+		
+			private function initLoader():void
+			{
+	            loader = new URLLoader();
+	            loader.addEventListener(Event.COMPLETE, completeHandler);
+	            loader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+	            loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+        	}
+
+	        private function completeHandler(event:Event):void {
+	            var loader:URLLoader = URLLoader(event.target);
+	            var pattern:RegExp = /\r\n/g;
+	            content = String(loader.data).replace(pattern, "<br>");
+	        }
+	        
+	        private function ioErrorHandler(event:IOErrorEvent):void {
+	        	content = event.text;
+	        }
+	        
+	        private function progressHandler(event:ProgressEvent):void {
+	        	pbLoad.setProgress(event.bytesLoaded, event.bytesTotal);
+	        }
+        
+		]]>
+	</mx:Script>
+
+	<mx:TextArea width="100%" height="100%" editable="false" htmlText="{content}" visible="{content != null}"
+		styleName="helpText"/>
+	
+	<mx:Box width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="{content == null}">
+		<mx:Panel title="Loading content">
+			<mx:ProgressBar id="pbLoad" width="300" labelPlacement="center" mode="manual"/>
+		</mx:Panel>
+	</mx:Box>
+</mx:Canvas>

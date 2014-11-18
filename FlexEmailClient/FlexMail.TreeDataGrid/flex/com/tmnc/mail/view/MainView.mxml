@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:view="com.tmnc.mail.view.*"
+	width="100%" height="100%" paddingLeft="2" paddingRight="2" paddingBottom="2" paddingTop="2"
+	initialize="onInit()"
+>
+
+	<mx:Script>
+		<![CDATA[
+		    import com.tmnc.components.treeDataClasses.event.ClosureIconClickEvent;
+		    import mx.managers.PopUpManager;
+		    import com.tmnc.components.treeDataClasses.DataGridThreatIR;
+
+		    import mx.events.ListEvent;
+		    import mx.events.DataGridEvent;
+			import mx.core.Application;
+			import com.tmnc.mail.control.events.*;
+			import com.tmnc.mail.business.messages.*;
+	        import com.tmnc.mail.model.MailBoxModel;
+
+			[Embed(source="/assets/indicator.swf")]
+			[Bindable]
+			public var indicatorImage:Class;
+
+			[Bindable]
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+
+            private var isClosureIconClicked:Boolean = false;
+            
+            private function onInit():void{
+                Application.application.addEventListener(
+                    ClosureIconClickEvent.CLOSURE_ICON_CLICK_EVENT, onClosureIconClick);
+            }   
+             
+            private function onClosureIconClick(event:ClosureIconClickEvent):void {
+                isClosureIconClicked = true;
+                
+                var msgItem:MessageTreeItem = MessageTreeItem(event.item);
+                msgItem.isOpened = !msgItem.isOpened;
+                model.messageListDescriptor.messageTreeItemList.refresh();
+            }
+            
+            private function doCompose():void {
+            	var event:MessageEvent = new MessageEvent(MessageEvent.EVENT_COMPOSE, null);
+            	dispatchEvent(event);
+            }
+
+            private function doReply():void {
+            	var event:MessageEvent = new MessageEvent(MessageEvent.EVENT_REPLY, model.currentMessage);
+            	Application.application.dispatchEvent(event);
+            }
+
+            private function doForward():void {
+            	var event:MessageEvent = new MessageEvent(MessageEvent.EVENT_FORWARD, model.currentMessage);
+            	Application.application.dispatchEvent(event);
+            }
+
+            private function doDeleteMessages():void {
+                var deleteCandidates:Array = [];
+                
+                for each(var treeItem:MessageTreeItem in dg.selectedItems){
+                    deleteCandidates.push(model.messageListDescriptor.getMessageItemById(treeItem.itemId));
+                }
+                
+            	var event:DeleteMessagesEvent = new DeleteMessagesEvent(deleteCandidates);
+            	Application.application.dispatchEvent(event);
+            }
+            
+            private function doCheckMessages():void {
+            	var event:CheckMessagesEvent = new CheckMessagesEvent();
+            	Application.application.dispatchEvent(event);
+            }
+
+            private function doChangeSettings():void {
+                var event:DisplayDialogEvent = new DisplayDialogEvent(
+                        DisplayDialogEvent.EVENT_DISPLAY_SETTINGS_DIALOG, 
+                        Application(Application.application));
+                
+                Application.application.dispatchEvent(event);
+            }
+
+            private function doLogout():void {
+            	//Login Event with empty user email param causes a logout.
+		        Application.application.dispatchEvent(new LoginEvent("", ""));
+		        
+		        showThreads.selected = false;
+            }
+            
+            private function changeGridView():void {
+                model.messageListDescriptor.threadViewActive = showThreads.selected;
+                model.messageListDescriptor.messageTreeItemList.refresh();
+           }
+            
+            private function changeCurrentMessage():void {
+                if (dg.selectedItem){
+                    model.currentMessage = model.messageListDescriptor.getMessageItemById(dg.selectedItem.itemId);                    
+                }
+            }
+            
+            private function itemClickHandler(event:ListEvent):void {
+                if (!showThreads.selected){
+                    return;
+                }
+                
+                if (isClosureIconClicked){
+                    isClosureIconClicked = false;
+                    return;
+                }
+                
+                if (event.itemRenderer is DataGridThreatIR){
+                    var msgItem:MessageTreeItem = MessageTreeItem(event.itemRenderer.data);
+                    if (!msgItem.isOpened) {
+                        msgItem.isOpened = !msgItem.isOpened;
+                        model.messageListDescriptor.messageTreeItemList.refresh();
+                    }
+                }
+            }
+    
+            private function headerReleaseHandler(event:DataGridEvent):void {
+        		if (!event.isDefaultPrevented()) {
+        		    
+                    var c:DataGridColumn = dg.columns[event.columnIndex];
+            		var desc:Boolean = c.sortDescending;
+    
+                    if (model.messageListDescriptor.threadViewActive){
+            		    model.messageListDescriptor.sortTreeByField(c.dataField, desc);
+            		    
+                        c.sortDescending = !c.sortDescending;
+                        
+                        event.preventDefault();
+                    }
+        		}
+            }            
+		]]>
+	</mx:Script>
+	
+	<mx:Component id="attachmentColumnHeaderIcon">
+        <mx:VBox horizontalAlign="center">	
+	        <mx:Image source="@Embed(source='/assets/attachment_icon.gif')"/>
+	    </mx:VBox>
+	</mx:Component>
+
+    <mx:Component id="attachmentColumnIcon">
+        <mx:VBox horizontalAlign="center">
+	        <mx:Image source="@Embed(source='/assets/attachment_icon.gif')"
+                visible="{data.hasAttachment}"/>
+        </mx:VBox>
+    </mx:Component>
+	
+	<mx:ApplicationControlBar width="100%">
+	    <mx:Label text="Flex Mail" fontWeight="bold"/>
+	    <mx:VRule height="15"/>
+	    <mx:Label text="{'MailBox : ' + model.accountInfo.Email }"/>
+	
+		<mx:Button label="Compose" id="composeButton" click="doCompose()"/>
+		<mx:Button label="Check Mail" id="checkMailButton" click="doCheckMessages()"/>
+		<mx:Button label="Settings" id="settingsButton" click="doChangeSettings()"/>
+		
+        <mx:Spacer  width="30" />
+        
+		<mx:Button label="Reply" id="replayButton" 
+			click="doReply()" enabled = "{dg.selectedItems.length > 0}"/>
+		<mx:Button label="Forward" id="forwardButton" 
+			click="doForward()" enabled = "{dg.selectedItems.length > 0}"/>
+		<mx:Button label="Delete" id="deleteButton" 
+			click   = "doDeleteMessages()" 
+			enabled = "{dg.selectedItems.length > 0}"/>
+			
+        <mx:Spacer  width="99%" />
+        
+		<mx:Button label="Logout" id="logOutButton" click="doLogout()"/>        
+	</mx:ApplicationControlBar>
+	
+	<mx:HBox width="100%">
+        <mx:Label text="{model.statusMessage}" id="mailBoxStatus" width="100%" textAlign="right"/>
+        <mx:Image source="{indicatorImage}" visible="{model.serverActivity}"/>
+	</mx:HBox>
+
+	<mx:VBox styleName="messagePanel" width="100%" height="100%">
+        <mx:CheckBox id="showThreads" label="Show as Threads"
+            change="{changeGridView()}"/>	    
+
+        <mx:VDividedBox verticalGap="6" width="100%" height="100%">
+            <mx:DataGrid id="dg" dataProvider="{model.messageListDescriptor.messageTreeItemList}" width="100%" height="100%"
+                itemClick="itemClickHandler(event)" 
+                headerRelease="headerReleaseHandler(event)"            
+            	change="changeCurrentMessage()" allowMultipleSelection="true"
+            	>
+                <mx:columns>
+                    <mx:DataGridColumn dataField="hasAttachment" width="20" headerText=""
+                        headerRenderer="{attachmentColumnHeaderIcon}"
+                        itemRenderer="{attachmentColumnIcon}"/>
+
+                    <mx:DataGridColumn dataField="messageFrom" headerText="From" 
+                        visible="{showThreads.selected}"
+                        itemRenderer="com.tmnc.components.treeDataClasses.DataGridThreatIR"/>
+                        
+                    <mx:DataGridColumn dataField="messageFrom" headerText="From"
+                        visible="{!showThreads.selected}"/>
+
+                    <mx:DataGridColumn dataField="messageSubject" headerText="Subject" width="300"/>
+
+                    <mx:DataGridColumn dataField="sentDate" headerText="Date" width="250"/>
+
+                    <mx:DataGridColumn dataField="size" textAlign="right" headerText="Size" width="100"/>
+                </mx:columns>
+            </mx:DataGrid>
+            
+            <view:MessageDetailView width="100%" height="100%" 
+                visible="{model.currentMessage != null}"
+                includeInLayout="{model.currentMessage != null}"
+                backgroundColor="white"/>
+        </mx:VDividedBox>
+        
+	</mx:VBox>
+
+</mx:VBox>
+

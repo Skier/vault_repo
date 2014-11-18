@@ -1,0 +1,131 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MobileTech</RootNamespace>
+    <AssemblyName>MobileTech.Inventory.Unload.Equipment</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>MobileTech.Inventory.Unload.Equipment</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PocketPC;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;PocketPC;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Windows\UI\Inventory\Unload\Equipment\InventoryUnloadEquipmentModel.cs" />
+    <Compile Include="Windows\UI\Inventory\Unload\Equipment\InventoryUnloadEquipmentView.cs">
+    </Compile>
+    <Compile Include="Windows\UI\Inventory\Unload\Equipment\InventoryUnloadEquipmentView.Designer.cs">
+      <DependentUpon>InventoryUnloadEquipmentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\UI\Inventory\Unload\Equipment\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Windows\UI\Inventory\Unload\Equipment\Resources.ru.Designer.cs">
+      <DependentUpon>Resources.ru.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MobileTech.Domain\MobileTech.Domain.csproj">
+      <Project>{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}</Project>
+      <Name>MobileTech.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech.Inventory.Unload\MobileTech.Inventory.Unload.csproj">
+      <Project>{32EE898F-0CDC-41FA-B06A-802B7310520D}</Project>
+      <Name>MobileTech.Inventory.Unload</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech.Windows.UI.Controls\MobileTech.Windows.UI.Controls.csproj">
+      <Project>{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}</Project>
+      <Name>MobileTech.Windows.UI.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech.Windows\MobileTech.Windows.csproj">
+      <Project>{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}</Project>
+      <Name>MobileTech.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech\MobileTech.csproj">
+      <Project>{30B0146B-25B7-4658-9436-183CE7E27388}</Project>
+      <Name>MobileTech</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Windows\UI\Inventory\Unload\Equipment\InventoryUnloadEquipmentView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InventoryUnloadEquipmentView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\UI\Inventory\Unload\Equipment\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\UI\Inventory\Unload\Equipment\Resources.ru.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.ru.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

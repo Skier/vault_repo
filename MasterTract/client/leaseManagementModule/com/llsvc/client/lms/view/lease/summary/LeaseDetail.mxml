@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="5"
+    enabled="{lease != null}">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.client.lms.view.lease.search.LeaseSearchCriterias;
+            import mx.controls.listClasses.IDropInListItemRenderer;
+            import mx.controls.dataGridClasses.DataGridItemRenderer;
+            import com.llsvc.client.lm.storage.Storage;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.events.FaultEvent;
+            import mx.controls.TextInput;
+            import mx.events.DataGridEvent;
+            import mx.controls.Alert;
+            import flash.net.navigateToURL;
+            import mx.events.ItemClickEvent;
+            import com.llsvc.client.lms.control.TabManager;
+            import com.llsvc.domain.LeaseTract;
+            import com.llsvc.domain.DocumentActor;
+            import mx.collections.ArrayCollection;
+            import com.llsvc.domain.Lease;
+            import mx.rpc.Responder;
+            
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease { return _lease; }
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+                
+                setFilter();
+            }
+            
+            private var _tractFilter:LeaseSearchCriterias;
+            [Bindable]
+            public function get tractFilter():LeaseSearchCriterias { return _tractFilter; }
+            public function set tractFilter(value:LeaseSearchCriterias):void 
+            {
+                _tractFilter = value;
+                
+                setFilter();
+            }
+            
+            private var giversHash:Object = new Object();
+            
+            [Bindable] private var filteredTracts:ArrayCollection;
+            
+            [Bindable] private var filteredGrossAcresStr:String = "";
+            [Bindable] private var filteredNetAcresStr:String = "";
+            [Bindable] private var filteredInterestStr:String = "";
+            [Bindable] private var filteredBurdenStr:String = "";
+            [Bindable] private var filteredNriStr:String = "";
+            [Bindable] private var filteredCwiStr:String = "";
+            [Bindable] private var filteredAddBurdensStr:String = "";
+            [Bindable] private var filteredCnriStr:String = "";
+            [Bindable] private var filteredCNetAcresStr:String = "";
+
+            private function getLabel(item:LeaseTract, column:DataGridColumn):String
+            {
+                if (column.dataField == "nri") {
+                    return LeaseTract(item).nriStr; 
+                } else if (column.dataField == "cwi") {
+                    return LeaseTract(item).cwiStr; 
+                } else if (column.dataField == "burden") {
+                    return LeaseTract(item).burdenStr; 
+                } else if (column.dataField == "cnri") {
+                    return LeaseTract(item).cnriStr; 
+                } else if (column.dataField == "leaseInterest") {
+                    return (LeaseTract(item).leaseInterest * 100).toFixed(2) + "%"; 
+                } else if (column.dataField == "leaseBurden") {
+                    return LeaseTract(item).leaseBurdenStr; 
+                } else {
+                    return ""; 
+                }
+            } 
+            
+            private function startRemoting(name:String):void 
+            {
+                boxHeader.enabled = false;
+                vsTracts.enabled = false;
+                //progressBar.visible = true;
+                //pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                boxHeader.enabled = true;
+                vsTracts.enabled = true;
+                //progressBar.visible = false;
+                //pbRemote.label = "";
+            }
+           
+            private function setFilter():void 
+            {
+            	if (tractFilter == null) 
+            	{
+            		boxFilter.visible = false;
+            		boxFilter.includeInLayout = false;
+            		//lbTracts.visible = false;
+            		vsTracts.selectedIndex = 0;
+            	} else 
+            	{
+            		boxFilter.visible = true;
+            		boxFilter.includeInLayout = true;
+	            	//lbTracts.visible = true;
+            		vsTracts.selectedIndex = 1;
+	            	refreshFilteredTracts();
+            	}
+            }
+            
+            private function refreshFilteredTracts():void 
+            {
+            	if (filteredTracts == null)
+            		filteredTracts = new ArrayCollection();
+            	
+            	filteredTracts.removeAll();
+            	
+            	if (lease == null || lease.tracts == null || lease.tracts.length == 0) 
+            	{
+	            	updateFilteredSummary();
+            		return;
+            	}
+            		
+            	for each (var tract:LeaseTract in lease.tracts) 
+            	{
+            		if (tractFilter.accept(tract)) 
+            		{
+	            		filteredTracts.addItem(tract);
+            		}
+            	}
+
+            	updateFilteredSummary();
+            }
+            
+            private function updateFilteredSummary():void 
+            {
+				var tractsGrossAcresSum:Number = 0; 
+				var tractsNetAcresSum:Number = 0; 
+				var tractsInterestSum:Number = 0; 
+				var tractsBurdenSum:Number = 0; 
+				var tractsNriSum:Number = 0; 
+				var tractsCwiSum:Number = 0; 
+				var tractsAddBurdensSum:Number = 0; 
+				var tractsCnriSum:Number = 0; 
+				var tractsCNetAcresSum:Number = 0; 
+		
+				for each (var tract:LeaseTract in filteredTracts) 
+				{
+					tractsGrossAcresSum += tract.grossAcres;
+					tractsNetAcresSum += tract.netAcres;
+					tractsInterestSum += tract.leaseInterest;
+					tractsBurdenSum += tract.leaseBurden;
+					tractsNriSum += tract.nri;
+					tractsCwiSum += tract.cwi;
+					tractsAddBurdensSum += tract.burden;
+					tractsCnriSum += tract.cnri;
+					tractsCNetAcresSum += tract.cNetAcres;
+				}
+				
+				filteredGrossAcresStr = tractsGrossAcresSum.toFixed(2);
+				filteredNetAcresStr = tractsNetAcresSum.toFixed(2);
+				if (filteredTracts.length > 0) 
+				{
+					filteredInterestStr = ((tractsInterestSum / filteredTracts.length) * 100).toFixed(2) + "%";
+					filteredBurdenStr = ((tractsBurdenSum / filteredTracts.length) * 100).toFixed(2) + "%";
+					filteredNriStr = ((tractsNriSum / filteredTracts.length) * 100).toFixed(2) + "%";
+					filteredCwiStr = ((tractsCwiSum / filteredTracts.length) * 100).toFixed(2) + "%";
+					filteredAddBurdensStr = ((tractsAddBurdensSum / filteredTracts.length) * 100).toFixed(2) + "%";
+					filteredCnriStr = ((tractsCnriSum / filteredTracts.length) * 100).toFixed(2) + "%";
+				}
+				filteredCNetAcresStr = tractsCNetAcresSum.toFixed(2);
+            }
+            
+            private function exportToExcel():void 
+            {
+                navigateToURL(new URLRequest("xls?leaseId=" + lease.document.id));
+            }
+            
+            private function exportToShape():void 
+            {
+                navigateToURL(new URLRequest("shapefile_download?leaseId=" + lease.document.id));
+            }
+            
+            private function buttonBarClickHandler(event:ItemClickEvent):void
+            {
+                switch (event.index) 
+                {
+                    case 0:
+                        TabManager.openLease(lease);
+                        break;
+                    case 1:
+                        TabManager.openLease(lease.createCopy());
+                        break;
+                    case 2:
+                        exportToShape();
+                        break;
+                    case 3:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 4:
+                        exportToExcel();
+                        break;
+                }
+            }
+            
+            private function onItemEditEnd(event:DataGridEvent):void 
+            {
+                var colName:String = DataGrid(event.currentTarget).columns[event.columnIndex].dataField;
+                var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+
+                if (event.columnIndex > 3)
+                    checkInPercentField(ti);
+                
+                var t:LeaseTract = lease.tracts[event.rowIndex];
+
+                if (colName == "grossAcres") 
+                {
+                    var ga:Number = Number(ti.text);
+                    if (ga > 0) {
+                        t.leaseInterest = t.netAcres / ga;
+                    } else {
+                        t.leaseInterest = 0;
+                    }
+                } else if (colName == "netAcres") 
+                {
+                    if (t.breakdown.length > 0) return; // can not edit net Acres if found breakdowns
+                      
+                    var na:Number = Number(ti.text);
+                    if (na > t.grossAcres) {
+                        na = t.grossAcres;
+                        ti.text = t.grossAcres.toString();
+                    }
+                    if (t.grossAcres > 0) {
+                        t.leaseInterest = na / t.grossAcres;  
+                    } else {
+                        t.leaseInterest = 0;
+                    }
+                } else if (colName == "leaseInterest") 
+                {
+                    t.netAcres = t.grossAcres * Number(ti.text);
+                }
+                
+                //callLater(dgTracts.executeBindings, [true]);
+            }
+            
+            private function onItemEditBegin(event:DataGridEvent):void 
+            {
+                var colName:String = dgTracts.columns[event.columnIndex].dataField;
+                var t:LeaseTract = lease.tracts[event.rowIndex];
+        
+                if(colName == "grossAcres" || colName == "netAcres" || colName == "leaseInterest" )
+                {
+                    event.preventDefault();
+
+                    if (t.breakdown.length > 1 && colName == "netAcres" 
+                        && t.lease && t.lease.document && t.lease.document.givers && t.lease.document.givers.length > 1)
+                        return; // can not edit net Acres if found breakdowns
+
+                    dgTracts.createItemEditor(event.columnIndex,event.rowIndex);
+
+                    IDropInListItemRenderer(dgTracts.itemEditorInstance).listData =
+                        IDropInListItemRenderer(dgTracts.editedItemRenderer).listData;
+                    
+                    dgTracts.itemEditorInstance.data = dgTracts.editedItemRenderer.data;
+                    
+                    var ti:TextInput = TextInput(dgTracts.itemEditorInstance);
+                    
+                    if (colName == "grossAcres") {
+                        ti.text = t.grossAcres.toString();
+                    } else if (colName == "netAcres") {
+                        ti.text = t.netAcres.toString();
+                    } else if (colName == "leaseInterest") {
+                        ti.text = isNaN(t.leaseInterest) ? "0%" : (t.leaseInterest * 100).toString() + "%";
+                    }
+                    
+                    ti.selectionEndIndex = 0;
+                    ti.selectionEndIndex = ti.text.length;
+                    focusManager.setFocus(ti);
+                }
+            }
+            
+            private function checkInPercentField(ti:TextInput):void 
+            {
+                var percentInput:String = ti.text;
+                var value:Number;
+                
+                if ( percentInput.length > 0 && percentInput.indexOf("%") > 0 ) 
+                {
+                    var p1:String = percentInput.substr(0, percentInput.indexOf("%"));
+                    if ( !isNaN(Number(p1)) ) {
+                        value = new Number(p1)/100;
+                    } else {
+                        value = 0.00;
+                    }
+                } else if ( !isNaN(Number(percentInput)) ) 
+                {
+                    value = new Number(percentInput);
+                } else 
+                {
+                    value = 0.00;
+                }
+                
+                if (value > 1) {
+                    value = 1.00;
+                } else if (value < 0) {
+                    value = 0.00;
+                }
+                
+                ti.text = value.toString();
+            }
+            
+            private function btnSaveClickHandler():void 
+            {
+                var currentTractIndex:int = dgTracts.selectedIndex;
+                startRemoting("Save current Lease");
+
+                Storage.instance.storeLease(lease, 
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            lease.populate(event.result as Lease);
+                            lease.isDirty = false;
+
+                            stopRemoting();
+                            
+                            callLater(setTractFocus, [currentTractIndex]);
+                        },
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Cannot save current Lease.");
+                            trace(event.fault.faultString);
+                        } 
+                    )
+                ); 
+            }
+            
+            private function setTractFocus(index:int):void 
+            {
+                dgTracts.selectedIndex = index;
+                dgTracts.scrollToIndex(index);
+            }
+            
+            private function switchState():void 
+            {
+            	vsTracts.selectedIndex = 1 - vsTracts.selectedIndex;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox id="boxHeader" 
+        width="100%" 
+        paddingRight="5" paddingLeft="5" paddingTop="5" paddingBottom="5" 
+        verticalAlign="top">
+        <mx:VBox width="100%" height="100%">
+            <mx:Text fontWeight="bold" text="{lease.leaseName}" width="100%"/>
+        </mx:VBox>
+
+		<mx:HBox id="boxFilter" color="#000099" horizontalGap="0"
+			paddingLeft="1" paddingRight="1" paddingTop="1" paddingBottom="1"
+			verticalAlign="middle"
+			backgroundColor="#f0ffee" borderColor="#dddddd" borderStyle="solid" cornerRadius="2">
+			<mx:Label text="{filteredTracts.length}" fontWeight="bold" 
+				visible="{vsTracts.selectedIndex == 1}" includeInLayout="{vsTracts.selectedIndex == 1}"/>
+
+			<mx:Label text="tracts from" 
+				visible="{vsTracts.selectedIndex == 1}" includeInLayout="{vsTracts.selectedIndex == 1}"/>
+
+			<mx:Label text="{lease.tracts.length}" fontWeight="bold" 
+				visible="{vsTracts.selectedIndex == 1}" includeInLayout="{vsTracts.selectedIndex == 1}"/>
+
+			<mx:Label text="available" 
+				visible="{vsTracts.selectedIndex == 1}" includeInLayout="{vsTracts.selectedIndex == 1}"/>
+
+			<mx:Button label="{vsTracts.selectedIndex == 0 ? 'Show filtered' : 'Show all'}" 
+				height="20" verticalCenter="0"
+				click="switchState()"/>
+		</mx:HBox>
+
+        <mx:Button icon="@Embed('assets/icons16/disk.png')" width="24" height="24" toolTip="Save current Lease"
+            enabled="{lease.isDirty}" click="btnSaveClickHandler()"/>
+
+        <mx:ButtonBar id="bbUtil" itemClick="buttonBarClickHandler(event)" 
+            verticalCenter="0" buttonWidth="30" buttonHeight="24">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/page_edit.png')" toolTip="Open Lease"/>
+                <mx:Object icon="@Embed('assets/icons16/page_go.png')" toolTip="Open Lease copy"/>
+                <mx:Object icon="@Embed('assets/icons16/map_go.png')" toolTip="Export to shape file"/>
+                <mx:Object icon="@Embed('assets/icons16/map.png')" toolTip="Open Map"/>
+                <mx:Object icon="@Embed('assets/icons16/page_excel.png')" toolTip="Export to Excel"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+    </mx:HBox>
+
+	<mx:ViewStack id="vsTracts" width="100%" height="100%">
+	    <mx:VBox id="boxAllTracts"
+	    	label="Show all" 
+	        width="100%" height="100%" verticalGap="-1" paddingLeft="5" paddingRight="5" paddingBottom="5">
+	        <mx:DataGrid id="dgTracts" width="100%" height="100%" 
+	            dataProvider="{lease.tracts}" editable="true" verticalScrollPolicy="on"
+	            sortableColumns="false" draggableColumns="false" resizableColumns="false"
+	            itemEditEnd="onItemEditEnd(event)" itemEditBegin="onItemEditBegin(event)">
+	            <mx:columns>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="40" headerText="Type" dataField="tractType" editable="false"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    headerText="Tract" dataField="tract" editable="false" 
+	                    itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseTractDescriptionIR"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Gross Acres" headerWordWrap="true" dataField="grossAcres" textAlign="right"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Net Acres" headerWordWrap="true" dataField="netAcres" textAlign="right"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Interest" dataField="leaseInterest" textAlign="right"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Lease Burden" headerWordWrap="true" dataField="leaseBurden" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Lease NRI" headerWordWrap="true" dataField="nri" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR WI" headerWordWrap="true" dataField="cwi" textAlign="right" 
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Add / Burden" headerWordWrap="true" dataField="burden" textAlign="right" 
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR NRI" headerWordWrap="true" dataField="cnri" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR Net Acres" headerWordWrap="true" dataField="cNetAcres" textAlign="right" editable="false"/>
+	            </mx:columns>
+	        </mx:DataGrid>
+	        
+	        <mx:HBox width="100%" horizontalGap="-1">
+	            <mx:VBox width="100%" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="Summary / Average" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	            
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsGrossAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsNetAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsInterestStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsBurdenStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsNriStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsCwiStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsAddBurdensStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsCnriStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{lease.tractsCNetAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	            
+	            <mx:Spacer width="17"/>
+	        </mx:HBox>
+	    </mx:VBox>  
+
+	    <mx:VBox id="boxFilteredTracts"
+	    	label="Show filtered" 
+	        width="100%" height="100%" verticalGap="-1" paddingLeft="5" paddingRight="5" paddingBottom="5">
+	        <mx:DataGrid id="dgFilteredTracts" width="100%" height="100%" 
+	            dataProvider="{filteredTracts}" verticalScrollPolicy="on"
+	            sortableColumns="false" draggableColumns="false" resizableColumns="false">
+	            <mx:columns>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="40" headerText="Type" dataField="tractType" editable="false"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    headerText="Tract" dataField="tract" editable="false" 
+	                    itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseTractDescriptionIR"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Gross Acres" headerWordWrap="true" dataField="grossAcres" textAlign="right"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Net Acres" headerWordWrap="true" dataField="netAcres" textAlign="right"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Interest" dataField="leaseInterest" textAlign="right"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Lease Burden" headerWordWrap="true" dataField="leaseBurden" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Lease NRI" headerWordWrap="true" dataField="nri" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR WI" headerWordWrap="true" dataField="cwi" textAlign="right" 
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="Add / Burden" headerWordWrap="true" dataField="burden" textAlign="right" 
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR NRI" headerWordWrap="true" dataField="cnri" textAlign="right" editable="false"
+	                    labelFunction="getLabel"/>
+	                <mx:DataGridColumn headerStyleName="headerTextCentered"
+	                    width="60" headerText="FCR Net Acres" headerWordWrap="true" dataField="cNetAcres" textAlign="right" editable="false"/>
+	            </mx:columns>
+	        </mx:DataGrid>
+	        
+	        <mx:HBox width="100%" horizontalGap="-1">
+	            <mx:VBox width="100%" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="Summary / Average" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	            
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredGrossAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredNetAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredInterestStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredBurdenStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredNriStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredCwiStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredAddBurdensStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredCnriStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{filteredCNetAcresStr}" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	            
+	            <mx:Spacer width="17"/>
+	        </mx:HBox>
+	    </mx:VBox>  
+	</mx:ViewStack>
+</mx:VBox>

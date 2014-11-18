@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import UI.Document.Participant.ParticipantModel;
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			public var controller:DocumentController;
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox label="Sellers" width="100%"
+		left="5" right="5" bottom="5" top="5"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		borderColor="#dddddd" borderStyle="solid" cornerRadius="5">
+	
+		<mx:HBox backgroundColor="#cccccc" width="100%">
+			<mx:Label text="{controller.Model.SellerRole.RoleName}" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox id="sellersView" width="100%">
+			<mx:VBox width="100%">
+				<mx:Label text="AsNamed:" fontWeight="bold"/>
+				<mx:TextArea id="sellerAsNamed" width="100%" height="80" maxChars="350"
+					text="{controller.Model.SellerAsNamed.AsNamed}"
+					change="controller.Model.SellerAsNamed.AsNamed = sellerAsNamed.text.toUpperCase()"/>
+				<mx:HBox width="100%">
+					<mx:Spacer width="100%"/>
+					<mx:LinkButton label="{
+							controller.Model.SellerAsNamedReservations.length == 0 ? 'Add AsNamed Seller Reservation' : 
+								controller.Model.SellerAsNamedReservations.length == 1 ? 'Seller has ' + controller.Model.SellerAsNamedReservations.length.toString() + ' Reservation' :
+								'Seller has ' + controller.Model.SellerAsNamedReservations.length.toString() + ' Reservations'
+						}" 
+						click="controller.OnClickSellerAsNamedReservations()"
+						textDecoration="underline" color="#000099"
+						/>
+					<mx:Spacer width="15"/>
+					<mx:LinkButton label="Add Detailed Seller" 
+						click="controller.OnClickAddSellerDetailed()"
+						textDecoration="underline" color="#000099"
+						visible="{controller.Model.SellersDetailed.length == 0}"
+						includeInLayout="{controller.Model.SellersDetailed.length == 0}"
+						/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox id="boxSellersDetailed" width="100%"
+				visible="{controller.Model.SellersDetailed.length > 0}"
+				includeInLayout="{controller.Model.SellersDetailed.length > 0}"
+				>
+				<mx:Label text="Detailed information" fontWeight="bold"/>
+				<mx:DataGrid id="dgSellersDetailed" width="100%" showHeaders="false" height="80"
+					dataProvider="{controller.Model.SellersDetailed}">
+					<mx:columns>
+						<mx:DataGridColumn itemRenderer="UI.Document.ParticipantItemRenderer"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="Add" click="controller.OnClickAddSellerDetailed()"/>
+					<mx:Button label="Edit" click="controller.OnClickEditSellerDetailed()"
+						enabled="{dgSellersDetailed.selectedItem != null}"/>
+					<mx:Button label="Remove" click="controller.OnClickRemoveSellerDetailed()"
+						enabled="{dgSellersDetailed.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+
+		</mx:HBox>
+	
+	</mx:VBox>
+	
+	<mx:VBox label="Buyers" width="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		borderColor="#dddddd" borderStyle="solid" cornerRadius="5">
+	
+		<mx:HBox backgroundColor="#cccccc" width="100%">
+			<mx:Label text="{controller.Model.BuyerRole.RoleName}" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox id="buyersView" width="100%" >
+			<mx:VBox width="100%">
+				<mx:Label text="AsNamed:" fontWeight="bold"/>
+				<mx:TextArea id="buyerAsNamed" width="100%" height="80" maxChars="350"
+					text="{controller.Model.BuyerAsNamed.AsNamed}"
+					change="controller.Model.BuyerAsNamed.AsNamed = buyerAsNamed.text.toUpperCase()"/>
+				<mx:HBox width="100%">
+					<mx:Spacer width="100%"/>
+					<mx:LinkButton label="Add Detailed Buyer" 
+						click="controller.OnClickAddBuyerDetailed()"
+						textDecoration="underline" color="#000099"
+						visible="{controller.Model.BuyersDetailed.length == 0}"
+						includeInLayout="{controller.Model.BuyersDetailed.length == 0}"
+						/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox id="boxBuyersDetailed" width="100%"
+				visible="{controller.Model.BuyersDetailed.length > 0}"
+				includeInLayout="{controller.Model.BuyersDetailed.length > 0}"
+				>
+				<mx:Label text="Detailed information" fontWeight="bold"/>
+				<mx:DataGrid id="dgBuyersDetailed" width="100%" height="80" showHeaders="false"
+					dataProvider="{controller.Model.BuyersDetailed}">
+					<mx:columns>
+						<mx:DataGridColumn itemRenderer="UI.Document.ParticipantItemRenderer"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%">
+					<mx:Spacer width="100%" />
+					<mx:Button label="Add" click="controller.OnClickAddBuyerDetailed()" />
+					<mx:Button label="Edit" click="controller.OnClickEditBuyerDetailed()"
+						enabled="{dgBuyersDetailed.selectedItem != null}"/>
+					<mx:Button label="Remove" click="controller.OnClickRemoveBuyerDetailed()"
+						enabled="{dgBuyersDetailed.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+	
+	</mx:VBox>
+
+</mx:VBox>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+	<mx:ComboBox x="10" y="41" width="380" fontSize="14"></mx:ComboBox>
+	<mx:Label x="10" y="10" text="What company do you want to use:" fontSize="14"/>
+	<mx:Grid x="10" y="76" width="380" height="214"
+		paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5"
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="4" backgroundColor="#FFFFCC">
+		<mx:GridRow width="100%">
+			<mx:GridItem width="120">
+				<mx:Label text="Email" width="100%" textAlign="right" fontSize="12"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%">
+				<mx:Text text="valery@affilia.com" width="100%" height="100%" minWidth="100" minHeight="15" fontSize="12"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow width="100%">
+			<mx:GridItem>
+				<mx:Label text="Phone" width="100%" textAlign="right" fontSize="12"/>
+			</mx:GridItem>
+			<mx:GridItem>
+				<mx:Text text="+1(555)789-4512" width="100%" height="100%" minWidth="100" minHeight="15" fontSize="12"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow width="100%">
+			<mx:GridItem>
+				<mx:Label text="Address" width="100%" textAlign="right" fontSize="12"/>
+			</mx:GridItem>
+			<mx:GridItem>
+				<mx:Text text="7016 Randall Way, Plano TX, 75025" width="100%" height="100%" minWidth="100" minHeight="15" fontSize="12"/>
+			</mx:GridItem>
+		</mx:GridRow>
+	</mx:Grid>
+	
+</mx:Canvas>

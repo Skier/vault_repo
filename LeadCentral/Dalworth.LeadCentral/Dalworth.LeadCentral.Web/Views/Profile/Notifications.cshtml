@@ -1,0 +1,67 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Profile.NotificationList
+
+@{
+    ViewBag.Title = "Notifications";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">@Html.ActionLink("Notification Settings", "NotificationSetting", new { controller="Profile" }, new { @class="button primary" } )</div>
+      <h1>Notifications</h1>
+    </div>
+    <div class="content">
+
+    @using (Html.BeginForm("Notifications", "Profile", FormMethod.Get))
+    {
+    <div class="filter" style="border-bottom: none;">
+    <table style="width:100%;">
+        <tr>
+        <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">Created from:</span>
+            @Html.TextBoxFor(model => model.DateFrom, new { @class = "date-input", @id = "date-from" })</td>
+        <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">to:</span>
+            @Html.TextBoxFor(model => model.DateTo, new { @class = "date-input", @id = "date-to" })</td>
+        <td class="left" style="width:100%;vertical-align:bottom;">
+            <div style="float:right;">
+            <button type="submit">Refresh</button>
+            @Html.ActionLink("Clear", "Notifications", new { controller = "Profile" }, new { @class = "button" })
+            </div>
+        </td>
+        </tr>
+    </table>
+    </div>
+    }
+
+@{
+    var grid = new WebGrid(Model.Notifications, rowsPerPage: 20);
+    var columns = new List<WebGridColumn>
+                      {
+                          grid.Column("DateCreated", "Created", canSort : false),
+                          grid.Column("NotificationType", "Type", canSort : false),
+                          grid.Column("FromEmail", "From", canSort : false),
+                          grid.Column("ToEmail", "To", canSort : false),
+                          grid.Column("DateProcessed", "Processed", canSort : false)
+                      };
+}
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 10,
+            tableStyle: "list"
+    )
+
+    </div>
+  </div>
+

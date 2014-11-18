@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    xmlns:lm="com.llsvc.client.lm.*"
+    creationComplete="onCreationComplete(event)"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            private function onStateChange(event:Event):void {
+//                this.cbCounty.dataProvider = this.cbState.selectedItem.counties;
+            }
+            
+            public function onCreationComplete(event:Event):void {
+            	this.fcbOptAgreement.fileInput.anchor = "15&name=OptAgreement";
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox height="100%" width="100%">
+        <mx:VBox  height="100%">
+        	<lm:FileWithCheckBox id="fcbOptAgreement" text="Option Agreement"/>
+        	<lm:FileWithCheckBox id="fcbLeaseCopy" text="LEASE-COPY"/>
+        	<lm:FileWithCheckBox id="fcbSchedInterest" text="Schedules of Interest"/>
+        	<lm:FileWithCheckBox id="fcbDraftCopies" text="Draft-Copies"/>
+        	<lm:FileWithCheckBox id="fcbRentalDivOrder" text="Rental Division Order - Copy/Original"/>
+        	<lm:FileWithCheckBox id="fcbDeedOfAcq" text="Deed of Acquisition"/>
+        </mx:VBox>
+        <mx:VBox  height="100%">
+        	<lm:FileWithCheckBox id="fcbTitleNotes" text="Title Notes"/>
+        	<lm:FileWithCheckBox id="fcbAssignment" text="Assignment - Copy/Original"/>
+        	<lm:FileWithCheckBox id="fcbAffidavit" text="Affidavit"/>
+        	<lm:FileWithCheckBox id="fcbSubOfLien" text="Subordination of Lien - Copy/Original"/>
+        	<lm:FileWithCheckBox id="fcbLetterAgreement" text="Letter Agreement - Copy/Original"/>
+        	<lm:FileWithCheckBox id="fcbPowerOfAttorney" text="Power of Attorney - Copy/Original"/>
+        </mx:VBox>
+        <mx:VBox  height="100%">
+        	<lm:FileWithCheckBox id="fcbOther1" text="Other - Copy of Check Request"/>
+        	<lm:FileWithCheckBox id="fcbOther2" text="Other"/>
+        	<lm:FileWithCheckBox id="fcbOther3" text="Other"/>
+        	<lm:FileWithCheckBox id="fcbPlat" text="Plat (number separate tracts)"/>
+        </mx:VBox>
+	</mx:HBox>
+	
+</mx:Canvas>

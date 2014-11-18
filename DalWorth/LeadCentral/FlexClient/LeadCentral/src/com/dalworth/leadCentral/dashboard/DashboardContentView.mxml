@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	initialize="onInit()"
+	creationComplete="onCreate()" 
+	xmlns:leadType="com.dalworth.leadCentral.dashboard.graph.leadType.*" xmlns:daily="com.dalworth.leadCentral.dashboard.graph.daily.*" xmlns:webIntegration="com.dalworth.leadCentral.dashboard.graph.webIntegration.*" xmlns:leads="com.dalworth.leadCentral.dashboard.leads.*" xmlns:visits="com.dalworth.leadCentral.dashboard.visits.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.domain.Lead;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.affilia.util.DateUtil;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var model:DashboardContentModel;
+			private var controller:DashboardContentController;
+			
+			public function set content(content:ArrayCollection):void 
+			{
+				if (content is ArrayCollection)
+					controller.setContent(content as ArrayCollection);
+
+				if (viewVisits != null)
+					viewVisits.selectedLeadSources = model.currentLeadSources;
+			}
+			
+			private function onDatePeriodChange():void 
+			{
+				controller.setDatePeriod(dateStart.selectedDate, dateEnd.selectedDate);
+			}
+			
+			private function onInit():void 
+			{
+				model = DashboardContentModel.getInstance();
+				controller = new DashboardContentController(this);
+				addEventListener("leadsChanged", onLeadsChanged);
+			}
+			
+			private function onCreate():void 
+			{
+				refreshDateRanges();
+			}
+			
+			private function onLeadsChanged(event:Event):void 
+			{
+				viewLeads.setLeads(model.leads);
+			}
+			
+			private function getTimeStr(value:Number):String
+			{
+				var result:String = "";
+				
+				var ageUnitsStr:String = "";
+				if (value < 60)
+				{
+					result = int(value).toString();
+					ageUnitsStr = "min";
+				} else if (value < 2880) 
+				{
+					result = int(value / 60).toString();
+					ageUnitsStr = "hrs";
+				} else 
+				{
+					result = int(value / 1440).toString();
+					ageUnitsStr = "days";
+				}
+				
+				return (result + ageUnitsStr);
+			}
+			
+			private function getPctStr(value:Number):String 
+			{
+				var result:String = "";
+				
+				result += "(";
+				result += value.toFixed(1);
+				result += "%)";
+				
+				return result;
+			}
+			
+			private function refreshDateRanges():void 
+			{
+				dateStart.selectableRange = {rangeStart : new Date(2000,0,1), rangeEnd : new Date(dateEnd.selectedDate.time - 86400001)};
+				dateEnd.selectableRange = {rangeStart : new Date(dateStart.selectedDate.time + 86400001), rangeEnd : new Date(2099,11,31)};
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="curr" precision="2"/>
+	
+	<mx:VBox id="boxContent" visible="{model.currentLeadSources != null}" width="100%" height="100%" backgroundColor="#EEEEEE" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		verticalGap="0" enabled="{!model.isBusy}">
+		<mx:HBox width="100%" backgroundColor="#DDDDDD" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+			paddingLeft="5" paddingRight="5" paddingTop="2" paddingBottom="2">
+			<mx:Label text="{model.currentLeadSource.Name}" fontSize="14" color="#666666" visible="{model.currentLeadSource != null}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="Date period:" fontWeight="bold"/>
+			<mx:DateField id="dateStart" selectedDate="{model.startDate}" change="refreshDateRanges()"/>
+			<mx:DateField id="dateEnd" selectedDate="{model.endDate}" change="refreshDateRanges()"/>
+			<mx:Button label="Refresh" click="onDatePeriodChange()" cornerRadius="2"/>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" height="100%" 
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			verticalGap="5">
+			<mx:HBox width="100%" horizontalGap="5" borderStyle="solid" borderColor="#999999" backgroundColor="#215187"
+					cornerRadius="2" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4">
+				<mx:Grid width="100%" verticalGap="0">
+					<mx:GridRow width="100%">
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Total Leads:" fontSize="12" color="#FFFFFF"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:Label text="{model.totalLeads.toString()}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Contacted:" fontSize="12" color="#FFFFFF"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:Label text="{model.contactedLeads.toString() + getPctStr(model.contactedLeadsPct)}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:GridItem>
+					</mx:GridRow>
+<!--
+					<mx:GridRow width="100%">
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Avg contact time:" fontSize="12" color="#FFFFFF"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:Label text="{getTimeStr(model.averageContactTime)}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:GridItem>
+					</mx:GridRow>
+-->
+					<mx:GridRow width="100%">
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Converted:" fontSize="12" color="#FFFFFF"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:Text text="{model.convertedLeads.toString() + getPctStr(model.convertedLeadsPct)}" fontSize="12" fontWeight="bold" width="100%" color="#FFFFFF"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+<!--				
+				<mx:VBox width="100%" height="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+					borderColor="#FFFFCC" borderStyle="solid" cornerRadius="4">
+-->
+					<mx:Grid width="100%" height="100%" verticalGap="0">
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" height="100%" verticalAlign="middle">
+								<mx:Label text="Closed amount:" fontSize="14" color="#FFFFCC" fontWeight="bold"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%" verticalAlign="middle" horizontalAlign="right">
+								<mx:Text text="{curr.format(model.summary.SubTotalAmt)}" fontSize="14" fontWeight="bold" width="100%" color="#FFFFCC"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" height="100%" verticalAlign="middle">
+								<mx:Label text="Tax amount:" fontSize="14" color="#FFFFCC" fontWeight="bold"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%" verticalAlign="middle" horizontalAlign="right">
+								<mx:Text text="{curr.format(model.summary.TaxAmt)}" fontSize="14" fontWeight="bold" width="100%" color="#FFFFCC"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" height="100%" verticalAlign="middle">
+								<mx:Label text="Total amount:" fontSize="14" color="#FFFFCC" fontWeight="bold"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%" verticalAlign="middle" horizontalAlign="right">
+								<mx:Text text="{curr.format(model.summary.TotalAmt)}" fontSize="14" fontWeight="bold" width="100%" color="#FFFFCC"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+<!--	
+				</mx:VBox>
+-->	
+			</mx:HBox>
+			
+			<mx:HBox width="100%" backgroundColor="#FFFFCC" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+				paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+				visible="{model.currentLeadSource != null &amp;&amp; model.currentLeadSource.RelatedUser != null}"
+				includeInLayout="{model.currentLeadSource != null &amp;&amp; model.currentLeadSource.RelatedUser != null}">
+				<mx:Label text="Related to User:" fontSize="12" fontWeight="bold" color="#333333"/>
+				<mx:Label text="{model.currentLeadSource.RelatedUser.Name}" fontSize="12" fontWeight="bold" width="100%" minWidth="50" color="#666666"/>
+<!--
+				<mx:Label text="Phone:" fontSize="12" width="80" textAlign="right" color="#666666"/>
+				<mx:Label text="{model.currentContent.RelatedUser.Phone}" fontSize="12" fontWeight="bold" width="100%" minWidth="50" color="#666666"/>
+-->
+				<mx:Label text="Email:" fontSize="12" width="80" textAlign="right" color="#666666"/>
+				<mx:Label text="{model.currentLeadSource.RelatedUser.Email}" fontSize="12" fontWeight="bold" width="100%" minWidth="50" color="#666666"/>
+			</mx:HBox>
+
+			<mx:TabNavigator width="100%" height="100%" historyManagementEnabled="false" creationPolicy="all"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+
+				<leads:DashboardLeadsView id="viewLeads" 
+					label="Leads"
+					width="100%" height="100%" backgroundColor="#FFFFFF" backgroundAlpha="0.8"
+					startDate="{model.startDate}" endDate="{model.endDate}"/>
+
+				<visits:DashboardVisitsView id="viewVisits"
+					label="Sites Visits"
+					width="100%" height="100%" backgroundColor="#FFFFFF" backgroundAlpha="0.8"
+					startDate="{model.startDate}" endDate="{model.endDate}"/>
+
+			</mx:TabNavigator>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="{!boxContent.visible}" backgroundColor="#FFFFFF"
+		borderColor="#CCCCCC" borderStyle="solid">
+		<mx:Label text="Source doesnt selected. Please select any source from right panel" fontSize="14"/>
+	</mx:VBox>
+</mx:Canvas>

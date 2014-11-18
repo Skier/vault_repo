@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:steps="src.wizards.steps.*"
+    title="{fillTractFieldsStep.stepTitle}"
+    layout="vertical" width="400" height="250" >
+
+    <mx:Script>
+        <![CDATA[
+            import mx.managers.PopUpManager;
+            import src.AppController;
+
+            public static function open(parent:DisplayObject, modal:Boolean = false):CreateDrawingWizardView
+            {
+                var dialog:CreateDrawingWizardView = new CreateDrawingWizardView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+                
+                return dialog;
+            }
+
+            [Bindable] public var appController:AppController;
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            private function okButton_clickHandler():void
+            {
+                if (fillTractFieldsStep.validateForm())
+                {
+                    appController.openTract(fillTractFieldsStep.tract);
+                    close();
+                }
+                    
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Box
+        width="100%" height="100%"
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <steps:FillTractFieldsStep id="fillTractFieldsStep" 
+            stepTitle="Create Drawing" width="100%" height="100%"/>
+
+    </mx:Box>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" click="okButton_clickHandler()"/>
+
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

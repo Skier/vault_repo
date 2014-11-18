@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:total="com.dalworth.servman.dashboard.leads.total.*" 
+	xmlns:daily="com.dalworth.servman.dashboard.leads.daily.*" 
+	xmlns:projectTypes="com.dalworth.servman.dashboard.leads.projectTypes.*" 
+	xmlns:controls="com.arc90.flexlib.containers.*">
+
+	<mx:Script>
+		<![CDATA[
+			
+
+		]]>
+	</mx:Script>
+
+	<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+		<mx:VBox width="300" height="100%">
+			<mx:TabNavigator width="100%" height="100%"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4">
+				<mx:VBox width="100%" height="100%" label="Sales Reps">
+					<mx:List width="100%" height="100%"/>
+				</mx:VBox>
+			</mx:TabNavigator>
+		</mx:VBox>
+	</mx:HDividedBox>
+
+	<mx:VBox width="100%" height="100%" verticalAlign="middle">
+		<mx:HBox width="100%" backgroundColor="#eeeeee" borderColor="#999999" borderStyle="solid" cornerRadius="2"
+			paddingLeft="5" paddingRight="5" paddingTop="2" paddingBottom="2">
+			<mx:Label text="Sales Rep:" fontSize="14"/>
+			<mx:Label text="Larry Dilan" fontSize="14" fontWeight="bold"/>
+			<mx:Label text="All Business Partners" fontSize="14" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="Date period:" fontWeight="bold"/>
+			<mx:DateField/>
+			<mx:DateField/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox height="100%" width="300">
+				<controls:CollapsiblePanel width="100%" height="100%" title="Sales Representatives" borderColor="#0033CC" borderStyle="solid" borderThickness="2">
+					<mx:TabNavigator width="100%" height="100%" historyManagementEnabled="false">
+						<mx:VBox label="SalesReps">
+							<mx:DataGrid width="100%" height="100%">
+								<mx:columns>
+									<mx:DataGridColumn headerText="Name"/>
+								</mx:columns>
+							</mx:DataGrid>
+
+							<controls:CollapsiblePanel width="100%" height="100%" title="Business Partners">
+								<mx:DataGrid width="100%" height="100%">
+									<mx:columns>
+										<mx:DataGridColumn headerText="Name"/>
+									</mx:columns>
+								</mx:DataGrid>
+							</controls:CollapsiblePanel>
+						</mx:VBox>
+						<mx:VBox label="Business Partners">
+							<mx:DataGrid width="100%" height="100%">
+								<mx:columns>
+									<mx:DataGridColumn headerText="Name"/>
+								</mx:columns>
+							</mx:DataGrid>
+						</mx:VBox>
+					</mx:TabNavigator>
+				</controls:CollapsiblePanel>
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%">
+				<daily:LeadsDailyView borderColor="#0033CC" borderStyle="solid" borderThickness="2"/>
+				<mx:HBox width="100%" height="100%">
+					<projectTypes:LeadsProjectTypesView width="100%" height="100%"
+						 borderColor="#0033CC" borderStyle="solid" borderThickness="2"/>
+					<mx:VBox width="100%" height="100%">
+						<mx:Text width="100%" fontSize="14" text="Summary information about leads for current project type"/>
+					</mx:VBox>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

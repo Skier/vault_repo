@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:qs="expense.qs.controls.*"
+    layout="absolute"
+    title="Edit Bill Items"
+    minWidth="750"
+    minHeight="400"
+    verticalAlign="middle"
+    horizontalAlign="center">
+
+    <mx:Script>
+        <![CDATA[
+
+            import App.Domain.*;
+            import mx.managers.PopUpManager;
+
+            [Bindable]
+            public var Controller: ItemsController;
+
+            public function set ItemsController(controller: DiaryController): void {
+                this.Controller = new ItemsController(this, controller);
+            }
+            
+            public static function Open(parent:DisplayObject, modal:Boolean = false):ItemsView {
+                var popup:ItemsView = new ItemsView();
+                popup.Controller = new ItemsController(popup, DiaryView(parent).Controller);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+           
+                return popup;
+            }
+            
+            public function onClose():void {
+                PopUpManager.removePopUp(this);
+            }
+            
+            public function canEdit(data:Object):Boolean {
+            	return BillItem(data).isBillItemEditable()
+            		&& Controller.Model.dailyEvent.isEditable();
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Component id="billItemTypeEditor">
+        <mx:ComboBox rowCount="10"
+            dataProvider="{outerDocument.Controller.Model.billItemTypesFiltered}"
+            labelField="Name"
+            change="outerDocument.Controller.OnBillItemTypeEditorChange(event)"
+            enabled="{outerDocument.canEdit(data)}" 
+            focusIn="outerDocument.Controller.refreshBillItemTypes(this, data)"
+            prompt="..."/>
+    </mx:Component>
+
+    <mx:Component id="billItemTypeRenderer">
+        <mx:Label text="{(null == data.RelatedBillItemTypeTemp)? '': data.RelatedBillItemTypeTemp.Name}" />
+    </mx:Component>
+
+    <mx:Component id="amountRenderer">
+        <mx:Label fontFamily="Courier"
+            fontWeight="bold"
+            text="{(data.BillRateTemp != 0 &amp;&amp; data.QtyTemp != 0)? outerDocument.Controller.GetItemAmount(data, null).toFixed(2): ''}" />
+    </mx:Component>
+
+    <mx:Component id="billRateEditor">
+        <mx:TextInput
+            text="{data.BillRateTemp}"
+            fontFamily="Courier"
+            enabled="{outerDocument.canEdit(data) &amp;&amp; !(null == data.RelatedBillItemTypeTemp || data.RelatedBillItemTypeTemp.IsPresetRate)}"
+            keyUp="outerDocument.Controller.tryToAddBillItem(data)"
+            restrict=".0-9" />
+    </mx:Component> 
+    
+    <mx:Component id="quantityEditor">
+        <mx:TextInput
+            text="{data.QtyTemp}"
+            fontFamily="Courier"
+            enabled="{outerDocument.canEdit(data) &amp;&amp; data.RelatedBillItemTypeTemp.IsCountable &amp;&amp; (null != data.RelatedBillItemTypeTemp)}"
+            keyUp="outerDocument.Controller.tryToAddBillItem(data)"
+            restrict="0-9" />
+    </mx:Component> 
+
+    <mx:Component id="dailyBillingAmountRenderer">
+        <mx:Label
+        	fontFamily="Courier"
+            fontWeight="bold"
+            text="{(data.BillRateTemp != 0 &amp;&amp; data.QtyTemp != 0)? (data.BillRateTemp * data.QtyTemp).toFixed(2): ''}" />
+    </mx:Component>
+
+    <mx:Component id="removeItemRenderer">
+        <mx:HBox width="26" height="26">
+	        <mx:Button
+	        	width="26"
+	        	height="26"
+	        	label="x"
+	        	color="#C05050"
+	        	textRollOverColor="#F08080"
+	        	fontWeight="{(1 == data.RelatedBillItemTypeTemp.BillItemTypeId)? 'bold': 'normal'}"
+	        	visible="{null != data.RelatedBillItemTypeTemp &amp;&amp; 0 != data.RelatedBillItemTypeTemp.BillItemTypeId}"
+	        	enabled="{outerDocument.Controller.Model.dailyEvent.isEditable()}"
+	        	click="outerDocument.Controller.onRemoveBillItem(data)"
+	        />
+        </mx:HBox>
+    </mx:Component>
+
+    <mx:Component id="dailyBillingEditor">
+        <mx:ComboBox labelField="label"
+            enabled="{outerDocument.canEdit(data)}"
+            dataProvider="{outerDocument.Controller.Model.dailyBillingCollection}"
+            rowCount="9"
+            width="110"
+            fontFamily="Courier"
+            selectedIndex="{outerDocument.Controller.Model.dailyEvent.dailyBillItem.QtyTemp}"
+            change="{outerDocument.Controller.dailyBillingChanged(event);}"
+            textAlign="center"
+            prompt="..." />
+    </mx:Component> 
+
+    <mx:VBox id="itemsBox" 
+        horizontalAlign="center" verticalAlign="top" verticalGap="2" 
+        width="100%" height="100%">
+        <mx:DataGrid id="dailyBillingGrid" width="100%" 
+            editable="{Controller.Model.dailyEvent.isEditable()}" 
+            showHeaders="false" rowCount="1">
+            <mx:columns>
+                <mx:DataGridColumn width="12"
+                    labelFunction="{function(i:BillItem,c:DataGridColumn):String{return ('REJECTED' == i.Status || 'CHANGED' == i.Status)? '!': ''}}"
+                    color="#FF0000" fontWeight="bold" editable="false"/>
+                <mx:DataGridColumn width="150"
+                    labelFunction="{function():String{return 'Daily Billing:'}}"
+                    editable="false" />
+                <mx:DataGridColumn width="100"
+                    editable="false"
+                    dataField="BillRateTemp"
+                    itemRenderer="UI.landman.ItemRateRenderer"
+                    textAlign="right" />
+                <mx:DataGridColumn width="100"
+                    dataField="QtyTemp"
+                    itemRenderer="{dailyBillingEditor}"
+                    rendererIsEditor="true"
+                    editorDataField="selectedIndex" />
+                <mx:DataGridColumn width="100"
+                    editable="false"
+                    textAlign="right"
+                    itemRenderer="{dailyBillingAmountRenderer}" />
+                <mx:DataGridColumn width="100"
+                    textAlign="center"
+                    headerText="Attach"
+                    itemRenderer="common.attachment.AttachItemRenderer"
+                    editable="false"/>
+                <mx:DataGridColumn width="150"
+                    headerText="Notes" 
+                    editable="false"
+                    itemRenderer="common.notes.NotesRenderer"/>
+                <mx:DataGridColumn
+                	width="35"
+                	editable="false"
+                	visible="{Controller.Model.dailyEvent.isEditable()}"
+                	itemRenderer="{removeItemRenderer}" />
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:DataGrid id="billItemGrid" width="100%" height="100%"
+            editable="{Controller.Model.dailyEvent.isEditable()}"
+            click="Controller.recalcTotalAmount()"
+            keyUp="Controller.recalcTotalAmount()"
+            itemEditEnd="Controller.recalcTotalAmount()"
+            draggableColumns="false" sortableColumns="false">
+            <mx:columns>
+                <mx:DataGridColumn
+                    width="12"
+                    labelFunction="{function(i:BillItem,c:DataGridColumn):String{return ('REJECTED' == i.Status || 'CHANGED' == i.Status)? '!': ''}}"
+                    color="#FF0000"
+                    fontWeight="bold"
+                    editable="false" />
+                <mx:DataGridColumn
+                    width="150"
+                    headerText="Bill Item Type"
+                    dataField="RelatedBillItemTypeTemp"
+                    editorDataField="selectedItem"
+                    itemEditor="{billItemTypeEditor}"
+                    itemRenderer="{billItemTypeRenderer}" />
+                <mx:DataGridColumn
+                    width="100"
+                    headerText="Rate"
+                    dataField="BillRateTemp"
+                    editorDataField="text"
+                    itemEditor="{billRateEditor}"
+                    itemRenderer="UI.landman.ItemRateRenderer"
+                    textAlign="right" />
+                <mx:DataGridColumn
+                    width="100"
+                    headerText="Quantity"
+                    dataField="QtyTemp"
+                    editorDataField="text"
+                    itemEditor="{quantityEditor}"
+                    itemRenderer="UI.landman.QuantityRenderer"
+                    textAlign="right" />
+                <mx:DataGridColumn
+                    width="100"
+                    headerText="Amount"
+                    editable="false"
+                    textAlign="right"
+                    itemRenderer="{amountRenderer}" />
+                <mx:DataGridColumn
+                    headerText="Attach"
+                    width="100"
+                    textAlign="center"
+                    itemRenderer="common.attachment.AttachItemRenderer"
+                    editable="false"/>
+                <mx:DataGridColumn
+                    headerText="Notes"
+                    width="150"
+                    editable="false"
+                    itemRenderer="common.notes.NotesRenderer"/>
+                <mx:DataGridColumn
+                	width="35"
+                	editable="false"
+                	itemRenderer="{removeItemRenderer}"
+                	visible="{Controller.Model.dailyEvent.isEditable()}" />
+            </mx:columns>
+        </mx:DataGrid>
+
+        <mx:HBox width="100%" horizontalAlign="right" fontWeight="bold" verticalAlign="middle" borderColor="#cccccc" borderStyle="solid">
+            <mx:HBox width="25%" />
+            <mx:VBox id="messagesBox" width="50%" horizontalAlign="center" color="#D04040" />
+            <mx:HBox width="25%" horizontalAlign="right" verticalAlign="middle">
+                <mx:Label fontWeight="bold" text="Total: " />
+                <mx:Label id="totalLabel" fontWeight="bold"
+                    styleName="{(Controller.totalAmount > ItemsController.MAX_AMOUNT)? 'totalAmountExceeded': 'totalAmount'}"
+                    text="${Controller.totalAmount.toFixed(2)}" fontFamily="Courier" />
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:ControlBar horizontalAlign="center" width="100%">
+        <mx:ViewStack selectedChild="{(Controller.Model.dailyEvent.isEditable())? editorButtons: viewerButtons}">
+            <mx:HBox id="editorButtons" width="100%">
+            	<mx:HBox width="100%" height="100%" horizontalAlign="left">
+	                <mx:Button
+    	            	id="saveButton"
+        	        	label="Ok"
+        	        	width="80"
+            	    	click="Controller.onOkClick()"
+                		enabled="{0 != Controller.Model.dailyEvent.dailyBillItem.QtyTemp || Controller.Model.dailyEvent.dailyBillItem.IsMarkedToRemove}" />
+                	<mx:Button
+                		label="Cancel"
+        	        	width="80"
+                		click="Controller.CancelBillItems()" />
+                	<mx:Spacer
+                		width="15"/>
+	                <mx:Button
+    	            	id="applyButton"
+        	        	label="Apply"
+        	        	width="80"
+            	    	click="Controller.onApplyClick()"
+                		enabled="{0 != Controller.Model.dailyEvent.dailyBillItem.QtyTemp || Controller.Model.dailyEvent.dailyBillItem.IsMarkedToRemove}" />
+            	</mx:HBox>
+            </mx:HBox>
+            <mx:HBox id="viewerButtons" width="100%" horizontalAlign="center">
+                <mx:Button label="Close" click="onClose()" />
+            </mx:HBox>
+        </mx:ViewStack>
+    </mx:ControlBar>
+
+</mx:Panel>

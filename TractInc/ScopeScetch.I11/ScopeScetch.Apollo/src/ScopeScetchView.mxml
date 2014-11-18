@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:deedplotter="src.deedplotter.*"
+    xmlns:common="src.common.*"
+    height="100%" width="100%" verticalGap="2" >
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.Tract;
+
+            [Bindable]
+            public var Controller:ScopeScetchController;
+
+        	public function set Parent(parent:AppController):void 
+        	{
+        		Controller = new ScopeScetchController(ScopeScetchView(this), parent);
+        	}
+        
+        ]]>
+    </mx:Script>
+
+    <mx:Canvas width="100%">
+    
+        <mx:MenuBar id="mainMenu" 
+            dataProvider="{Controller.Model.MenuData}" width="100%" labelField="label"/>
+
+    	<mx:HBox width="100%" height="{mainMenu.height}" horizontalAlign="right" verticalAlign="middle">
+    		<mx:Label fontWeight="bold" text="New: {Controller.appController.Model.Storage.NewTracts.length}  "/>
+    		
+    		<mx:Label fontWeight="bold" text="Total: {Controller.appController.Model.Storage.user.NewTracts}"/>
+    		
+    		<mx:Label id="syncSatus" text="{Controller.appController.Model.SyncStatus}"/>
+    		
+    	    <mx:Label width="100" text="{Controller.appController.Model.IsOnline ? 'ONLINE' : 'OFFLINE'}"/>
+    	    
+    	</mx:HBox>
+    	
+    </mx:Canvas>
+
+	<common:ClientIdleTimeOut id="timeOutWatcher" 
+	    listenMouseMove="true" timeOutInterval="25" confirmInterval="1" />
+
+    <deedplotter:DeedPlotter id="deedplotter" 
+        width="100%" height="100%" tractViewStyleName="tractView"
+        borderStyle="solid" enabled="{Controller.Model.CurrentTract != null}"
+        horizontalCenter="0.5" top="0" backgroundColor="#c2d8fe"/>
+
+</mx:VBox>

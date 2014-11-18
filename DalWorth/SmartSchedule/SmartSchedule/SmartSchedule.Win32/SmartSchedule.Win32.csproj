@@ -1,0 +1,515 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{31148F65-4C7C-45E2-B968-D6C73E44CC98}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartSchedule.Win32</RootNamespace>
+    <AssemblyName>SmartSchedule.Win32</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\SmartSchedule.Win32.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\SmartSchedule.Win32.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\SmartSchedule.Win32.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\SmartSchedule.Win32.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Data.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v10.1.Design, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v10.1.Design, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraGrid.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraGrid.v10.1.Design, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v10.1.Design, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.1.Reporting.Extensions, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.1, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.1.Core, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v10.1.Design, Version=10.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionReport\ActionReportController.cs" />
+    <Compile Include="ActionReport\ActionReportModel.cs" />
+    <Compile Include="ActionReport\ActionReportView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActionReport\ActionReportView.Designer.cs">
+      <DependentUpon>ActionReportView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Authenticate\AuthenticateController.cs" />
+    <Compile Include="Authenticate\AuthenticateModel.cs" />
+    <Compile Include="Authenticate\AuthenticateView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Authenticate\AuthenticateView.Designer.cs">
+      <DependentUpon>AuthenticateView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BlockoutCreate\BlockoutCreateController.cs" />
+    <Compile Include="BlockoutCreate\BlockoutCreateModel.cs" />
+    <Compile Include="BlockoutCreate\BlockoutCreateView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlockoutCreate\BlockoutCreateView.Designer.cs">
+      <DependentUpon>BlockoutCreateView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\BaseForm.Designer.cs">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Controller.cs" />
+    <Compile Include="Controls\DateRange.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\DateRange.Designer.cs">
+      <DependentUpon>DateRange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Grid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Scheduler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TimeEditEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\VisitInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\VisitInfo.Designer.cs">
+      <DependentUpon>VisitInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DelayedVisitProcess\DelayedVisitProcessController.cs" />
+    <Compile Include="DelayedVisitProcess\DelayedVisitProcessModel.cs" />
+    <Compile Include="DelayedVisitProcess\DelayedVisitProcessView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DelayedVisitProcess\DelayedVisitProcessView.Designer.cs">
+      <DependentUpon>DelayedVisitProcessView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HistoricalOrders\HistoricalOrdersController.cs" />
+    <Compile Include="HistoricalOrders\HistoricalOrdersModel.cs" />
+    <Compile Include="HistoricalOrders\HistoricalOrdersView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HistoricalOrders\HistoricalOrdersView.Designer.cs">
+      <DependentUpon>HistoricalOrdersView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm\MainFormController.cs" />
+    <Compile Include="MainForm\MainFormModel.cs" />
+    <Compile Include="MainForm\MainFormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm\MainFormView.Designer.cs">
+      <DependentUpon>MainFormView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ActionReport\ActionReportView.resx">
+      <DependentUpon>ActionReportView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Authenticate\AuthenticateView.resx">
+      <DependentUpon>AuthenticateView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BlockoutCreate\BlockoutCreateView.resx">
+      <DependentUpon>BlockoutCreateView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\BaseForm.resx">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\DateRange.resx">
+      <DependentUpon>DateRange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\VisitInfo.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>VisitInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DelayedVisitProcess\DelayedVisitProcessView.resx">
+      <DependentUpon>DelayedVisitProcessView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HistoricalOrders\HistoricalOrdersView.resx">
+      <DependentUpon>HistoricalOrdersView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm\MainFormView.resx">
+      <DependentUpon>MainFormView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RouteAnalyze\RouteAnalyzeView.resx">
+      <DependentUpon>RouteAnalyzeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SnapshotChange\SnapshotChangeView.resx">
+      <DependentUpon>SnapshotChangeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TechnicianArrangement\TechnicianArrangementView.resx">
+      <DependentUpon>TechnicianArrangementView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TechnicianEdit\TechnicianEditView.resx">
+      <DependentUpon>TechnicianEditView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserEdit\UserEditView.resx">
+      <DependentUpon>UserEditView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManage\UserManageView.resx">
+      <DependentUpon>UserManageView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisitAdd\VisitAddView.resx">
+      <DependentUpon>VisitAddView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Coordinate1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Service1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Sync.RecommendationResponseItem.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Technician1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.User.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.UserAction.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.UserResult.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.VisitAddResult1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.BucketProcessingOptions1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.TechnicianDetail1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.TechnicianDetailValidationError1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.VisitChangeItem1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.VisitsFullChangeDetail1.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.ZipCode1.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="RouteAnalyze\RouteAnalyzeController.cs" />
+    <Compile Include="RouteAnalyze\RouteAnalyzeModel.cs" />
+    <Compile Include="RouteAnalyze\RouteAnalyzeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RouteAnalyze\RouteAnalyzeView.Designer.cs">
+      <DependentUpon>RouteAnalyzeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\WcfServiceClient\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="SnapshotChange\SnapshotChangeController.cs" />
+    <Compile Include="SnapshotChange\SnapshotChangeModel.cs" />
+    <Compile Include="SnapshotChange\SnapshotChangeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SnapshotChange\SnapshotChangeView.Designer.cs">
+      <DependentUpon>SnapshotChangeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TechnicianArrangement\TechnicianArrangementController.cs" />
+    <Compile Include="TechnicianArrangement\TechnicianArrangementModel.cs" />
+    <Compile Include="TechnicianArrangement\TechnicianArrangementView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TechnicianArrangement\TechnicianArrangementView.Designer.cs">
+      <DependentUpon>TechnicianArrangementView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TechnicianEdit\TechnicianEditController.cs" />
+    <Compile Include="TechnicianEdit\TechnicianEditModel.cs" />
+    <Compile Include="TechnicianEdit\TechnicianEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TechnicianEdit\TechnicianEditView.Designer.cs">
+      <DependentUpon>TechnicianEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserEdit\UserEditController.cs" />
+    <Compile Include="UserEdit\UserEditModel.cs" />
+    <Compile Include="UserEdit\UserEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserEdit\UserEditView.Designer.cs">
+      <DependentUpon>UserEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserManage\UserManageController.cs" />
+    <Compile Include="UserManage\UserManageModel.cs" />
+    <Compile Include="UserManage\UserManageView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManage\UserManageView.Designer.cs">
+      <DependentUpon>UserManageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisitAdd\VisitAddController.cs" />
+    <Compile Include="VisitAdd\VisitAddModel.cs" />
+    <Compile Include="VisitAdd\VisitAddView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VisitAdd\VisitAddView.Designer.cs">
+      <DependentUpon>VisitAddView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WcfClient\WcfCallbackListener.cs" />
+    <Compile Include="WcfClient\WcfClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\SmartSchedule.Domain.ChangeRecord.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Coordinate.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Schedule.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Service.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.Technician.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.TimeFrame.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.VisitAddResult.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.BucketProcessingOptions.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.DriveOptimizeOption.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.RpmOptimizeOption.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.TechnicianDetail.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.TechnicianDetailValidationError.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.VisitChangeItem.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.WCF.VisitsFullChangeDetail.datasource" />
+    <None Include="Properties\DataSources\SmartSchedule.Domain.ZipCode.datasource" />
+    <None Include="Service References\WcfServiceClient\Arrays.xsd" />
+    <None Include="Service References\WcfServiceClient\configuration.svcinfo" />
+    <None Include="Service References\WcfServiceClient\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\WcfServiceClient\service.wsdl" />
+    <None Include="Service References\WcfServiceClient\service.xsd" />
+    <None Include="Service References\WcfServiceClient\service1.xsd" />
+    <None Include="Service References\WcfServiceClient\SmartSchedule.Domain.Sync.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WcfServiceClient\SmartSchedule.Domain.WCF.xsd" />
+    <None Include="Service References\WcfServiceClient\SmartSchedule.Domain.xsd" />
+    <None Include="Service References\WcfServiceClient\configuration91.svcinfo" />
+    <None Include="Resources\Unlock24.png" />
+    <Content Include="SmartSchedule.Win32.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartSchedule.Domain.Servman\SmartSchedule.Domain.Servman.csproj">
+      <Project>{5A8F6794-86B2-4E02-A4C9-0CC1A3B10A50}</Project>
+      <Name>SmartSchedule.Domain.Servman</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartSchedule.Domain\SmartSchedule.Domain.csproj">
+      <Project>{24191447-3BE5-426B-BADE-6EB9FF25B34C}</Project>
+      <Name>SmartSchedule.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartSchedule.Windows\SmartSchedule.Windows.csproj">
+      <Project>{A1AB5BB5-46FD-4F3F-BFA2-E85A25EA80C8}</Project>
+      <Name>SmartSchedule.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartSchedule\SmartSchedule.csproj">
+      <Project>{D46D8F20-6C11-4625-84C2-FB28F2346504}</Project>
+      <Name>SmartSchedule</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\WcfServiceClient\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

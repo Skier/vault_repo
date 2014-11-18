@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:Connection="UI.ConnectionManager.*"
+	xmlns:Process="UI.ProcessManager.*">
+
+	<mx:Script>
+		<![CDATA[
+
+			[Bindable]
+			private var Controller:AppController = new AppController( AppView(this) );
+
+		]]>
+	</mx:Script>
+
+    <mx:StringValidator id="checkHost" source="{hostname}" 
+        property="text" required="true" minLength="4"/>
+
+	<mx:VBox id="mainBox" width="100%" height="100%">
+
+		<mx:ApplicationControlBar width="100%">
+			<mx:Button id="btnConnect" label="New Connection" click="Controller.Login();"/>
+			<mx:Spacer width="100%"/>
+			<mx:HBox width="100%" horizontalGap="5" verticalAlign="middle">
+				<mx:Label text="Host:" fontWeight="bold"/>
+				<mx:TextInput id="hostname" width="150"/>
+				<mx:CheckBox id="isAnonymous" label="Anonymous" change="Controller.DoAnonym();" selected="false"/>
+				<mx:Label text="User:" fontWeight="bold"/>
+				<mx:TextInput id="username" enabled="{!isAnonymous.selected}" width="80"/>
+				<mx:Label text="Password:" fontWeight="bold"/>
+				<mx:TextInput id="password" displayAsPassword="true" enabled="{!isAnonymous.selected}" width="80"/>
+				<mx:Button id="btnGo" label="GO!" click="Controller.QuickConnect()"/>
+			</mx:HBox>
+		</mx:ApplicationControlBar>
+		
+		<mx:VDividedBox width="100%" height="100%" verticalGap="5" liveDragging="false">
+			<Connection:ConnectionManagerView id="cManager" width="100%" height="100%" ParentController="{Controller}"/>
+			<Process:ProcessManagerView id="ftpProcesses" height="150" ParentController="{Controller}"/>
+		</mx:VDividedBox>
+
+	</mx:VBox>
+
+</mx:Canvas>

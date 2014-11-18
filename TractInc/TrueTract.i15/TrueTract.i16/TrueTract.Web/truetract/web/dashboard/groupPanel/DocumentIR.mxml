@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" paddingRight="4">
+
+    <mx:DateFormatter id="df" formatString="DD MMM YYYY"/>
+
+    <mx:NumberFormatter id="nf" precision="2"/>
+
+    <mx:VBox  
+        borderStyle="solid" backgroundColor="0xFFFFFF" backgroundAlpha="0.1"
+        width="100%" height="100%" verticalGap="-5">
+
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.toString()}" fontWeight="bold"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="{data.DocumentTypeName}" fontWeight="bold"/>
+    
+        </mx:HBox>
+    
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.SellerRoleName}:"/>
+            <mx:Label text="{data.Seller.AsNamed}" fontWeight="bold"/>
+    
+        </mx:HBox>
+    
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.BuyerRoleName}:"/>
+            <mx:Label text="{data.Buyer.AsNamed}" fontWeight="bold"/>
+    
+        </mx:HBox>
+    
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.TractsCount}" fontWeight="bold" />
+            <mx:Label text="Tracts Plotted"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="Signed:"/>
+            <mx:Label text="{df.format(data.DateSigned)}" fontWeight="bold"/>
+    
+        </mx:HBox>
+    
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{nf.format(data.TractsAcres)}" fontWeight="bold"/>
+            <mx:Label text="Total Acres:"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="Filled:"/>
+            <mx:Label text="{df.format(data.DateFiled)}" fontWeight="bold"/>
+    
+        </mx:HBox>
+        
+    </mx:VBox>
+
+</mx:VBox>

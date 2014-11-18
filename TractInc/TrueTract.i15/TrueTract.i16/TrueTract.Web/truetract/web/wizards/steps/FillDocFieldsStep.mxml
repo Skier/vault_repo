@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractStep 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:steps="truetract.web.wizards.steps.*"
+    verticalScrollPolicy="off" verticalGap="5" xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.DateField;
+            import truetract.plotter.domain.Participant;
+            import truetract.plotter.domain.Document;
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+
+            [Bindable] public var docum:Document;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            override public function validateForm():Boolean 
+            {
+                var result:Boolean = super.validateForm();
+
+                if (result)
+                {
+                    if (!docum)
+                        docum = new Document();
+
+                    docum.Buyer = new Participant();
+                    docum.Buyer.AsNamed = buyerName.text;
+                    docum.Seller = new Participant();
+                    docum.Seller.AsNamed = sellerName.text;
+                    docum.DateFiled = filledDateField.value;
+                    docum.DateSigned = signedDateField.value;
+                }
+
+                return result;
+            }
+            
+            override public function clean():void
+            {
+                signedDateField.value = null;
+                filledDateField.value = null;
+                sellerName.text = "";
+                buyerName.text = "";
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+
+      <mx:DateValidator
+            daySource="{filledDateField.dayTxt}" dayProperty="text" 
+            monthSource="{filledDateField.monthTxt}" monthProperty="text" 
+            yearSource="{filledDateField.yearTxt}" yearProperty="text" required="true"/>
+        
+      <mx:DateValidator
+            daySource="{signedDateField.dayTxt}" dayProperty="text" 
+            monthSource="{signedDateField.monthTxt}" monthProperty="text" 
+            yearSource="{signedDateField.yearTxt}" yearProperty="text" required="true"/>
+
+        <mx:StringValidator source="{sellerName}" property="text" required="true"/>
+
+        <mx:StringValidator source="{buyerName}" property="text" required="true"/>
+
+    </validators:ValidatorsGroup>
+
+    <steps:DocumentInfoView docum="{docum}" enabled="false" width="100%"/>
+
+    <mx:HRule width="100%" strokeColor="#000000"/>
+
+    <mx:Form width="100%" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="3">
+
+        <mx:FormItem label="Date Signed (dd/mm/yyyy):">
+            <components:CombinedDateField id="signedDateField"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Date Filled (dd/mm/yyyy):">
+            <components:CombinedDateField id="filledDateField"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="{docum.SellerRoleName}:" width="100%">
+            <mx:TextInput id="sellerName" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="{docum.BuyerRoleName}:" width="100%">
+            <mx:TextInput id="buyerName" width="100%"/>
+        </mx:FormItem>
+        
+    </mx:Form>
+
+</AbstractStep>

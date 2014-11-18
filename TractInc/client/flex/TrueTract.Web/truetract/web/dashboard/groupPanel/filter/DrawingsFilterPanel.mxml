@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FilterPanel
+    xmlns="truetract.web.dashboard.groupPanel.filter.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:validators="truetract.plotter.validators.*"
+    title="Group Filter">
+    
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.*;
+
+            private const labelWidth:Number = 100;
+            
+            private function applyFilter():void
+            {
+                if (!isFormValid()) return;
+
+                if (!filter) filter = new DrawingsFilter();
+
+                DrawingsFilter(filter).refName = (refNameTxt.text.length > 0) 
+                    ? refNameTxt.text : null;
+
+                dispatchEvent(new Event("applyFilter"));
+
+                close();
+            }
+            
+            private function resetFilter():void
+            {
+                filter.reset();
+                dispatchEvent(new Event("resetFilter"));
+                
+                close();
+            }
+            
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+    </validators:ValidatorsGroup>
+
+    <mx:Form width="100%" verticalGap="1" height="100%" 
+	    backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+	    paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="Reference Name" width="100%">
+
+            <mx:TextInput id="refNameTxt" 
+                width="100%" maxWidth="100" text="{DrawingsFilter(filter).refName}"/>
+
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Apply" styleName="toolButton" click="applyFilter()"/>
+        <mx:Button label="Clear" styleName="toolButton" click="resetFilter()"/>
+        <mx:Button label="Close" styleName="toolButton" click="close()"/>
+    </mx:ControlBar>
+    
+</FilterPanel>

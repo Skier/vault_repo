@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()"
+	creationComplete="onCreate()" 
+	xmlns:lead="com.dalworth.leadCentral.lead.*" 
+	xmlns:dashboard="com.dalworth.leadCentral.dashboard.*" 
+	xmlns:phone="com.dalworth.leadCentral.phone.*" xmlns:home="com.dalworth.leadCentral.owner.home.*" xmlns:owner="com.dalworth.leadCentral.owner.*" xmlns:transaction="com.dalworth.leadCentral.transaction.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.MainModel;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			
+			public static const MODEL_INITED:String = "ModelInited";
+			
+			private static const VIEW_NAME:String = "Owner View";
+			
+			[Bindable]
+			private var model:OwnerModel;
+			private var controller:OwnerController;
+
+			public function onInit():void 
+			{
+				model = OwnerModel.getInstance();
+				controller = new OwnerController(this);
+			}
+			
+			public function onCreate():void 
+			{
+				Application.application.addEventListener("openVideo", onOpenVideo);
+				addEventListener(MODEL_INITED, onModelInit);
+				startRemoting();
+				controller.initModel();
+			}
+			
+			private function onModelInit(event:Event):void 
+			{
+				stopRemoting();
+				viewHome.init();
+			}
+			
+			private function startRemoting():void 
+			{
+				boxProgress.visible = true;
+				boxBalance.enabled = false;
+				tnOwner.enabled = false;
+			}
+
+			private function stopRemoting():void 
+			{
+				boxProgress.visible = false;
+				boxBalance.enabled = true;
+				tnOwner.enabled = true;
+			}
+
+			private function onTabNavigatorChange():void 
+			{
+				var index:int = tnOwner.selectedIndex;
+				
+				if (denyAutoInit)
+				{
+					denyAutoInit = false;
+					return;
+				}
+				
+				switch (index) 
+				{
+					case 0:
+						viewHome.init();
+						break;
+
+					case 1:
+						viewLeads.init();
+						break;
+
+					case 2:
+						viewDashboard.init();
+						break;
+						
+					case 3:
+						viewTransactions.init();
+						break;
+
+					case 4:
+						viewSetting.init();
+						break;
+				}
+
+			}
+			
+			private var denyAutoInit:Boolean = false;
+			
+			private function onInitOAuth():void 
+			{
+				boxOAuthStatus.initOAuth();
+			}
+			
+			private function onInitLeadSources():void 
+			{
+				denyAutoInit = true;
+				tnOwner.selectedChild = viewSetting;
+				viewSetting.initLeadSources();
+			}
+			
+			private function onInitWorkflows():void 
+			{
+				denyAutoInit = true;
+				tnOwner.selectedChild = viewSetting;
+				viewSetting.initWorkflows();
+			}
+			
+			private function onLeadsDetail():void 
+			{
+				tnOwner.selectedChild = viewLeads;
+				viewLeads.init();
+			}
+			
+			private function onLeadSourcesDetail():void 
+			{
+				tnOwner.selectedChild = viewDashboard;
+				viewDashboard.init();
+			}
+			
+			private function onPhonesDetail():void 
+			{
+				denyAutoInit = true;
+				tnOwner.selectedChild = viewSetting;
+				viewSetting.initPhones();
+			}
+			
+			private function onOpenVideo(event:Event):void 
+			{
+				boxBalance.enabled = false;
+				tnOwner.enabled = false;
+				
+				boxVideo.visible = true;
+				videoPlayer.openVideo("cast/test.htm"); //replace to real url
+			}
+			
+			private function onCloseVideo():void 
+			{
+				boxBalance.enabled = true;
+				tnOwner.enabled = true;
+
+				boxVideo.visible = false;
+				videoPlayer.closeVideo(); //replace to real url
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox verticalAlign="top" right="1" top="0" height="40" horizontalGap="3">
+		<owner:OAuthStatusView id="boxOAuthStatus" height="100%"/>
+		<transaction:CurrentBalanceView id="boxBalance" height="100%"/>
+		<mx:HBox height="100%" paddingTop="4" paddingBottom="4"
+			backgroundColor="#EEEEEE" backgroundAlpha="0.8"
+			borderColor="#FFFFFF" borderStyle="solid" cornerRadius="3">
+			<mx:Label text="{MainModel.getInstance().currentVersion}" fontSize="14" color="#000099"/>
+		</mx:HBox>
+	</mx:HBox>
+
+	<mx:TabNavigator id="tnOwner" width="100%" height="100%"
+		tabHeight="30" fontSize="14" creationPolicy="all"
+		historyManagementEnabled="false" change="onTabNavigatorChange()"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#EEEEEE">
+		<home:OwnerHomeView id="viewHome" width="100%" height="100%" label="Home"
+			initOAuth="onInitOAuth()"
+			initLeadSources="onInitLeadSources()"
+			initWorkflows="onInitWorkflows()"
+			selectLeadsDetail="onLeadsDetail()"
+			selectLeadSourcesDetail="onLeadSourcesDetail()"
+			selectPhonesDetail="onPhonesDetail()"/>
+		<lead:LeadsView id="viewLeads" width="100%" height="100%" label="Leads" fontSize="12"/>
+		<dashboard:DashboardView id="viewDashboard" width="100%" height="100%" label="Dashboard" fontSize="12"/>
+		<transaction:TransactionsView id="viewTransactions" width="100%" height="100%" label="Transactions" fontSize="12"/>
+<!--
+		<owner:OwnerReportsView id="viewReports" width="100%" height="100%" label="Reports" fontSize="12"/>
+-->
+		<owner:OwnerSettingView id="viewSetting" width="100%" height="100%" label="Settings" fontSize="12"/>
+<!--		
+		<phone:PhonesView id="viewTelephony" width="100%" height="100%" label="Phones" fontSize="12"/>
+-->
+	</mx:TabNavigator>
+	
+	<mx:VBox id="boxVideo" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" 
+		visible="false" includeInLayout="false">
+		<mx:Panel title="Video Tutorial" layout="absolute" dropShadowEnabled="true">
+			<owner:VideoTutorial id="videoPlayer" label="Video Tutorial" width="640" height="420" top="35"/>
+			<mx:LinkButton label="Back to Application" click="onCloseVideo()" fontSize="12" color="#003399" right="4" top="4"/>
+		</mx:Panel>
+	</mx:VBox>
+	
+	<mx:VBox id="boxProgress" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Panel title="Init Owner environment" width="350" layout="vertical" horizontalAlign="center" 
+			borderColor="#FFFFFF" borderStyle="solid" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+			<mx:Text width="100%" text="Init Owner Environment..." fontSize="16"/>
+			<mx:ProgressBar width="100%"  height="10" indeterminate="true" labelPlacement="center" label=""/>
+		</mx:Panel>
+	</mx:VBox>
+</mx:Canvas>

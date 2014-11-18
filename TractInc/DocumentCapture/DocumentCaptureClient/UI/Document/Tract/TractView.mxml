@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    creationComplete="OnCreationComplete()"
+    cornerRadius="5"
+    width="100%" height="100%"
+    >
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import Domain.Tract;
+			import UI.Document.DocumentController;
+			import mx.core.UIComponent;
+			
+            [Bindable]
+			public var Controller:TractController;
+			
+			public function set parentCollection(parent:ArrayCollection):void {
+				Controller.Model.parentCollection = parent;
+			}
+			
+			public function set Parent(parent:DocumentController):void {
+				 Controller = new TractController(TractView(this), parent);
+			}
+			
+	        private function OnCreationComplete():void {
+	            focusManager.setFocus(referenceName);
+	        }
+	        
+	        public function IsValid():Boolean {
+
+				var isValid:Boolean = true;
+
+				if (referenceNameV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(referenceName);
+					}
+					isValid = false;
+				}
+
+				if (calledSizeV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(calledSize);
+					}
+					isValid = false;
+				}
+				
+				return isValid;
+
+	        }
+		
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="referenceNameV" source="{referenceName}" property="text" maxLength="50"
+		required="{referenceName.text.length > 0 || calledSize.text.length > 0 || Controller.Model.exceptions.length > 0}" 
+		/>
+	<mx:StringValidator id="calledSizeV" source="{calledSize}" property="text" maxLength="50"
+		required="{referenceName.text.length > 0 || calledSize.text.length > 0 || Controller.Model.exceptions.length > 0}" 
+		/>
+
+	<mx:HBox
+		left="5" right="5" top="5"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		backgroundColor="#eeeeee" cornerRadius="5"
+		borderColor="#cccccc" borderStyle="solid"
+	 	width="100%">
+
+		<mx:VBox width="100%">
+			<mx:Form>
+				<mx:FormItem label="Reference Name" width="100%">
+					<mx:TextInput id="referenceName" maxChars="50" width="100%"
+						text="{Controller.Model.tract.RefName}"
+						change="(Controller.Model.tract.RefName = referenceName.text.toUpperCase())"/>
+				</mx:FormItem>
+				<mx:FormItem label="Called Size" width="100%">
+					<mx:HBox>
+						<mx:TextInput id="calledSize" width="100%"
+							text="{Controller.Model.tract.CalledAC}"
+							change="Controller.Model.tract.CalledAC = isNaN( Number(calledSize.text) ) ? 0 : Number(calledSize.text) "/>
+						<mx:ComboBox id="selectType">
+					        <mx:ArrayCollection>
+					            <mx:Object label="Square Feets"/>
+					            <mx:Object label="Acres"/>
+					        </mx:ArrayCollection>
+						</mx:ComboBox>
+					</mx:HBox>
+				</mx:FormItem>
+				<mx:FormItem label="Scope Plotter Url">
+					<mx:LinkButton id="scopePlotterUrl" label="Scope Scetch application" click="Controller.OnClickScopeUrl()"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+
+		<mx:VBox width="100%">
+
+			<mx:HBox horizontalAlign="right" backgroundColor="#cccccc" width="100%">
+				<mx:Label text="Tract Exceptions" fontWeight="bold"/>
+				<mx:Spacer width="100%"/>
+			</mx:HBox>
+
+			<mx:VBox id="tractsView" horizontalAlign="right" width="100%">
+				
+				<mx:DataGrid height="80" width="100%" id="dgExceptions"
+					dataProvider="{Controller.Model.exceptions}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Reference Name" dataField="RefName"/>
+						<mx:DataGridColumn headerText="Called Size" dataField="CalledAC" width="120"/>
+					</mx:columns>
+				</mx:DataGrid>
+
+				<mx:HBox>
+					<mx:Button label="Add new" textAlign="center"
+						click="Controller.OnClickAddException()"/>
+					<mx:Button label="Edit" textAlign="center"
+						click="Controller.OnClickEditException()" enabled="{dgExceptions.selectedItem != null}"/>
+					<mx:Button label="Remove" textAlign="center" 
+						click="Controller.OnClickRemoveException()" enabled="{dgExceptions.selectedItem != null}"/>
+				</mx:HBox>
+			
+			</mx:VBox>
+
+		</mx:VBox>
+			
+	</mx:HBox>
+	<mx:Spacer height="100%"/>
+
+	<mx:ControlBar width="100%">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Complete" click="{Controller.OnClickComplete()}" 
+			enabled="{referenceName.text.length != 0}"/>
+		<mx:Button label="Cancel" click="{Controller.OnClickCancel()}"/>
+	</mx:ControlBar>
+
+</mx:VBox>

@@ -1,0 +1,1025 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetIncomingMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetIncomingMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetIncomingMessageResult" type="tns:Message" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Message">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EmployeeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="VisitId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="NotifyMessageReceived">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="messageId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NotifyMessageReceivedResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="NoGo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NoGoResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="Etc">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="saleAmount" type="s:decimal" />
+            <s:element minOccurs="1" maxOccurs="1" name="hours" nillable="true" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="minutes" nillable="true" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="notes" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="EtcResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="Gps">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="workId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="latitude" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="longitude" type="s:float" />
+            <s:element minOccurs="1" maxOccurs="1" name="gpsTime" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GpsResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="CompleteVisit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="tasks" type="tns:ArrayOfTaskPackage" />
+            <s:element minOccurs="0" maxOccurs="1" name="payment" type="tns:WorkTransactionPayment" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfTaskPackage">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TaskPackage" nillable="true" type="tns:TaskPackage" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TaskPackage">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Task" type="tns:Task" />
+          <s:element minOccurs="0" maxOccurs="1" name="Visit" type="tns:Visit" />
+          <s:element minOccurs="0" maxOccurs="1" name="Project" type="tns:Project" />
+          <s:element minOccurs="0" maxOccurs="1" name="TaskItemRequirements" type="tns:ArrayOfTaskItemRequirement" />
+          <s:element minOccurs="0" maxOccurs="1" name="TaskItemDeliveries" type="tns:ArrayOfTaskItemDelivery" />
+          <s:element minOccurs="0" maxOccurs="1" name="TaskEquipmentCaptures" type="tns:ArrayOfTaskEquipmentCapture" />
+          <s:element minOccurs="0" maxOccurs="1" name="Items" type="tns:ArrayOfItem" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Task">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanOrderNum" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ProjectId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaskTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaskStatusId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Number" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Sequence" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreateDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServiceDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="DurationMin" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Visit">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="VisitStatusId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreateDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServiceDate" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="DurationMin" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="PreferedTimeFrom" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="PreferedTimeTo" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="CustomerId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServiceAddressId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Project">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ParentProdjectId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ProjectTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CustomerId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServiceAddressId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ProjectStatusId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTaskItemRequirement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TaskItemRequirement" nillable="true" type="tns:TaskItemRequirement" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TaskItemRequirement">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaskId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ItemType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServiceQuantity" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="CaptureQuantity" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTaskItemDelivery">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TaskItemDelivery" nillable="true" type="tns:TaskItemDelivery" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TaskItemDelivery">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaskId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ItemId" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfTaskEquipmentCapture">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="TaskEquipmentCapture" nillable="true" type="tns:TaskEquipmentCapture" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="TaskEquipmentCapture">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaskId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EquipmentId" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfItem">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Item" nillable="true" type="tns:Item" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Item">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ItemTypeId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SerialNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ItemShapeId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Width" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="Height" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="Diameter" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsProtectorApplied" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsPaddingApplied" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsMothRepelApplied" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsRapApplied" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="CleanCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="ProtectorCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="PaddingCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="MothRepelCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="RapCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="OtherCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="SubTotalCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TaxCost" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalCost" type="s:decimal" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkTransactionPayment">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionPaymentTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="PaymentAmount" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Address" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Zip" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreditCardTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="CreditCardNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreditCardExpirationDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreditCardCVV2TypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="CreditCardCVV2" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="BankCheckAccountTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankCheckNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankRouteNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankCheckCompany" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankCheckBankName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankCheckAccountNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsAccepted" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServerResponse" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CompleteVisitResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CompleteVisitResult" type="tns:PaymentResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="PaymentResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="IsAccepted" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="CreditCardNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BankCheckNumber" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServerResponse" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ArrivedToVisit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArrivedToVisitResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="AcceptVisit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AcceptVisitResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="DeclineVisit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="reason" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeclineVisitResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetEmployees">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEmployeesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEmployeesResult" type="tns:ArrayOfEmployee" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfEmployee">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Employee" nillable="true" type="tns:Employee" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Employee">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EmployeeTypeId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanUserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanTechId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="AddressId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Login" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="HireDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="Phone1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Phone2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="IsTodayWorkExist">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianEmployeeId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsTodayWorkExistResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="IsTodayWorkExistResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStartDayPackage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="technicianEmployeeId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStartDayPackageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStartDayPackageResult" type="tns:StartDayPackage" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="StartDayPackage">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Addresses" type="tns:ArrayOfAddress" />
+          <s:element minOccurs="0" maxOccurs="1" name="Customers" type="tns:ArrayOfCustomer" />
+          <s:element minOccurs="0" maxOccurs="1" name="Equipments" type="tns:ArrayOfEquipment" />
+          <s:element minOccurs="0" maxOccurs="1" name="Items" type="tns:ArrayOfItem" />
+          <s:element minOccurs="0" maxOccurs="1" name="Van" type="tns:Van" />
+          <s:element minOccurs="0" maxOccurs="1" name="Visits" type="tns:ArrayOfVisit" />
+          <s:element minOccurs="0" maxOccurs="1" name="TaskItemDeliveries" type="tns:ArrayOfTaskItemDelivery" />
+          <s:element minOccurs="0" maxOccurs="1" name="Tasks" type="tns:ArrayOfTaskPackage" />
+          <s:element minOccurs="0" maxOccurs="1" name="Work" type="tns:Work" />
+          <s:element minOccurs="0" maxOccurs="1" name="WorkDetails" type="tns:ArrayOfWorkDetail" />
+          <s:element minOccurs="0" maxOccurs="1" name="WorkEquipments" type="tns:ArrayOfWorkEquipment" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfAddress">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Address" nillable="true" type="tns:Address" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Address">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Address1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Address2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Zip" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Map" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCustomer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Customer" nillable="true" type="tns:Customer" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Customer">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanCustId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="AddressId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Phone1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Phone2" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfEquipment">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Equipment" nillable="true" type="tns:Equipment" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Equipment">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EquipmentTypeId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SerialNumber" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Van">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanTruckId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServmanTruckNum" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LicensePlateNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EngineNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="BodyNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Color" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OilChangeDue" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfVisit">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Visit" nillable="true" type="tns:Visit" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Work">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="DispatchEmployeeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TechnicianEmployeeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="VanId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="StartDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkStatusId" nillable="true" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="StartMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EndMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="EquipmentNotes" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSentToServman" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="CreateDate" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWorkDetail">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WorkDetail" nillable="true" type="tns:WorkDetail" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkDetail">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="VisitId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TimeBegin" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="TimeEnd" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Sequence" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkDetailStatusId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsConfirmed" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWorkEquipment">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WorkEquipment" nillable="true" type="tns:WorkEquipment" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkEquipment">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EquipmentTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Quantity" nillable="true" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SaveStartDayDone">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="package" type="tns:StartDayDonePackage" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="StartDayDonePackage">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="WorkTransaction" type="tns:WorkTransaction" />
+          <s:element minOccurs="0" maxOccurs="1" name="CapturedEquipments" type="tns:ArrayOfWorkTransactionEquipment" />
+          <s:element minOccurs="0" maxOccurs="1" name="CapturedItems" type="tns:ArrayOfWorkTransactionItem" />
+          <s:element minOccurs="0" maxOccurs="1" name="VanCheck" type="tns:WorkTransactionVanCheck" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkTransaction">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="VisitId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionTypeId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TransactionDate" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="AmountCollected" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsSentToServman" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWorkTransactionEquipment">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WorkTransactionEquipment" nillable="true" type="tns:WorkTransactionEquipment" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkTransactionEquipment">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EquipmentId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsLeft" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsCaptured" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfWorkTransactionItem">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WorkTransactionItem" nillable="true" type="tns:WorkTransactionItem" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkTransactionItem">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionlId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ItemId" nillable="true" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsLeft" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsCaptured" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WorkTransactionVanCheck">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="WorkTransactionId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="OilChecked" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="UnitClean" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="VanClean" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="SuppliesStocked" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="OdometerReading" type="s:decimal" />
+          <s:element minOccurs="1" maxOccurs="1" name="HobbsReading" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="SpecialNeeds" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SaveStartDayDoneResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetVisit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="visitId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVisitResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetVisitResult" type="tns:VisitPackage" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="VisitPackage">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Visit" type="tns:Visit" />
+          <s:element minOccurs="0" maxOccurs="1" name="Customer" type="tns:Customer" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServiceAddress" type="tns:Address" />
+          <s:element minOccurs="0" maxOccurs="1" name="Tasks" type="tns:ArrayOfTaskPackage" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CompleteWork">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="workId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CompleteWorkResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetIncomingMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:GetIncomingMessage" />
+  </wsdl:message>
+  <wsdl:message name="GetIncomingMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:GetIncomingMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="NotifyMessageReceivedSoapIn">
+    <wsdl:part name="parameters" element="tns:NotifyMessageReceived" />
+  </wsdl:message>
+  <wsdl:message name="NotifyMessageReceivedSoapOut">
+    <wsdl:part name="parameters" element="tns:NotifyMessageReceivedResponse" />
+  </wsdl:message>
+  <wsdl:message name="NoGoSoapIn">
+    <wsdl:part name="parameters" element="tns:NoGo" />
+  </wsdl:message>
+  <wsdl:message name="NoGoSoapOut">
+    <wsdl:part name="parameters" element="tns:NoGoResponse" />
+  </wsdl:message>
+  <wsdl:message name="EtcSoapIn">
+    <wsdl:part name="parameters" element="tns:Etc" />
+  </wsdl:message>
+  <wsdl:message name="EtcSoapOut">
+    <wsdl:part name="parameters" element="tns:EtcResponse" />
+  </wsdl:message>
+  <wsdl:message name="GpsSoapIn">
+    <wsdl:part name="parameters" element="tns:Gps" />
+  </wsdl:message>
+  <wsdl:message name="GpsSoapOut">
+    <wsdl:part name="parameters" element="tns:GpsResponse" />
+  </wsdl:message>
+  <wsdl:message name="CompleteVisitSoapIn">
+    <wsdl:part name="parameters" element="tns:CompleteVisit" />
+  </wsdl:message>
+  <wsdl:message name="CompleteVisitSoapOut">
+    <wsdl:part name="parameters" element="tns:CompleteVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="ArrivedToVisitSoapIn">
+    <wsdl:part name="parameters" element="tns:ArrivedToVisit" />
+  </wsdl:message>
+  <wsdl:message name="ArrivedToVisitSoapOut">
+    <wsdl:part name="parameters" element="tns:ArrivedToVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="AcceptVisitSoapIn">
+    <wsdl:part name="parameters" element="tns:AcceptVisit" />
+  </wsdl:message>
+  <wsdl:message name="AcceptVisitSoapOut">
+    <wsdl:part name="parameters" element="tns:AcceptVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeclineVisitSoapIn">
+    <wsdl:part name="parameters" element="tns:DeclineVisit" />
+  </wsdl:message>
+  <wsdl:message name="DeclineVisitSoapOut">
+    <wsdl:part name="parameters" element="tns:DeclineVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEmployeesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEmployees" />
+  </wsdl:message>
+  <wsdl:message name="GetEmployeesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEmployeesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsTodayWorkExistSoapIn">
+    <wsdl:part name="parameters" element="tns:IsTodayWorkExist" />
+  </wsdl:message>
+  <wsdl:message name="IsTodayWorkExistSoapOut">
+    <wsdl:part name="parameters" element="tns:IsTodayWorkExistResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetStartDayPackageSoapIn">
+    <wsdl:part name="parameters" element="tns:GetStartDayPackage" />
+  </wsdl:message>
+  <wsdl:message name="GetStartDayPackageSoapOut">
+    <wsdl:part name="parameters" element="tns:GetStartDayPackageResponse" />
+  </wsdl:message>
+  <wsdl:message name="SaveStartDayDoneSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveStartDayDone" />
+  </wsdl:message>
+  <wsdl:message name="SaveStartDayDoneSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveStartDayDoneResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetVisitSoapIn">
+    <wsdl:part name="parameters" element="tns:GetVisit" />
+  </wsdl:message>
+  <wsdl:message name="GetVisitSoapOut">
+    <wsdl:part name="parameters" element="tns:GetVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="CompleteWorkSoapIn">
+    <wsdl:part name="parameters" element="tns:CompleteWork" />
+  </wsdl:message>
+  <wsdl:message name="CompleteWorkSoapOut">
+    <wsdl:part name="parameters" element="tns:CompleteWorkResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServerSyncServiceSoap">
+    <wsdl:operation name="GetIncomingMessage">
+      <wsdl:input message="tns:GetIncomingMessageSoapIn" />
+      <wsdl:output message="tns:GetIncomingMessageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NotifyMessageReceived">
+      <wsdl:input message="tns:NotifyMessageReceivedSoapIn" />
+      <wsdl:output message="tns:NotifyMessageReceivedSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NoGo">
+      <wsdl:input message="tns:NoGoSoapIn" />
+      <wsdl:output message="tns:NoGoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Etc">
+      <wsdl:input message="tns:EtcSoapIn" />
+      <wsdl:output message="tns:EtcSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Gps">
+      <wsdl:input message="tns:GpsSoapIn" />
+      <wsdl:output message="tns:GpsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CompleteVisit">
+      <wsdl:input message="tns:CompleteVisitSoapIn" />
+      <wsdl:output message="tns:CompleteVisitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ArrivedToVisit">
+      <wsdl:input message="tns:ArrivedToVisitSoapIn" />
+      <wsdl:output message="tns:ArrivedToVisitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AcceptVisit">
+      <wsdl:input message="tns:AcceptVisitSoapIn" />
+      <wsdl:output message="tns:AcceptVisitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeclineVisit">
+      <wsdl:input message="tns:DeclineVisitSoapIn" />
+      <wsdl:output message="tns:DeclineVisitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEmployees">
+      <wsdl:input message="tns:GetEmployeesSoapIn" />
+      <wsdl:output message="tns:GetEmployeesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsTodayWorkExist">
+      <wsdl:input message="tns:IsTodayWorkExistSoapIn" />
+      <wsdl:output message="tns:IsTodayWorkExistSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStartDayPackage">
+      <wsdl:input message="tns:GetStartDayPackageSoapIn" />
+      <wsdl:output message="tns:GetStartDayPackageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveStartDayDone">
+      <wsdl:input message="tns:SaveStartDayDoneSoapIn" />
+      <wsdl:output message="tns:SaveStartDayDoneSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVisit">
+      <wsdl:input message="tns:GetVisitSoapIn" />
+      <wsdl:output message="tns:GetVisitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CompleteWork">
+      <wsdl:input message="tns:CompleteWorkSoapIn" />
+      <wsdl:output message="tns:CompleteWorkSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServerSyncServiceSoap" type="tns:ServerSyncServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetIncomingMessage">
+      <soap:operation soapAction="http://tempuri.org/GetIncomingMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NotifyMessageReceived">
+      <soap:operation soapAction="http://tempuri.org/NotifyMessageReceived" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NoGo">
+      <soap:operation soapAction="http://tempuri.org/NoGo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Etc">
+      <soap:operation soapAction="http://tempuri.org/Etc" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Gps">
+      <soap:operation soapAction="http://tempuri.org/Gps" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CompleteVisit">
+      <soap:operation soapAction="http://tempuri.org/CompleteVisit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArrivedToVisit">
+      <soap:operation soapAction="http://tempuri.org/ArrivedToVisit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AcceptVisit">
+      <soap:operation soapAction="http://tempuri.org/AcceptVisit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeclineVisit">
+      <soap:operation soapAction="http://tempuri.org/DeclineVisit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmployees">
+      <soap:operation soapAction="http://tempuri.org/GetEmployees" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsTodayWorkExist">
+      <soap:operation soapAction="http://tempuri.org/IsTodayWorkExist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStartDayPackage">
+      <soap:operation soapAction="http://tempuri.org/GetStartDayPackage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveStartDayDone">
+      <soap:operation soapAction="http://tempuri.org/SaveStartDayDone" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVisit">
+      <soap:operation soapAction="http://tempuri.org/GetVisit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CompleteWork">
+      <soap:operation soapAction="http://tempuri.org/CompleteWork" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServerSyncServiceSoap12" type="tns:ServerSyncServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetIncomingMessage">
+      <soap12:operation soapAction="http://tempuri.org/GetIncomingMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NotifyMessageReceived">
+      <soap12:operation soapAction="http://tempuri.org/NotifyMessageReceived" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NoGo">
+      <soap12:operation soapAction="http://tempuri.org/NoGo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Etc">
+      <soap12:operation soapAction="http://tempuri.org/Etc" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Gps">
+      <soap12:operation soapAction="http://tempuri.org/Gps" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CompleteVisit">
+      <soap12:operation soapAction="http://tempuri.org/CompleteVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArrivedToVisit">
+      <soap12:operation soapAction="http://tempuri.org/ArrivedToVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AcceptVisit">
+      <soap12:operation soapAction="http://tempuri.org/AcceptVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeclineVisit">
+      <soap12:operation soapAction="http://tempuri.org/DeclineVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEmployees">
+      <soap12:operation soapAction="http://tempuri.org/GetEmployees" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsTodayWorkExist">
+      <soap12:operation soapAction="http://tempuri.org/IsTodayWorkExist" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStartDayPackage">
+      <soap12:operation soapAction="http://tempuri.org/GetStartDayPackage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveStartDayDone">
+      <soap12:operation soapAction="http://tempuri.org/SaveStartDayDone" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVisit">
+      <soap12:operation soapAction="http://tempuri.org/GetVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CompleteWork">
+      <soap12:operation soapAction="http://tempuri.org/CompleteWork" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServerSyncService">
+    <wsdl:port name="ServerSyncServiceSoap" binding="tns:ServerSyncServiceSoap">
+      <soap:address location="http://localhost:8080/Dalworth.Server.Web/serversyncservice.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ServerSyncServiceSoap12" binding="tns:ServerSyncServiceSoap12">
+      <soap12:address location="http://localhost:8080/Dalworth.Server.Web/serversyncservice.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

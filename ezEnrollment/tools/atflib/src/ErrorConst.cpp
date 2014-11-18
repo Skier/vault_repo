@@ -1,0 +1,29 @@
+/*
+ *  $RCSfile: ErrorConst.cpp,v $
+ *
+ *  $Revision: 1.2 $
+ *
+ *  last change: $Date: 2003/09/05 07:18:17 $
+ */
+#include <atf/ErrorConst.h>
+#include <atf/messages.h>
+
+const ATF_ERROR ATF_DEBUG            = ATF_DEBUG_MC;
+const ATF_ERROR ATF_WARNING          = ATF_WARNING_MC; 
+const ATF_ERROR ATF_INFO             = ATF_INFO_MC;
+
+const ATF_ERROR ATF_UNKNOWN_ERR      = ATF_UNKNOWN_MC;
+const ATF_ERROR ATF_ASSERT_ERR       = ATF_ASSERT_MC;
+const ATF_ERROR ATF_INVALID_CFG_ERR  = ATF_INVALID_CFG_MC;
+const ATF_ERROR ATF_SYSTEM_ERR       = ATF_SYSTEM_MC;
+const ATF_ERROR ATF_MQ_ERR           = ATF_MQ_MC;
+const ATF_ERROR ATF_NOTFOUND_ERR     = ATF_NOTFOUND_MC;
+const ATF_ERROR ATF_NOMEMORY_ERR     = ATF_NOMEMORY_MC;
+const ATF_ERROR ATF_SOCKET_ERR       = ATF_SOCKET_MC;
+const ATF_ERROR ATF_NO_MORE_DATA_ERR = ATF_NO_MORE_DATA_MC;
+const ATF_ERROR ATF_WRONG_TRANSID_ERR = ATF_WRONG_TRANSID_MC;
+
+const ATF_ERROR ATF_SERVICE_ERR       = ATF_SERVICE_MC;
+const ATF_ERROR ATF_NO_IMPLEMENT_ERR  = ATF_NO_IMPLEMENT_MC;
+
+const ATF_ERROR ATF_USER_ERR          = ATF_USER_MC;

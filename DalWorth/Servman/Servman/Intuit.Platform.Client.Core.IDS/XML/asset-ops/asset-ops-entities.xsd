@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/ao" xmlns:bt="http://www.intuit.com/sb/cdm/basetypes" xmlns:ns1="http://www.intuit.com/sb/cdm/customfields" targetNamespace="http://www.intuit.com/sb/cdm/ao" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.intuit.com/sb/cdm/basetypes" schemaLocation="../common/IntuitCdmBaseTypes.xsd" />
+	<xs:import namespace="http://www.intuit.com/sb/cdm/customfields" schemaLocation="../common/IntuitCustomFieldCDMTypes.xsd" />
+	<xs:include schemaLocation="asset-ops-components.xsd" />
+	<!-- ============================================================================== -->
+	<!-- Item Definition -->
+	<!-- ============================================================================== -->
+	<xs:element name="Item" type="Item">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The Item element represents goods and services.  See the complexType Item for its type definition</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="Item">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The Item type defines the data used to represent goods and services.  See the Item element</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="bt:CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0" />
+					<xs:element name="Description" type="xs:string" minOccurs="0" />
+					<xs:element name="ParentNameRef" type="ItemRef" minOccurs="0" maxOccurs="unbounded" />
+					<xs:group ref="ItemUomGroup" minOccurs="0" />
+					<xs:group ref="ItemSvcGroup" minOccurs="0" />
+					<xs:group ref="ItemInvGroup" minOccurs="0" />
+					<xs:group ref="ItemPurchGroup" minOccurs="0" />
+					<xs:group ref="ItemMfgGroup" minOccurs="0" />
+					<xs:group ref="ItemProdGroup" minOccurs="0" />
+					<xs:element name="Active" type="xs:boolean" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ============================================================================== -->
+	<!-- Bill of Materials Definition -->
+	<!-- ============================================================================== -->
+	<xs:element name="Bom" type="Bom">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The Bom element represents a convenient grouping of items to enter together in a transaction. 
+				 See complexType Bom for its type definition
+			 </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="Bom">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The Bom type defines the list of raw items used to produce an finished Item.  See the Bom element
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="bt:CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0" />
+					<xs:element name="Description" type="xs:string" minOccurs="0" />
+					<xs:element name="ParentNameRef" type="BomRef" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="BomLine" type="BomLine" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="Active" type="xs:boolean" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ============================================================================== -->
+	<!-- ItemBundle Definition -->
+	<!-- ============================================================================== -->
+	<xs:element name="ItemBundle" type="ItemBundle">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The ItemBundle element represents a convenient grouping of items to enter together in a transaction. 
+				 See complexType ItemBundle for its type definition
+			 </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="ItemBundle">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The ItemBundle type defines the data used to represent groups of items to enter together in a sales or purchasing transaction.  
+				Analagous to QuickBooks Groups.  See the ItemBundle element
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="bt:CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0" />
+					<xs:element name="Description" type="xs:string" minOccurs="0" />
+					<xs:element name="ParentNameRef" type="ItemBundleRef" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="ItemRef" type="ItemRef" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="Active" type="xs:boolean" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ============================================================================== -->
+	<!-- UOM Conversion Set Definition -->
+	<!-- ============================================================================== -->
+	<xs:element name="UomConvSet" type="UomConvSet">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The UomConvSet element represents a set of unit conversions relative to a base unit of measure 
+				 See complexType UOMConvSet for its type definition
+			 </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="UomConvSet">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The UomConvSet type defines the data used to represent a set of equivalent units and the conversion rates to other related units. See the UomConvSet element
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="bt:CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0" />
+					<xs:element name="Type" type="uomTypeEnum" minOccurs="0" />
+					<xs:element name="BaseUnit" type="UomConv" minOccurs="0" />
+					<xs:element name="ConvUnit" type="UomConv" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="Active" type="xs:boolean" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

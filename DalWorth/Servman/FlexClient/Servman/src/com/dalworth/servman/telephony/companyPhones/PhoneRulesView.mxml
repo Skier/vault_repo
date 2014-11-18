@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.servman.events.PhoneCallWorkflowEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.domain.PhoneCallWorkflow;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.domain.Phone;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var rules:ArrayCollection;
+			
+			private var _phone:Phone;
+			[Bindable]
+			public function get phone():Phone { return _phone; }
+			public function set phone(value:Phone):void 
+			{
+				_phone = value;
+				initRules();
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function initRules():void 
+			{
+				if (rules == null)
+					rules = new ArrayCollection();
+				
+				rules.removeAll();
+				if (_phone == null)
+					return; 
+				
+				startRemoting();
+				PhoneService.getInstance().getRulesByPhone(_phone).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							var result:Array = event.result as Array;
+							var len:int = result.length;
+							for (var i:int = 0; i < len; i++)
+							{
+								var rule:PhoneCallWorkflow = result[i] as PhoneCallWorkflow;
+								rule.updateProperties();
+								rules.addItem(rule);
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							trace(event.fault.message);
+						}));
+			}
+			
+			private function onNewRule():void 
+			{
+				var rule:PhoneCallWorkflow = new PhoneCallWorkflow();
+					rule.RelatedPhoneTo = phone;
+					rule.ToPhoneId = phone.Id;
+					rule.Priority = rules.length;
+					
+					//rule.FromWeekDay = 2;
+					//rule.ToWeekDay = 5;
+					//rule.FromTime = DateUtil.getDayTimes().getItemAt(13)["value"] as Date;
+					//rule.ToTime = DateUtil.getDayTimes().getItemAt(25)["value"] as Date;
+					
+				var popup:PhoneRuleEditPopup = PhoneRuleEditPopup.open(Application.application as DisplayObject, rule);
+				popup.addEventListener(PhoneCallWorkflowEvent.PHONE_CALL_WORKFLOW_SAVE, 
+					function (event:PhoneCallWorkflowEvent):void 
+					{
+						initRules();
+					});
+			}
+			
+			private function onDragComplete():void 
+			{
+				for (var i:int; i < rules.length; i++)
+				{
+					var rule:PhoneCallWorkflow = rules[i] as PhoneCallWorkflow;
+					rule.Priority = i;
+				}
+				
+				startRemoting();
+				PhoneService.getInstance().commitPhoneCallWorkflows(rules).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			private function onRemoveRule():void 
+			{
+				startRemoting();
+				var rule:PhoneCallWorkflow = dgRules.selectedItem as PhoneCallWorkflow;
+				PhoneService.getInstance().removePhoneCallWorkflow(rule.prepareToSend()).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							initRules();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}
+					)) 
+			}
+			
+			private function onDoubleClick():void 
+			{
+				var rule:PhoneCallWorkflow = dgRules.selectedItem as PhoneCallWorkflow;
+				var popup:PhoneRuleEditPopup = PhoneRuleEditPopup.open(Application.application as DisplayObject, rule);
+				popup.addEventListener(PhoneCallWorkflowEvent.PHONE_CALL_WORKFLOW_SAVE, 
+					function (event:PhoneCallWorkflowEvent):void 
+					{
+						initRules();
+					});
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" horizontalAlign="right">
+		<mx:DataGrid id="dgRules" width="100%" height="100%" dataProvider="{rules}"
+			sortableColumns="false" draggableColumns="false"
+			doubleClickEnabled="true" doubleClick="onDoubleClick()"
+			dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" dragComplete="onDragComplete()">
+			<mx:columns>
+				<mx:DataGridColumn headerText="From" dataField="PhoneFromStr"/>
+				<mx:DataGridColumn headerText="Days" dataField="DaysStr"/>
+				<mx:DataGridColumn headerText="Time" dataField="TimeStr"/>
+				<mx:DataGridColumn headerText="Flow" dataField="FlowStr"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HRule width="100%" height="1"/>
+		<mx:HBox width="100%">
+			<mx:Button label="Remove selected" click="onRemoveRule()" enabled="{dgRules.selectedItem != null}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="New Rule" click="onNewRule()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

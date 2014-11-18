@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:web="truetract.web.*" 
+    xmlns:login="truetract.web.login.*" 
+    xmlns:switchApp="truetract.web.switchApp.*" 
+    xmlns:dashboard="truetract.web.dashboard.*">
+    
+    <web:AppController id="controller" view="{this}"/>
+
+    <mx:ViewStack id="mainViewStack" 
+        creationPolicy="all" width="100%" height="100%">
+        
+        <mx:Box id="loginView" 
+            width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+            <login:LoginView appController="{controller}"/>
+        </mx:Box>
+
+        <dashboard:DashboardView id="dashboardView"
+            appController="{controller}"
+            width="100%" height="100%"/>
+
+	</mx:ViewStack>
+
+</mx:Canvas>

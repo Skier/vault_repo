@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" xmlns:containers="com.llsvc.containers.*">
+
+    <mx:Metadata>
+        [Event(name="filterChange", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			import mx.core.Application;
+			
+			[Bindable] private var _filter:LeaseSearchCriterias;
+			public function get filter():LeaseSearchCriterias 
+			{
+				return _filter;
+			}
+			
+			private var filterEditor:FilterEditor;
+			
+			private function openFilter():void 
+			{
+				if (filterEditor == null) 
+				{
+					filterEditor = new FilterEditor();
+					filterEditor.criterias = new LeaseSearchCriterias();
+				}
+				
+				var popup:FilterPopup = FilterPopup.open(Application.application as DisplayObject,
+					filterEditor, true);
+				
+				popup.addEventListener("submitRequest", 
+					function (event:Event):void 
+					{
+						_filter = popup.filterEditor.criterias;
+						popup.close();
+		
+						dispatchEvent(new Event("filterChange"));
+					});
+			}
+			
+			private function removeFilter():void 
+			{
+				filterEditor = null;
+				_filter = null;
+				
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			private function btnAddFilterClickHandler():void 
+			{
+				openFilter();
+			}
+			
+			private function btnOpenFilterClickHandler():void 
+			{
+				openFilter();
+			}
+			
+			private function btnRemoveFilterClickHandler():void 
+			{
+				removeFilter();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" backgroundColor="#ddeeff" verticalAlign="middle"
+		borderColor="#dddddd" borderStyle="solid" borderThickness="1"
+		visible="{_filter == null}" includeInLayout="{_filter == null}">
+		<mx:Label text="Setup filter for Lease List. Click to add filter." 
+			fontWeight="bold" color="#003399" width="100%"
+			click="btnAddFilterClickHandler()"/>
+		
+        <mx:Button toolTip="Add filter"
+        	width="16" height="16" verticalCenter="0" horizontalCenter="0" 
+        	icon="@Embed('assets/icon_plus.png')"
+        	click="btnAddFilterClickHandler()"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%" backgroundColor="#e5e5ff" verticalAlign="top"
+		borderColor="#dddddd" borderStyle="solid" borderThickness="1"
+		visible="{_filter != null}" includeInLayout="{_filter != null}"
+		fontSize="10" color="#777777">
+		<containers:FlowContainer width="100%" verticalGap="-3">
+			<mx:HBox horizontalGap="0" includeInLayout="{_filter.leaseNo != null}" visible="{_filter.leaseNo != null}">
+				<mx:Label text="No:"/>
+				<mx:Label text="{_filter.leaseNo}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" includeInLayout="{_filter.leaseName != null}" visible="{_filter.leaseName != null}">
+				<mx:Label text="Name:"/>
+				<mx:Label text="{_filter.leaseName}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" includeInLayout="{_filter.projectId != null}" visible="{_filter.projectId != null}">
+				<mx:Label text="Project:"/>
+				<mx:Label text="{_filter.projectName}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{_filter.expDate.dateFrom != null || _filter.expDate.dateTo != null}" 
+				visible="{_filter.expDate.dateFrom != null || _filter.expDate.dateTo != null}">
+				<mx:Label text="Exp.Date"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{_filter.expDate.dateFrom == null ? 'ANY' : _filter.expDate.dateFrom.toLocaleDateString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{_filter.expDate.dateTo == null ? 'ANY' : _filter.expDate.dateTo.toLocaleDateString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.grossAc.min) || !isNaN(_filter.grossAc.max)}" 
+				visible="{!isNaN(_filter.grossAc.min) || !isNaN(_filter.grossAc.max)}">
+				<mx:Label text="GrossAC"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.grossAc.min) ? 'ANY' : _filter.grossAc.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.grossAc.max) ? 'ANY' : _filter.grossAc.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.netAc.min) || !isNaN(_filter.netAc.max)}" 
+				visible="{!isNaN(_filter.netAc.min) || !isNaN(_filter.netAc.max)}">
+				<mx:Label text="NetAC"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.netAc.min) ? 'ANY' : _filter.netAc.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.netAc.max) ? 'ANY' : _filter.netAc.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.interest.min) || !isNaN(_filter.interest.max)}" 
+				visible="{!isNaN(_filter.interest.min) || !isNaN(_filter.interest.max)}">
+				<mx:Label text="Interest"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.interest.min) ? 'ANY' : _filter.interest.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.interest.max) ? 'ANY' : _filter.interest.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.leaseBurden.min) || !isNaN(_filter.leaseBurden.max)}" 
+				visible="{!isNaN(_filter.leaseBurden.min) || !isNaN(_filter.leaseBurden.max)}">
+				<mx:Label text="Lease Burden"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.leaseBurden.min) ? 'ANY' : _filter.leaseBurden.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.leaseBurden.max) ? 'ANY' : _filter.leaseBurden.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.leaseNri.min) || !isNaN(_filter.leaseNri.max)}" 
+				visible="{!isNaN(_filter.leaseNri.min) || !isNaN(_filter.leaseNri.max)}">
+				<mx:Label text="Lease NRI"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.leaseNri.min) ? 'ANY' : _filter.leaseNri.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.leaseNri.max) ? 'ANY' : _filter.leaseNri.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.wi.min) || !isNaN(_filter.wi.max)}" 
+				visible="{!isNaN(_filter.wi.min) || !isNaN(_filter.wi.max)}">
+				<mx:Label text="FCR WI"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.wi.min) ? 'ANY' : _filter.wi.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.wi.max) ? 'ANY' : _filter.wi.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.additionalBurden.min) || !isNaN(_filter.additionalBurden.max)}" 
+				visible="{!isNaN(_filter.additionalBurden.min) || !isNaN(_filter.additionalBurden.max)}">
+				<mx:Label text="Additional Burden"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.additionalBurden.min) ? 'ANY' : _filter.additionalBurden.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.additionalBurden.max) ? 'ANY' : _filter.additionalBurden.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.nri.min) || !isNaN(_filter.nri.max)}" 
+				visible="{!isNaN(_filter.nri.min) || !isNaN(_filter.nri.max)}">
+				<mx:Label text="FCR NRI"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.nri.min) ? 'ANY' : _filter.nri.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.nri.max) ? 'ANY' : _filter.nri.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalGap="0" 
+				includeInLayout="{!isNaN(_filter.net.min) || !isNaN(_filter.net.max)}" 
+				visible="{!isNaN(_filter.net.min) || !isNaN(_filter.net.max)}">
+				<mx:Label text="FCR NetAC"/>
+				<mx:Label text="from:"/>
+				<mx:Label 
+					text="{isNaN(_filter.net.min) ? 'ANY' : _filter.net.min.toString()}" 
+					fontWeight="bold"/>
+				<mx:Label text="to:"/>
+				<mx:Label 
+					text="{isNaN(_filter.net.max) ? 'ANY' : _filter.net.max.toString()}" 
+					fontWeight="bold"/>
+			</mx:HBox>
+			
+			<mx:Repeater id="rptTracts" dataProvider="{_filter.tracts}">
+				<mx:HBox horizontalGap="0" color="#6666ee">
+					<mx:Label text="["/>
+					<mx:Label text="TWN:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).twn.length > 0 ? TractSearchCriteria(rptTracts.currentItem).twn : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="Dir:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).twnDir.length > 0 ? TractSearchCriteria(rptTracts.currentItem).twnDir : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="RNG:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).rng.length > 0 ? TractSearchCriteria(rptTracts.currentItem).rng : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="Dir:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).rngDir.length > 0 ? TractSearchCriteria(rptTracts.currentItem).rngDir : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="PM:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).pm.length > 0 ? TractSearchCriteria(rptTracts.currentItem).pm : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="Sec:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).sec.length > 0 ? TractSearchCriteria(rptTracts.currentItem).sec : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="State:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).stateStr.length > 0 ? TractSearchCriteria(rptTracts.currentItem).stateStr : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="County:"/>
+					<mx:Label 
+						text="{TractSearchCriteria(rptTracts.currentItem).countyStr.length > 0 ? TractSearchCriteria(rptTracts.currentItem).countyStr : 'ANY'}" fontWeight="bold"/>
+					<mx:Label text="]"/>
+				</mx:HBox>
+			</mx:Repeater>
+
+		</containers:FlowContainer>
+		
+		<mx:HBox>
+	        <mx:Button toolTip="Change filter"
+	        	width="24" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icons16/pencil.png')"
+	        	click="btnOpenFilterClickHandler()"/>
+	        <mx:Button toolTip="Remove filter"
+	        	width="24" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icons16/delete.png')"
+	        	click="btnRemoveFilterClickHandler()"/>
+		</mx:HBox>
+	</mx:HBox>
+
+</mx:VBox>

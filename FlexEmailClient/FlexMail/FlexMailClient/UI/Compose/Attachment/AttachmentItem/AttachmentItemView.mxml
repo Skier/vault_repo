@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    styleName="listItem" height="30" width="100%"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+    
+    <mx:Metadata>
+       [Event(name="removeAttachment", type="Event")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+            [Bindable]
+            public var Controller:AttachmentItemController = 
+                new AttachmentItemController(AttachmentItemView(this));
+        ]]>
+    </mx:Script>
+
+  <mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="true"/>  
+    
+    <mx:Button id="removeButton" width="14" height="14" icon="@Embed('/Images/trash_icon.png')"
+        toolTip="Remove attachment" click="Controller.OnRemove()"/>
+        
+    <mx:Label text="{Controller.Model.Name}" maxWidth="100" width="100"/>
+    <mx:ProgressBar id="pb" width="70" maxWidth="70" labelPlacement="bottom" mode="manual"/>
+    <mx:Spacer width="100%" />    
+    <mx:Label text="{nf.format(Controller.Model.Size/1024)} Kb" textAlign="right"/>
+</mx:HBox>

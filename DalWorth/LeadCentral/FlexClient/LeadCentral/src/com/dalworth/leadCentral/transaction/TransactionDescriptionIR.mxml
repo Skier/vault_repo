@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.Transaction;
+			import com.dalworth.leadCentral.domain.TransactionType;
+			
+			private function getTypeName(obj:Object):String
+			{
+				if (obj is Transaction)
+					return TransactionType.getTypeDescriptionById(Transaction(obj).TransactionTypeId);
+				
+				return "";
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" horizontalGap="2" width="100%" height="100%">
+		<mx:Label width="100%" text="{getTypeName(data)}"/>
+	</mx:HBox>
+</mx:Canvas>

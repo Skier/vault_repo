@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="User" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+        	import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Role;
+        	import TractInc.Domain.User;
+            import TractInc.Domain.UserPreference;
+            import TractInc.Domain.Person;
+            import TractInc.Domain.Company;
+            import TractInc.Domain.Client;
+            import TractInc.Domain.Module;
+            
+            [Bindable]
+            private var canEdit:Boolean = false;
+
+            public var controller:UserManagerController = null;
+            public var currentUser:User = null;
+            private var checkBoxes:Array = new Array();
+                
+            public static function open(ctrl:UserManagerController, user:User, modal:Boolean):UserView
+            {
+                var popup:UserView = new UserView();
+                popup.controller = ctrl;
+                popup.currentUser = user;
+                
+                PopUpManager.addPopUp(popup, ctrl.view, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function init():void
+            {
+                canEdit = controller.model.userManagerPackage.canManageUsers;
+  
+                this.roleGrid.dataProvider = 
+                        controller.model.userManagerPackage.RoleList;
+                                
+                this.cbClient.dataProvider =
+                        controller.model.userManagerPackage.ClientList;
+                this.cbClient.labelField = "ClientName";
+                
+                this.cbCompany.dataProvider =
+                        controller.model.userManagerPackage.CompanyList;
+                this.cbCompany.labelField = "CompanyName";
+                
+/*                
+                for each (var role:Role in controller.model.userManagerPackage.RoleList) {
+                    var box:CheckBox = new CheckBox();
+                    box.label = role.Name;
+                    box.selected = isRoleSelected(role);
+                    box.data = role;
+                    checkBoxes.push(box);
+                    roleCheckList.addChild(box);
+                }
+*/                
+                if ( null != currentUser ) {
+                    this.loginTxt.text = currentUser.Login;
+                    this.isActiveBox.selected = currentUser.IsActive;
+                    this.txtFirstName.text = currentUser.Personal.FirstName;
+                    this.txtLastName.text = currentUser.Personal.LastName;
+                    this.txtMiddleName.text = currentUser.Personal.MiddleName;
+                    this.txtPhone.text = currentUser.Personal.PhoneNumber;
+                    this.txtEmail.text = currentUser.Personal.Email;
+                    this.txtPassword.text = currentUser.Password;
+                    this.txtConfirmPassword.text = currentUser.Password;
+                    this.txtDefaultSite.text = currentUser.Preference.DefaultSite;
+                    this.txtNewTracts.text = currentUser.Preference.NewTracts.toString();
+
+                    for each (var role:Role in controller.model.userManagerPackage.RoleList) {
+                        role.Selected = isRoleSelected(role);
+                    }
+                
+                    if ( 0 != currentUser.Personal.ClientId ) {
+                        this.cbClient.selectedItem = 
+                            getClientById(currentUser.Personal.ClientId);
+                        this.checkClientBox.selected = true;
+                    }
+
+                    if ( 0 != currentUser.Personal.CompanyId ) {
+                        this.cbCompany.selectedItem = 
+                            getCompanyById(currentUser.Personal.CompanyId);
+                        this.checkCompanyBox.selected = true;
+                    }
+                } else {
+                    currentUser = new User();
+                    currentUser.Personal = new Person();
+                    currentUser.Preference = new UserPreference();
+                }
+            }
+            
+            private function getCompanyById(id:int):Company
+            {
+                for each (var item:Company in controller.model.userManagerPackage.CompanyList) {
+                    if ( id == item.CompanyId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getClientById(id:int):Client
+            {
+                for each (var item:Client in controller.model.userManagerPackage.ClientList) {
+                    if ( id == item.ClientId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getUser():User 
+            {
+                currentUser.Login = this.loginTxt.text;
+                currentUser.IsActive = this.isActiveBox.selected;
+                currentUser.Password = this.txtPassword.text;
+                
+                currentUser.Personal.FirstName = this.txtFirstName.text;
+                currentUser.Personal.LastName = this.txtLastName.text;
+                currentUser.Personal.MiddleName = this.txtMiddleName.text;
+                currentUser.Personal.Email = this.txtEmail.text;
+                currentUser.Personal.PhoneNumber = this.txtPhone.text;
+                
+                currentUser.Personal.ClientId = 0;
+                currentUser.Personal.CompanyId = 0;
+                if ( this.checkClientBox.selected ) {
+                    currentUser.Personal.ClientId = (this.cbClient.selectedItem as Client).ClientId;
+                }
+                if ( this.checkCompanyBox.selected ) {
+                    currentUser.Personal.CompanyId = (this.cbCompany.selectedItem as Company).CompanyId;
+                }
+                
+                currentUser.Preference.DefaultSite = this.txtDefaultSite.text;
+                currentUser.Preference.NewTracts = int(this.txtNewTracts.text);
+                
+                currentUser.RoleList = new Array();
+/*                
+                for each (var box:CheckBox in checkBoxes) {
+                    if ( box.selected ) {
+                        currentUser.RoleList.push(box.data);
+                    }
+                }
+*/                
+                for each (var role:Role in controller.model.userManagerPackage.RoleList) {
+                    if ( role.Selected ) {
+                        currentUser.RoleList.push(role);
+                    }
+                }
+                
+                return currentUser;
+            }
+
+            private function isRoleSelected(role:Role):Boolean
+            {
+                if ( null != currentUser ) {
+                    for each (var r:Role in currentUser.RoleList) {
+                        if ( role.RoleId == r.RoleId ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }    
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveUser(getUser())
+            }
+/*            
+            private function checkAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = true;
+                }
+                checkAllBox.selected = false;
+            }
+            
+            private function uncheckAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = false;
+                }
+                uncheckAllBox.selected = false;
+            }
+*/
+            
+            private function checkClientBoxOnClickHandler(event:Event):void
+            {
+                if ( checkClientBox.selected ) {
+                    checkCompanyBox.selected = false;
+                }
+            }
+            
+            private function checkCompanyBoxOnClickHandler(event:Event):void
+            {
+                if ( checkCompanyBox.selected ) {
+                    checkClientBox.selected = false;
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{loginTxt}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form id="mainForm" enabled="{canEdit}" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:HBox>
+            <mx:Form>
+		<mx:FormHeading label="User Account"/>
+        <mx:FormItem label="Login" width="100%" required="true">
+            <mx:TextInput id="loginTxt" width="100%"/>
+        </mx:FormItem>
+        <mx:FormItem label="Is Active" width="100%" required="true">
+            <mx:CheckBox id="isActiveBox" width="100%"/>
+        </mx:FormItem>
+		<mx:FormItem label="Password:">
+			<mx:TextInput id="txtPassword" maxChars="50" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="Confirm password:">
+			<mx:TextInput id="txtConfirmPassword" maxChars="50" displayAsPassword="true"/>
+		</mx:FormItem>
+		
+		<mx:FormHeading label="Personal Information"/>
+		<mx:FormItem label="First Name:">
+			<mx:TextInput id="txtFirstName" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last Name:">
+			<mx:TextInput id="txtLastName" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem label="Middle Name:">
+			<mx:TextInput id="txtMiddleName" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem label="Email:">
+			<mx:TextInput id="txtEmail" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem label="Phone Num:">
+			<mx:TextInput id="txtPhone" maxChars="50"/>
+		</mx:FormItem>
+            </mx:Form>
+            
+            <mx:Form>
+		<mx:FormHeading label="Client/Company"/>
+        <mx:VBox width="100%">
+		    <mx:FormItem label="Client">
+            <mx:HBox>
+                <mx:CheckBox id="checkClientBox" click="checkClientBoxOnClickHandler(event)"/>    
+                <mx:ComboBox id="cbClient" enabled="{checkClientBox.selected}" width="100%"/>
+            </mx:HBox>
+            </mx:FormItem>
+		    <mx:FormItem label="Company">
+            <mx:HBox>
+                <mx:CheckBox id="checkCompanyBox" click="checkCompanyBoxOnClickHandler(event)"/>    
+                <mx:ComboBox id="cbCompany" enabled="{checkCompanyBox.selected}" width="100%"/>
+            </mx:HBox>
+            </mx:FormItem>
+        </mx:VBox>
+        
+		<mx:FormHeading label="User Roles"/>
+        <mx:VBox width="100%">
+		    <mx:DataGrid id="roleGrid" 
+		            width="100%" height="100%">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="" dataField="Selected" width="16" minWidth="16"
+                            itemRenderer="tractIncUserManager.RoleCheckIR"/>
+                    <mx:DataGridColumn headerText="Role" width="200" dataField="Name"/>
+                </mx:columns>
+            </mx:DataGrid>
+<!--            
+            <mx:HBox width="100%" horizontalAlign="center">
+                <mx:CheckBox id="checkAllBox" label="Check All" click="checkAllBoxOnClickHandler(event)"/>    
+                <mx:CheckBox id="uncheckAllBox" label="Uncheck All" click="uncheckAllBoxOnClickHandler(event)"/>    
+            </mx:HBox>
+            <mx:VBox id="roleCheckList">
+            </mx:VBox>
+-->            
+        </mx:VBox>
+
+		<mx:FormHeading label="Preferences"/>
+		<mx:FormItem label="Default Site">
+			<mx:TextInput id="txtDefaultSite" maxChars="50"/>
+		</mx:FormItem>
+		<mx:FormItem label="New Tracts">
+			<mx:TextInput id="txtNewTracts" maxChars="10"/>
+		</mx:FormItem>
+            </mx:Form>
+        </mx:HBox>
+    </mx:Form>
+            
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

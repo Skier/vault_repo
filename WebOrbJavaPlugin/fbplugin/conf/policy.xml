@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wasp:PolicyDocument xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy"
+                     xmlns:wasp="http://systinet.com/wasp/policy/1.0"
+                     xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" >
+
+    <wsp:PolicyAttachment>
+        <wsp:AppliesTo>
+            <wasp:DefaultDomainExpression/>
+        </wsp:AppliesTo>
+        <wsp:Policy Name="Default" TargetNamespace="http://systinet.com/wasp/app/core">
+            <!-- specify here default Systinet Server policy -->
+            <wsu:SpecVersion URI="http://schemas.xmlsoap.org/ws/2004/08/addressing" wsp:Preference="1" wsp:Usage="wsp:Observed" />
+        </wsp:Policy>
+    </wsp:PolicyAttachment>
+
+    <!-- specify here another useful policies which can be attached at runtime
+    <wsp:Policy Name="..." TargetNamespace="http://systinet.com/wasp/app/core">
+    </wsp:Policy>
+    -->
+</wasp:PolicyDocument>

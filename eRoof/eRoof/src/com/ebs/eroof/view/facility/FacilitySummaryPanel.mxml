@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:section="com.ebs.eroof.view.section.*" xmlns:facility="com.ebs.eroof.view.facility.*">
+	
+    <mx:Metadata>
+        [Event(name="setEditMode", type="flash.events.Event")]
+        [Event(name="setViewMode", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			private var _isEditing:Boolean;
+			[Bindable]
+			public function get isEditing():Boolean { return _isEditing; }
+			public function set isEditing(value:Boolean):void 
+			{
+				_isEditing = value;
+
+				if (_isEditing)
+					setEditMode();
+				else 
+					setViewMode();
+			}
+			
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				_model = value;
+				setViewMode();
+			}
+			
+			[Bindable]
+			public var isEditable:Boolean = false;
+			
+			private function setEditMode():void 
+			{
+				vsModes.selectedChild = editor;
+				editor.model = model;
+				dispatchEvent(new Event("setEditMode"));
+			}
+			
+			private function setViewMode():void 
+			{
+				vsModes.selectedChild = viewer;
+				viewer.model = model;
+				dispatchEvent(new Event("setViewMode"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsModes" width="100%" height="100%">
+		<facility:FacilitySummaryView id="viewer" width="100%" height="100%" startEdit="setEditMode()"/>
+		<facility:FacilitySummaryEditor id="editor" width="100%" height="100%" endEdit="setViewMode()"/>
+	</mx:ViewStack>
+</mx:Canvas>

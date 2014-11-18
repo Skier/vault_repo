@@ -1,0 +1,275 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Reports
+@model PartnersRevenueModel
+
+@{
+    ViewBag.Title = "Revenue By Sales Rep";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+<h2>Business Partner Signup By Sales Rep</h2>
+
+@using (Html.BeginForm())
+{
+
+<div class="details">
+    <table class="form">
+    <tr>
+        <td>
+          &nbsp;&nbsp;From: 
+          @Html.TextBoxFor(model => model.DateFrom, new { @class = "date-input", @id = "date-from" })
+          &nbsp;&nbsp;To:
+          @Html.TextBoxFor(model => model.DateTo, new { @class = "date-input", @id = "date-to" })
+          &nbsp;&nbsp;<button type="submit" class="primary"> Create Report </button>
+        </td>
+    </tr>
+    </table>
+</div>
+<br/>
+  <div class="content">
+@if (Model.Leads != null && Model.Leads.Count > 0)
+{
+    var lastCampaignName = string.Empty;
+    var lastPatnerName = string.Empty;
+    var lastSalesRepName = string.Empty;
+
+    var currentCampaignLeads = 0;
+    var currentPartnerLeads = 0;
+    var currentSalesRepLeads = 0;
+
+    decimal currentCampaignAmount = 0;
+    decimal currentPartnerAmount = 0;
+    decimal currentSalesRepAmount = 0;
+
+    decimal totalAmount = 0;
+
+    <table class="list">
+        <thead>
+            <tr>
+                <td class="left">Sales Rep</td>
+                <td class="left">Partner</td>
+                <td class="left">Campaign</td>
+                <td class="left">Call Date</td>
+                <td class="left">Invoice Number</td>
+                <td class="left">Invoice Date</td>
+                <td class="left">Amount</td>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var lead in Model.Leads)
+            {
+                var campaign = (lead.RelatedCampaign != null) ? lead.RelatedCampaign.CampaignName : string.Empty;
+
+                if (campaign != lastCampaignName && currentCampaignLeads > 0)
+                {
+                    <tr style="background:#FFE;">
+                        @if (string.IsNullOrEmpty(lastCampaignName))
+                        {
+                            <td class="right" colspan="6">Total for undefined campaigns :</td>
+                        }
+                        else
+                        {
+                            <td class="right" colspan="6">Total for @lastCampaignName :</td>
+                        }
+                        <td class="right">@string.Format("{0:C}", currentCampaignAmount)</td>
+                    </tr>
+            
+                    currentPartnerAmount += currentCampaignAmount;
+                    currentCampaignAmount = 0;
+                    currentCampaignLeads = 0;
+                }
+
+                var partner = (lead.RelatedCampaign != null &&
+                               lead.RelatedCampaign.RelatedBusinessPartner != null)
+                                  ? lead.RelatedCampaign.RelatedBusinessPartner.PartnerName : string.Empty;
+
+                if (partner != lastPatnerName && currentPartnerLeads > 0)
+                {
+                    <tr style="background:#FFE;">
+                        @if (string.IsNullOrEmpty(lastPatnerName))
+                        {
+                            <td class="right" colspan="6">Total for undefined partners :</td>
+                        }
+                        else
+                        {
+                            <td class="right" colspan="6">Total for <b>@lastPatnerName :</b></td>
+                        }
+                        <td class="right">@string.Format("{0:C}", currentPartnerAmount)</td>
+                    </tr>
+                    currentSalesRepAmount += currentPartnerAmount;
+                    currentPartnerAmount = 0;
+                    currentPartnerLeads = 0;
+                }
+
+                var salesRep = (lead.RelatedCampaign != null &&
+                                lead.RelatedCampaign.RelatedBusinessPartner != null &&
+                                lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep != null)
+                                   ? lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep.Name : string.Empty;
+
+                if (salesRep != lastSalesRepName && currentSalesRepLeads > 0)
+                {
+                    <tr style="background:#FFE;">
+                        @if (string.IsNullOrEmpty(lastSalesRepName))
+                        {
+                            <td class="right" colspan="6">Total for undefined sales reps :</td>
+                        }
+                        else
+                        {
+                            <td class="right" colspan="6">Total for <b>@lastSalesRepName :</b></td>
+                        }
+                        <td class="right">@string.Format("{0:C}", currentSalesRepAmount)</td>
+                    </tr>
+                    totalAmount += currentSalesRepAmount;
+                    currentSalesRepAmount = 0;
+                    currentSalesRepLeads = 0;
+                }
+
+                <tr>
+                    @if (currentSalesRepLeads == 0)
+                    {
+                        lastSalesRepName = salesRep;
+                        if (lead.RelatedCampaign != null && lead.RelatedCampaign.RelatedBusinessPartner != null && lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep != null)
+                        {
+                            <td class="left">@Html.ActionLink(salesRep, "Details", new { controller = "Users", id = lead.RelatedCampaign.RelatedBusinessPartner.SalesRepId })</td>
+                        }
+                        else
+                        {
+                            <td class="left"><i>undefined</i></td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="left">&nbsp;</td>
+                    }
+
+                    @if (currentPartnerLeads == 0)
+                    {
+                        lastPatnerName = partner;
+                        if (lead.RelatedCampaign != null && lead.RelatedCampaign.RelatedBusinessPartner != null)
+                        {
+                            <td class="left">@Html.ActionLink(partner, "Details", new { controller = "Partners", id = lead.RelatedCampaign.BusinessPartnerId })</td>
+                        }
+                        else
+                        {
+                            <td class="left"><i>undefined</i></td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="left">&nbsp;</td>
+                    }
+
+                    @if (currentCampaignLeads == 0)
+                    {
+                        lastCampaignName = campaign;
+                        if (lead.RelatedCampaign != null)
+                        {
+                            <td class="left">@Html.ActionLink(campaign, "Details", new { controller = "Campaigns", id = lead.CampaignId })</td>
+                        }
+                        else
+                        {
+                            <td class="left"><i>undefined</i></td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="left">&nbsp;</td>
+                    }
+
+                    <td class="left">@Html.ActionLink(lead.DateCreatedStr, "LeadDetails", new { controller = "Leads", id = lead.Id })</td>
+
+                    @if (lead.QbInvoices != null && lead.QbInvoices.Count > 0)
+                    {
+                        var invoice = lead.QbInvoices[0];
+                        currentCampaignAmount += invoice.Amount;
+                        <td class="left">@invoice.IdsInvoiceNumber</td>
+                        <td class="left">@invoice.IdsInvoiceDateCreatedStr</td>
+                        <td class="right">@string.Format("{0:C}", invoice.Amount)</td>
+                    }
+                </tr>
+            
+                if (lead.QbInvoices != null && lead.QbInvoices.Count > 1)
+                {
+                    for (int i = 1; i < lead.QbInvoices.Count; i++)
+                    {
+                        var invoice = lead.QbInvoices[i];
+                        currentCampaignAmount += invoice.Amount;
+                        <tr>
+                            <td colspan="4">&nbsp;</td>
+                            <td class="left">@invoice.IdsInvoiceNumber</td>
+                            <td class="left">@invoice.IdsInvoiceDateCreatedStr</td>
+                            <td class="right">@string.Format("{0:C}", invoice.Amount)</td>
+                        </tr>
+                    }
+                }
+
+                currentCampaignLeads++;
+                currentPartnerLeads++;
+                currentSalesRepLeads++;
+            }
+            <tr style="background:#FFE;">
+                @if (string.IsNullOrEmpty(lastCampaignName))
+                {
+                    <td class="right" colspan="6">Total for undefined campaigns :</td>
+                }
+                else
+                {
+                    <td class="right" colspan="6">Total for @lastCampaignName :</td>
+                }
+                <td class="right">@string.Format("{0:C}", currentCampaignAmount)</td>
+            </tr>
+            @{
+                currentPartnerAmount += currentCampaignAmount;
+            }    
+
+            <tr style="background:#FFE;">
+                @if (string.IsNullOrEmpty(lastPatnerName))
+                {
+                    <td class="right" colspan="6">Total for undefined partners :</td>
+                }
+                else
+                {
+                    <td class="right" colspan="6">Total for <b>@lastPatnerName :</b></td>
+                }
+                <td class="right">@string.Format("{0:C}", currentPartnerAmount)</td>
+            </tr>
+            @{
+                currentSalesRepAmount += currentPartnerAmount;
+            }    
+
+            <tr style="background:#FFE;">
+                @if (string.IsNullOrEmpty(lastSalesRepName))
+                {
+                    <td class="right" colspan="6">Total for undefined sales reps :</td>
+                }
+                else
+                {
+                    <td class="right" colspan="6">Total for <b>@lastSalesRepName :</b></td>
+                }
+                <td class="right">@string.Format("{0:C}", currentSalesRepAmount)</td>
+            </tr>
+            @{
+                totalAmount += currentSalesRepAmount;
+            }    
+
+            <tr style="background:#FFD;">
+                <td class="right" colspan="6"><b>Total :</b></td>
+                <td class="right"><b>@string.Format("{0:C}", totalAmount)</b></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div style="float:right;"><a href="/Reports/PartnersRevenueExportToCsv/">Export to CSV</a></div>
+}
+else
+{
+    <div>No Phone Calls found</div>
+}
+  </div>
+}

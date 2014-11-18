@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="400" height="300"
+	title="Notes Panel"
+	showCloseButton="true" close="close()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CollectionEventKind;
+			import mx.events.CollectionEvent;
+			import com.llsvc.registry.MainModel;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.services.NoteService;
+			import com.llsvc.domain.Note;
+			import mx.managers.PopUpManager;
+			import com.llsvc.domain.Invoice;
+			import mx.rpc.Responder;
+			
+			[Bindable] public var invoice:Invoice;
+			
+			[Bindable] private var isBusy:Boolean = false;
+			
+            public static function open(parent:DisplayObject, invoice:Invoice, modal:Boolean = true):NotesView
+            {
+                var popup:NotesView = new NotesView();
+                
+                popup.invoice = invoice;
+                popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void
+            {
+           		callLater(scrollNotesDown);
+				//invoice.notes.addEventListener(CollectionEvent.COLLECTION_CHANGE, notesChangeHandler);
+            }
+            
+            private function notesChangeHandler(event:CollectionEvent):void 
+            {
+            	if (event.kind == CollectionEventKind.ADD) 
+            	{
+            		callLater(scrollNotesDown);
+            	}
+            }
+            
+            private function scrollNotesDown():void 
+            {
+           		notesContainer.verticalScrollPosition = notesContainer.maxVerticalScrollPosition;
+            }
+            
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+            private function saveNote(note:Note):void 
+            {
+            	startRemoting();
+            	NoteService.instance.saveNote(note).addResponder(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+            				stopRemoting();
+
+	            			if (!invoice.notes.contains(note))
+	            				invoice.notes.addItem(note);
+
+	            			txtNewNote.text = "";
+            			},
+            			function (event:FaultEvent):void 
+            			{
+            				stopRemoting();
+            				Alert.show(event.fault.message);
+            			}
+            		));
+            }
+            
+            private function onClickOk():void 
+            {
+            	var note:Note = new Note();
+            	note.invoice = invoice;
+            	note.invoiceid = invoice.invoiceid;
+            	note.notedate = new Date();
+            	note.user = MainModel.instance.currentUser;
+            	note.userid = note.user.userid;
+            	note.notetext = txtNewNote.text;
+            	note.notefrom = MainModel.instance.currentUser.login.person.fullName;
+            	
+            	saveNote(note);
+            }
+            
+		]]>
+	</mx:Script>
+	
+    <mx:Canvas id="notesContainer" width="100%" height="100%" 
+    	borderColor="#999999" borderStyle="solid" backgroundColor="#ffffff" 
+    	horizontalScrollPolicy="off" verticalScrollPolicy="on">
+<!--
+		<mx:List width="100%" height="100%" 
+			selectable="false" variableRowHeight="true"
+			dataProvider="{invoice.notes}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:VBox width="100%">
+		                <mx:HBox width="100%" backgroundColor="#eeeeee" verticalAlign="top">
+		                    <mx:Script>
+		                    	<![CDATA[
+		                    		import com.llsvc.domain.Note;
+		                    	]]>
+		                    </mx:Script>
+		                    <mx:Label text="{Note(data).notefrom} says:" fontWeight="bold"/>
+		                    <mx:Spacer width="100%"/>
+		                    <mx:Label text="{Note(data).notedate.toLocaleDateString()}" fontStyle="italic"/>
+		                </mx:HBox>
+		                <mx:Text id="txtBody" width="100%" text="{Note(data).notetext}"/>
+					</mx:VBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:List>
+-->
+
+        <mx:VBox width="100%" height="100%" 
+            paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+            <mx:Repeater id="rptNotes" dataProvider="{invoice.notes}">
+                <mx:HBox width="100%" backgroundColor="#eeeeee" verticalAlign="top">
+                    <mx:Label text="{Note(rptNotes.currentItem).notefrom} says:" fontWeight="bold"/>
+                    <mx:Spacer width="100%"/>
+                    <mx:Label text="{Note(rptNotes.currentItem).notedate.toLocaleDateString()}" fontStyle="italic"/>
+                </mx:HBox>
+                <mx:Text id="txtBody" width="100%" text="{Note(rptNotes.currentItem).notetext}"/>
+            </mx:Repeater>
+        </mx:VBox>
+
+    </mx:Canvas>
+
+    <mx:HBox id="boxControls" width="100%">
+        <mx:TextInput id="txtNewNote" width="100%" enter="onClickOk()" maxChars="250" enabled="{!isBusy}"/>
+        <mx:Button height="24" label="Add Note" click="onClickOk()" enabled="{txtNewNote.text.length > 0 &amp;&amp; !isBusy}"/>
+    </mx:HBox>
+</mx:TitleWindow>

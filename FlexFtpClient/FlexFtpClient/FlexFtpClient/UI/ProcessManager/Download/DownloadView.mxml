@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:DownloadItem="UI.ProcessManager.Download.DownloadItem.*"
+    borderStyle="solid"
+    paddingTop="5" paddingBottom="5" paddingRight="5" paddingLeft="5"
+    horizontalScrollPolicy="off"
+    height="100%" width="100%"
+    > 
+
+    <mx:Script>
+    	<![CDATA[
+    		import UI.ProcessManager.ProcessManagerController;
+
+			public function set ParentController(parent:ProcessManagerController):void {
+				Controller = new DownloadController( DownloadView(this), parent );
+			}
+			
+			[Bindable]
+			public var Controller:DownloadController;
+				
+    	]]>
+    </mx:Script>
+
+	<mx:List id="downloadItems" 
+	    horizontalScrollPolicy="off" height="100%" width="100%"
+		dataProvider="{Controller.Model.Items}" 
+		itemRenderer="UI.ProcessManager.Download.DownloadItemRenderer"/>
+
+</mx:Canvas>

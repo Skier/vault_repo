@@ -1,0 +1,127 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CFC1636E-0A1F-4698-B10E-B32DB1436645}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MobileTech.Windows.UI.FlagEditor</RootNamespace>
+    <AssemblyName>MobileTech.Windows.UI.FlagEditor</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>MobileTech.Windows.UI.FlagEditor</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FlagEditorRouteCollectionView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlagEditorRouteCollectionView.Designer.cs">
+      <DependentUpon>FlagEditorRouteCollectionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FlagEditorRouteValuesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlagEditorRouteValuesView.Designer.cs">
+      <DependentUpon>FlagEditorRouteValuesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FlagEditorView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlagEditorView.Designer.cs">
+      <DependentUpon>FlagEditorView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MobileTech.Domain\MobileTech.Domain.csproj">
+      <Project>{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}</Project>
+      <Name>MobileTech.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech.Windows.UI.Controls\MobileTech.Windows.UI.Controls.csproj">
+      <Project>{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}</Project>
+      <Name>MobileTech.Windows.UI.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech.Windows\MobileTech.Windows.csproj">
+      <Project>{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}</Project>
+      <Name>MobileTech.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MobileTech\MobileTech.csproj">
+      <Project>{30B0146B-25B7-4658-9436-183CE7E27388}</Project>
+      <Name>MobileTech</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FlagEditorRouteCollectionView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FlagEditorRouteCollectionView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlagEditorRouteValuesView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FlagEditorRouteValuesView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlagEditorView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FlagEditorView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

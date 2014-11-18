@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    verticalGap="4"
+	borderColor="#333399" borderStyle="solid" borderThickness="1"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	backgroundColor="#eeeeee" styleName="CollapsiblePanel" 
+	xmlns:tab="truetract.web.client.project.tab.*" 
+	xmlns:contact="truetract.web.client.project.tab.contact.*" 
+	xmlns:document="truetract.web.client.document.*">
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.ListEvent;
+        	import mx.events.DataGridEvent;
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.events.CollectionEventKind;
+        	import mx.events.CollectionEvent;
+        	import mx.events.PropertyChangeEvent;
+        	import mx.events.CloseEvent;
+        	import mx.core.Application;
+        	import truetract.web.wizards.addDocumentWizard.AddDocumentWizardView;
+        	import truetract.web.util.TokenResponder;
+        	import truetract.web.AppModel;
+        	import truetract.web.services.DocumentService;
+            import truetract.domain.mementos.ProjectTabDocumentMemento;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.AsyncToken;
+            import truetract.web.services.ProjectService;
+            import truetract.domain.mementos.ProjectTabMemento;
+            import mx.core.IUIComponent;
+            import mx.events.DynamicEvent;
+            import mx.core.DragSource;
+            import truetract.domain.DocumentAttachment;
+            import truetract.domain.Document;
+            import truetract.domain.ProjectTab;
+            import truetract.domain.ProjectTabDocument;
+            import truetract.web.dashboard.events.DocumentEvent;
+
+            import mx.events.DragEvent;
+            import mx.core.UIComponent;
+            import mx.collections.ArrayCollection;
+            import mx.controls.List;
+            import mx.controls.Button;
+            import mx.controls.CheckBox;
+            import mx.controls.Alert;
+            import mx.managers.DragManager;
+
+            [Bindable] public var readOnly:Boolean = false;
+            [Bindable] private var currentDoc:Document = null;
+
+			private var _projectTab:ProjectTab;
+            [Bindable] 
+            public function get projectTab():ProjectTab {return _projectTab};
+            public function set projectTab(value:ProjectTab):void 
+            {
+            	_projectTab = value;
+            	
+            	ChangeWatcher.watch(documentDG, "selectedItem", selectedDocChangeHandler);
+            }
+            
+            private function selectedDocChangeHandler(e:*):void 
+            {
+            	if (documentDG.selectedItem != null 
+            		&& documentDG.selectedItem is ProjectTabDocument) 
+            	{
+            		currentDoc = ProjectTabDocument(documentDG.selectedItem).DocumentRef;
+            	} else 
+            	{
+            		currentDoc = null;
+            	}
+            }
+
+            private function doCloseTab():void 
+            {
+            	parentDocument.closeProjectTab(projectTab);
+            }
+            
+            private function dgDocsDoubleClickHandler(event:ListEvent):void 
+            {
+            	var doc:Document = ProjectTabDocument(DataGrid(event.currentTarget).selectedItem).DocumentRef;
+            	
+            	openDocument(doc);
+            }
+            
+            public function openDocument(document:Document):void 
+            {
+            	document.referencedProject = projectTab.ProjectRef;
+            	
+            	var event:DocumentEvent = new DocumentEvent(DocumentEvent.OPEN_DOCUMENT, document);
+            	event.docTarget = this;
+            	
+	            dispatchEvent(event);
+            }
+
+            public function openPdfCopy(document:Document):void 
+            {
+            	if (!document) return;
+            		
+                if (document.PdfCopy) {
+                    var file:DocumentAttachment = DocumentAttachment(document.PdfCopy);
+
+                    navigateToURL(new URLRequest(file.FileRef.FileUrl), '_blank');
+                }
+            }
+
+			protected function sortByDateSigned(obj1:Object, obj2:Object):int 
+			{
+				var tabDoc1:ProjectTabDocument = obj1 as ProjectTabDocument;
+				var tabDoc2:ProjectTabDocument = obj2 as ProjectTabDocument;
+			
+				if (tabDoc1.DocumentRef.DateSigned < tabDoc2.DocumentRef.DateSigned) {
+					return -1;
+				} else if (tabDoc1.DocumentRef.DateSigned > tabDoc2.DocumentRef.DateSigned) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+	
+			protected function sortByDateFiled(obj1:Object, obj2:Object):int 
+			{
+				var tabDoc1:ProjectTabDocument = obj1 as ProjectTabDocument;
+				var tabDoc2:ProjectTabDocument = obj2 as ProjectTabDocument;
+			
+				if (tabDoc1.DocumentRef.DateFiled < tabDoc2.DocumentRef.DateFiled) {
+					return -1;
+				} else if (tabDoc1.DocumentRef.DateFiled > tabDoc2.DocumentRef.DateFiled) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+	
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" verticalAlign="middle"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		backgroundColor="#dddddd" borderColor="#bbbbbb" borderStyle="solid">
+ 		<mx:Image id="imgTab"
+ 			source="@Embed(source='/assets/tab.png')"/>
+
+    	<mx:Label text="{projectTab.Name}" fontWeight="bold"/>
+    	
+    	<mx:Label text="(Project tab)"/>
+
+	    <mx:Spacer width="100%"/>
+
+	    <mx:Button id="closeTabButton"
+	        icon="@Embed(source='/assets/close.png')" height="20" width="20"
+	        styleName="toolButton" toolTip="Close Tab Detail"
+	        click="doCloseTab()"
+	        paddingLeft="1" paddingRight="1" paddingTop="1" paddingBottom="1"/>
+
+    </mx:HBox>
+
+    <mx:TabNavigator width="100%">
+    	<mx:VBox id="boxTabInfo" 
+    		width="100%" label="Primary Document"
+        	paddingLeft="5" paddingRight="5" paddingBottom="5">
+        	<tab:ProjectTabDocumentPanel id="panelDocumentInfo"
+        		width="100%" height="100%"
+        		readOnly="{readOnly}"
+        		activeTabDocument="{projectTab.ActiveTabDocument}"/>
+    	</mx:VBox>
+        <mx:VBox width="100%" height="{boxTabInfo.height}" 
+        	label="Contacts"
+        	paddingLeft="5" paddingRight="5" paddingBottom="5">
+        	<contact:ProjectTabContactPanel id="panelContacts"
+        		width="100%" height="100%"
+        		readOnly="{readOnly}"
+        		projectTab="{projectTab}"/>
+        </mx:VBox>
+
+    </mx:TabNavigator>
+
+	<mx:VBox width="100%" height="100%" verticalGap="1"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		backgroundColor="#dddddd" borderColor="#bbbbbb" borderStyle="solid">
+	    <mx:HBox width="100%">
+	        <mx:Label text="Runsheet" fontWeight="bold"/>
+			<tab:ProjectTabExportExcelPanel projectTab="{projectTab}" width="100%"/>
+	    </mx:HBox>
+	
+	    <mx:DataGrid id="documentDG" 
+	        dataProvider="{projectTab.DocumentsList}" sortableColumns="{!readOnly}" dragEnabled="{!readOnly}"
+	        fontSize="9" height="100%" width="100%" minWidth="150"
+	        doubleClickEnabled="true" itemDoubleClick="dgDocsDoubleClickHandler(event)"
+	        itemRenderer="truetract.web.client.project.tab.ProjectTabDocumentGridIR">
+	        <mx:columns>
+	            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+	            	itemRenderer="truetract.web.client.project.tab.DocStatusIR" sortable="false"/>
+	            <mx:DataGridColumn headerText="Instrument" minWidth="85" dataField="DocumentTypeName"/>
+	            <mx:DataGridColumn headerText="Date Signed" minWidth="75" dataField="DateSigned" sortCompareFunction="sortByDateSigned"/>
+	            <mx:DataGridColumn headerText="Date Filed" minWidth="75" dataField="DateFiledDisplayValue" sortCompareFunction="sortByDateFiled"/>
+	            <mx:DataGridColumn headerText="Grantor" width="150" dataField="SellerName"/>
+	            <mx:DataGridColumn headerText="Grantee" width="150" dataField="BuyerName"/>
+	            <mx:DataGridColumn headerText="Description" width="150" dataField="Description" sortable="false"
+	                itemRenderer="truetract.web.client.project.tab.LongTextIR"/>
+	            <mx:DataGridColumn headerText="Remarks" width="150" dataField="Remarks" sortable="false" 
+	                itemRenderer="truetract.web.client.project.tab.LongTextIR"/>
+	            <mx:DataGridColumn headerText="Tracts" width="50" minWidth="50" dataField="TractsStr" textAlign="center"/>
+	            <mx:DataGridColumn headerText="Primary" width="50" minWidth="50" dataField="status" sortable="false"
+	            	itemRenderer="truetract.web.client.project.tab.ProjectTabDocumentIsActiveIR"/>
+	            <mx:DataGridColumn headerText=" " width="38" minWidth="38" dataField="status" sortable="false"
+	            	itemRenderer="truetract.web.client.project.tab.ProjectTabDocumentActionsIR"/>
+	        </mx:columns>
+	    </mx:DataGrid>
+	    <mx:Spacer height="4"/>
+		<document:DocumentQuickDetail fontSize="9"
+			docum="{currentDoc}" width="100%" height="100%"
+			includeInLayout="{currentDoc != null}"
+			visible="{currentDoc != null}"/>
+	</mx:VBox>
+	
+</mx:VBox>

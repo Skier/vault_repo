@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:domain="com.dalworth.leadCentral.domain.*">
+
+	<domain:AmountSummary id="summary"/>	
+
+	<mx:CurrencyFormatter id="currF" precision="2"/>
+
+	<mx:HBox width="100%" backgroundColor="#990000" fontSize="13" horizontalAlign="right" verticalAlign="middle"
+		paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+		<mx:Label text="SubTotal Amount:" color="#FFFF99"/>
+		<mx:Label text="{currF.format(summary.SubTotalAmt)}" fontWeight="bold" color="#FFFF66"/>
+		<mx:Label text="Tax Amount:" color="#FFFF99"/>
+		<mx:Label text="{currF.format(summary.TaxAmt)}" fontWeight="bold" color="#FFFF66"/>
+		<mx:Label text="Total Amount:" color="#FFFF99"/>
+		<mx:Label text="{currF.format(summary.TotalAmt)}" fontWeight="bold" color="#FFFF66"/>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*" 
+	xmlns:management="UI.Management.*"
+	xmlns:licensing="UI.Licensing.*"
+	xmlns:ftpclient="UI.FtpClient.*"
+	layout="vertical" backgroundGradientColors="[#ffc184, #ff8000]" 
+	cornerRadius="5" backgroundGradientAlphas="[1.0, 0.98]" width="100%" height="100%"
+	creationComplete="init()">
+<mx:Style>
+TabNavigator { 
+   cornerRadius: 11;
+   horizontalGap: -1;
+   horizontalAlign: left;
+   paddingLeft: 13;
+   paddingRight: 5;
+   textAlign: center;
+   textIndent: 0;
+   backgroundAlpha: 1;
+   backgroundColor: #ffffff;
+   borderStyle: solid;
+   borderColor: #ff9900;
+   borderThickness: 1;
+   dropShadowEnabled: true;
+   shadowDirection: right;
+   shadowDistance: 2;
+   tabStyleName: "myTabs";
+}
+
+.myTabs {
+   cornerRadius: 14;
+   highlightAlphas: 0.55, 0.14;
+   fillAlphas: 0.63, 0.4;
+   fillColors: #ffffcc, #ffcc99;
+   backgroundColor: #ffffff;
+   borderColor: #ff9900;
+} 
+
+Panel { 
+   cornerRadius: 12;
+   headerHeight: 24;
+   borderThickness: 13;
+   shadowDistance: 4;
+   shadowDirection: right;
+   roundedBottomCorners: false;
+   textAlign: left;
+   borderAlpha: 0.78;
+   borderThicknessLeft: 10;
+   borderThicknessRight: 10;
+   borderThicknessTop: 2;
+   borderThicknessBottom: 10;
+   highlightAlphas: 0.2, 0;
+   borderColor: #ff9900;
+   titleStyleName: "myTitleStyle";
+} 
+
+.myTitleStyle {
+   }	
+
+</mx:Style>
+	<mx:Script>
+	<![CDATA[
+		import UI.AppSettings;
+		import mx.controls.Alert;
+		import mx.events.IndexChangedEvent;
+		public function init():void
+		{
+			iFrame.visible=true;
+			nav.addEventListener( "change", tabChangeListener );		
+		}
+		
+		public function tabChangeListener( event:IndexChangedEvent ):void
+		{
+			var child:Object = nav.getChildAt( event.oldIndex );
+			
+			if( child is IFrame )
+				IFrame(child).visible = false;
+		}
+	]]>
+	</mx:Script>
+
+	<mx:VBox id="topApp" height="100%" width="100%" backgroundColor="#ffffff" cornerRadius="10" borderStyle="solid" horizontalAlign="center" verticalGap="0">
+		<mx:HBox width="100%" paddingLeft="5" paddingRight="5" verticalAlign="bottom" horizontalGap="1">
+				<mx:Label text="WebORB Enterprise Edition"  fontSize="18" fontFamily="Tahoma" />
+				<mx:Label text="v3.0 Beta 1" fontFamily="Verdana" paddingBottom="0" height="20"/>				
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Image source="images/mc-logo.gif" horizontalAlign="right" />
+			</mx:HBox>
+		</mx:HBox>
+		<mx:VBox horizontalAlign="center" width="100%" height="100%" verticalAlign="middle">
+		<mx:Spacer height="10" />
+		<mx:TabNavigator width="98%" height="96%" id="nav" historyManagementEnabled="false" paddingBottom="20" paddingRight="20">
+			<IFrame label="Introduction" id="iFrame" source="http://www.google.com" width="100%" height="100%"/>
+			<mx:Canvas label="Getting Started" width="100%" height="100%">
+				<mx:Button x="288" y="190" label="Getting Started"/>
+			</mx:Canvas>
+			<mx:Canvas label="Examples" width="100%" height="100%">
+			</mx:Canvas>
+			<management:ManagementView label="Management" width="100%" height="100%" verticalScrollPolicy="off" >
+			</management:ManagementView>
+			<mx:Canvas label="Deployment" width="100%" height="100%">
+			</mx:Canvas>
+			<licensing:LicensingView label="Licensing" width="100%" height="100%" >
+			</licensing:LicensingView>
+			<IFrame label="Documentation" id="docFrame" source="http://www.themidnightcoders.com/doc20" width="100%" height="100%" visible="false"/>			
+		</mx:TabNavigator>
+			
+		</mx:VBox>
+		
+	</mx:VBox>
+</mx:Application>

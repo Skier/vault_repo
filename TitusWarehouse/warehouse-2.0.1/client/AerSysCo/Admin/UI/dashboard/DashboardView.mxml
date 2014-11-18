@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%">
+	
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CustomerUI;
+			import AerSysCo.UI.Models.BrandUI;
+			import AerSysCo.UI.Models.ASCUserUI;
+			
+			[Bindable] public var controller:DashboardController;
+			
+			public function init(user:ASCUserUI):void 
+			{
+				controller = new DashboardController();
+				controller.init(user, this);
+			}
+			
+			private function btnFindClickHandler():void 
+			{
+				controller.setFilter(cbBrand.selectedItem as BrandUI, txtSearchString.text);
+			}
+
+			private function btnResetClickHandler():void 
+			{
+				cbBrand.selectedIndex = 0;
+				txtSearchString.text = "";
+				
+				controller.setFilter(cbBrand.selectedItem as BrandUI, txtSearchString.text);
+			}
+			private function btnOpenClickHandler():void 
+			{
+				controller.openCustomer(dgCustomers.selectedItem as CustomerUI);
+			}
+
+		]]>
+	</mx:Script>
+	
+    <mx:Metadata>
+        [Event(name="logoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:ApplicationControlBar width="100%" color="#ffff66">
+		<mx:Label text="Welcome"/>
+		<mx:Label text="{controller.model.currentUser.login}" fontWeight="bold"/>
+		<mx:LinkButton label="Logout" click="dispatchEvent(new Event('logoutRequest'))"/>
+		<mx:Spacer width="100%"/>
+		<mx:Label text="{controller.model.currentUser.userType.userTypeName}"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5"
+		enabled="{!controller.model.loading}">
+		<mx:HBox width="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="2" paddingBottom="2"
+			backgroundColor="#002252">
+			<mx:Label text="Filter: " fontWeight="bold" color="#ffffff"/>
+
+			<mx:ComboBox id="cbBrand" 
+				dataProvider="{controller.model.brandList}" labelField="brandName"
+				change="btnFindClickHandler()"/>
+
+			<mx:TextInput id="txtSearchString" width="100"
+				enter="btnFindClickHandler()"/>
+
+			<mx:Button id="btnFind" 
+				width="50" height="22" 
+				label="Set" 
+				click="btnFindClickHandler()"/>
+
+			<mx:Button id="btnReset" 
+				width="50" height="22" 
+				label="Reset" 
+				click="btnResetClickHandler()"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgCustomers"
+			width="100%" height="100%" dataProvider="{controller.model.customersFiltered}"
+			draggableColumns="false"
+			doubleClickEnabled="true" doubleClick="btnOpenClickHandler()">
+			<mx:columns>
+				<mx:DataGridColumn dataField="brandName" headerText="Brand" width="80" minWidth="80"/>
+				<mx:DataGridColumn dataField="customerNumber" headerText="Customer #" width="80" minWidth="80"/>
+				<mx:DataGridColumn dataField="salesRepCompanyName" headerText="Company Name"/>
+				<mx:DataGridColumn dataField="phoneNumber" headerText="Phone" width="120" minWidth="120"/>
+<!--
+				<mx:DataGridColumn dataField="brandId" headerText="Brand Id" width="40" minWidth="40"/>
+ -->
+				<mx:DataGridColumn headerText="Max Order Total" width="120" minWidth="120" textAlign="center"
+					itemRenderer="AerSysCo.Admin.UI.dashboard.MaxOrderIR" sortable="false"/>
+				<mx:DataGridColumn headerText="Credit Hold" width="80" minWidth="80" textAlign="center"
+					itemRenderer="AerSysCo.Admin.UI.dashboard.CreditHoldIR" sortable="false"/>
+				<mx:DataGridColumn dataField="dayBalanceStr" headerText="Day Balance" width="90" minWidth="90" textAlign="right"/>
+			</mx:columns>
+		</mx:DataGrid>
+
+		<mx:HBox width="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="2" paddingBottom="2"
+			backgroundColor="#002252">
+			<mx:Button id="btnOpen" 
+				width="50" height="22" 
+				label="Open" enabled="{dgCustomers.selectedItem != null}"
+				click="btnOpenClickHandler()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

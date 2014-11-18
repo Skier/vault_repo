@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="622" height="516" xmlns:steps="testLayouts.steps.*">
+	
+    <mx:XMLList id="treeData">
+        <node label="AllTypes">
+            <node label="Larry Dilan">
+                <node label="John Doe"/>
+                <node label="Ivan Ivanovich"/>
+                <node label="Vasya Pupkind"/>
+            </node>
+            <node label="Boris Furman">
+                <node label="Valery Yaworsky"/>
+                <node label="Sergey Kalashnikov"/>
+            </node>
+            <node label="Boris Furman">
+                <node label="Valery Yaworsky"/>
+                <node label="Sergey Kalashnikov"/>
+            </node>
+            <node label="DalworthRestoration.com"/>
+            <node label="Carpet Cleaning Inc."/>
+        </node>    
+    </mx:XMLList>
+    
+	<mx:ViewStack id="vsStep" width="100%" height="100%" creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<mx:LinkButton label="Video" click="vsStep.selectedIndex = 1" x="555" y="10" fontSize="12" color="#003399"/>
+		    <mx:Label x="10" y="14" text="Tell us more about &quot;All Sons Moving&quot; Lead Source:" fontSize="14" fontWeight="bold"/>
+		    <mx:Button label="Save" height="28" fontSize="14" right="10" top="478" width="86" cornerRadius="0"/>
+		    <mx:Button label="Cancel" height="28" fontSize="14" right="104" top="478" width="86" cornerRadius="0" fontWeight="normal"/>
+		    <mx:TextInput x="68" y="46" width="544" fontSize="14"/>
+		    <mx:ComboBox x="226" y="81" width="386"></mx:ComboBox>
+		    <mx:Label x="68" y="81" text="is child of Lead Source:" fontSize="12" textAlign="right"/>
+		    <mx:VBox x="323" y="139" width="289"
+		    	backgroundColor="#F5F5F5"
+		    	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" height="126" horizontalAlign="right" verticalGap="2">
+		        <mx:DataGrid height="100%" width="100%" fontSize="12" showHeaders="false">
+		            <mx:columns>
+		                <mx:DataGridColumn headerText="Phone Number"/>
+		            </mx:columns>
+		        </mx:DataGrid>
+		        <mx:Button label="Add new" fontSize="12" cornerRadius="2"/>
+		    </mx:VBox>
+		    <mx:HBox visible="{radioYes.selected}" x="10" y="303" width="602" height="165"
+		    	paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+		        <mx:VBox width="193" height="100%" borderStyle="solid" cornerRadius="2"
+		        	paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" backgroundColor="#FFFFDD">
+		            <mx:Grid width="100%" height="100%" verticalGap="0" horizontalGap="4">
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%">
+		                		<mx:Label text="Your Balance:" fontSize="13" width="100%" textAlign="center" fontWeight="bold"/>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle"
+		                    	borderColor="#CCCCCC" borderStyle="solid"
+		                    	backgroundColor="#FFFFBB"
+		                    	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		                    	<mx:Label width="100%" textAlign="center" fontSize="32" fontWeight="bold" text="$34.56" color="#6C6C6C"/>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%">
+		                    	<mx:HBox width="100%" height="100%" horizontalGap="0" fontSize="11" horizontalAlign="center" verticalAlign="middle">
+		                    		<mx:Label text="Can bay"/>
+		                    		<mx:Label text="34" fontWeight="bold"/>
+		                    		<mx:Label text="phone numbers"/>
+		                    	</mx:HBox>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%">
+		                    	<mx:HBox width="100%" horizontalGap="0" fontSize="11" horizontalAlign="center" verticalAlign="middle">
+		                    		<mx:Label text="About"/>
+		                    		<mx:Label text="1700" fontWeight="bold"/>
+		                    		<mx:Label text="inbound min"/>
+		                    	</mx:HBox>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%">
+		                    	<mx:HBox width="100%" horizontalGap="0" fontSize="11" horizontalAlign="center" verticalAlign="middle">
+		                    		<mx:Label text="About"/>
+		                    		<mx:Label text="1000" fontWeight="bold"/>
+		                    		<mx:Label text="out min"/>
+		                    	</mx:HBox>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		                <mx:GridRow width="100%">
+		                    <mx:GridItem width="100%">
+		                    	<mx:HBox width="100%" horizontalGap="0" fontSize="11" horizontalAlign="center" verticalAlign="middle">
+		                    		<mx:Label text="About"/>
+		                    		<mx:Label text="1200" fontWeight="bold"/>
+		                    		<mx:Label text="SMS"/>
+		                    	</mx:HBox>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+		            </mx:Grid>
+		        </mx:VBox>
+		        <mx:HBox width="100%" height="100%"
+		        	backgroundColor="#F5F5F5"
+		        	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		            <mx:DataGrid height="100%" width="205" showHeaders="false">
+		                <mx:columns>
+		                    <mx:DataGridColumn headerText=""/>
+		                </mx:columns>
+		            </mx:DataGrid>
+		            <mx:VBox width="100%" height="100%" horizontalAlign="right" verticalGap="2">
+		                <mx:Button label="Purchase new" width="100%" fontSize="13" height="30" cornerRadius="2"/>
+		                <mx:Spacer height="100%" width="100%"/>
+		                <mx:Label text="OR" fontSize="12" width="100%" fontWeight="bold" textAlign="center"/>
+		                <mx:Label text="select existing:" fontSize="12" width="100%" textAlign="center"/>
+		                <mx:ComboBox width="100%" minWidth="100"/>
+		                <mx:Button label="Add" fontSize="12" cornerRadius="2"/>
+		            </mx:VBox>
+		        </mx:HBox>
+		    </mx:HBox>
+		    <mx:Label x="10" y="48" text="Name:" fontSize="14"/>
+		    <mx:Label x="323" y="111" text="Phone Numbers:" fontSize="12" fontWeight="normal"/>
+		    <mx:HBox width="600" x="12" y="273" verticalAlign="middle">
+		        <mx:Label text="Does" fontSize="12"/>
+		        <mx:Label text="All Son Moving" fontSize="12" fontWeight="bold"/>
+		        <mx:Label text="need Tracking Phone Numbers ?" fontSize="12"/>
+		        <mx:RadioButton id="radioYes" groupName="Does All Son Moving need Tracking Phone Numbers ?" label="Yes" fontSize="12"/>
+		        <mx:RadioButton id="radioNo" groupName="Does All Son Moving need Tracking Phone Numbers ?" label="No" fontSize="12"/>
+		    </mx:HBox>
+		    <mx:VBox x="10" y="140" width="305" enabled="{cbCreateUser.selected}"
+		    	backgroundColor="#F5F5F5"
+		    	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" horizontalAlign="right" verticalGap="2" verticalAlign="middle">
+		        <mx:Form width="100%" fontSize="12" backgroundColor="#FFFFFF"
+		        	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5">
+		        	<mx:FormItem label="First Name:" width="100%" required="true">
+		        		<mx:TextInput width="100%"/>
+		        	</mx:FormItem>
+		        	<mx:FormItem label="Last Name:" width="100%" required="true">
+		        		<mx:TextInput width="100%"/>
+		        	</mx:FormItem>
+		        	<mx:FormItem label="Email:" width="100%" required="true">
+		        		<mx:TextInput width="100%"/>
+		        	</mx:FormItem>
+		        	<mx:FormItem label="User Role" width="100%" required="true">
+		        		<mx:ComboBox width="100%"></mx:ComboBox>
+		        	</mx:FormItem>
+		        </mx:Form>
+		    </mx:VBox>
+		    <mx:CheckBox id="cbCreateUser" x="10" y="109" label="Create as a User of Lead Central" fontSize="12"/>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<steps:VideoTutorial label="Video Tutorial" width="622" height="516"/>
+			<mx:LinkButton label="Back to Wizard" click="vsStep.selectedIndex = 0" fontSize="12" color="#003399" right="10" top="10"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+</mx:Canvas>

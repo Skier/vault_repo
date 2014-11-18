@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollapsiblePanel backgroundColor="#99ff99"
+    title="Contact Map"
+    xmlns="truetract.web.containers.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.controls.TextInput;
+    	import mx.controls.Label;
+    	import mx.collections.ArrayCollection;
+    	import mx.events.DataGridEventReason;
+    	import mx.events.DataGridEvent;
+    	import mx.controls.Alert;
+    	import mx.events.CloseEvent;
+        import truetract.domain.mementos.ProjectAttachmentMemento;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.AsyncToken;
+        import truetract.web.dashboard.file.FileAttachmentEditor;
+        import mx.rpc.events.ResultEvent;
+        import truetract.web.util.TokenResponder;
+        import truetract.web.services.ProjectService;
+        import truetract.domain.*;
+
+        private static const CONTACT_MAP_ATTACHMENT_TYPE:String = "Contact Map";
+
+        private var dictionaries:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+        [Bindable] private var contactMapAttachment:ProjectAttachment;
+
+	    [Bindable] public var readOnly:Boolean = false;
+
+        private var _project:Project;
+        [Bindable] public function get project():Project { return _project; }
+        public function set project(value:Project):void
+        {
+            _project = value;
+            
+            parseProjectAttachments();
+        }
+
+        private function parseProjectAttachments():void
+        {
+            contactMapAttachment = null;
+
+            if (!project.Attachments) return;
+            
+            for each (var attachment:ProjectAttachment in project.Attachments)
+            {
+                if (attachment.TypeName == CONTACT_MAP_ATTACHMENT_TYPE) {
+                    contactMapAttachment = attachment;
+                    break;
+                }
+            }
+        }
+
+        private function doOpenFile():void
+        {
+            var urlRequest:URLRequest = new URLRequest(contactMapAttachment.FileRef.fileFullUrl);
+
+            navigateToURL(urlRequest, "_blank");
+        }
+
+        private function creationCompleteHandler():void
+        {
+            addHeaderItem(removeChild(createButton));
+            addHeaderItem(removeChild(editButton));
+            addHeaderItem(removeChild(deleteButton));
+        }
+
+        private function createButton_clickHandler():void
+        {
+            var attachment:ProjectAttachment = new ProjectAttachment();
+            attachment.ProjectId = project.ProjectId;
+            attachment.ProjectAttachmentTypeId = 
+                dictionaries.projectAttachmentTypes.AttachmentType.
+                    (@Name == CONTACT_MAP_ATTACHMENT_TYPE).@Id;
+
+            var popup:FileAttachmentEditor = FileAttachmentEditor.open(this, true);
+            popup.attachmentTypes = dictionaries.projectAttachmentTypes;
+            popup.attachment = attachment;
+            popup.showAttachmentTypes = false;
+            popup.addEventListener("commit", 
+                function (event:Event):void
+                {
+                    var token:AsyncToken = ProjectService.getInstance().addAttachment(
+                        attachment, popup.uploadID);
+
+                    token.addResponder(new mx.rpc.Responder(
+                        function(event:ResultEvent):void
+                        {
+                            parseProjectAttachments();
+                            popup.close();
+		                    callLater(expandPanel);
+                        },
+                        function(event:FaultEvent):void {})
+                    );
+                }
+            )
+        }
+
+        private function editButton_clickHandler():void
+        {
+            var memento:ProjectAttachmentMemento = 
+                ProjectAttachmentMemento(contactMapAttachment.getMemento());
+
+            var popup:FileAttachmentEditor = FileAttachmentEditor.open(this, true);
+            popup.attachmentTypes = dictionaries.projectAttachmentTypes;
+            popup.attachment = contactMapAttachment;
+            popup.showAttachmentTypes = false;
+            popup.addEventListener("commit", 
+                function (event:Event):void
+                {
+                    var token:AsyncToken = ProjectService.getInstance().updateAttachment(
+                        contactMapAttachment, popup.uploadID);
+
+                    token.addResponder(new mx.rpc.Responder(
+                        function(event:ResultEvent):void
+                        {
+                            popup.close();
+                        },
+                        function(event:FaultEvent):void {})
+                    );
+                }
+            )
+            popup.addEventListener("cancel", 
+                function(event:Event):void
+                {
+                    contactMapAttachment.setMemento(memento);
+                }
+            );
+        }
+
+        private function deleteButton_clickHandler():void
+        {
+            Alert.show(
+                "Are you sure you want to delete Contact Map ?", 
+                "Remove Contact Map", Alert.YES | Alert.NO, null, 
+                function (event:CloseEvent):void
+                {
+                    if (event.detail == Alert.YES) 
+                    {
+			            var token:AsyncToken = 
+			                ProjectService.getInstance().deleteAttachment(contactMapAttachment);
+			
+			            token.addResponder(new mx.rpc.Responder(
+			                function(event:ResultEvent):void 
+			                {
+			                    parseProjectAttachments();
+			                    callLater(expandPanel);
+			                }, 
+			                function(event:FaultEvent):void {}
+			            ));
+                    }
+                }
+            );
+        }
+        
+        private function dgTabsEditEndHandler(event:DataGridEvent):void 
+        {
+			if (event.reason == DataGridEventReason.CANCELLED)
+            {
+                return;
+            }
+            
+            var dataGrid:DataGrid = event.currentTarget as DataGrid;
+            var dataProvider:ArrayCollection = dataGrid.dataProvider as ArrayCollection;
+            var idx:int = event.rowIndex;
+            
+            if (idx > -1) 
+            {
+	            var tab:ProjectTab = dataProvider.getItemAt(idx) as ProjectTab;
+	            
+				if (tab.Label == TextInput(dataGrid.itemEditorInstance).text) 
+				{
+					return;
+				} else 
+				{
+		            tab.Label = TextInput(dataGrid.itemEditorInstance).text;
+	
+		            ProjectService.getInstance().updateProjectTab(tab);
+				}
+            }
+        }
+        
+    ]]>
+    </mx:Script>
+
+    <mx:Button id="editButton" 
+        icon="@Embed(source='/assets/page_white_edit.png')" width="20" height="20" 
+        styleName="toolButton" enabled="{null != contactMapAttachment}"
+        click="editButton_clickHandler()" toolTip="Edit"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:Button id="createButton" 
+        icon="@Embed(source='/assets/page_white_add.png')" width="20" height="20" 
+        styleName="toolButton" enabled="{null == contactMapAttachment}"
+        click="createButton_clickHandler()" toolTip="Create"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:Button id="deleteButton" 
+        icon="@Embed(source='/assets/page_white_delete.png')" width="20" height="20" 
+        styleName="toolButton" enabled="{null != contactMapAttachment}"
+        click="deleteButton_clickHandler()" toolTip="Delete"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:HBox 
+        width="100%" visible="{null == contactMapAttachment}" includeInLayout="{null == contactMapAttachment}">
+        <mx:Label text="Contact Map is not specified"/>
+    </mx:HBox>
+
+	<mx:VBox 
+		width="100%" height="100%" 
+        visible="{null != contactMapAttachment}" includeInLayout="{null != contactMapAttachment}"
+		>
+	    <mx:Form 
+			borderColor="#999999" borderStyle="solid" borderThickness="1" backgroundColor="#eeeeee"
+	        paddingBottom="0" paddingLeft="3" paddingRight="0" paddingTop="0" verticalGap="-3"
+	        width="100%" verticalScrollPolicy="off">
+	
+	        <mx:FormItem label="Reference Name :" width="100%">
+	            <mx:LinkButton 
+	                label="{contactMapAttachment.FileRef.Description}" height="16"
+	                click="doOpenFile()"
+	                textAlign="left" 
+	                textDecoration="underline" color="#000099"/>
+	        </mx:FormItem>
+	
+	        <mx:FormItem label="Created :" width="100%">
+	            <mx:HBox>
+	                <mx:Label text="{df.format(contactMapAttachment.FileRef.Created)}" fontWeight="bold"/>
+	                <mx:Label text="Added By :"/>
+	                <mx:Label text="{contactMapAttachment.FileRef.CreatedByName}" fontWeight="bold"/>
+	            </mx:HBox>
+	        </mx:FormItem>
+	    </mx:Form>
+	    
+	    <mx:HBox width="100%">
+	    	<mx:VBox width="100%" height="100%" verticalGap="-5">
+	    		<mx:Label text="Project's Tabs:" fontWeight="bold"/>
+			    <mx:DataGrid id="dgTabs"
+			        dataProvider="{project.TabsList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%" minWidth="100"
+			        editable="{!readOnly}"
+			        itemEditEnd="dgTabsEditEndHandler(event)">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Label" width="100" dataField="Label"/>
+			            <mx:DataGridColumn headerText="Tab Name" dataField="Name" editable="false"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+	    	</mx:VBox>
+	
+	    	<mx:VBox width="100%" height="100%" verticalGap="-5">
+	    		<mx:Label text="Tab's Contacts:" fontWeight="bold"/>
+			    <mx:DataGrid id="dgContacts" 
+			        dataProvider="{ProjectTab(dgTabs.selectedItem).ContactsList}" 
+			        sortableColumns="false" draggableColumns="false"
+			        fontSize="9" height="100%" width="100%" minWidth="300" 
+			        itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ProjectTabContactGridIR">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="IsEntity"
+			            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ContactTypeIR"/>
+			            <mx:DataGridColumn headerText="Type" width="85" dataField="Type"/>
+			            <mx:DataGridColumn headerText="Name" dataField="Name"/>
+			            <mx:DataGridColumn headerText="Phone" width="85" dataField="PhoneNumber"/>
+			            <mx:DataGridColumn headerText="Email" dataField="Email"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+	    	</mx:VBox>
+	    </mx:HBox>
+	</mx:VBox>
+</CollapsiblePanel>

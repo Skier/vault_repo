@@ -1,0 +1,1008 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WcfService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="NetTcpBinding_IWcfService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <msb:BinaryEncoding xmlns:msb="http://schemas.microsoft.com/ws/06/2004/mspolicy/netbinary1">
+        </msb:BinaryEncoding>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <msf:WindowsTransportSecurity xmlns:msf="http://schemas.microsoft.com/ws/2006/05/framing/policy">
+                  <msf:ProtectionLevel>EncryptAndSign</msf:ProtectionLevel>
+                </msf:WindowsTransportSecurity>
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256>
+                </sp:Basic256>
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict>
+                </sp:Strict>
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <wsaw:UsingAddressing>
+        </wsaw:UsingAddressing>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import namespace="http://tempuri.org/" />
+      <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" />
+      <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.Sync" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWcfService_ProcessPendingOptimizations_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessPendingOptimizations" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessPendingOptimizations_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessPendingOptimizationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ApplyOptimizationResult_InputMessage">
+    <wsdl:part name="parameters" element="tns:ApplyOptimizationResult" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ApplyOptimizationResult_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ApplyOptimizationResultResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CanInsertVisit_InputMessage">
+    <wsdl:part name="parameters" element="tns:CanInsertVisit" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CanInsertVisit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CanInsertVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetRecommendations_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRecommendations" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetRecommendations_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRecommendationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_RunSync_InputMessage">
+    <wsdl:part name="parameters" element="tns:RunSync" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_RunSync_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RunSyncResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ApplyServmanData_InputMessage">
+    <wsdl:part name="parameters" element="tns:ApplyServmanData" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ApplyServmanData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ApplyServmanDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ModifyPredictionIgnoreDate_InputMessage">
+    <wsdl:part name="parameters" element="tns:ModifyPredictionIgnoreDate" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ModifyPredictionIgnoreDate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ModifyPredictionIgnoreDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CreateBlockout_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateBlockout" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CreateBlockout_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateBlockoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SendErrorEmail_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendErrorEmail" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SendErrorEmail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendErrorEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:FindUser" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FindUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUsers_InputMessage">
+    <wsdl:part name="parameters" element="tns:FindUsers" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUsers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FindUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUserActions_InputMessage">
+    <wsdl:part name="parameters" element="tns:FindUserActions" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_FindUserActions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FindUserActionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_AddEditUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddEditUser" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_AddEditUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddEditUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetFullViewInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFullViewInfo" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetFullViewInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFullViewInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetDefaultTechnicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDefaultTechnicians" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetDefaultTechnicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDefaultTechniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetTechnicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicians" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetTechnicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveTechnicianArrangement_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianArrangement" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveTechnicianArrangement_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianArrangementResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetTechnicianDetails_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetails" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetTechnicianDetails_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveTechnicianDetail_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianDetail" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveTechnicianDetail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianDetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetZipCodes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetZipCodes" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetZipCodes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetZipCodesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_InsertZipCode_InputMessage">
+    <wsdl:part name="parameters" element="tns:InsertZipCode" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_InsertZipCode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InsertZipCodeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GecocodeAddress_InputMessage">
+    <wsdl:part name="parameters" element="tns:GecocodeAddress" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GecocodeAddress_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GecocodeAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GecocodeZip_InputMessage">
+    <wsdl:part name="parameters" element="tns:GecocodeZip" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GecocodeZip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GecocodeZipResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetExistingSnapshotDate_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExistingSnapshotDate" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetExistingSnapshotDate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExistingSnapshotDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CreateSnapshot_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateSnapshot" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_CreateSnapshot_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateSnapshotResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetSnapshotChanges_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetSnapshotChanges" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetSnapshotChanges_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetSnapshotChangesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetServices_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetServices" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetServices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetServicesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_MarkTimeAs_InputMessage">
+    <wsdl:part name="parameters" element="tns:MarkTimeAs" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_MarkTimeAs_OutputMessage">
+    <wsdl:part name="parameters" element="tns:MarkTimeAsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_MarkTimeAs_WcfServiceBusinessExceptionFault_FaultMessage">
+    <wsdl:part xmlns:q1="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" name="detail" element="q1:WcfServiceBusinessException" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_UnscheduleVisit_InputMessage">
+    <wsdl:part name="parameters" element="tns:UnscheduleVisit" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_UnscheduleVisit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnscheduleVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_Subscribe_InputMessage">
+    <wsdl:part name="parameters" element="tns:Subscribe" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_Subscribe_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_Unsubscribe_InputMessage">
+    <wsdl:part name="parameters" element="tns:Unsubscribe" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_Unsubscribe_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnsubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_UpdateVisit_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateVisit" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_UpdateVisit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_BookDelayedVisit_InputMessage">
+    <wsdl:part name="parameters" element="tns:BookDelayedVisit" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_BookDelayedVisit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:BookDelayedVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetBucketProcessingOptions_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBucketProcessingOptions" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_GetBucketProcessingOptions_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBucketProcessingOptionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitTempExclusivity_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitTempExclusivity" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitTempExclusivity_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitTempExclusivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitIgnoreExclusivity_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitIgnoreExclusivity" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitIgnoreExclusivity_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitIgnoreExclusivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitChangeFrame_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitChangeFrame" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitChangeFrame_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitChangeFrameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitExtendWorkingHours_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitExtendWorkingHours" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ProcessDelayedVisitExtendWorkingHours_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProcessDelayedVisitExtendWorkingHoursResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveDelayedVisit_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveDelayedVisit" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_SaveDelayedVisit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveDelayedVisitResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_KeepAliveDummy_InputMessage">
+    <wsdl:part name="parameters" element="tns:KeepAliveDummy" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_KeepAliveDummy_OutputMessage">
+    <wsdl:part name="parameters" element="tns:KeepAliveDummyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_EnqueueOptimization_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnqueueOptimization" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_EnqueueOptimization_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnqueueOptimizationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_OnViewModelChanged_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnViewModelChanged" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_OnOptimizationRequested_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnOptimizationRequested" />
+  </wsdl:message>
+  <wsdl:message name="IWcfService_ForceSync_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:ForceSync" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetDefaultTechniciansWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDefaultTechniciansWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetDefaultTechniciansWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDefaultTechniciansWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetTechnicianDetailsByServmanIdWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetailsByServmanIdWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetTechnicianDetailsByServmanIdWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetailsByServmanIdWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetTechnicianDetailsWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetailsWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetTechnicianDetailsWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTechnicianDetailsWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_SaveTechnicianDetailWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianDetailWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_SaveTechnicianDetailWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveTechnicianDetailWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_ValidateTechnicianDetailsWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateTechnicianDetailsWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_ValidateTechnicianDetailsWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateTechnicianDetailsWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetRecommendationsWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRecommendationsWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWcfServiceWeb_GetRecommendationsWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRecommendationsWebResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IWcfService">
+    <wsdl:operation name="ProcessPendingOptimizations">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ProcessPendingOptimizations" message="tns:IWcfService_ProcessPendingOptimizations_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ProcessPendingOptimizationsResponse" message="tns:IWcfService_ProcessPendingOptimizations_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ApplyOptimizationResult">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ApplyOptimizationResult" message="tns:IWcfService_ApplyOptimizationResult_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ApplyOptimizationResultResponse" message="tns:IWcfService_ApplyOptimizationResult_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CanInsertVisit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/CanInsertVisit" message="tns:IWcfService_CanInsertVisit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/CanInsertVisitResponse" message="tns:IWcfService_CanInsertVisit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRecommendations">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetRecommendations" message="tns:IWcfService_GetRecommendations_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetRecommendationsResponse" message="tns:IWcfService_GetRecommendations_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RunSync">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/RunSync" message="tns:IWcfService_RunSync_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/RunSyncResponse" message="tns:IWcfService_RunSync_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ApplyServmanData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ApplyServmanData" message="tns:IWcfService_ApplyServmanData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ApplyServmanDataResponse" message="tns:IWcfService_ApplyServmanData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ModifyPredictionIgnoreDate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ModifyPredictionIgnoreDate" message="tns:IWcfService_ModifyPredictionIgnoreDate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ModifyPredictionIgnoreDateResponse" message="tns:IWcfService_ModifyPredictionIgnoreDate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateBlockout">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/CreateBlockout" message="tns:IWcfService_CreateBlockout_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/CreateBlockoutResponse" message="tns:IWcfService_CreateBlockout_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendErrorEmail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/SendErrorEmail" message="tns:IWcfService_SendErrorEmail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/SendErrorEmailResponse" message="tns:IWcfService_SendErrorEmail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FindUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/FindUser" message="tns:IWcfService_FindUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/FindUserResponse" message="tns:IWcfService_FindUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FindUsers">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/FindUsers" message="tns:IWcfService_FindUsers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/FindUsersResponse" message="tns:IWcfService_FindUsers_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FindUserActions">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/FindUserActions" message="tns:IWcfService_FindUserActions_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/FindUserActionsResponse" message="tns:IWcfService_FindUserActions_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddEditUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/AddEditUser" message="tns:IWcfService_AddEditUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/AddEditUserResponse" message="tns:IWcfService_AddEditUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFullViewInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetFullViewInfo" message="tns:IWcfService_GetFullViewInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetFullViewInfoResponse" message="tns:IWcfService_GetFullViewInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultTechnicians">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetDefaultTechnicians" message="tns:IWcfService_GetDefaultTechnicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetDefaultTechniciansResponse" message="tns:IWcfService_GetDefaultTechnicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicians">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetTechnicians" message="tns:IWcfService_GetTechnicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetTechniciansResponse" message="tns:IWcfService_GetTechnicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianArrangement">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/SaveTechnicianArrangement" message="tns:IWcfService_SaveTechnicianArrangement_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/SaveTechnicianArrangementResponse" message="tns:IWcfService_SaveTechnicianArrangement_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetails">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetTechnicianDetails" message="tns:IWcfService_GetTechnicianDetails_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetTechnicianDetailsResponse" message="tns:IWcfService_GetTechnicianDetails_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianDetail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/SaveTechnicianDetail" message="tns:IWcfService_SaveTechnicianDetail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/SaveTechnicianDetailResponse" message="tns:IWcfService_SaveTechnicianDetail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetZipCodes">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetZipCodes" message="tns:IWcfService_GetZipCodes_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetZipCodesResponse" message="tns:IWcfService_GetZipCodes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="InsertZipCode">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/InsertZipCode" message="tns:IWcfService_InsertZipCode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/InsertZipCodeResponse" message="tns:IWcfService_InsertZipCode_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GecocodeAddress">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GecocodeAddress" message="tns:IWcfService_GecocodeAddress_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GecocodeAddressResponse" message="tns:IWcfService_GecocodeAddress_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GecocodeZip">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GecocodeZip" message="tns:IWcfService_GecocodeZip_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GecocodeZipResponse" message="tns:IWcfService_GecocodeZip_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExistingSnapshotDate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetExistingSnapshotDate" message="tns:IWcfService_GetExistingSnapshotDate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetExistingSnapshotDateResponse" message="tns:IWcfService_GetExistingSnapshotDate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateSnapshot">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/CreateSnapshot" message="tns:IWcfService_CreateSnapshot_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/CreateSnapshotResponse" message="tns:IWcfService_CreateSnapshot_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSnapshotChanges">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetSnapshotChanges" message="tns:IWcfService_GetSnapshotChanges_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetSnapshotChangesResponse" message="tns:IWcfService_GetSnapshotChanges_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServices">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetServices" message="tns:IWcfService_GetServices_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetServicesResponse" message="tns:IWcfService_GetServices_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="MarkTimeAs">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/MarkTimeAs" message="tns:IWcfService_MarkTimeAs_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/MarkTimeAsResponse" message="tns:IWcfService_MarkTimeAs_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://tempuri.org/IWcfService/MarkTimeAsWcfServiceBusinessExceptionFault" name="WcfServiceBusinessExceptionFault" message="tns:IWcfService_MarkTimeAs_WcfServiceBusinessExceptionFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UnscheduleVisit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/UnscheduleVisit" message="tns:IWcfService_UnscheduleVisit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/UnscheduleVisitResponse" message="tns:IWcfService_UnscheduleVisit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/Subscribe" message="tns:IWcfService_Subscribe_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/SubscribeResponse" message="tns:IWcfService_Subscribe_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Unsubscribe">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/Unsubscribe" message="tns:IWcfService_Unsubscribe_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/UnsubscribeResponse" message="tns:IWcfService_Unsubscribe_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateVisit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/UpdateVisit" message="tns:IWcfService_UpdateVisit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/UpdateVisitResponse" message="tns:IWcfService_UpdateVisit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="BookDelayedVisit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/BookDelayedVisit" message="tns:IWcfService_BookDelayedVisit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/BookDelayedVisitResponse" message="tns:IWcfService_BookDelayedVisit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBucketProcessingOptions">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/GetBucketProcessingOptions" message="tns:IWcfService_GetBucketProcessingOptions_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/GetBucketProcessingOptionsResponse" message="tns:IWcfService_GetBucketProcessingOptions_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitTempExclusivity">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitTempExclusivity" message="tns:IWcfService_ProcessDelayedVisitTempExclusivity_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitTempExclusivityResponse" message="tns:IWcfService_ProcessDelayedVisitTempExclusivity_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitIgnoreExclusivity">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitIgnoreExclusivity" message="tns:IWcfService_ProcessDelayedVisitIgnoreExclusivity_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitIgnoreExclusivityResponse" message="tns:IWcfService_ProcessDelayedVisitIgnoreExclusivity_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitChangeFrame">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitChangeFrame" message="tns:IWcfService_ProcessDelayedVisitChangeFrame_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitChangeFrameResponse" message="tns:IWcfService_ProcessDelayedVisitChangeFrame_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitExtendWorkingHours">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitExtendWorkingHours" message="tns:IWcfService_ProcessDelayedVisitExtendWorkingHours_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ProcessDelayedVisitExtendWorkingHoursResponse" message="tns:IWcfService_ProcessDelayedVisitExtendWorkingHours_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveDelayedVisit">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/SaveDelayedVisit" message="tns:IWcfService_SaveDelayedVisit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/SaveDelayedVisitResponse" message="tns:IWcfService_SaveDelayedVisit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="KeepAliveDummy">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/KeepAliveDummy" message="tns:IWcfService_KeepAliveDummy_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/KeepAliveDummyResponse" message="tns:IWcfService_KeepAliveDummy_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnqueueOptimization">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfService/EnqueueOptimization" message="tns:IWcfService_EnqueueOptimization_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/EnqueueOptimizationResponse" message="tns:IWcfService_EnqueueOptimization_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnViewModelChanged">
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/OnViewModelChanged" message="tns:IWcfService_OnViewModelChanged_OutputCallbackMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnOptimizationRequested">
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/OnOptimizationRequested" message="tns:IWcfService_OnOptimizationRequested_OutputCallbackMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ForceSync">
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfService/ForceSync" message="tns:IWcfService_ForceSync_OutputCallbackMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IWcfServiceWeb">
+    <wsdl:operation name="GetDefaultTechniciansWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetDefaultTechniciansWeb" message="tns:IWcfServiceWeb_GetDefaultTechniciansWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetDefaultTechniciansWebResponse" message="tns:IWcfServiceWeb_GetDefaultTechniciansWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetailsByServmanIdWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsByServmanIdWeb" message="tns:IWcfServiceWeb_GetTechnicianDetailsByServmanIdWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsByServmanIdWebResponse" message="tns:IWcfServiceWeb_GetTechnicianDetailsByServmanIdWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetailsWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsWeb" message="tns:IWcfServiceWeb_GetTechnicianDetailsWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsWebResponse" message="tns:IWcfServiceWeb_GetTechnicianDetailsWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianDetailWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/SaveTechnicianDetailWeb" message="tns:IWcfServiceWeb_SaveTechnicianDetailWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/SaveTechnicianDetailWebResponse" message="tns:IWcfServiceWeb_SaveTechnicianDetailWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateTechnicianDetailsWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/ValidateTechnicianDetailsWeb" message="tns:IWcfServiceWeb_ValidateTechnicianDetailsWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/ValidateTechnicianDetailsWebResponse" message="tns:IWcfServiceWeb_ValidateTechnicianDetailsWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRecommendationsWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetRecommendationsWeb" message="tns:IWcfServiceWeb_GetRecommendationsWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWcfServiceWeb/GetRecommendationsWebResponse" message="tns:IWcfServiceWeb_GetRecommendationsWeb_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NetTcpBinding_IWcfService" type="tns:IWcfService">
+    <wsp:PolicyReference URI="#NetTcpBinding_IWcfService_policy">
+    </wsp:PolicyReference>
+    <soap12:binding transport="http://schemas.microsoft.com/soap/tcp" />
+    <wsdl:operation name="ProcessPendingOptimizations">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ProcessPendingOptimizations" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ApplyOptimizationResult">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ApplyOptimizationResult" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CanInsertVisit">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/CanInsertVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRecommendations">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetRecommendations" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RunSync">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/RunSync" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ApplyServmanData">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ApplyServmanData" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ModifyPredictionIgnoreDate">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ModifyPredictionIgnoreDate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateBlockout">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/CreateBlockout" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendErrorEmail">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/SendErrorEmail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindUser">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/FindUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindUsers">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/FindUsers" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FindUserActions">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/FindUserActions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddEditUser">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/AddEditUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFullViewInfo">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetFullViewInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultTechnicians">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetDefaultTechnicians" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicians">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetTechnicians" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianArrangement">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/SaveTechnicianArrangement" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetails">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetTechnicianDetails" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianDetail">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/SaveTechnicianDetail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZipCodes">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetZipCodes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsertZipCode">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/InsertZipCode" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GecocodeAddress">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GecocodeAddress" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GecocodeZip">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GecocodeZip" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetExistingSnapshotDate">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetExistingSnapshotDate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateSnapshot">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/CreateSnapshot" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSnapshotChanges">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetSnapshotChanges" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServices">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetServices" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MarkTimeAs">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/MarkTimeAs" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="WcfServiceBusinessExceptionFault">
+        <soap12:fault use="literal" name="WcfServiceBusinessExceptionFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UnscheduleVisit">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/UnscheduleVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Subscribe">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/Subscribe" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Unsubscribe">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/Unsubscribe" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateVisit">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/UpdateVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BookDelayedVisit">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/BookDelayedVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBucketProcessingOptions">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/GetBucketProcessingOptions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitTempExclusivity">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ProcessDelayedVisitTempExclusivity" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitIgnoreExclusivity">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ProcessDelayedVisitIgnoreExclusivity" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitChangeFrame">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ProcessDelayedVisitChangeFrame" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessDelayedVisitExtendWorkingHours">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ProcessDelayedVisitExtendWorkingHours" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveDelayedVisit">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/SaveDelayedVisit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="KeepAliveDummy">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/KeepAliveDummy" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EnqueueOptimization">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/EnqueueOptimization" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OnViewModelChanged">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/OnViewModelChanged" style="document" />
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OnOptimizationRequested">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/OnOptimizationRequested" style="document" />
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ForceSync">
+      <soap12:operation soapAction="http://tempuri.org/IWcfService/ForceSync" style="document" />
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_IWcfServiceWeb" type="tns:IWcfServiceWeb">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetDefaultTechniciansWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/GetDefaultTechniciansWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetailsByServmanIdWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsByServmanIdWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTechnicianDetailsWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/GetTechnicianDetailsWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveTechnicianDetailWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/SaveTechnicianDetailWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateTechnicianDetailsWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/ValidateTechnicianDetailsWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRecommendationsWeb">
+      <soap:operation soapAction="http://tempuri.org/IWcfServiceWeb/GetRecommendationsWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WcfService">
+    <wsdl:port name="NetTcpBinding_IWcfService" binding="tns:NetTcpBinding_IWcfService">
+      <soap12:address location="net.tcp://localhost:8888/SmartScheduleWCFService" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>net.tcp://localhost:8888/SmartScheduleWCFService</wsa10:Address>
+        <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+          <Upn>WSSERGEIK-LP\Sergei</Upn>
+        </Identity>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_IWcfServiceWeb" binding="tns:BasicHttpBinding_IWcfServiceWeb">
+      <soap:address location="http://localhost:8080/SmartScheduleWCFService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

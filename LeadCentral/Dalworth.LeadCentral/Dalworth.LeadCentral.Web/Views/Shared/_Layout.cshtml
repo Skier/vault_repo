@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>@ViewBag.Title</title>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/stylesheet.css")" />
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui.min.js")"></script>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jquery-ui.css")" />
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jPlayer/jquery.jplayer.min.js")" ></script>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Scripts/jPlayer/jplayer.blue.monday.css")" />
+
+</head>
+<body>
+@*
+<div id="header">
+  <div class="div1"><a href="/"><img alt="Lead Central" src="@Url.Content("~/Content/image/logo.png")" title="Home" onclick="location='@Url.Content("~/")'" /></a>
+    <b>Development version of Lead Central</b>
+  </div>
+
+
+  <div class="div2">
+    <select>
+      <option value="1">Lead</option>
+      <option value="2">Campaign</option>
+      <option value="3">User</option>
+    </select>
+    <input type="text"/>
+    <a class="button search" style="height:12px;">Search</a>
+  </div>
+
+
+</div>
+*@
+
+@{
+    Html.RenderPartial("MainMenu");
+}
+
+<div id="content">
+
+@{
+    Html.RenderPartial("BreadCrumbs");
+}
+    
+@{
+    Html.RenderPartial("MessagesPanel");
+}
+
+
+@RenderBody()
+
+</div>
+<div id="footer">
+  Footer text. Copyright
+</div>
+</body>
+</html>

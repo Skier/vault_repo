@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:cal="calendar.*"
+    verticalAlign="middle"
+    horizontalAlign="center"
+    title="{(null == Controller.model.composition)? 'Create Multiday Item': 'Edit Composite Item'}">
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.BillItemTypeDataObject;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import mx.controls.CheckBox;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.formatters.DateFormatter;
+            import mx.managers.PopUpManager;
+            import common.TypesRegistry;
+            import mx.managers.PopUpManager;
+
+            [Bindable]
+            public var Controller:CompositionController;
+
+            public function set DiaryController(controller: DiaryController): void {
+                this.Controller = new CompositionController(this, controller);
+            }
+            
+            public static function Open(parent:DisplayObject, modal:Boolean = false):CompositionView {
+                var popup:CompositionView = new CompositionView();
+                popup.Controller = new CompositionController(popup, DiaryView(parent).Controller);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+           
+                return popup;
+            }
+            
+            public function onClose():void {
+            	PopUpManager.removePopUp(this);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+	<mx:Form id="formNew">
+		<mx:FormItem label="Type:">
+	    	<mx:ComboBox
+	    		id="cbItemTypes"
+	    		width="100%"
+	    		dataProvider="{Controller.model.types}"
+	    		labelField="Name"
+	    		prompt=" "
+		   		/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Amount:">
+			<mx:TextInput id="tiAmount" />
+		</mx:FormItem>
+		
+		<mx:FormItem label="Description:">
+			<mx:HBox>
+				<mx:TextInput id="tiDescription" width="100%" />
+			</mx:HBox>
+		</mx:FormItem>
+			
+		<mx:FormItem>
+			<mx:HBox>
+				<mx:Button label="{(null == Controller.model.composition)? 'Create': 'Change'}"
+		   			enabled="{!((-1 == cbItemTypes.selectedIndex) || isNaN(Number(tiAmount.text)) || ('' == tiDescription.text))}"
+		   			click="{Controller.addCompositeItem(BillItemTypeDataObject(cbItemTypes.selectedItem), tiDescription.text, new Number(tiAmount.text)); onClose()}"
+			    	/>
+		    	<mx:Button label="Cancel"
+		    		click="{this.onClose()}"
+		    		/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+    				
+</mx:TitleWindow>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="truetract.plotter.validators.*" 
+    layout="vertical" title="Sign Up" >
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.User;
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+            
+            public static function open(parent:DisplayObject, modal:Boolean):SignUpView
+            {
+                var popup:SignUpView = new SignUpView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            private function commit():void
+            {
+                if (! formValidator.validate(true)) return;
+
+                if (passwdTxt.text != confPasswdTxt.text) {
+                    passwdTxt.errorString = confPasswdTxt.errorString = "Passwords are not equal";
+                    passwdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    confPasswdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    return;
+                }
+                
+                if (emailTxt.text != confEmailTxt.text) {
+                    emailTxt.errorString = confEmailTxt.errorString = "Emails are not equal";
+                    emailTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    confEmailTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    return;
+                }
+
+                var user:User = new User();        
+                user.Login = loginTxt.text;
+                user.Password = passwdTxt.text;
+                user.Email = emailTxt.text;
+                user.FirstName = firstNameTxt.text;
+                user.LastName = lastNameTxt.text;
+                user.PhoneNumber = phoneNumberTxt.text;
+
+                trueTractService.SignUp(user);
+            }
+
+            private function signUp_resultHandler(event:ResultEvent):void
+            {
+                Alert.show("Sign Up succeded. Now login");
+                close();
+            }
+            
+            private function signUp_faultHandler(event:FaultEvent):void
+            {
+                Alert.show(event.fault.faultString);
+            }
+
+            private function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:RemoteObject id="trueTractService" 
+        destination="GenericDestination" showBusyCursor="true"
+        source="TractInc.TrueTract.TrueTractService">
+        
+        <mx:method name="SignUp" 
+            result="signUp_resultHandler(event)" 
+            fault="signUp_faultHandler(event)"/>
+    </mx:RemoteObject>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{loginTxt}" property="text" required="true" minLength="3"/>
+        <mx:StringValidator source="{firstNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{lastNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{phoneNumberTxt}" property="text" required="true"/>                        
+        <mx:StringValidator source="{passwdTxt}" property="text" required="true" minLength="4"/>
+        <mx:StringValidator source="{confPasswdTxt}" property="text" required="true" minLength="4"/>
+        <mx:EmailValidator source="{emailTxt}" property="text" required="true"/>
+        <mx:EmailValidator source="{confEmailTxt}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form styleName="popupPanel">
+
+        <mx:FormItem label="Login" width="100%" required="true">
+            <mx:TextInput id="loginTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Password" width="100%" required="true">
+            <mx:TextInput id="passwdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Confirm Password" width="100%" required="true">
+            <mx:TextInput id="confPasswdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="First Name" width="100%" required="true">
+            <mx:TextInput id="firstNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Last Name" width="100%" required="true">
+            <mx:TextInput id="lastNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Phone Number" width="100%" required="true">
+            <mx:TextInput id="phoneNumberTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Email" width="100%" required="true">
+            <mx:TextInput id="emailTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Confirm Email" width="100%" required="true">
+            <mx:TextInput id="confEmailTxt" width="100%"/>
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

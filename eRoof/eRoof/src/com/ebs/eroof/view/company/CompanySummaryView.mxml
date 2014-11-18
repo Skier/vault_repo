@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{model != null}" xmlns:controls="com.ebs.controls.*" height="720" width="773" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	>
+	
+    <mx:Metadata>
+        [Event(name="startEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.ebs.eroof.model.wrapper.Segment;
+			import com.ebs.eroof.model.wrapper.Company;
+			import com.ebs.eroof.dto.Consultant_DTO;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			
+			private var _model:Company;
+			[Bindable]
+			public function get model():Company { return _model; }
+			public function set model(value:Company):void 
+			{
+				_model = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				updateTotals();
+			}
+			
+			[Bindable] private var totalClients:Number;
+			[Bindable] private var totalFacilities:Number;
+			[Bindable] private var totalSections:Number;
+			[Bindable] private var totalSqFt:Number;
+			[Bindable] private var totalValue:Number;
+			
+			private function updateTotals():void
+			{
+				totalClients = totalFacilities = totalSections = totalSqFt = totalValue = 0;
+
+				for each (var segment:Segment in model.segmentCollection) 
+				{
+					totalClients += segment.totalClients;
+					totalFacilities += segment.totalFacilities;
+					totalSections += segment.totalSections;
+					totalSqFt += segment.totalSqFt;
+					totalValue += segment.totalValue;
+				}
+			}
+			
+			private function onClickEdit():void 
+			{
+				dispatchEvent(new Event("startEdit"));
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Label id="lblCompanyName" y="10" fontSize="14" text="{model.consultantDTO.CompanyName}" left="10" width="465"/>
+
+	<mx:LinkButton label="Edit" click="onClickEdit()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="591" width="100"/>
+
+	<mx:HRule left="10" width="681" top="43"/>
+
+	<mx:Label x="10" y="55" text="Business Name" textAlign="right" width="150"/>
+	<mx:Label fontSize="12" x="168" y="53" width="508" text="{model.consultantDTO.CompanyName}"/>
+
+	<mx:Label x="10" y="85" text="Contact" textAlign="right" width="150"/>
+	<mx:Label fontSize="12" x="168" y="83" width="508" text="{model.consultantDTO.Contact}"/>
+
+	<mx:Label x="10" y="114" text="Address" textAlign="right" width="150"/>
+	<mx:TextArea x="168" y="113" width="508" height="82" text="{model.consultantDTO.Address}" editable="false"/>
+
+	<mx:Label x="10" y="205" text="Total # of clients" textAlign="right" width="150"/>
+	<mx:Label x="168" y="203" 
+		text="{totalClients}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="233" text="Total # of facilities" textAlign="right" width="150"/>
+	<mx:Label x="168" y="231" 
+		text="{totalFacilities}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="261" text="Total # of sections" textAlign="right" width="150"/>
+	<mx:Label x="168" y="259" 
+		text="{totalSections}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="289" text="Total Sq. Ft" textAlign="right" width="150"/>
+	<mx:Label x="168" y="287" 
+		text="{totalSqFt}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="317" text="Total Est Asset Value" textAlign="right" width="150"/>
+	<mx:Label x="168" y="315" 
+		text="{cf.format(totalValue)}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+</mx:Canvas>

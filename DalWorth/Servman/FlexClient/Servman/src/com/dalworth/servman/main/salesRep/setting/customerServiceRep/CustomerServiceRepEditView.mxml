@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:voice="com.affilia.voice.*" xmlns:controls="com.affilia.controls.*" xmlns:bp="com.dalworth.servman.main.bp.*" xmlns:user="com.dalworth.servman.main.customerServiceRep.setting.user.*" xmlns:user1="com.dalworth.servman.main.owner.setting.user.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.CustomerServiceRep;
+			import mx.events.ValidationResultEvent;
+			import com.dalworth.servman.domain.SalesRep;
+			import com.dalworth.servman.domain.User;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.service.LeadService;
+			import com.dalworth.servman.domain.Lead;
+			
+			public function setCustomerServiceRep(customerServiceRep:CustomerServiceRep):void 
+			{ 
+				controller.initModel(customerServiceRep); 
+			}
+			
+			[Bindable]
+			private var model:CustomerServiceRepEditModel;
+			private var controller:CustomerServiceRepEditController;
+			
+			private function onInit():void 
+			{
+				model = CustomerServiceRepEditModel.getInstance();
+				controller = new CustomerServiceRepEditController(this);
+			}
+			
+			private function onCloseClick():void 
+			{
+				dispatchEvent(new Event("closeCustomerServiceRepEditor"));
+			}
+			
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+
+				if (!viewUserInfo.isValid())
+					result = false;
+
+				return result;
+			}
+			
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var newCustomerServiceRep:CustomerServiceRep =  model.customerServiceRep.prepareToSend();
+				newCustomerServiceRep.ShowAs = txtName.text;
+				newCustomerServiceRep.IsActive = cbIsActive.selected;
+				
+				newCustomerServiceRep.RelatedUser = viewUserInfo.getUser();
+				newCustomerServiceRep.RelatedUser.Name = txtName.text;
+				
+				controller.saveCustomerServiceRep(newCustomerServiceRep);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{model.customerServiceRep.Id == 0}" enabled="false"/>
+	
+	<mx:HBox width="100%" height="100%" backgroundColor="#FFFFFF"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" borderColor="#EEEEEE" borderStyle="solid">
+		<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5"
+			borderColor="#CCCCCC" borderStyle="solid">
+			<mx:Form width="100%" minWidth="250" labelWidth="120"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+				<mx:FormItem label="Customer Service Rep" width="100%" required="true">
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:TextInput id="txtName" width="100%" text="{model.customerServiceRep.ShowAs}"/>
+						<mx:CheckBox id="cbIsActive" label="is active" selected="{model.customerServiceRep.IsActive}"/>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+
+			<user1:UserEditView id="viewUserInfo" width="100%" user="{model.customerServiceRep.RelatedUser}"/>
+		</mx:VBox>
+		
+		<mx:VBox height="100%" width="150" horizontalAlign="center">
+			<mx:Button label="Update" 
+				click="onSaveClick()" fontSize="12"
+				width="100%" height="35"/>
+	        <mx:Button label="Close" click="onCloseClick()" fontSize="12"
+	        	width="100%" height="35"/>
+
+			<mx:Spacer height="100%"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

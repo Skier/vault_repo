@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Core Photo Editor" xmlns:view="com.quickbase.idn.view.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.CorePhotos_DTO;
+			import com.ebs.eroof.model.wrapper.CorePhoto;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var corePhoto:CorePhoto;
+			
+            public static function open(parent:DisplayObject, corePhoto:CorePhoto, modal:Boolean = true):CorePhotoEditPopup
+            {
+                var popup:CorePhotoEditPopup = new CorePhotoEditPopup();
+                
+                popup.corePhoto = corePhoto;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vPhotoDate.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	corePhoto.corePhotoDTO.PhotoDate = dateCorePhoto.selectedDate;
+            	corePhoto.corePhotoDTO.Description = txtDescription.text;
+            }
+            
+            private function storeCorePhoto():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreCorePhoto, corePhoto.corePhotoDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(corePhoto.corePhotoDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreCorePhoto(storedPhoto:CorePhotos_DTO):void 
+            {
+            	corePhoto.corePhotoDTO = storedPhoto;
+            	dispatchEvent(new Event("closeRequest"));
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	if (!isFormValid())
+            		return;
+            		
+            	storeCorePhoto();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:DateValidator id="vPhotoDate" source="{dateCorePhoto}" property="selectedDate" required="true"/>
+	
+	<mx:Form id="clientForm">
+		<mx:FormItem label="Layer Type" required="true" width="100%">
+			<mx:DateField id="dateCorePhoto" selectedDate="{corePhoto.corePhotoDTO.PhotoDate}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Description" required="true" width="100%">
+			<mx:TextArea id="txtDescription" text="{corePhoto.corePhotoDTO.Description}" width="100%" height="50"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Photo" required="true">
+			<view:FileManagementField id="filePhoto" fileDTO="{corePhoto.corePhotoDTO.Photo}" allowUpload="true"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

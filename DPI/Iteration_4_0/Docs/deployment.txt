@@ -1,0 +1,18 @@
+%PublicDir% - public site directory
+%PublicUrl% - public site URL
+%SecureDir% - account site directory
+%SecureUrl% - account site URL
+
+- Build the solution
+- Copy all files from Dpi.Central.Web except *.cs into %PublicDir%
+- Copy all files from Dpi.Central.Web.Account except *.cs into %SecureDir%
+- Set the correct values of the site URLs in %PublicDir%/Web.config file
+	* <add key="AccountSiteUrl" value="%SecureUrl%"/>
+	* <add key="PublicSiteUrl" value="%PublicUrl%"/>
+- Set the correct value of connection string in %PublicDir%/Web.config file (DBConnString - key)
+- Set the correct values of the site URLs in %SecureDir%/Web.config file
+	* <add key="AccountSiteUrl" value="%SecureUrl%"/>
+	* <add key="PublicSiteUrl" value="%PublicUrl%"/>
+- Set the correct value of connection string in %SecureDir%/Web.config file (DBConnString - key)
+- Set the correct path to the FeaturesMatrix31.txt file in %SecureDir%/Web.config file (FEATURESFILEPATH - key)
+- Execute SQL script in iteration_4.sql (Vault/Iteration_4_0/Db)

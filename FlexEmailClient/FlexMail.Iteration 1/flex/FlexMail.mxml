@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:view="com.tmnc.mail.view.*" 
+                xmlns:control="com.tmnc.mail.control.*" 
+                xmlns:business="com.tmnc.mail.business.*"
+                horizontalAlign="center" verticalAlign="middle"
+                xmlns:Controller="com.tmnc.mail.control.*"
+                >
+
+    <mx:Script>
+    <![CDATA[
+        import mx.core.Container;
+        import com.tmnc.mail.model.MailBoxModel;    
+                        
+        [Bindable]
+        private var model:MailBoxModel = MailBoxModel.getInstance();
+                    
+        public function getView( workflowState : Number ) : Container {
+            switch ( workflowState){
+                case MailBoxModel.VIEWING_LOGIN_SCREEN :
+                    return loginView;
+                    break;
+                case MailBoxModel.VIEWING_INBOX_MAIL_SCREEN :
+                    return mainView;
+                    break;
+                case MailBoxModel.VIEWING_SETTINGS_SCREEN :
+                    return settingsView;
+                    break;
+                case MailBoxModel.VIEWING_MAIL_CREATION_SCREEN :
+                    return messageCreationView;
+                    break;
+                default :
+                    throw new Error("Unknown workflow State");
+            }
+            
+        }
+    ]]>
+    </mx:Script>
+    
+    <Controller:MailBoxController id="controller" />
+    
+    <mx:Style source="main.css"/>                
+    <mx:ViewStack id="appStack" selectedChild="{ getView( model.workflowState ) }"
+        creationPolicy="all"
+        width="100%" height="100%" horizontalCenter="0" verticalCenter="0">
+        <view:LoginView id="loginView"/>
+        <view:MainView id="mainView"/>
+        <view:AccountSettingsView id="settingsView"/>
+        <view:MessageCreationView id="messageCreationView"/>
+    </mx:ViewStack>
+
+</mx:Application>

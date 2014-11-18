@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:simpleType name="SyncTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Visits" />
+      <xs:enumeration value="TechnicianSettings" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="SyncTypeEnum" nillable="true" type="tns:SyncTypeEnum" />
+  <xs:complexType name="VisitsFullChangeDetail">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="BucketVisits" nillable="true" type="q1:ArrayOfVisit" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="DashboardVisits" nillable="true" type="q2:ArrayOfVisit" />
+      <xs:element minOccurs="0" name="IsRecommendationsSuspended" type="xs:boolean" />
+      <xs:element minOccurs="0" name="LastProcessedCallbackId" type="xs:long" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TemporaryAssignedVisits" nillable="true" type="q3:ArrayOfVisit" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VisitsFullChangeDetail" nillable="true" type="tns:VisitsFullChangeDetail" />
+  <xs:complexType name="ArrayOfTechnicianDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianDetail" nillable="true" type="tns:TechnicianDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianDetail" nillable="true" type="tns:ArrayOfTechnicianDetail" />
+  <xs:complexType name="TechnicianDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PrimaryZipCodesText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SecondaryZipCodesText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Services" nillable="true" type="tns:ArrayOfTechnicianService" />
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="Technician" nillable="true" type="q4:Technician" />
+      <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="WorkingHoursPresets" nillable="true" type="q5:ArrayOfTechnicianWorkTimeDefaultPreset" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TechnicianDetail" nillable="true" type="tns:TechnicianDetail" />
+  <xs:complexType name="ArrayOfTechnicianService">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianService" nillable="true" type="tns:TechnicianService" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianService" nillable="true" type="tns:ArrayOfTechnicianService" />
+  <xs:complexType name="TechnicianService">
+    <xs:sequence>
+      <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="Service" nillable="true" type="q6:Service" />
+      <xs:element minOccurs="0" name="ServiceAllowance" type="tns:TechnicianService.ServiceAllowanceEnum" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TechnicianService" nillable="true" type="tns:TechnicianService" />
+  <xs:simpleType name="TechnicianService.ServiceAllowanceEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NotAllowed" />
+      <xs:enumeration value="AllowedForExclusive" />
+      <xs:enumeration value="Allowed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TechnicianService.ServiceAllowanceEnum" nillable="true" type="tns:TechnicianService.ServiceAllowanceEnum" />
+  <xs:complexType name="ArrayOfTechnicianDetailValidationError">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianDetailValidationError" nillable="true" type="tns:TechnicianDetailValidationError" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianDetailValidationError" nillable="true" type="tns:ArrayOfTechnicianDetailValidationError" />
+  <xs:complexType name="TechnicianDetailValidationError">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ErrorField" type="tns:TechnicianDetailValidationError.ErrorFieldEnum" />
+      <xs:element minOccurs="0" name="ErrorText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ScheduleDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TechnicianDetailValidationError" nillable="true" type="tns:TechnicianDetailValidationError" />
+  <xs:simpleType name="TechnicianDetailValidationError.ErrorFieldEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="General" />
+      <xs:enumeration value="Name" />
+      <xs:enumeration value="DepotAddress" />
+      <xs:enumeration value="DriveTimeMinutes" />
+      <xs:enumeration value="MaxNonExclusiveVisitsCount" />
+      <xs:enumeration value="MaxVisitsCount" />
+      <xs:enumeration value="WorkTime" />
+      <xs:enumeration value="WorkTimeStart" />
+      <xs:enumeration value="WorkTimeEnd" />
+      <xs:enumeration value="HourlyRate" />
+      <xs:enumeration value="HourlyRate150To300" />
+      <xs:enumeration value="HourlyRateMore300" />
+      <xs:enumeration value="PrimaryZipCodes" />
+      <xs:enumeration value="SecondaryZipCodes" />
+      <xs:enumeration value="Services" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TechnicianDetailValidationError.ErrorFieldEnum" nillable="true" type="tns:TechnicianDetailValidationError.ErrorFieldEnum" />
+  <xs:complexType name="ArrayOfVisitChangeItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VisitChangeItem" nillable="true" type="tns:VisitChangeItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVisitChangeItem" nillable="true" type="tns:ArrayOfVisitChangeItem" />
+  <xs:complexType name="VisitChangeItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ChangeDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TicketNumber" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VisitChangeItem" nillable="true" type="tns:VisitChangeItem" />
+  <xs:complexType name="WcfServiceBusinessException">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Caption" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WcfServiceBusinessException" nillable="true" type="tns:WcfServiceBusinessException" />
+  <xs:simpleType name="WcfSubscriberTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Dashboard" />
+      <xs:enumeration value="Service" />
+      <xs:enumeration value="Optimizer" />
+      <xs:enumeration value="Sync" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="WcfSubscriberTypeEnum" nillable="true" type="tns:WcfSubscriberTypeEnum" />
+  <xs:complexType name="BucketProcessingOptions">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BucketReason" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsIgnoreExclusivityAllowed" type="xs:boolean" />
+      <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TempExclusivityTechnicians" nillable="true" type="q7:ArrayOfTechnician" />
+      <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TimeFrameChangeOptions" nillable="true" type="q8:ArrayOfVisitAddResult" />
+      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="WorkingHoursExtensions" nillable="true" type="q9:ArrayOfWorkingHoursExtensionResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BucketProcessingOptions" nillable="true" type="tns:BucketProcessingOptions" />
+  <xs:complexType name="DelayedVisitSaveInfo">
+    <xs:sequence>
+      <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="DelayedVisit" nillable="true" type="q10:Visit" />
+      <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="DoNotCallVisitIds" nillable="true" type="q11:ArrayOfint" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DelayedVisitSaveInfo" nillable="true" type="tns:DelayedVisitSaveInfo" />
+  <xs:complexType name="CallbackInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ChangeType" type="tns:CallbackType" />
+      <xs:element minOccurs="0" name="Date" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Id" type="xs:long" />
+      <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TechnicianChange" nillable="true" type="q12:Technician" />
+      <xs:element minOccurs="0" name="TechnicianWorkHoursChange" nillable="true" type="tns:TechnicianWorkHoursChangeDetail" />
+      <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TechniciansChange" nillable="true" type="q13:ArrayOfTechnician" />
+      <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="VisitChange" nillable="true" type="q14:Visit" />
+      <xs:element minOccurs="0" name="VisitsChange" nillable="true" type="tns:VisitsChangeDetail" />
+      <xs:element minOccurs="0" name="VisitsFullChange" nillable="true" type="tns:VisitsFullChangeDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CallbackInfo" nillable="true" type="tns:CallbackInfo" />
+  <xs:simpleType name="CallbackType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TechnicianWorkHours" />
+      <xs:enumeration value="Technician" />
+      <xs:enumeration value="Technicians" />
+      <xs:enumeration value="VisitsFull" />
+      <xs:enumeration value="Visit" />
+      <xs:enumeration value="Visits" />
+      <xs:enumeration value="Empty" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="CallbackType" nillable="true" type="tns:CallbackType" />
+  <xs:complexType name="TechnicianWorkHoursChangeDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TechnicianId" type="xs:int" />
+      <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="WorkingIntervals" nillable="true" type="q15:ArrayOfTechnicianWorkTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TechnicianWorkHoursChangeDetail" nillable="true" type="tns:TechnicianWorkHoursChangeDetail" />
+  <xs:complexType name="VisitsChangeDetail">
+    <xs:sequence>
+      <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="BucketVisits" nillable="true" type="q16:ArrayOfVisit" />
+      <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="DashboardAddedVisits" nillable="true" type="q17:ArrayOfVisit" />
+      <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="DashboardModifiedVisits" nillable="true" type="q18:ArrayOfVisit" />
+      <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="DashboardRemovedVisits" nillable="true" type="q19:ArrayOfVisit" />
+      <xs:element minOccurs="0" name="IsOperationFailed" type="xs:boolean" />
+      <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="TemporaryAssignedVisits" nillable="true" type="q20:ArrayOfVisit" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VisitsChangeDetail" nillable="true" type="tns:VisitsChangeDetail" />
+</xs:schema>

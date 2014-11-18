@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="contentBox"
+	xmlns:book="com.rubenswieringa.book.*" 
+	xmlns:pdf="com.titus.catalog.view.pdf.*"
+	xmlns:view="com.titus.catalog.view.*"
+	xmlns:controls="qs.controls.*"
+	creationComplete="onCreationComplete()"
+	xmlns:controls1="com.titus.catalog.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.events.PageEvent;
+			import com.titus.catalog.view.Dashboard;
+			import com.titus.catalog.view.ContentPanel;
+			import com.titus.catalog.model.CatalogLocation;
+			import com.titus.catalog.controls.PdfBook;
+			import mx.collections.ArrayCollection;
+			import com.titus.catalog.storage.DBStorage;
+			import mx.controls.Alert;
+			import com.titus.catalog.model.CatalogItemPackage;
+			import com.titus.catalog.model.PdfPage;
+			import mx.controls.Label;
+			import com.rubenswieringa.book.Page;
+			import mx.binding.utils.ChangeWatcher;
+			import com.titus.catalog.model.PdfDocument;
+			import com.rubenswieringa.book.Book;
+			import com.rubenswieringa.book.PageManager;
+			
+			public static const DEFAULT_BOOK_WIDTH:int = 662;
+			public static const DEFAULT_BOOK_HEIGHT:int = 430;
+			public static const EXPANDED_BOOK_WIDTH:int = 896;
+			public static const EXPANDED_BOOK_HEIGHT:int = 582;
+			
+			public static var currentWidth:int = EXPANDED_BOOK_WIDTH;
+			public static var currentHeight:int = EXPANDED_BOOK_HEIGHT;
+		
+			public var currentPage:int;
+			
+			public var isExpanded:Boolean = false;
+			
+			[Bindable]
+			public var pdfBook:PdfBook;
+			
+			private function onCreationComplete(): void {
+				DBStorage.getInstance().addEventListener(Event.COMPLETE, onCompleteLoad);
+				currentScale = minScale;
+			}
+			
+			private function scaleUp():void 
+			{
+				currentScale = currentScale * 1.5;
+				if (currentScale > 3) currentScale = 3;
+				rescaleBook();
+			}
+			
+			private function scaleDown():void 
+			{
+				currentScale = currentScale / 1.5;
+				if (currentScale < minScale) currentScale = minScale;
+				rescaleBook();
+			}
+			
+			[Bindable]
+			private var currentScale:Number;
+			
+			private function rescaleBook():void 
+			{
+//				currentWidth = currentScale * ((isExpanded)? EXPANDED_BOOK_WIDTH: DEFAULT_BOOK_WIDTH);
+//				currentHeight = currentScale * ((isExpanded)? EXPANDED_BOOK_HEIGHT: DEFAULT_BOOK_HEIGHT);
+				
+//				rebuildBook();
+
+				pdfBook.scaleX = currentScale;
+				pdfBook.scaleY = currentScale;
+				
+				if (currentScale == minScale) 
+					pdfBook.book.flippingEnabled = true;
+				else 
+					pdfBook.book.flippingEnabled = false;
+			}
+			
+			private function get minScale():Number 
+			{
+				return (isExpanded) ? 1 : (DEFAULT_BOOK_HEIGHT/EXPANDED_BOOK_HEIGHT);
+			}
+			
+			private function btnPrevClickHandler():void {
+				if (currentScale != minScale) {
+					currentScale = minScale;
+					rescaleBook();
+				}
+				callLater(pdfBook.prevPage);
+			}
+
+			private function btnNextClickHandler():void {
+				if (currentScale != minScale) {
+					currentScale = minScale;
+					rescaleBook();
+				}
+				callLater(pdfBook.nextPage);
+			}
+			
+			[Bindable]
+			public var numPages:int;
+			
+			public function expand():void 
+			{
+				isExpanded = true;
+				currentScale = minScale;
+
+				rescaleBook();
+			}
+			
+			public function collapse():void 
+			{
+				isExpanded = false;
+				currentScale = minScale;
+				
+				rescaleBook();
+			}
+			
+			public function onCompleteLoad(event:Event):void {
+				var currentPage:int = -1;
+				
+				if (null != this.pdfBook) {
+					currentPage = pdfBook.pageNumber;
+					var index:int = this.getChildIndex(pdfBook);
+					if (index > -1) {
+						this.removeChildAt(index);
+					}
+				}
+				
+				pdfBook = new PdfBook();
+				
+				pdfBook.width = currentWidth;
+				pdfBook.height = currentHeight;
+				
+				pdfBook.dataProvider = DBStorage.getInstance().getCatalogPages();
+				pdfBook.pageNumber = currentPage;
+				pdfBook.doubleClickEnabled = true;
+				pdfBook.addEventListener(MouseEvent.DOUBLE_CLICK, onBookDoubleClick);
+				pdfBook.addEventListener("pageNumberChanged", pageNumberChangeHandler);
+				
+				rescaleBook();
+				
+				numPages = pdfBook.dataProvider.length;
+				
+				boxBookContainer.addChild(pdfBook);
+			}
+			
+			private function pageNumberChangeHandler(evt:PageEvent):void {
+				sliderCurrentPage.value = evt.page;
+				pageNumberChanged();
+				Dashboard(ContentPanel(parentDocument).parentDocument).panelControl.vwCategories.selectItemByPage(evt.page);
+			}
+			
+			private function onBookDoubleClick(evt:MouseEvent):void {
+				Dashboard(ContentPanel(parentDocument).parentDocument).swapState();
+			}
+			
+			private function rebuildBook():void 
+			{
+				pdfBook.width = currentWidth;
+				pdfBook.height = currentHeight;
+				pdfBook.updatePaging();
+			}
+
+			private var _lastPage:String;
+
+			private function txtSectionPageChangeHandler():void {
+				txtSectionPage.text = txtSectionPage.text.toUpperCase();
+				
+				var result:CatalogLocation = DBStorage.getInstance().findPageByCode(txtSectionPage.text);
+				if (null == result) {
+					txtSectionPage.text = _lastPage;
+					return;
+				}
+				
+				pdfBook.pageNumber = result.catalogPage;
+				txtSectionPage.text = result.section + result.sectionPage.toString();
+				_lastPage = txtSectionPage.text;
+			}
+			
+			private function getCodeByPage(page:Number):String {
+				return DBStorage.getInstance().findCodeByPage(page);
+			}
+			
+			private function pageNumberChanged():void {
+				pdfBook.pageNumber = sliderCurrentPage.value;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox
+		id="boxBookControl"
+		width="100%"
+		enabled="{null != pdfBook}">
+		<mx:Button
+			label="+"
+			click="scaleUp()"/>
+		<mx:Button
+			label="-"
+			click="scaleDown()"/>
+		<mx:Button
+			label="Prev"
+			click="btnPrevClickHandler()"/>
+        <mx:HSlider
+        	id="sliderCurrentPage"
+        	width="100%"
+        	snapInterval="2"
+        	value="{pdfBook.pageNumber}" 
+        	minimum="-1"
+        	maximum="{numPages - 1}" 
+        	horizontalCenter="0"
+        	change="pageNumberChanged()"
+        	dataTipFormatFunction="getCodeByPage"
+        	/>
+		<mx:Button
+			label="Next"
+			click="btnNextClickHandler()"/>
+		<mx:TextInput
+			id="txtSectionPage"
+			width="45"
+			maxChars="4"
+			enter="txtSectionPageChangeHandler()"
+			toolTip="Enter page number like A5 (for example)"/>
+	</mx:HBox>
+
+	<mx:ViewStack creationPolicy="auto" width="100%" height="100%">
+		<mx:HBox
+			id="boxBookContainer"
+			width="{this.width - 10}"
+			height="100%"
+			enabled="{null != pdfBook}"/>
+	</mx:ViewStack>
+
+</mx:VBox>

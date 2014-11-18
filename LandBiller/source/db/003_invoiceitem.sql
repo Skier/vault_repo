@@ -1,0 +1,1 @@
+ALTER TABLE ll_invoiceitem RENAME COLUMN adjustment TO total

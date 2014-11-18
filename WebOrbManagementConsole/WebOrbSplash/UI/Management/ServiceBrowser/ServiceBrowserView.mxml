@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox height="100%" width="20%" xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:Metadata>
+   [Event(name="nodeChanged", type="UI.Management.ServiceBrowser.ServiceBrowserEvent")] 
+   [Event(name="serviceRequest", type="flash.events.Event")] 
+</mx:Metadata>
+<mx:Script>
+    <![CDATA[
+    	import UI.Management.ManagementController;    
+
+	    [Embed("../../../images/method2.gif")] private var iconMethod:Class;
+	    [Embed("../../../images/namespace2.gif")] private var iconNamespace:Class;
+	    [Embed("../../../images/class2.gif")] private var iconClass:Class;
+		    
+    	[Bindable]
+    	public var Services:Array;
+    
+    	private function OnCurrentNodeChanged(event:Event):void
+    	{
+    		var serviceBrowserEvent:ServiceBrowserEvent = new ServiceBrowserEvent(ServiceNode( Tree(event.target).selectedItem));
+    		
+        	dispatchEvent(serviceBrowserEvent);
+    	}
+    	
+    	private function OnRefresh():void
+    	{
+    		dispatchEvent(new Event("serviceRequest"));
+    	}
+    	
+        public function getIcon(item:Object):Class
+        {	
+        	var serviceNode:ServiceNode = ServiceNode(item);
+        	
+        	if(serviceNode.IsMethod())
+        		return iconMethod;
+        	else if(serviceNode.IsNamespace())
+        		return iconNamespace;
+        	else 
+        		return iconClass;
+        		
+        }
+    ]]>
+</mx:Script>
+	
+ <mx:Tree id="m_tree" 
+	iconFunction="getIcon"
+	width="100%" 
+	height="100%" 
+	labelField="Name"
+    showRoot="false" 
+    dataProvider="{Services}" 
+    change="OnCurrentNodeChanged(event)" 
+    dataDescriptor="{new ServiceTreeDataDescriptor()}" 
+    click="ManagementController.expandTreeNode(m_tree)"
+    textAlign="left"/>   
+  <mx:Button label="Refresh" width="100%" click="OnRefresh()"/>		
+</mx:VBox>
+

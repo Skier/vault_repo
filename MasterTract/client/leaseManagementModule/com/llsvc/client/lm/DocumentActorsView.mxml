@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    height="100%" 
+    width="100%"
+    creationComplete="onCreationComplete(event)"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.DocumentActor;
+        	import com.llsvc.domain.Address;
+        	import mx.collections.ArrayCollection;
+//        	import com.llsvc.domain.DocumentActor;
+
+            [Bindable]
+			private var _gridData:ArrayCollection = new ArrayCollection();
+			
+        	private var _actors:ArrayCollection;
+            [Bindable]
+            public function get actors():ArrayCollection {
+            	var result:ArrayCollection = new ArrayCollection();
+            	for each (var o:Object in _gridData) {
+            		var a:Address = new Address();
+            		a.address1 = o.address1;
+            		a.address2 = o.address2;
+            		a.city = o.city;
+            		a.zip = o.zip;
+            		
+            		var act:DocumentActor = new DocumentActor();
+            		act.name = o.name;
+            		act.address = a;
+            		
+            		result.addItem(act);
+            	}
+            	return result;
+            }
+            
+            public function set actors(a:ArrayCollection):void {
+            	for each (var da:DocumentActor in a) {
+            		var o:Object = new Object();
+            		o.name = da.name;
+            		o.address1 = da.address.address1;
+            		o.address2 = da.address.address2;
+            		o.city = da.address.city;
+            		o.zip = da.address.zip;
+            		this._gridData.addItem(o);
+            	}
+//            	_actors = actors;	
+            }
+
+			private function onCreationComplete(event:Event):void {
+				_gridData.addItem(new Object());
+			}
+/*
+            private function onEnabledChange(event:Event):void {
+                this.fileInput.enabled = this.chbEnabled.selected;
+            }
+*/            
+        ]]>
+    </mx:Script>
+    
+    
+    <mx:DataGrid id="dgActorList" 
+        left="10" 
+        right="10" 
+        top="0" 
+        bottom="10" 
+        width="100%" 
+        height="70"
+        editable="true"
+        dataProvider="{_gridData}"
+        >
+        <mx:columns>
+            <mx:DataGridColumn id="dgcName" headerText="Name" dataField="name" width="130" resizable="false"/>
+            <mx:DataGridColumn id="dgcAddress1" headerText="Address" dataField="address1" width="130" resizable="false"/>
+            <mx:DataGridColumn id="dgcAddress2" headerText="Address" dataField="address2" width="130" resizable="false"/>
+            <mx:DataGridColumn id="dgcCity" headerText="City" dataField="city" width="110" resizable="false"/>
+            <mx:DataGridColumn id="dgcState" headerText="State" dataField="state" width="110" resizable="false"/>
+            <mx:DataGridColumn id="dgcZip" headerText="Zip" dataField="zip" width="110" resizable="false"/>
+        </mx:columns>
+    </mx:DataGrid>
+    <mx:Button label="Add"/>
+</mx:HBox>

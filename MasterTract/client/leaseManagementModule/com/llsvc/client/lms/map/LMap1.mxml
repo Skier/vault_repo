@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<maps:GeneralMap 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:maps="com.llsvc.maps.*"
+    creationComplete="onCreationComplete(event)"
+>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.HTTPService;
+            
+            import mx.controls.Alert;
+            import mx.controls.ComboBox;
+
+            import com.yahoo.maps.api.core.location.LatLon;
+            import com.yahoo.maps.api.core.location.BoundingBox;
+            
+            import com.llsvc.client.lm.storage.Storage;
+
+			private var prospectList:ArrayCollection = null;
+			private var prospectCombo:ComboBox = new ComboBox();
+			
+            private function onCreationComplete(event:Event):void {
+                Alert.show("LMap1.onCreationComplete: not implemented!");
+/*                
+				this.controlBox.addChildAt(prospectCombo, 0);
+				prospectCombo.addEventListener(Event.CHANGE, onProspectChangeHandler);
+				
+                var responder:mx.rpc.Responder = new mx.rpc.Responder(onGetProspectNamesResultHandler, 
+                        onGetProspectNamesFaultHandler);
+                Storage.instance.getProspectNames(responder);
+*/                
+            }
+            
+            private function onProspectChangeHandler(event:Event):void {
+            	processProspectBoundsRequest(prospectCombo.selectedLabel);
+            }
+            
+            private function onGetProspectNamesResultHandler(event:ResultEvent):void {
+            	prospectCombo.dataProvider = event.result;
+            }
+    
+            private function onGetProspectNamesFaultHandler(event:FaultEvent):void {
+                Alert.show(event.fault.message);
+            }
+
+            private function parseCoordinates(coords:String):Array {
+                var result:Array = new Array();
+                var pairs:Array = coords.split(' ');
+                for each (var p:String in  pairs) {
+                    var pair:Array = p.split(',');
+                    var ll:LatLon = new LatLon(
+                        new Number(pair[1]),
+                        new Number(pair[0]));
+                    result = result.concat(ll);
+                }           
+                return result;  
+            }   
+                     
+            private function processProspectBoundsRequest(prospectName:String):void {
+                var request:String = "<?xml version=\"1.0\"?>" +
+                    "<wfs:GetFeature " +
+                    "   version=\"1.1.0\"" +                    
+                    "   service=\"WFS\"" +
+                    "   resultType=\"results\"" +
+                    "   xmlns:wfs=\"http://www.opengis.net/wfs\"" + 
+                    "   xmlns:gml=\"http://www.opengis.net/gml\"" +
+                    "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                    "   xsi:schemaLocation=\"http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd\">" +
+                    "   <wfs:Query typeName=\"topp:doc_lease_tract_qq_view\" xmlns:topp=\"http://www.openplans.org/topp\"> " +
+                    "       <wfs:PropertyName>topp:prosp_name</wfs:PropertyName> " +
+                    "       <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>prosp_name</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + prospectName + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "       </ogc:Filter> " +
+                    "   </wfs:Query> " +
+                    "</wfs:GetFeature> ";
+
+                var url:String = getGeoServerUrlPrefix() + "wfs";
+                var hs:HTTPService = new HTTPService();
+                hs.useProxy = false;
+                hs.url = url;
+                hs.contentType = "text/xml";
+                hs.method = "POST";
+                hs.addEventListener(mx.rpc.events.ResultEvent.RESULT, onProspectBoundsRequestResult);
+                hs.addEventListener(mx.rpc.events.FaultEvent.FAULT, onProspectBoundsRequestFault);
+                hs.send(request);
+            }
+
+            private function onProspectBoundsRequestResult(e:mx.rpc.events.ResultEvent):void {
+//              Alert.show("Result: " + e.message.body);
+                var x:XML = new XML(e.message.body);
+//                Alert.show("onProspectBoundsRequestResult: XML=" + x.toXMLString());
+                
+                this.mapStatus.text = x.toXMLString();
+
+                var wfs:Namespace = x.namespace('wfs');
+                var gml:Namespace = x.namespace('gml');
+                var topp:Namespace = x.namespace('topp');
+
+                var bboxStr:String = x.gml::boundedBy.gml::Box.gml::coordinates[0].text();
+                var bboxArray:Array = this.parseCoordinates(bboxStr);
+                var bbox:BoundingBox = new BoundingBox(bboxArray[0], bboxArray[1]);
+                
+                startBoundGuardTimer();
+                
+                this._yahooMap.setMapBounds(bbox);
+            }
+
+            private function onProspectBoundsRequestFault(e:mx.rpc.events.FaultEvent):void {
+                Alert.show("onProspectBoundsRequest: Fault: " + e.fault.faultString);
+            }
+            
+
+        ]]>
+    </mx:Script>
+
+</maps:GeneralMap>

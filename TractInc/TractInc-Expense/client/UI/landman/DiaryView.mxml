@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:cal="calendar.*"
+    xmlns:notes="common.notes.*"
+    width="100%"
+    height="100%"
+    verticalAlign="top"
+    horizontalAlign="center"
+    enabled="false"
+    xmlns:common="common.notes.*"
+    xmlns:landman="UI.landman.*"
+    xmlns:components="components.*">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ListCollectionView;
+        	import mx.events.ListEvent;
+        	import mx.events.CloseEvent;
+        	import common.TypesRegistry;
+        	import App.Entity.BillDataObject;
+        	import mx.controls.Alert;
+        	import common.StatusesRegistry;
+        	import util.NumberUtil;
+        	import util.DateUtil;
+        	import mx.core.Application;
+        	import mx.formatters.DateFormatter;
+			import mx.events.DynamicEvent;
+
+            [Bindable]
+            public var Controller: DiaryController;
+
+            public function set Parent(controller: ExpenseController): void {
+                this.Controller = new DiaryController(this, controller);
+            }
+            
+            public function get Parent():ExpenseController {
+            	return this.Controller.parentController;
+            }
+            
+            private function getMonthName(date:Date):String {
+            	var formatter:DateFormatter = new DateFormatter();
+            	formatter.formatString = "MMMM";
+            	return formatter.format(date);
+            }
+            
+            [Bindable]
+            private var _isLastMonth:Boolean = true;
+            
+            [Bindable]
+	        public function get isLastMonth():Boolean {
+    	    	return _isLastMonth;
+        	}
+        
+	        public function set isLastMonth(value:Boolean):void {
+    	    	_isLastMonth = value;
+        	}
+        	
+			private function onCreate():void 
+			{
+				tnBill.selectedIndex = 0;
+				var e:DynamicEvent = new DynamicEvent("toggleCalendarState");
+				e.isComposedMode = false;
+				Application.application.dispatchEvent(e);
+			}
+			
+			private function onTNChanged():void 
+			{
+				var evt:DynamicEvent = new DynamicEvent("toggleDayState");
+				Application.application.dispatchEvent(evt);
+
+				var e:DynamicEvent = new DynamicEvent("toggleCalendarState");
+				e.isComposedMode = tnBill.selectedIndex == 1 ? true : false;
+				Application.application.dispatchEvent(e);
+			}
+			
+			private function onBillClick(evt:ListEvent):void {
+				if (null == dgBills.selectedItem) {
+					return;
+				}
+				
+            	checkCompositions(
+            		function():void {
+            			Controller.proceedCompositions(
+            				function():void {
+            					Controller.Model.billDate = new Date(Date.parse(BillDataObject(dgBills.selectedItem).StartDate));
+								Controller.LoadBillItems();
+            				}
+            			);
+            		},
+            		function():void {
+            			Controller.Model.billDate = new Date(Date.parse(BillDataObject(dgBills.selectedItem).StartDate));
+						Controller.LoadBillItems();
+            		},
+            		function():void {
+            			evt.preventDefault();
+            		}
+            	);
+			}
+			
+			private function onProcessedBillClick(evt:ListEvent):void {
+				if (null == dgProcessedBills.selectedItem) {
+					return;
+				}
+				
+            	checkCompositions(
+            		function():void {
+            			Controller.proceedCompositions(
+            				function():void {
+            					Controller.Model.billDate = new Date(Date.parse(BillDataObject(dgProcessedBills.selectedItem).StartDate));
+								Controller.LoadBillItems();
+            				}
+            			);
+            		},
+            		function():void {
+            			Controller.Model.billDate = new Date(Date.parse(BillDataObject(dgProcessedBills.selectedItem).StartDate));
+						Controller.LoadBillItems();
+            		},
+            		function():void {
+            			dgProcessedBills.selectedItem = null;
+            		}
+            	);
+			}
+			
+			private function setItemLabels(item:Composition, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				switch (column.dataField) {
+					case "amount":
+						result = "$" + (Math.round(item.compositeRecord.Amount * 100) / 100).toFixed(2);
+						break;
+					case "description":
+						result = item.compositeRecord.Description;
+						break;
+					case "billItemType":
+						result = TypesRegistry.instance.getAllBillItemTypes.getItemAt(item.compositeRecord.BillItemTypeId - 1).Name;
+						break;
+					case "status":
+						result = (0 < item.compositeRecord.BillItems.length)? "Proceeded": "In work";
+						break;
+				}
+				
+				return result;
+			}
+			
+			private function onCreateCompositionClick():void {
+				Controller.openCreateComposition();
+			}
+			
+			public function onCompositeItemClick():void {
+				Controller.buildCalendar();
+			}
+			
+			public function onCompositeItemDoubleClick():void {
+				Controller.openEditComposition();
+			}
+			
+			public function onProceedClick(composition:Object):void {
+				Controller.proceedComposition(Composition(composition));
+			}
+			
+            private function setBillColor(item:BillDataObject, color:uint):uint 
+            {
+            	var newColor:uint = StatusesRegistry.instance.getColorByName(item.Status);
+            	
+            	if (newColor == 0xFFFFFF) {
+            		return color;
+            	} else {
+            		return newColor;
+            	}
+            }
+            
+            private function onRemoveCompositeClick():void {
+            	Controller.removeCompositeItem();
+            }
+            
+            private function checkCompositions(onYes:Function = null, onNo:Function = null, onCancel:Function = null):void {
+            	var hasNotProceeded:Boolean = false;
+            	for each (var composition:Composition in Controller.Model.compositions) {
+            		if (!composition.isProceeded) {
+            			hasNotProceeded = true;
+            		}
+            	}
+            	
+            	if (hasNotProceeded) {
+            		Alert.show(
+            			"There are not saved multiday items. Do you want to save it?",
+            			"Not saved multiday items",
+            			Alert.CANCEL | Alert.YES | Alert.NO,
+            			this,
+            			function(evt:CloseEvent):void {
+            				if (Alert.NO == evt.detail) {
+            					if (null != onNo) {
+            						onNo();
+            					}
+            				} else if (Alert.CANCEL == evt.detail) {
+            					if (null != onCancel) {
+            						onCancel();
+            					}
+            				} else if (Alert.YES == evt.detail) {
+            					if (null != onYes) {
+            						onYes();
+            					}
+            				}
+            			}
+            		);
+            	} else if (null != onNo) {
+            		onNo();
+            	}
+            }
+			
+            private function onSubmitClick():void {
+            	checkCompositions(
+            		function():void {
+            			Controller.proceedCompositions(
+            				function():void {
+            					Controller.callSubmitView();
+            				}
+            			);
+            		},
+            		function():void {
+            			Controller.callSubmitView();
+            		}
+            	);
+            }
+            
+			private function onClientsFilterChange():void {
+				ListCollectionView(dgProjects.dataProvider).refresh();
+			}
+			
+			public function onAllClientsFilterClick():void {
+				cbClientFilter.selectedIndex = -1;
+				onClientsFilterChange();
+			}
+			
+        ]]>
+    </mx:Script>
+    
+    <mx:Component id="afeRenderer">
+        <mx:Label text="{data.RelatedAfe.AFE + ' / ' + data.RelatedSubAfe.SubAFE}" />
+    </mx:Component>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="top" horizontalAlign="center">
+	
+		<mx:VDividedBox width="250" height="100%" verticalGap="5">
+			
+			<mx:TabNavigator
+				id="tnBills"
+				width="100%"
+				height="100%"
+				borderColor="#999999"
+				borderStyle="solid"
+				backgroundColor="#eeeeee"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				>
+				
+				<mx:VBox id="vbCurrentBills" label="Current Bills" width="100%" height="100%" horizontalAlign="right">
+					
+					<components:ColoredDataGrid
+						id="dgBills"
+						width="100%"
+						height="100%"
+						rowColorFunction="setBillColor"
+						dataProvider="{Controller.Model.currentBills}"
+						change="onBillClick(event)"
+						>
+						<components:columns>
+							<mx:DataGridColumn
+								headerText="Date"
+								dataField="StartDate"/>
+							<mx:DataGridColumn
+								headerText="Amount"
+								width="80"
+								textAlign="right"
+								dataField="amountString"/>
+						</components:columns>
+					</components:ColoredDataGrid>
+					
+					<mx:Button
+						label="Submit"
+						click="onSubmitClick()"/>
+		
+				</mx:VBox>
+	
+				<mx:VBox id="vbProcessedBills" label="History" width="100%" height="100%">
+					
+					<components:ColoredDataGrid
+						id="dgProcessedBills"
+						width="100%"
+						height="100%"
+						rowColorFunction="setBillColor"
+						dataProvider="{Controller.Model.processedBills}"
+						change="onProcessedBillClick(event)">
+						<components:columns>
+							<mx:DataGridColumn
+								headerText="Date"
+								dataField="StartDate"/>
+							<mx:DataGridColumn
+								headerText="Amount"
+								width="80"
+								textAlign="right"
+								dataField="amountString"/>
+						</components:columns>
+					</components:ColoredDataGrid>
+		
+				</mx:VBox>
+	
+			</mx:TabNavigator>
+			
+			<mx:Panel title="Projects"
+				width="100%"
+				height="300"
+				borderColor="#999999"
+				borderStyle="solid">
+				<mx:VBox
+					width="100%"
+					height="100%"
+					>
+				
+					<mx:DataGrid
+						id="dgProjects"
+						dataProvider="{Controller.Model.currentAssignmentsFiltered}" 
+						showHeaders="false" 
+						width="100%"
+						height="100%"
+						dragEnabled="true"
+						>
+						<mx:columns>
+							<mx:DataGridColumn dataField="SubAFE"/>
+						</mx:columns>
+					</mx:DataGrid>
+					
+					<mx:HBox width="100%">
+						<mx:Spacer width="100%" minWidth="30"/>
+						<mx:ComboBox
+							id="cbClientFilter"
+							dataProvider="{Controller.Model.clients}"
+							labelField="ClientName"
+							maxWidth="120"
+							change="onClientsFilterChange()"
+							prompt=" "/>
+						<mx:Button
+							id="btnAllClientsFilter"
+							label="All"
+							width="27"
+							click="onAllClientsFilterClick()"/>
+					</mx:HBox>
+					
+				</mx:VBox>
+	
+			</mx:Panel>
+			
+		</mx:VDividedBox>
+
+    	<mx:VBox
+   			width="100%"
+   			height="100%"
+    		verticalAlign="middle"
+   			horizontalAlign="center"
+   			enabled="{tnBills.selectedIndex == 0 ? dgBills.selectedItem : dgProcessedBills.selectedItem}"
+   			>
+			<mx:VBox width="100%" height="100%">
+			
+				<mx:TabNavigator id="tnBill" width="100%" change="onTNChanged()"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+					>
+					
+					<mx:HBox
+						id="boxBillInfo"
+						width="100%"
+						label="Bill Information"
+						backgroundColor="#eeeeee"
+						borderColor="#999999"
+						borderStyle="solid"
+						paddingLeft="5"
+						paddingRight="5"
+						paddingTop="5"
+						paddingBottom="5"
+						verticalAlign="middle"
+						height="105"
+						>
+					
+						<mx:VBox>
+							
+	            		    <mx:HBox>
+								<mx:Label text="Start date:" width="100" textAlign="right"/>
+								<mx:Label text="{Controller.Model.bill.StartDate}" fontWeight="bold" width="100"/>
+								<mx:Label text="Status:" width="100" textAlign="right"/>
+								<mx:Label text="{Controller.Model.bill.Status}" fontWeight="bold" width="100"/>
+	    		            </mx:HBox>
+				
+							<mx:HBox>
+								<mx:Label text="Total Days:" width="100" textAlign="right"/>
+								<mx:Label text="{NumberUtil.fraction(Controller.Model.bill.TotalDailyBill, 8)}" fontWeight="bold" width="100"/>
+								<mx:Label text="Other Amount:" width="100" textAlign="right"/>
+								<mx:Label text="{(Math.round(Controller.Model.bill.OtherBillAmt * 100) / 100).toFixed(2)}" fontWeight="bold" width="100"/>
+							</mx:HBox>
+				
+							<mx:HBox>
+								<mx:Label text="Daily Bill Amount:" width="100" textAlign="right"/>
+								<mx:Label text="{(Math.round(Controller.Model.bill.DailyBillAmt * 100) / 100).toFixed(2)}" fontWeight="bold" width="100"/>
+								<mx:Label text="Total Amount:" width="100" textAlign="right"/>
+								<mx:Label text="{(Math.round(Controller.Model.bill.TotalBillAmt * 100) / 100).toFixed(2)}" fontWeight="bold" width="100"/>
+							</mx:HBox>
+				
+						</mx:VBox>
+						
+						<notes:NotesPanel id="panelNotes" width="100%" height="100%" item="{Controller.Model.bill}"/>
+
+        		    </mx:HBox>
+	
+					<mx:HBox
+						id="boxCompositeItems"
+						width="100%"
+						height="{boxBillInfo.height}"
+						label="Multidays Bill Items"
+						enabled="{!Controller.Model.isReadOnly &amp;&amp; (0 &lt; Controller.Model.bill.TotalBillAmt)}"
+						>
+						
+		    			<mx:DataGrid
+    						id="dgCompositeItems"
+    						width="100%"
+    						height="100%"
+    						minWidth="250"
+	    					dataProvider="{Controller.Model.compositions}"
+    						editable="false"
+    						change="onCompositeItemClick()"
+    						sortableColumns="false"
+    						doubleClickEnabled="{null != dgCompositeItems.selectedItem &amp;&amp; Composition(dgCompositeItems.selectedItem).isEnabled}"
+    						doubleClick="onCompositeItemDoubleClick()">
+        		    	    <mx:columns>
+				                <mx:DataGridColumn
+				                	width="2"
+                				    labelFunction="{function(i:Composition,c:DataGridColumn):String{return (i.isRejected)? '!': ''}}"
+                    				color="#FF0000" fontWeight="bold" editable="false" />
+            	   	    		<mx:DataGridColumn
+            	   	    			width="90"
+            	   	    			labelFunction="setItemLabels"
+            	   	    			dataField="billItemType"
+            	   	    			headerText="Type" />
+            	   	    		<mx:DataGridColumn
+            	   	    			labelFunction="setItemLabels"
+            	   	    			dataField="description"
+            	   	    			headerText="Description" />
+            	   	    		<mx:DataGridColumn
+            	   	    			width="80"
+            	   	    			dataField="amountString"
+            	   	    			headerText="Amount"
+            	   	    			textAlign="right" />
+								<mx:DataGridColumn
+									headerText="Attach"
+									textAlign="center"
+									itemRenderer="common.attachment.CompositeAttachItemRenderer"
+									editable="false"/>
+								<mx:DataGridColumn
+									headerText="Notes"
+									textAlign="center"
+									editable="false">
+									<mx:itemRenderer>
+										<mx:Component>
+											<landman:CompositeNotesRenderer
+												canEditNotes="true" />
+										</mx:Component>
+									</mx:itemRenderer>
+								</mx:DataGridColumn>
+            	   	    		<mx:DataGridColumn
+            	   	    			minWidth="100"
+            	   	    			dataField="action"
+            	   	    			headerText="">
+            	   	    			<mx:itemRenderer>
+            	   	    				<mx:Component>
+            	   	    					<mx:HBox
+            	   	    						horizontalAlign="center"
+            	   	    						horizontalScrollPolicy="off">
+	            	   	    					<mx:Button
+	            	   	    						label="proceed"
+													enabled="{(!Composition(data).isProceeded || Composition(data).isRejected) &amp;&amp; (0 &lt; Composition(data).itemsCount || 0 &lt; Composition(data).temporaryItems.length)}"
+	            	   	    						click="outerDocument.onProceedClick(data)"/>
+            	   	    					</mx:HBox>
+            	   	    				</mx:Component>
+            	   	    			</mx:itemRenderer>
+            	   	    		</mx:DataGridColumn>
+	            		    </mx:columns>
+		    	        </mx:DataGrid>
+						
+						<mx:VBox
+							height="100%"
+							verticalAlign="bottom"
+							visible="{!Controller.Model.isReadOnly}"
+							includeInLayout="{!Controller.Model.isReadOnly}">
+							<mx:Button label="New" width="100" click="onCreateCompositionClick()"/>
+							<mx:Button label="Remove" width="100" enabled="{null != dgCompositeItems.selectedItem &amp;&amp; dgCompositeItems.selectedItem.isEnabled}" click="onRemoveCompositeClick()"/>
+						</mx:VBox>
+    	
+					</mx:HBox>
+        	
+				</mx:TabNavigator>
+				
+				<mx:HBox
+					width="100%"
+					height="100%"
+					enabled="{!(tnBill.selectedChild == boxCompositeItems) || (null != dgCompositeItems.selectedItem)}"
+					> <!-- &amp;&amp; !dgCompositeItems.selectedItem.isProceeded -->
+					<cal:Calendar
+            			id="cal"
+        	    		width="100%"
+		            	height="100%"
+						dataProvider="{Controller.Model.eventGroups}"
+						itemRenderer="UI.landman.DayRenderer">
+					</cal:Calendar>
+				</mx:HBox>
+				
+		    </mx:VBox>
+			
+	   	</mx:VBox>
+		
+	</mx:HBox>
+    
+</mx:VBox>

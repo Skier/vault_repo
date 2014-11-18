@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="left" horizontalGap="0" horizontalScrollPolicy="off">
+<mx:Script>
+<![CDATA[
+    [Embed(source="../../../images/right.png")]
+    private var iconRight:Class;
+
+    [Embed(source="../../../images/down.png")]
+    private var iconDown:Class;
+    
+	[Embed(source="../../../images/folder_open.png")]
+    private var iconOpen:Class;
+    
+	[Embed(source="../../../images/folder_closed.png")]
+    private var iconClosed:Class;
+    							        
+    override public function set data(data:Object):void
+    {
+        super.data = data;
+        
+        if(data != null)
+        {
+        	var controller:TestDriveController = TestDriveView(this.parentDocument).Controller;
+        	
+        	if(controller.Model.TreeGridAdapter.m_dataDescriptor.isBranch(data.Value))
+        	{
+        		if(controller.Model.TreeGridAdapter.isBranchLoaded(TreeGridNode(data)))
+        		{
+        			m_img1.source = iconDown;   
+        			m_img2.source = iconOpen;  
+        		}
+        		else
+        		{
+        			m_img1.source = iconRight;   
+        			m_img2.source = iconClosed;  
+        		}
+        		
+        		m_img1.visible = true;  
+        		m_img2.visible = true;
+        	}
+        	else
+        	{
+        		m_img1.visible = false;
+        		m_img2.visible = false;
+        	}
+        }
+    }
+	private function OnIconClick(event:Event):void
+	{
+		var treeGridNode:TreeGridNode = TreeGridNode(data);
+		var controller:TestDriveController = TestDriveView(this.parentDocument).Controller;
+		
+		if(controller.Model.TreeGridAdapter.m_dataDescriptor.isBranch(treeGridNode.Value))
+		{
+			if(controller.Model.TreeGridAdapter.isBranchLoaded(treeGridNode))
+				controller.Model.TreeGridAdapter.unloadBranch(treeGridNode);
+			else
+				controller.Model.TreeGridAdapter.loadBranch(treeGridNode);
+				
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
+]]>
+</mx:Script>
+	<mx:Spacer width="{(data.getDepth()-1) * 10}" />
+	<mx:Image id="m_img1" width="16" visible="false" click="{OnIconClick(event)}" />
+	<mx:Image id="m_img2" width="16" visible="false" click="{OnIconClick(event)}"/>
+	<mx:Label text="{data.Value.Name}" />
+</mx:HBox>

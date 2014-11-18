@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.affilia.util.DateUtil;
+			import com.intuit.sb.cdm.xmlrequest.IntuitRequest;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import Intuit.Sb.Cdm.vo.TelephoneNumber;
+			import com.dalworth.servman.events.JobEvent;
+			import com.dalworth.servman.domain.Job;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.collections.ArrayCollection;
+			import Intuit.Sb.Cdm.vo.Job;
+			
+			[Bindable]
+			private var job:com.dalworth.servman.domain.Job;
+			
+			[Bindable] private var intuitJob:Intuit.Sb.Cdm.vo.Job;
+			[Bindable] private var intuitCustomer:Intuit.Sb.Cdm.vo.Customer;
+
+			[Bindable] private var phonesStr:String;
+			[Bindable] private var customerPhonesStr:String;
+
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				
+				if (value is com.dalworth.servman.domain.Job)
+					job = value as com.dalworth.servman.domain.Job;
+				else 
+					job = null;
+				
+				updateJobProperties();
+			}
+			
+			private function updateJobProperties():void 
+			{
+				if (job != null)
+				{
+					intuitJob = job.RelatedIdsJob as Intuit.Sb.Cdm.vo.Job;
+
+					if (intuitJob != null) 
+						phonesStr = getPhonesStr(intuitJob.Phone);
+					else 
+						phonesStr = "";
+
+					intuitCustomer = job.RelatedIdsCustomer as Intuit.Sb.Cdm.vo.Customer;
+					
+					if (intuitCustomer != null) 
+						customerPhonesStr = getPhonesStr(intuitCustomer.Phone);
+					else 
+						customerPhonesStr = "";
+				}
+				
+				setBackground();
+			}
+			
+			private function getPhonesStr(phones:Array):String
+			{
+				var result:String = "";
+				if (phones != null) 
+				{
+					for each (var phone:TelephoneNumber in phones) 
+					{
+						if (result != "")
+							result += ", ";
+						result += phone.FreeFormNumber;
+					}
+				}
+				return result;
+			}
+			
+			private function setBackground():void 
+			{
+				if (job != null)
+				{
+					if (job.MatchLevel == 4)
+						boxContent.setStyle("backgroundColor", 0xDDFFDD);
+					else if (job.MatchLevel == 3)
+						boxContent.setStyle("backgroundColor", 0xDDDDFF);
+					else if (job.MatchLevel == 2)
+						boxContent.setStyle("backgroundColor", 0xFFFFDD);
+					else if (job.MatchLevel == 1)
+						boxContent.setStyle("backgroundColor", 0xFFDDDD);
+					else 
+						boxContent.setStyle("backgroundColor", 0xFFFFFF);
+				}
+			}
+			
+			private function onConnect():void 
+			{
+				dispatchEvent(new JobEvent(JobEvent.JOB_CONNECT, job, true));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox id="boxContent" cornerRadius="2" horizontalGap="-1"
+		top="1" bottom="0" right="1" left="1">
+		<mx:VBox width="100%" verticalGap="0" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:HBox width="100%" backgroundColor="{intuitCustomer != null ? 0xFFFFFF : 0xFF0000}" backgroundAlpha="0.4">
+				
+				<mx:Label text="Customer:"/>
+				<mx:Label text="{intuitCustomer.ShowAs}" fontWeight="bold"/>
+
+				<mx:Label text="Name:"/>
+				<mx:Label text="{intuitCustomer.GivenName}" fontWeight="bold"/>
+				<mx:Label text="{intuitCustomer.FamilyName}" fontWeight="bold"/>
+
+				<mx:Label text="Phones:"/>
+				<mx:Label text="{customerPhonesStr}" fontWeight="bold" width="100%" minWidth="100"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%" horizontalScrollPolicy="off">
+				<mx:Label text="{intuitJob.ShowAs}" fontWeight="bold"/>
+
+				<mx:Label text="Created:"/>
+				<mx:Text text="{DateUtil.getDateTimeStr(intuitJob.MetaData.CreateTime)}" fontWeight="bold"/>
+
+				<mx:Label text="Details:"/>
+				<mx:Text width="100%" text="{intuitJob.JobInfo.Description}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:Button height="100%" label="Match" click="onConnect()" cornerRadius="2"
+			visible="{!job.IsMatched}" includeInLayout="{!job.IsMatched}"/>
+	</mx:HBox>
+</mx:Canvas>

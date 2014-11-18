@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_EMAIL:String = "columnEmail";
+			private static const COLUMN_PHONE:String = "columnPhone";
+			
+			[Bindable]
+			private var model:BusinessPartnersModel = BusinessPartnersModel.getInstance();
+			
+			[Bindable]
+			private var controller:BusinessPartnersController;
+			
+			public function init():void 
+			{
+				controller = new BusinessPartnersController(this);
+				controller.initModel();
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is BusinessPartner) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return BusinessPartner(item).Name;
+						
+						case COLUMN_EMAIL :
+							return BusinessPartner(item).Email;
+						
+						case COLUMN_PHONE :
+							return BusinessPartner(item).Phone;
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onBusinessPartnerCreated():void 
+			{
+				var partner:BusinessPartner = viewBusinessPartner.businessPartner;
+				
+				if(!model.businessPartners.contains(partner))
+				{
+					model.businessPartners.addItem(partner);
+					var idx:int = model.businessPartners.getItemIndex(partner);
+					dgBusinessPartners.selectedIndex = idx;
+					dgBusinessPartners.scrollToIndex(idx);
+				}
+			}
+			
+			private function onNewClick():void 
+			{
+				viewBusinessPartner.businessPartner = new BusinessPartner();
+				//viewProjectType.visible = viewProjectType.includeInLayout = true;
+			}
+			
+			
+		]]>
+	</mx:Script>
+
+	<mx:VDividedBox width="100%" height="100%">
+		<mx:DataGrid id="dgBusinessPartners" dataProvider="{model.businessPartners}" width="100%" height="100%" minWidth="300">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Name" labelFunction="getLabel" dataField="{COLUMN_NAME}" minWidth="100"/>
+				<mx:DataGridColumn headerText="Email" labelFunction="getLabel" dataField="{COLUMN_EMAIL}" width="150" minWidth="100"/>
+				<mx:DataGridColumn headerText="Phone" labelFunction="getLabel" dataField="{COLUMN_PHONE}" width="150" minWidth="100"/>
+			</mx:columns>
+		</mx:DataGrid>
+
+		<mx:TabNavigator width="100%" height="200"
+			visible="{viewBusinessPartner.businessPartner != null}" includeInLayout="{viewBusinessPartner.businessPartner != null}">
+			<businessPartner:BusinessPartnerView id="viewBusinessPartner" 
+				businessPartner="{dgBusinessPartners.selectedItem as BusinessPartner}" 
+				borderColor="#999999" backgroundColor="#ffffff" borderStyle="solid" width="100%" height="100%"
+				label="Details" businessPartnerCreated="onBusinessPartnerCreated()"/>
+			<businessPartner:LeadsView businessPartner="{dgBusinessPartners.selectedItem as BusinessPartner}"
+				controller="{controller}" width="100%" height="100%"
+				label="Related Leads"/>
+			<mx:VBox width="100%" height="100%" label="RelatedProjects"/>
+		</mx:TabNavigator>
+	</mx:VDividedBox>
+
+	<mx:VBox height="100%" width="120">
+		<mx:Button width="100%" label="Create New" click="onNewClick()"/>
+		<mx:Text width="100%" height="100%"/>
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:trackingPhone="com.dalworth.leadCentral.phone.trackingPhone.*" xmlns:callWorkflow="com.dalworth.leadCentral.phone.callWorkflow.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			
+			[Embed(source="/assets/icons16/control.png")]
+			[Bindable]
+			private var iconControlRight:Class;
+			
+			[Embed(source="/assets/icons16/control_180.png")]
+			[Bindable]
+			private var iconControlLeft:Class;
+			
+			public function init():void 
+			{
+				if (vsTelephony != null)
+					vsTelephony.selectedIndex = 0;
+			}
+			
+			private function onMenuItemClick(event:ItemClickEvent):void 
+			{
+				switch (event.index) 
+				{
+					case 0:
+						vsTelephony.selectedChild = viewPhoneNumbers;
+						viewPhoneNumbers.init();
+						break;
+
+					case 1:
+						vsTelephony.selectedChild = viewWorkflows;
+						viewWorkflows.init();
+						break;
+				}
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox id="boxLeftPanel" width="100%" paddingLeft="4" paddingRight="4">
+			<mx:LinkBar direction="horizontal" dataProvider="{vsTelephony}" labelField="label" itemClick="onMenuItemClick(event)"
+				fontSize="14"/>
+		</mx:HBox>
+		
+		<mx:ViewStack id="vsTelephony" width="100%" height="100%">
+			<trackingPhone:TrackingPhonesView id="viewPhoneNumbers" width="100%" height="100%" label="Tracking Phones"/>
+			<callWorkflow:PhoneWorkflowsView id="viewWorkflows" width="100%" height="100%" label="Workflows"/>
+		</mx:ViewStack>
+	</mx:VBox>
+</mx:Canvas>

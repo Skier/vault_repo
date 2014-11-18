@@ -1,0 +1,87 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{30B81EC2-2F0D-4EF5-B1CF-000000000004}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MobileTech.Domain</RootNamespace>
+    <AssemblyName>MobileTech.Domain.Win32</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\Win32</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WIN32</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\Win32</OutputPath>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="MobileTech.Win32, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessTransaction.cs" />
+    <Compile Include="BusinessTransactionStatus.cs" />
+    <Compile Include="BusinessTransactionType.cs" />
+    <Compile Include="Codegen\**\*.cs" />
+    <Compile Include="Counter.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="CustomerOption.cs" />
+    <Compile Include="CustomerOptionDescription.cs" />
+    <Compile Include="CustomerTransaction.cs" />
+    <Compile Include="CustomerTransactionDetail.cs" />
+    <Compile Include="CustomerTransactionType.cs" />
+    <Compile Include="CustomerVisit.cs" />
+    <Compile Include="DayOfWeek.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="Equipment.cs" />
+    <Compile Include="EventLog.cs" />
+    <Compile Include="InventoryTransaction.cs" />
+    <Compile Include="InventoryTransactionDetail.cs" />
+    <Compile Include="InventoryTransactionDetailType.cs" />
+    <Compile Include="InventoryTransactionDetailXRef.cs" />
+    <Compile Include="InventoryTransactionType.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemCategory.cs" />
+    <Compile Include="ItemType.cs" />
+    <Compile Include="Location.cs" />
+    <Compile Include="Password.cs" />
+    <Compile Include="PeriodTransaction.cs" />
+    <Compile Include="PeriodTransactionType.cs" />
+    <Compile Include="Product.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Route.cs" />
+    <Compile Include="RouteCustomer.cs" />
+    <Compile Include="RouteInventory.cs" />
+    <Compile Include="RouteOption.cs" />
+    <Compile Include="RouteOptionDescription.cs" />
+    <Compile Include="RouteSchedule.cs" />
+    <Compile Include="RouteScheduleQueue.cs" />
+    <Compile Include="RouteScheduleQueueStatus.cs" />
+    <Compile Include="RouteStatus.cs" />
+    <Compile Include="RouteType.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="StorageType.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

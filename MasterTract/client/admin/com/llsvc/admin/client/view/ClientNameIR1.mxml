@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.client.events.ClientWrapperEvent;
+            private function changeName():void 
+            {
+                if (txtClientName.text.length > 0) 
+                {
+                    var item:ClientWrapper = ClientWrapper(data);
+
+                    if (txtClientName.text != item.client.name) 
+                    {
+                    	item.setMemento();
+                    	
+                        item.client.name = txtClientName.text;
+                        dispatchEvent(new ClientWrapperEvent(ClientWrapperEvent.CLIENT_CHANGE, item, true));
+                    }
+                } else 
+                {
+                    txtClientName.text = ClientWrapper(data).client.name;
+                }
+            }
+            
+            private function txtProjectNameFocusOutHandler():void 
+            {
+            	changeName();
+            }
+            
+            private function txtProjectNameEnterHandler():void 
+            {
+            	changeName();
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:TextInput id="txtClientName" 
+        width="100%" height="100%" 
+        text="{ClientWrapper(data).client.name}"
+        focusOut="txtProjectNameFocusOutHandler()"
+        enter="txtProjectNameEnterHandler()"
+        enabled="{!ClientWrapper(data).isLoading}"/>
+</mx:Canvas>

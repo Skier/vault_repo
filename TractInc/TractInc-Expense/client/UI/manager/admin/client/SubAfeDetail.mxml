@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+    title="Edit Project"
+    creationComplete="init()">
+
+    <mx:Script>
+        <![CDATA[
+        	import common.StatusesRegistry;
+        	import App.Entity.ProjectDataObject;
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+
+            [Bindable]
+            private var statuses:ArrayCollection;
+
+            [Bindable]
+            public var subAfe:ProjectDataObject;
+            
+            [Bindable]
+            public var afes:ArrayCollection;
+            
+            [Bindable]
+            private var isTemporary:Boolean;
+            
+            public static function Open(subAfe:ProjectDataObject, parent:DisplayObject, modal:Boolean = true):SubAfeDetail {
+                var popup:SubAfeDetail = new SubAfeDetail();
+                popup.subAfe = subAfe;
+                popup.isTemporary = subAfe.Temporary;
+    
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function init():void 
+            {
+                cbSubAfeStatus.selectedItem = StatusesRegistry.instance.getProjectStatusByName(subAfe.SubAFEStatus);
+            }
+            
+            private function onFault(event:FaultEvent):void 
+            {
+                Alert.show(event.fault.message);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox
+    	id="inputBox"
+    	width="100%">
+        <mx:HBox
+        	visible="{cbTemporary.selected &amp;&amp; !subAfe.IsNew}"
+        	includeInLayout="{cbTemporary.selected &amp;&amp; !subAfe.IsNew}">
+            <mx:Label text="AFE:" width="120" textAlign="right"/>
+            <mx:ComboBox
+            	id="cbAfe"
+            	width="200"
+            	labelField="AFE"
+                dataProvider="{afes}"
+                prompt="..."/>
+        </mx:HBox>
+	    <mx:HRule
+	    	visible="{cbTemporary.selected &amp;&amp; !subAfe.IsNew}"
+	    	includeInLayout="{cbTemporary.selected &amp;&amp; !subAfe.IsNew}"
+	    	width="100%"/>
+        <mx:HBox
+        	visible="{subAfe.IsNew || subAfe.Temporary}"
+        	includeInLayout="{subAfe.IsNew || subAfe.Temporary}">
+            <mx:CheckBox
+            	id="cbTemporary"
+            	change="{subAfe.Temporary = cbTemporary.selected}"
+            	selected="{subAfe.Temporary}"/>
+            <mx:Label text="Is Temporary"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Project Name:" width="120" textAlign="right"/>
+            <mx:TextInput id="txtSubAfeName" text="{subAfe.SubAFE}" enabled="{subAfe.IsNew}" width="200" maxChars="50"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Short Name:" width="120" textAlign="right"/>
+            <mx:TextInput id="txtSubAfeShortName" text="{subAfe.ShortName}" width="100" maxChars="10"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Status:" width="120" textAlign="right"/>
+            <mx:ComboBox
+            	id="cbSubAfeStatus"
+            	width="120"
+            	labelField="Status"
+                dataProvider="{StatusesRegistry.instance.projectStatuses}"
+                prompt=""/>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button id="btnSubmit" label="Ok"
+            enabled="{txtSubAfeName.text.length > 0 &amp;&amp; cbSubAfeStatus.selectedItem != null}"/>
+        <mx:Button id="btnCancel" label="Cancel"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

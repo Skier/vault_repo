@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    minWidth="600"
+    minHeight="550"
+    verticalAlign="middle"
+    horizontalAlign="center"
+    alpha="2"
+    shadowDistance="0">
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.BillItemDataObject;
+        	import mx.managers.PopUpManager;
+        	import mx.collections.ListCollectionView;
+        	
+        	[Bindable]
+        	private var _log:ListCollectionView;
+        	
+			private var _counter:int = 0;
+
+            public static function Open(project:String, log:ListCollectionView, parent:DisplayObject):WorkLogView {
+                var popup:WorkLogView = new WorkLogView();
+                popup.title = "Project: " + project;
+                popup._log = log;
+                
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function close():void {
+            	PopUpManager.removePopUp(this);
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <mx:Component id="workLogItemRenderer">
+        <mx:VBox width="100%" horizontalAlign="left">
+        	<mx:HBox>
+        		<mx:Label text="Date:"/>
+        		<mx:Label text="{data.BillingDate}"/>
+        		<mx:Label text="Hours:"/>
+        		<mx:Label text="{data.Qty}"/>
+        	</mx:HBox>
+        	<mx:TextArea
+	    		width="100%"
+    			editable="false"
+    			text="{data.WorkLogInfo.LogMessage}"/>
+        </mx:VBox>
+    </mx:Component> 
+
+    <mx:HBox
+    	width="100%"
+    	height="100%">
+    	
+    	<mx:DataGrid
+    		id="dgWorkLog"
+	    	dataProvider="{_log}"
+    		height="100%"
+    		width="100%"
+    		showHeaders="false">
+	    	<mx:columns>
+    			<mx:DataGridColumn
+    				itemRenderer="{workLogItemRenderer}"/>
+	    	</mx:columns>
+    	</mx:DataGrid>
+    	
+    </mx:HBox>
+    
+    <mx:ControlBar horizontalAlign="center">
+        <mx:Button label="Close" click="close()" />
+    </mx:ControlBar>
+
+</mx:Panel>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+	dropShadowEnabled="true"
+	borderColor="#cccccc" borderStyle="solid"
+	backgroundColor="#ccffcc" backgroundAlpha="0.3" shadowDistance="1" shadowDirection="center"
+	>
+	
+    <mx:Metadata>
+        [Event(name="openProject", type="truetract.web.dashboard.events.ProjectEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Project;
+			import mx.events.ListEvent;
+			import truetract.web.dashboard.events.ProjectEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import truetract.web.AppModel;
+			import truetract.web.services.ProjectService;
+			import mx.binding.utils.ChangeWatcher;
+			import truetract.domain.Document;
+			
+			[Bindable] 
+			private var referencedProjects:ArrayCollection = new ArrayCollection();
+			
+			private var _docum:Document;
+			[Bindable] 
+			public function get docum():Document {return _docum;}
+			public function set docum(value:Document):void 
+			{
+				_docum = value;
+				
+				ChangeWatcher.watch(this, "docum", documChangeHandler);
+			}
+			
+			private function documChangeHandler(e:*):void  
+			{
+				reset();
+			}
+			
+			private function reset():void 
+			{
+				if (docum && (docum.DocID > 0))
+					referencedProjects = ProjectService.getInstance().getDocReferencedProjects(docum.DocID, AppModel.getInstance().user.ClientId);
+			}
+			
+			private function backToProject():void 
+			{
+				dispatchEvent(new ProjectEvent(ProjectEvent.OPEN_PROJECT, docum.referencedProject));
+			}
+			
+			private function projectClickHandler(e:ListEvent):void 
+			{
+				dispatchEvent(new ProjectEvent(ProjectEvent.OPEN_PROJECT, e.currentTarget.selectedItem as Project));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:Label text="Referenced project:" fontWeight="bold"/>
+		<mx:Box width="100%" height="100%">
+			<mx:Label text="No referenced projects" 
+				includeInLayout="{referencedProjects.length == 0}" visible="{referencedProjects.length == 0}"/>
+			<mx:List 
+				width="100%" height="100%"
+				includeInLayout="{referencedProjects.length != 0}" visible="{referencedProjects.length != 0}"
+				dataProvider="{referencedProjects}" labelField="Name" 
+				doubleClickEnabled="true" itemDoubleClick="projectClickHandler(event)"/>
+		</mx:Box>
+	</mx:VBox>
+<!--
+	<mx:LinkButton 
+		width="100%"
+		visible="{docum.referencedProject != null}" includeInLayout="{docum.referencedProject != null}"
+		label="Back to {docum.referencedProject.ShortName}" color="#000099" click="backToProject()"/>
+ -->
+</mx:VBox>

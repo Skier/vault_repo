@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<groupPanel:GroupPanel_code
+    label="{group.groupName}"
+    show="{showHandler()}"
+    paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:groupPanel="truetract.web.dashboard.groupPanel.*" 
+    xmlns:documentList="truetract.web.dashboard.documentList.*" 
+    xmlns:drawingList="truetract.web.dashboard.drawingList.*" 
+    xmlns:dashboard="truetract.web.dashboard.*" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:documentDetail="truetract.web.dashboard.documentPanel.documentDetail.*" 
+    xmlns:filter="truetract.web.dashboard.groupPanel.filter.*">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.DocumentAttachment;
+            import truetract.web.dashboard.DashboardModel;
+        ]]>
+    </mx:Script>
+
+    <dashboard:DocumentController id="docController"
+        document="{Document(documentList.selectedItem)}"/>
+
+    <mx:VBox
+        visible="{group.groupName == DashboardModel.ALL_DOCUMENTS_GROUP_NAME &amp;&amp;
+            isFilterSpecified(group.filter) == false}"
+        includeInLayout="{group.groupName == DashboardModel.ALL_DOCUMENTS_GROUP_NAME &amp;&amp;
+            isFilterSpecified(group.filter) == false}" width="100%" 
+        borderStyle="solid" borderColor="#7599ee" color="#7599ee" fontSize="11">
+        <mx:Text text="Filter should be specified for group [All Documents]"/>
+    </mx:VBox>
+
+    <filter:FiterInfoPanel
+        filter="{group.filter}" width="100%" 
+        visible="{isFilterSpecified(group.filter) == true}"
+        includeInLayout="{isFilterSpecified(group.filter) == true}"
+        borderStyle="solid" borderColor="#7599ee" color="#7599ee" fontSize="11"
+        resetFilterRequest="resetFilterRequestHandler()"/>
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <mx:Button 
+            visible="{!group.systemGroup}"
+            includeInLayout="{!group.systemGroup}"
+            label="Remove from Folder" styleName="toolButton"
+            enabled="{documentList.selectedItems.length > 0}"
+            click="removeFromFolderButton_clickHandler()"/>
+
+        <mx:Button 
+            label="Open" styleName="toolButton"
+            click="openSelectedItem()" 
+            enabled="{documentMode ? (documentList.selectedItem) : (drawingDG.selectedItem)}"/>
+
+        <mx:Button 
+            label="Delete" styleName="toolButton"
+            click="deleteSelectedItem()" 
+            enabled="{documentMode ? (false) : (drawingDG.selectedItem)}"/>
+
+        <mx:Button 
+            label="Filter" styleName="toolButton" 
+            icon="@Embed(source='/assets/page_white_find.png')"
+            click="filterButton_clickHandler()"/>
+        
+    </mx:HBox>
+
+    <mx:VBox 
+        width="100%" height="100%"
+        visible="{!documentMode}" includeInLayout="{!documentMode}">
+        <mx:DataGrid id="drawingDG"
+            dataProvider="{!documentMode ? group.groupItemsList : null}" 
+            doubleClickEnabled="true"
+            itemDoubleClick="openSelectedItem()"
+            width="100%" height="100%" backgroundAlpha="1">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Ref.Name" dataField="RefName"/>
+                <mx:DataGridColumn headerText="Called" dataField="calledString" width="150"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+
+    <mx:VDividedBox 
+        width="100%" height="100%" visible="{documentMode}" includeInLayout="{documentMode}">
+
+        <mx:List id="documentList"
+            allowMultipleSelection="true"
+            dragEnabled="true" allowDragSelection="true"
+            dataProvider="{documentMode ? group.groupItemsList : null}" 
+            itemRenderer="truetract.web.dashboard.groupPanel.DocumentIR"
+            doubleClickEnabled="true" width="100%" height="100%" 
+            doubleClick="openSelectedItem()"
+            change="documentList_changeHandler()"/>
+    
+        <documentDetail:DocumentDetailView id="detailView"
+            enabled="{null != documentList.selectedItem}"
+            docum="{Document(documentList.selectedItem)}" 
+            width="100%" minHeight="100"
+            addTract="detailView_addTractHandler()"
+            openTract="detailView_openTractHandler(event)"
+            addAttachment="docController.addAttachment()"
+            openAttachment="docController.editAttachment(DocumentAttachment(event.attachment))"
+            deleteAttachment="docController.deleteAttachment(DocumentAttachment(event.attachment))"/>
+        
+    </mx:VDividedBox>
+
+</groupPanel:GroupPanel_code>

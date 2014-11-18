@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:maps="com.ebs.eroof.view.maps.*" xmlns:mapping="com.ebs.eroof.mapping.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.afcomponents.umap.providers.microsoft.MicrosoftProvider;
+			import com.afcomponents.umap.providers.Providers;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.ebs.eroof.dto.Facilities_DTO;
+			import com.ebs.eroof.mapping.mapClasses.FacilityMarker;
+			import com.afcomponents.umap.types.LatLng;
+			import com.afcomponents.umap.overlays.Marker;
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.model.wrapper.Client;
+			
+			private var mapIsReady:Boolean = false;
+			[Bindable]
+			private var facilityMarker:FacilityMarker;
+			
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				if (_model)
+					updateModel();
+					
+				_model = value;
+				refreshContent();
+			}
+			
+			public function getCurrentPosition():LatLng
+			{
+				if (facilityMarker)
+					return facilityMarker.position;
+				else 
+					return null;
+			}
+			
+			public function getCurrentZoom():Number
+			{
+				return mapContainer.getMapZoom();
+			}
+			
+			private function refreshContent():void 
+			{
+				if (!model || !mapIsReady)
+					return;
+				
+				mapContainer.clearMap();
+				facilityMarker = model.getMarker();
+				if (facilityMarker && facilityMarker.position) 
+				{
+					facilityMarker.draggable = true;
+					mapContainer.addMarker(facilityMarker);
+				}
+
+				setMapView();
+			}
+			
+			private function setMapView():void 
+			{
+				if (model)
+				{
+					mapContainer.setMapZoom(model.facilityDTO.MapZoom);
+					mapContainer.setMapCenter(model.getPosition());
+					mapContainer.setMapType(MicrosoftProvider.AERIAL);
+				}
+			}
+			
+			private function mapIsReadyHandler(event:Event):void 
+			{
+				mapIsReady = true;
+				refreshContent();
+			}
+			
+			private function btnSetPositionClickHandler():void 
+			{
+				if (!facilityMarker)
+				{
+					facilityMarker = model.getMarker();
+					facilityMarker.draggable = true;
+					mapContainer.addMarker(facilityMarker);
+				}
+				
+				facilityMarker.position = mapContainer.getMapCenter();
+			}
+			
+			private function updateModel():void 
+			{
+				model.setPosition(getCurrentPosition());
+				model.setZoom(getCurrentZoom());
+			}
+
+			private function saveFacilityClickHandler():void 
+			{
+				updateModel();
+				saveSection();
+			}
+
+            private function saveSection():void 
+            {
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onSaveModel, model.facilityDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(model.facilityDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onSaveModel(storedObject:Facilities_DTO):void 
+            {
+            	model.facilityDTO = storedObject;
+            }
+            
+		]]>
+	</mx:Script>
+
+
+	<mapping:MapContainer id="mapContainer" left="0" right="0" top="0" bottom="24"
+		mapIsReady="mapIsReadyHandler(event)"/>
+	<mx:HBox width="100%" bottom="0" horizontalAlign="right">
+		<mx:Button label="Set Marker" click="btnSetPositionClickHandler()"/>
+		<mx:Button label="Save Facility position" click="saveFacilityClickHandler()"/>
+	</mx:HBox>
+</mx:Canvas>

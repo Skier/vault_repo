@@ -1,0 +1,158 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6B1B2BE3-E169-4B7A-8350-C9418385276E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QuickBooksAgent.Windows.UI.Controls</RootNamespace>
+    <AssemblyName>qagent.controls</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>QuickBooksAgent.Windows.UI.Controls</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SpDebug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\SP\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;SMARTPHONE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <FileAlignment>512</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsCE.Forms" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoDropDown.cs" />
+    <Compile Include="CurrencyEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI.cs" />
+    <Compile Include="IJoystickElement.cs" />
+    <Compile Include="ImageButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Joystick.cs" />
+    <Compile Include="Menu\IMenuButton.cs" />
+    <Compile Include="Menu\MenuButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\MenuManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\MenuManager.Designer.cs">
+      <DependentUpon>MenuManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NullableDateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="POINT.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RECT.cs" />
+    <Compile Include="Table\ComboboxTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\CurrencyTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\DefaultTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableHeaderRenderer.cs" />
+    <Compile Include="Table\DragAndDrop.cs" />
+    <Compile Include="Table\DrawControl.cs" />
+    <Compile Include="Table\ImageTableCellRenderer.cs" />
+    <Compile Include="Table\ITableCellEditor.cs" />
+    <Compile Include="Table\ITableCellRenderer.cs" />
+    <Compile Include="Table\ITableModel.cs" />
+    <Compile Include="Table\ListTableModel.cs" />
+    <Compile Include="Table\Table.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\TableCell.cs" />
+    <Compile Include="Table\TableColumn.cs" />
+    <Compile Include="WinAPI.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickBooksAgent\QuickBooksAgent.csproj">
+      <Project>{951A1DEB-1305-4D9A-B280-99C667F48248}</Project>
+      <Name>QuickBooksAgent</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MenuButton.bmp" />
+    <Content Include="Table.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Diagram.cd" />
+    <None Include="DesignTimeAttributes.xmta" />
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

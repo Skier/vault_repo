@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="onCreationComplete()" xmlns:controls="com.llsvc.controls.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.LeaseSummary;
+        	import com.llsvc.client.lms.view.lease.search.LeaseSearchCriterias;
+            import com.llsvc.client.lms.view.lease.ProcessTracts;
+            import mx.events.ItemClickEvent;
+            import mx.events.DynamicEvent;
+            import com.llsvc.client.lms.control.TabManager;
+            import com.llsvc.client.lms.view.lease.LeaseUtil;
+            import flash.net.navigateToURL;
+            import mx.collections.SortField;
+            import mx.collections.Sort;
+            import com.llsvc.domain.LeaseTract;
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import mx.events.PropertyChangeEvent;
+            import mx.binding.utils.ChangeWatcher;
+            import mx.rpc.events.ResultEvent;
+            import com.llsvc.client.lm.storage.Storage;
+            import mx.collections.ArrayCollection;
+            import com.llsvc.domain.Lease;
+            import mx.rpc.Responder;
+            
+            [Embed(source="assets/icons16/resultset_first.png")]
+            [Bindable]
+            private var imgFirst:Class;
+            
+            [Embed(source="assets/icons16/resultset_first_disabled.png")]
+            [Bindable]
+            private var imgFirstDisabled:Class;
+            
+            [Embed(source="assets/icons16/resultset_last.png")]
+            [Bindable]
+            private var imgLast:Class;
+            
+            [Embed(source="assets/icons16/resultset_last_disabled.png")]
+            [Bindable]
+            private var imgLastDisabled:Class;
+            
+            [Embed(source="assets/icons16/resultset_prev.png")]
+            [Bindable]
+            private var imgPrev:Class;
+            
+            [Embed(source="assets/icons16/resultset_prev_disabled.png")]
+            [Bindable]
+            private var imgPrevDisabled:Class;
+            
+            [Embed(source="assets/icons16/resultset_next.png")]
+            [Bindable]
+            private var imgNext:Class;
+            
+            [Embed(source="assets/icons16/resultset_next_disabled.png")]
+            [Bindable]
+            private var imgNextDisabled:Class;
+            
+            private const DEFAULT_PAGE_SIZE:int = 10;
+            
+            [Bindable] public var selectedLease:Lease;
+            
+            public var filter:LeaseSearchCriterias;
+            
+            [Bindable] private var leasesCount:int;
+            [Bindable] private var leaseSummary:LeaseSummary;
+            [Bindable] private var pages:ArrayCollection = new ArrayCollection();
+
+            private var _currentPage:int;
+            [Bindable] 
+            private function get currentPage():int { return _currentPage; }
+            private function set currentPage(value:int):void 
+            {
+                _currentPage = value;
+
+                if (value > 0) 
+                {
+                    loadCurrentPage();
+                }
+            }
+            
+            [Bindable] private var pagesCount:int = 0;
+
+            private var _pageSize:int = DEFAULT_PAGE_SIZE;
+            [Bindable] 
+            private function get pageSize():int { return _pageSize; }
+            private function set pageSize(value:int):void 
+            {
+                if (value < 1) 
+                {
+                    _pageSize = DEFAULT_PAGE_SIZE;
+                } else 
+                {
+                    _pageSize = value;
+                    refreshPaging();
+                }
+            }
+            
+            [Bindable] private var leaseCollection:ArrayCollection = new ArrayCollection();
+            
+            public function refresh():void 
+            {
+                leaseCollection.removeAll();
+                pages.removeAll();
+//                leaseNames.removeAll();
+                leasesCount = 0;
+                
+//              getLeasesCount();
+                getLeaseSummary();
+            }
+            
+            public function setFilter(value:LeaseSearchCriterias):void 
+            {
+            	this.filter = value;
+            	refresh();
+            }
+            
+            public function getLease(docId:int):Lease 
+            {
+                for each (var l:Lease in leaseCollection) 
+                {
+                    if (l.document.id == docId)
+                        return l;
+                }
+                
+                return null;
+            }
+
+            private function startRemoting(name:String):void 
+            {
+                boxContent.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                boxContent.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+            private function refreshPaging(total:int = 0):void 
+            {
+                if (total == leasesCount) return;
+                if (total == 0) {
+                    total = leasesCount;
+                } else {
+                    leasesCount = total;
+                }
+
+                pagesCount = Math.ceil(total / pageSize);
+
+                if (currentPage > pagesCount) {
+                    currentPage = pagesCount;
+                } else if (currentPage < 1) {
+                    currentPage = 1;
+                } else {
+                    loadCurrentPage();
+                }
+                
+//              initCurrentPageCombo();
+                initNamedCurrentPageCombo();
+            }
+            
+            private function initCurrentPageCombo():void 
+            {
+                pages.removeAll();
+                for (var i:int = 0; i < pagesCount; i++) 
+                {
+                    var name:String = int(i + 1).toString();
+//                  var value:int = i + 1;
+                    pages.addItem({label:name, data:i});
+                }
+                
+                cbCurrentPage.selectedIndex = currentPage - 1;
+            }
+            
+            private function initNamedCurrentPageCombo():void 
+            {
+                pages.removeAll();
+                for (var i:int = 0; i < pagesCount; i++) 
+                {
+                    var name:String = getLabelForPage(i);
+//                  var value:int = i + 1;
+                    pages.addItem({label:name, data:i});
+                }
+                
+                cbCurrentPage.selectedIndex = currentPage - 1;
+            }
+            
+            private function getLabelForPage(index:int):String 
+            {
+                var firstIndex:int;
+                var lastIndex:int;
+                
+                firstIndex = pageSize * index;
+                lastIndex = pageSize * (index + 1) - 1;
+                if (lastIndex >= leaseSummary.leaseNames.length) 
+                    lastIndex = leaseSummary.leaseNames.length - 1; 
+                
+                var result:String = "";
+                result += String(leaseSummary.leaseNames[firstIndex]).substr(0, 3);
+                result += "... - ";
+                result += String(leaseSummary.leaseNames[lastIndex]).substr(0, 3);
+                result += "...";
+                
+                return result;
+            }
+            
+            private function getLeaseSummary():void 
+            {
+                startRemoting("Getting leases list");
+                
+                Storage.instance.getLeaseSummary((filter == null ? null : filter.copyForQuery()), 
+                	new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        stopRemoting();
+	                        leaseSummary = event.result as LeaseSummary;
+	                        refreshPaging(leaseSummary.leaseNames.length);
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        stopRemoting();
+	                        Alert.show("Cannot get list of leases");
+	                    }));
+            } 
+            
+            private function loadCurrentPage():void 
+            {
+                leaseCollection.removeAll();
+                
+                startRemoting("Receiving leases.");
+                
+                Storage.instance.getLeasesRange((currentPage-1) * pageSize, pageSize, 
+                	(filter == null ? null : filter.copyForQuery()),
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            
+                            var result:ArrayCollection = event.result as ArrayCollection; 
+
+                            for each (var l:Lease in result) {
+                                l.isDirty = false;
+                                l.document.refreshAttachments();
+                                
+                                for each (var t:LeaseTract in l.tracts) 
+                                {
+                                    if (t.leaseBurden == 0)
+                                        t.leaseBurden = l.royalty;
+                                }
+                                
+                                var tractSort:Sort = new Sort();
+                                tractSort.fields = [new SortField("townshipRangeStr"), new SortField("sectionStr")];
+                                l.tracts.sort = tractSort;
+                                l.tracts.refresh();
+
+                                l.updateTractsSummary();
+                                
+                                leaseCollection.addItem(l);
+                            }
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            
+                            Alert.show("Cannot get leases collection for current page");
+                        }));
+            }
+            
+            private function exportToExcel():void 
+            {
+
+                var url:String = "xls";
+                var request:URLRequest = new URLRequest(url);
+                request.method = URLRequestMethod.POST;
+                navigateToURL(request);
+/*
+                Storage.instance.getLeases(
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            var leases:ArrayCollection = event.result as ArrayCollection;
+                            
+                            var url:String = "xls2";
+            
+                            var request:URLRequest = new URLRequest(url);
+                            request.method = URLRequestMethod.POST;
+                            var variables:URLVariables = new URLVariables();
+                            variables.data = LeaseUtil.exportLeaseListToExcel(leases);
+                            variables.filename = "leaseList.xls";
+            
+                            request.data = variables;
+                            navigateToURL(request);
+                        },
+                        function (event:FaultEvent):void 
+                        {
+                            Alert.show("Error export to Excel");
+                        }
+                    )
+                );
+*/
+            }
+            
+            private function goFirst():void 
+            {
+                currentPage = 1;
+            }
+            
+            private function goLast():void 
+            {
+                currentPage = pagesCount;
+            }
+            
+            private function goNext():void 
+            {
+                if ( currentPage >= pagesCount ) return;
+
+                currentPage = currentPage + 1;
+            }
+            
+            private function goPrev():void 
+            {
+                if (currentPage <= 1) return; 
+
+                currentPage = currentPage - 1;
+            }
+            
+            private function openLease(lease:Lease):void 
+            {
+                TabManager.openLease(lease);
+            }
+
+            private function onCreationComplete():void 
+            {
+                dgLeases.addEventListener("openLeaseRequest", openLeaseHandler);
+                dgLeases.addEventListener("openLeaseCopyRequest", openLeaseCopyHandler);
+            }
+            
+            private function leasesCountChangeHandler(event:PropertyChangeEvent):void 
+            {
+                if (int(event.oldValue) == int(event.newValue) || event.newValue == 0) return;
+                
+                refreshPaging(event.newValue as int);
+            }
+            
+            private function openLeaseHandler(event:DynamicEvent):void 
+            {
+                event.stopPropagation();
+                event.preventDefault();
+                var lease:Lease = dgLeases.selectedItem as Lease;
+                openLease(lease);
+            }
+            
+            private function openLeaseCopyHandler(event:DynamicEvent):void 
+            {
+                event.stopPropagation();
+                event.preventDefault();
+                var lease:Lease = dgLeases.selectedItem as Lease;
+                openLease(lease.createCopy());
+            }
+            
+            private function dgLeasesDoubleClickHandler():void 
+            {
+                var lease:Lease = dgLeases.selectedItem as Lease;
+                openLease(lease);
+            }
+            
+            private function buttonBarClickHandler(event:ItemClickEvent):void
+            {
+                switch (event.index) 
+                {
+                    case 0:
+                        navigateToURL(new URLRequest("shapefile_download"));
+//                        Alert.show("Do not realised yet !");
+                        break;
+                    case 1:
+                        exportToExcel();
+//                        Alert.show("Do not realised yet !");
+                        break;
+                    case 2:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 3:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 4:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 5:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 6:
+                        reprocessClickHandler();
+                        break;
+                }
+            }
+            
+            private function btnRefreshClickHandler():void 
+            {
+                refresh();
+            }
+            
+            private function cbPageSizeChangeHandler():void 
+            {
+                var pgNum:int = new int(cbPageSize.selectedLabel);
+                pageSize = pgNum;            
+            }
+            
+            private function cbCurrentPageChangeHandler():void 
+            {
+                currentPage = (cbCurrentPage.selectedItem.data as int) + 1;
+            }
+            
+
+            private function reprocessClickHandler():void 
+            {
+                var popup:ProcessTracts = ProcessTracts.open(this, null, true);
+                popup.reloadLeases();
+            }
+            
+            private function setRowColor(item:Lease, color:uint):uint 
+            {
+                if (item.vet) 
+                {
+                    return 0xeeffee;
+                } else 
+                {
+                    return color;
+                }
+            }
+               
+        ]]>
+    </mx:Script>
+    
+    <mx:Binding source="Lease(dgLeases.selectedItem)" destination="selectedLease"/>
+    
+    <mx:VBox id="boxContent" width="100%" height="100%">
+        <mx:HBox width="100%" verticalAlign="middle">
+            <mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingBottom="2" paddingTop="2" horizontalGap="2"
+                borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+                backgroundColor="#eeeeee">
+                <mx:Button width="20" height="20" 
+                    icon="{(currentPage != 1) ? imgFirst : imgFirstDisabled}" toolTip="First" 
+                    click="goFirst()" enabled="{currentPage != 1}"/> 
+    
+                <mx:Button width="20" height="20" 
+                    icon="{(currentPage != 1) ? imgPrev : imgPrevDisabled}" toolTip="Previous" 
+                    click="goPrev()" enabled="{currentPage != 1}"/> 
+    
+                <mx:ComboBox id="cbCurrentPage" dataProvider="{pages}" width="120" height="20" verticalCenter="0"
+                    selectedIndex="{(currentPage - 1)}"
+                    change="cbCurrentPageChangeHandler()"/>
+    
+                <mx:Button width="20" height="20" 
+                    icon="{(currentPage != pagesCount) ? imgNext : imgNextDisabled}" toolTip="Next" 
+                    click="goNext()" enabled="{currentPage != pagesCount}"/> 
+    
+                <mx:Button width="20" height="20" 
+                    icon="{(currentPage != pagesCount) ? imgLast : imgLastDisabled}" toolTip="Last" 
+                    click="goLast()" enabled="{currentPage != pagesCount}"/>
+
+                <mx:Spacer width="100%"/>
+
+                <mx:HBox horizontalGap="0">
+                    <mx:Label text="Total Leases:"/>
+                    <mx:Label text="{leasesCount.toString()}" fontWeight="bold"/>
+                    <mx:Label text="Page:"/>
+                    <mx:Label text="{currentPage.toString()}" fontWeight="bold"/>
+                    <mx:Label text="of"/>
+                    <mx:Label text="{pagesCount.toString()}" fontWeight="bold"/>
+                    <mx:Label text="Page size:"/>
+                    <mx:ComboBox id="cbPageSize" dataProvider="{[5,10,25,50]}" width="60" height="20" verticalCenter="0"
+                        change="cbPageSizeChangeHandler()" selectedIndex="1"/>
+                </mx:HBox>
+            </mx:HBox>
+            
+            <mx:ButtonBar id="bbUtil" itemClick="buttonBarClickHandler(event)" 
+                verticalCenter="0" buttonWidth="30" buttonHeight="24">
+                <mx:dataProvider>
+                    <mx:Object icon="@Embed('assets/icons16/map.png')" toolTip="Save shape file"/>
+                    <mx:Object icon="@Embed('assets/icons16/page_excel.png')" toolTip="Export to Excel"/>
+                    <mx:Object icon="@Embed('assets/icons16/page_white_acrobat.png')" toolTip="Create PDF Report"/>
+                    <mx:Object icon="@Embed('assets/icons16/printer.png')" toolTip="Print"/>
+                    <mx:Object icon="@Embed('assets/icons16/chart_bar.png')" toolTip="Compare against other"/>
+                    <mx:Object icon="@Embed('assets/icons16/calculator.png')" toolTip="Calculator"/>
+                    <mx:Object icon="@Embed('assets/icon_synchronize.png')" toolTip="Reprocess tracts"/>
+                </mx:dataProvider>
+            </mx:ButtonBar>
+            
+            <mx:Button width="24" height="24" 
+                icon="@Embed('assets/icon_synchronize.png')" toolTip="Refresh" click="btnRefreshClickHandler()"/>
+        </mx:HBox>
+<!--    
+        <mx:HBox width="100%"
+            paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+            backgroundColor="#f8f8f8">
+            <mx:Label text="Filter functionality will be here" fontWeight="bold"/>
+        </mx:HBox>
+-->     
+        <mx:VBox width="100%" height="100%" verticalGap="-1">
+            <controls:ColoredDataGrid id="dgLeases" dataProvider="{leaseCollection}" minWidth="600" width="100%" height="100%"
+                sortableColumns="false" draggableColumns="false" resizableColumns="false"
+                doubleClickEnabled="true" itemDoubleClick="dgLeasesDoubleClickHandler()"
+                rowColorFunction="setRowColor" verticalScrollPolicy="on">
+                <controls:columns>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Lease No" headerWordWrap="true" dataField="leaseNum" width="50" minWidth="50"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+                        headerText="Lease Name" dataField="leaseName"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+                        headerText="Records" itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseRecordsIR"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Exp Date" headerWordWrap="true" dataField="expirationDateStr" width="100" minWidth="100" textAlign="center"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Gross AC" headerWordWrap="true" dataField="tractsGrossAcresStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Net AC" headerWordWrap="true" dataField="tractsNetAcresStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Interest" dataField="tractsInterestStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Lease Burden" headerWordWrap="true" dataField="tractsBurdenStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Lease NRI" headerWordWrap="true" dataField="tractsNriStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="FCR WI" headerWordWrap="true" dataField="tractsCwiStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="Addition. Burden" headerWordWrap="true" dataField="tractsAddBurdensStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="FCR NRI" headerWordWrap="true" dataField="tractsCnriStr" width="60" minWidth="60" textAlign="right"/>
+                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                        headerText="FCR Net Acres" headerWordWrap="true" dataField="tractsCNetAcresStr" width="50" minWidth="50" textAlign="right"/>
+                </controls:columns>
+            </controls:ColoredDataGrid>
+
+	        <mx:HBox width="100%" horizontalGap="-1">
+	            <mx:VBox width="100%" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="Summary / Average" fontWeight="bold" textAlign="right"/>
+	            </mx:VBox>
+	            
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.grossAc}" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.netAc}" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.interest.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.leaseBurden.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.leaseNri.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.wi.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.additionalBurden.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="61" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.nri.toFixed(2)}%" fontWeight="bold" textAlign="right" maxWidth="60"/>
+	            </mx:VBox>
+	
+	            <mx:VBox width="51" height="100%" borderColor="#999999" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off">
+	                <mx:Label width="100%" text="{leaseSummary.net}%" fontWeight="bold" textAlign="right" maxWidth="50"/>
+	            </mx:VBox>
+	            
+	            <mx:Spacer width="17"/>
+	        </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+    
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false" includeInLayout="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+    
+</mx:Canvas>

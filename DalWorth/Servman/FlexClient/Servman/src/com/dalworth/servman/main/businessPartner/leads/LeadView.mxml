@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		initialize="onInit()">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.ProjectType;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.main.owner.OwnerModel;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.Lead;
+			
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead { return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+				initCombos();
+			}
+			
+			private function initCombos():void 
+			{
+				
+			}
+			
+			[Bindable] public var canSelectBusinessPartner:Boolean = true;
+			[Bindable] public var canSelectEmployee:Boolean = true;
+			[Bindable] public var canEditEmployeeNotes:Boolean = true;
+			[Bindable] public var canEditCustomerNotes:Boolean = true;
+			[Bindable] public var canUpdate:Boolean = true;
+			[Bindable] public var canCancel:Boolean = true;
+			[Bindable] public var canConvertToProject:Boolean = true;
+			
+			[Bindable] private var businessPartners:ArrayCollection;
+			[Bindable] private var employees:ArrayCollection;
+			[Bindable] private var projectTypes:ArrayCollection;
+			
+			private function getProjectTypeLabel(obj:Object):String 
+			{
+				if (obj is ProjectType)
+					return ProjectType(obj).Name;
+				else 
+					return "";
+			}
+			
+			private function onInit():void 
+			{
+				businessPartners = OwnerModel.getInstance().businessPartners;
+				projectTypes = MainAppModel.getInstance().projectTypes;
+				employees = new ArrayCollection(["John Doe", "Vasya Pupkin"]);
+			}
+
+			private function onCancelClick():void
+			{
+			}
+			
+			private function onUndoCancelClick():void 
+			{
+			}
+			
+			private function onToProjectClick():void 
+			{
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		borderColor="#999999" backgroundColor="#ffffee" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+			visible="{canSelectBusinessPartner || canSelectEmployee}" includeInLayout="{canSelectBusinessPartner || canSelectEmployee}">
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+				visible="{canSelectBusinessPartner}" includeInLayout="{canSelectBusinessPartner}">
+				<mx:Label text="Business Partner" fontSize="12" width="120" textAlign="right"/>
+				<mx:ComboBox id="comboBusinessPartner" width="100%" dataProvider="{businessPartners}" labelField="Name" editable="false"/>
+			</mx:HBox>
+		
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+				visible="{canSelectEmployee}" includeInLayout="{canSelectEmployee}">
+				<mx:Label text="Employee" fontSize="12" width="120" textAlign="right"/>
+				<mx:ComboBox id="comboEmployee" width="100%" dataProvider="{employees}" editable="false"/>
+			</mx:HBox>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+				<mx:Label text="Project Type" fontSize="12" width="120" textAlign="right"/>
+				<mx:ComboBox id="comboProjectType" width="100%" dataProvider="{projectTypes}" labelFunction="getProjectTypeLabel" editable="false"/>
+			</mx:HBox>
+		
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+				<mx:Label text="Lead Status:" fontSize="12" width="120" textAlign="right"/>
+				<mx:Label text="{lead.LeadStatusId}" fontSize="14" color="#000099" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" backgroundColor="#eeeeee" borderColor="#ffffdd" borderStyle="solid" cornerRadius="2" horizontalGap="5"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox width="100%" verticalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="First Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtFirstName" text="{lead.FirstName}" width="100%" editable="false"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Last Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtLastName" text="{lead.LastName}" width="100%" editable="false"/>
+				</mx:HBox>
+			</mx:VBox>
+
+			<mx:VBox width="200" verticalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Phone" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtPhone" text="{lead.Phone}" width="100%" editable="false"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+
+		<mx:HBox width="100%" height="100%" horizontalGap="5">
+			<mx:VBox width="100%" height="100%" verticalGap="5">
+				<mx:Label text="Customer Notes:"/>
+				<mx:TextArea id="txtCustomerNotes" text="{lead.CustomerNotes}" width="100%" height="100%"
+					editable="false"/>
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%" verticalGap="5">
+				<mx:Label text="Employee Notes:"/>
+				<mx:TextArea id="txtEmployeeNotes" text="{lead.EmployeeNotes}" width="100%" height="100%"
+					editable="false"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:HBox>

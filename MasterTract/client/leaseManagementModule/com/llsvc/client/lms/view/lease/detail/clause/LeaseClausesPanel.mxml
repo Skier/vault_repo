@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:component="com.llsvc.component.*" xmlns:controls="com.llsvc.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import com.llsvc.domain.LeaseClause;
+			import com.llsvc.domain.Lease;
+			import mx.controls.TextInput;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+            [Embed(source="assets/icons16/pencil.png")]
+            [Bindable]
+            private var imgEdit:Class;
+            
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+
+            [Embed(source="assets/icons16/add.png")]
+            [Bindable]
+            private var imgAdd:Class;
+
+/* 			
+			private function txtRateChangeHandler():void 
+			{
+				if ( txtAmount.text.length == 0 ) {
+					txtAmount.currency = (netAcres * Number(txtRate.currency)).toString();
+				} else if ( !isNaN(Number(txtAmount.currency)) ) { //&& 0 == new Number(txtAmount.currency) ) {
+					txtAmount.currency = (netAcres * Number(txtRate.currency)).toString();
+				}
+			}
+			
+			private function onClauseClick():void 
+			{
+				boxOtherDetail.visible = false;
+				boxExtendDetail.visible = false;
+			}
+			
+			private function btnOtherDetailClickHandler(event:Event):void 
+			{
+				event.stopPropagation();
+				//boxOtherDetail.x = cbOther.x;
+				//boxOtherDetail.y = cbOther.y + cbOther.height;
+				boxOtherDetail.visible = true;
+			}
+			
+			private function btnExtendDetailClickHandler(event:Event):void 
+			{
+				event.stopPropagation();
+				//boxExtendDetail.x = cbExtend.x;
+				//boxExtendDetail.y = cbExtend.y + cbExtend.height;
+				boxExtendDetail.visible = true;
+			}
+ */			
+ 
+ 			private function openClause(clause:LeaseClause):void 
+ 			{
+ 				var popup:LeaseClauseEditView = 
+ 					LeaseClauseEditView.open(Application.application as DisplayObject, clause, true);
+ 				
+ 				popup.addEventListener("submitRequest",
+ 					function(event:Event):void
+ 					{
+ 						if (!lease.clauses.contains(popup.clause)) 
+ 						{
+ 							lease.clauses.addItem(popup.clause);
+ 						}
+ 						
+ 						popup.close();
+ 					})
+ 			} 
+ 			
+ 			private function deleteClause(clause:LeaseClause):void 
+ 			{
+ 				var idx:int = lease.clauses.getItemIndex(clause);
+ 				
+ 				if (idx > -1)
+ 				{
+ 					lease.clauses.removeItemAt(idx);
+ 				} 
+ 			}
+ 
+ 			private function btnEditClickHandler(event:Event):void 
+ 			{
+	 			var linkBtn:LinkButton = event.target as LinkButton;
+	 			var clause:LeaseClause = lease.clauses.getItemAt(linkBtn.repeaterIndex) as LeaseClause;
+	 			openClause(clause);
+ 			} 
+ 			
+ 			private function btnDeleteClickHandler(event:Event):void 
+ 			{
+	 			var linkBtn:LinkButton = event.target as LinkButton;
+	 			var clause:LeaseClause = lease.clauses.getItemAt(linkBtn.repeaterIndex) as LeaseClause;
+
+                Alert.show("Do you really want to remove clause ?", 
+                   "Remove clause", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES)
+				 			deleteClause(clause);
+                    });
+ 			} 
+ 			
+ 			private function btnAddClickHandler():void 
+ 			{
+	 			var clause:LeaseClause = new LeaseClause();
+	 			openClause(clause);
+ 			} 
+ 			
+		]]>
+	</mx:Script>
+	
+    <mx:VBox backgroundColor="#ffffff" width="100%"
+    	borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+    	>
+    	
+    	<mx:VBox width="100%" maxHeight="100"
+    		paddingLeft="1" paddingRight="1" paddingTop="1" paddingBottom="1"
+    		backgroundColor="#dddddd" 
+    		verticalGap="1">
+	    	<mx:Repeater id="rptClauses" width="100%" dataProvider="{lease.clauses}">
+	    		<mx:HBox width="100%" backgroundColor="#ffffee" verticalAlign="middle"
+	    			horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	    			<mx:Label text="{LeaseClause(rptClauses.currentItem).name}:" minWidth="30"/>
+	    			
+	    			<mx:Label text="{LeaseClause(rptClauses.currentItem).description}" width="100%" minWidth="30"/>
+	    			
+	    			<mx:HBox backgroundColor="#ffffff" 
+	    				paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" horizontalGap="3">
+		    			<mx:LinkButton id="btnEdit" 
+		    				width="20" height="20" toolTip="Change Clause"
+		    				label="" icon="{imgEdit}" click="btnEditClickHandler(event)"/>
+		    			
+		    			<mx:LinkButton id="btnDelete" 
+		    				width="20" height="20" toolTip="Delete Clause"
+		    				label="" icon="{imgDelete}" click="btnDeleteClickHandler(event)"/>
+	    			</mx:HBox>
+	    		</mx:HBox>
+	    	</mx:Repeater>
+    	</mx:VBox>
+    	
+    	<mx:HBox width="100%" horizontalAlign="right">
+    		<mx:LinkButton id="btnAddClause" icon="{imgAdd}" label="Add Clause..." click="btnAddClickHandler()"/>
+    	</mx:HBox>
+    </mx:VBox>
+</mx:Canvas>

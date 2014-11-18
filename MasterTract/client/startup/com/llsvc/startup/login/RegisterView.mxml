@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" 
+    title="Registration" 
+    xmlns:component="com.llsvc.component.*"
+    xmlns:validators="TractInc.SDK.validators.*"
+    showCloseButton="true"
+    close="close()"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+        	import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+
+        	import com.llsvc.domain.Person;
+        	import com.llsvc.domain.User;
+        	
+            private var loginController:LoginController = null;
+                
+            public static function open(parent:DisplayObject, modal:Boolean):RegisterView
+            {
+                var popup:RegisterView = new RegisterView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+                
+            	loginController.setInitFocus();
+            }
+            
+            public function setController(lc:LoginController):void {
+                loginController = lc;
+            }
+            
+            private function commit():void
+            {
+                if ( ! formValidator.validate(true) ) {
+					return;                	
+                } 
+
+                if (passwdTxt.text != confPasswdTxt.text) {
+                    passwdTxt.errorString = confPasswdTxt.errorString = "Your passwords do not match.";
+                    passwdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    confPasswdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    return;
+                }
+                
+                var person:Person = new Person();        
+                person.email = emailTxt.text;
+                person.firstName = firstNameTxt.text;
+                person.middleName = middleNameTxt.text;
+                person.lastName = lastNameTxt.text;
+                person.primaryPhoneNumber = primaryPhoneNumberTxt.text;
+                person.secondaryPhoneNumber = secondaryPhoneNumberTxt.text;
+                person.birthDay = birthDayDf.selectedDate;
+                
+                loginController.doRegister(person, loginTxt.text, passwdTxt.text);
+            }
+            
+            private function onCbUseEmailChange(event:Event):void {
+            	this.loginTxt.enabled = !this.cbUseEmail.selected;
+            	if ( this.cbUseEmail.selected ) {
+            		this.loginTxt.text = this.emailTxt.text;
+            	}
+            }
+            
+            private function onEmailChange(event:Event):void {
+                if ( this.cbUseEmail.selected ) {
+                    this.loginTxt.text = this.emailTxt.text;
+                }
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <component:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{firstNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{lastNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{primaryPhoneNumberTxt}" property="text" required="true"/>                        
+        <mx:EmailValidator  source="{emailTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{birthDayDf}" property="selectedDate" required="true"/>
+        <mx:StringValidator source="{loginTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{passwdTxt}" property="text" required="true" minLength="4"/>
+        <mx:StringValidator source="{confPasswdTxt}" property="text" required="true" minLength="4"/>
+    </component:ValidatorsGroup>
+    
+    <mx:Form 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+        >
+
+        <mx:FormItem label="First Name" width="100%" required="true">
+            <mx:TextInput id="firstNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Middle Name" width="100%">
+            <mx:TextInput id="middleNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Last Name" width="100%" required="true">
+            <mx:TextInput id="lastNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Email" width="100%" required="true">
+            <mx:TextInput id="emailTxt" change="onEmailChange(event)" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Birth Day" width="100%" required="true">
+            <mx:DateField id="birthDayDf" enabled="true" showToday="true" editable="true" yearNavigationEnabled="true" width="100"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Primary Phone" required="true">
+            <component:MaskedInput id="primaryPhoneNumberTxt" inputMask="(###) ###-####" defaultChar="_" blankChar="#"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Secondary Phone">
+            <component:MaskedInput  id="secondaryPhoneNumberTxt" inputMask="(###) ###-####" defaultChar="_" blankChar="#"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Desired User Name" width="100%" required="true">
+        	<mx:HBox>
+            	<mx:TextInput id="loginTxt" width="100%"/>
+        		<mx:CheckBox id="cbUseEmail" paddingTop="4" label="Use my E-Mail" change="onCbUseEmailChange(event)"/>
+        	</mx:HBox>
+        </mx:FormItem>
+
+        <mx:FormItem label="Password" width="100%" required="true">
+            <mx:TextInput id="passwdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Reenter Password" width="100%" required="true">
+            <mx:TextInput id="confPasswdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="center">
+        <mx:Button height="28" label="Submit" click="commit()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

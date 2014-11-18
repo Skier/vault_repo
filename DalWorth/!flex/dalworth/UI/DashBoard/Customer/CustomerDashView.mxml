@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel title = "Customers" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	 <mx:Script>
+ 		<![CDATA[
+ 			import Domain.Customer;
+ 			import mx.collections.ArrayCollection;
+ 			import Service.ServerSyncService;
+ 			import mx.controls.Alert;
+ 			
+ 			[Bindable]
+ 			private  var _controller:CustomerController;
+ 			
+ 			[Bindable]
+			private  var _customers:ArrayCollection;
+		 			
+ 			public function set customerController(controller:CustomerController):void {
+ 				this._controller = controller;
+ 			}
+ 			
+ 			private function findCustomer():void{
+ 				
+ 				var svc:ServerSyncService = new ServerSyncService();
+ 				
+ 				var customerTemplate:Customer = new Customer();
+ 				
+ 			    if (txtPhoneNumber.text != null && txtPhoneNumber.text.length > 0){
+ 					customerTemplate.Phone1 = txtPhoneNumber.text;
+ 				} 
+ 				
+ 				if (txtFistName.text != null && txtFistName.text.length > 0){
+ 					customerTemplate.FirstName = txtFistName.text;
+ 				} 
+ 				
+ 				if (txtLastName.text != null && txtLastName.text.length > 0){
+ 					customerTemplate.LastName = txtLastName.text;
+ 				} 
+ 				
+ 				svc.FindCustomersByTemplate(customerTemplate, 
+ 					onFindCustomerOK, 
+ 					function(msg:String):void{
+ 						Alert.show(msg);
+ 					});
+ 			}
+ 			
+ 			private function onFindCustomerOK(arr:ArrayCollection):void{
+ 				this._customers = arr;
+ 			}
+ 			
+ 			private function onGridDoubleClick():void{
+ 				
+ 				var cust:Customer = dgCustomers.selectedItem as Customer;
+ 				
+ 				if (cust != null){
+					this._controller.showEditCustomer(cust);
+				} 
+			}  
+			
+ 			
+ 		]]>
+ 	</mx:Script>
+ 		
+	<mx:HBox width="100%" height="10%">
+		
+		<mx:VBox>
+			<mx:Label text="Customer Id"/>
+			<mx:TextInput id="txtCustomerId"  width="80"/>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Label text="Phone Number"/>
+			<mx:TextInput  id="txtPhoneNumber" width="87"/>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Label text="First Name"/>
+			<mx:TextInput id = "txtFistName" width="80"/>
+		</mx:VBox>
+		
+		
+		<mx:VBox>
+			<mx:Label text="Last Name"/>
+			<mx:TextInput  id="txtLastName" width="80" text="Carol"/>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Label text=""/>
+			<mx:Button label="Find" click="findCustomer()"/>
+		</mx:VBox>
+		
+		<mx:VBox>
+			<mx:Label text=""/>
+			<mx:Button id = "btnNew" label="New" enabled="true" click="_controller.showNewCustomer()"/>
+		</mx:VBox>
+		
+		
+	
+	</mx:HBox>
+	<mx:HBox width="100%" height="80%">
+		<mx:DataGrid id="dgCustomers" width="80%" height="100%" doubleClick="onGridDoubleClick()"   dataProvider="{_customers}" doubleClickEnabled="true">
+			<mx:columns>
+				<mx:DataGridColumn headerText="ID" 			dataField="ID"			width="5" />
+				<mx:DataGridColumn headerText="FirstName"  	dataField="FirstName" 	width="10"/>
+				<mx:DataGridColumn headerText="LastName"  	dataField="LastName"  	width="10"/>
+				<mx:DataGridColumn headerText="Phone"  	  	dataField="Phone1" 		width="10"/>
+				<mx:DataGridColumn headerText="Mobile"    	dataField="Phone" 		width="10"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:HBox>
+	
+</mx:Panel>

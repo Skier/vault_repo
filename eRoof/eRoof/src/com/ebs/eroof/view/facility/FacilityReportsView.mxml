@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.CorePhoto;
+			import mx.utils.Base64Encoder;
+			import mx.controls.Image;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.ebs.eroof.model.ImageLoader;
+			import com.ebs.eroof.control.TestReport;
+			import com.ebs.eroof.model.PdfService;
+			import com.ebs.eroof.control.FacilityReportBuilder;
+			import com.ebs.eroof.model.wrapper.Facility;
+			
+			[Bindable]
+			private var isLoading:Boolean = false;
+			
+			private var loaders:Array;
+			private var encoder:Base64Encoder = new Base64Encoder();
+
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				_model = value;
+			}
+			
+			private function prepareImages():void  
+			{
+				fillLoaders();
+				
+				if (loaders.length > 0)
+					isLoading = true;
+				else 
+					dispatchEvent(new Event("allImagesLoaded"));
+					
+				for each (var loader:ImageLoader in loaders)
+				{
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, imageLoaded);
+					loader.isLoading = true;
+					loader.load(new URLRequest(loader.imageUrl));
+				}
+			}
+			
+			private function cancelLoading():void 
+			{
+				for each (var loader:ImageLoader in loaders) 
+				{
+					loader.close();
+					loader.isLoading = false;
+				}
+				
+				loaders.length = 0;
+			}
+			
+			private function imageLoaded(event:Event):void 
+			{
+				var loader:ImageLoader = LoaderInfo(event.target).loader as ImageLoader;
+				loader.isLoading = false;
+
+				if (allImagesLoaded)
+				{
+					isLoading = false;
+					dispatchEvent(new Event("allImagesLoaded"));
+				}
+			}
+			
+			private function get allImagesLoaded():Boolean 
+			{
+				for each (var loader:ImageLoader in loaders)
+				{
+					if (loader.isLoading)
+						return false;
+				}
+				
+				return true;
+			}
+			
+			private function fillLoaders():void 
+			{
+				loaders = new Array();
+				
+				if (model.client.segment.company.consultantDTO != null
+					&& model.client.segment.company.consultantDTO.ReportBanner.url != "")
+					loaders.push(
+						getImageLoader( model.client.segment.company.consultantDTO.ReportBanner.file, 
+									    model.client.segment.company.consultantDTO.ReportBanner.url));
+
+				if (model.facilityDTO.Photo.url != "")
+					loaders.push(getImageLoader(model.facilityDTO.Photo.file, model.facilityDTO.Photo.url));
+
+				if (model.facilityDTO.Keyplan.url != "")
+					loaders.push(getImageLoader(model.facilityDTO.Keyplan.file, model.facilityDTO.Keyplan.url));
+				
+				for each (var section:Section in model.sectionsCollection)
+				{
+					if (section.sectionDTO.Photo.url != "")
+						loaders.push(getImageLoader(section.sectionDTO.Photo.file, section.sectionDTO.Photo.url));
+					
+					for each (var corePhoto:CorePhoto in section.corePhotosCollection) 
+					{
+						if (corePhoto.corePhotoDTO.Photo.url != "")
+							loaders.push(getImageLoader(corePhoto.corePhotoDTO.Photo.file, corePhoto.corePhotoDTO.Photo.url));
+					}
+				}
+			}
+			
+			private function getImageLoader(imageName:String, imageUrl:String):ImageLoader 
+			{
+				var loader:ImageLoader = new ImageLoader();
+				loader.imageFileName = imageName;
+				loader.imageUrl = imageUrl;
+				return loader;
+			}
+			
+			private function btnRoofConditionReportClickHandler():void 
+			{
+				addEventListener("allImagesLoaded", 
+					function (event:Event):void 
+					{
+						var foData:String = FacilityReportBuilder.getRoofConditionReportContent(model);
+						getPdf(foData);
+					});
+				prepareImages();
+			}
+			
+			private function getReport():void 
+			{
+			}
+			
+			private function getPdf(foData:String):void 
+			{
+				var filename:String = "RoofConditionReport.pdf";
+                var request:URLRequest = new URLRequest(PdfService.getPdfServiceUrl() + filename );
+                request.method = URLRequestMethod.POST;
+	            
+	            var variables:URLVariables = new URLVariables();
+	            variables.fodata = foData;
+	            variables.filename = filename;
+	            
+	            for each (var loader:ImageLoader in loaders) 
+	            {
+	            	variables[loader.imageFileName] = getEncodedImage(loader);
+	            }
+                
+                request.data = variables;
+                
+                navigateToURL(request);
+			}
+			
+			private function getEncodedImage(loader:ImageLoader):String 
+			{
+	            var ba:ByteArray = new ByteArray();
+	            loader.contentLoaderInfo.bytes.readBytes(ba, 0, ( loader.contentLoaderInfo.bytes.length - 17 ) );
+	            ba.position = ba.length - loader.contentLoaderInfo.bytesTotal;
+				
+				var imgdata:ByteArray = new ByteArray();
+	            while (ba.bytesAvailable)
+	            {
+	                imgdata.writeByte(ba.readUnsignedByte());
+	            }
+
+				encoder.reset();
+				encoder.encodeBytes(imgdata);
+	            
+	            return encoder.toString();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%">
+			<mx:LinkButton label="Roof Condition Report" click="btnRoofConditionReportClickHandler()" enabled="{!isLoading}" fontSize="14"/>
+			<mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle" horizontalGap="5">
+				<mx:ProgressBar indeterminate="true" visible="{isLoading}" label="Preparing report..." labelPlacement="left" width="250"/>
+				<mx:Button label="Cancel" click="cancelLoading()" visible="{isLoading}"/>
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:section="com.ebs.eroof.view.section.*" xmlns:system="com.ebs.eroof.view.section.system.*" xmlns:inspection="com.ebs.eroof.view.section.inspection.*" xmlns:expenditure="com.ebs.eroof.view.section.expenditure.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			public var isEditing:Boolean;
+			
+			[Bindable]
+			private var model:Section;
+			
+			public function init(model:Section):void 
+			{
+				this.model = model;
+			}
+			
+			private function setEditMode():void 
+			{
+				isEditing = true;
+			}
+			
+			private function setViewMode():void 
+			{
+				isEditing = false;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#ffffee"
+		borderColor="#999999" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%"
+			paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+			backgroundColor="#e8e8e8" borderColor="#999999" borderStyle="solid" cornerRadius="2">
+			<mx:Label text="Section detail" fontSize="16" fontWeight="bold" color="#AA0000" width="100%" textAlign="left"/>
+			<mx:Spacer width="100%"/>
+		</mx:HBox>
+		
+		<mx:TabNavigator width="100%" height="100%" 
+			historyManagementEnabled="false" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox label="Summary" width="100%" height="100%">
+				<section:SectionSummaryPanel width="100%" height="100%" model="{model}" 
+					setEditMode="setEditMode()" setViewMode="setViewMode()"/>
+			</mx:VBox>
+
+			<mx:VBox label="Site Plan" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Roof Plan" width="100%" height="100%">
+				<section:SectionRoofPlanEditor width="100%" height="100%" model="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="System" width="100%" height="100%">
+				<system:SectionRoofSystemEditor width="100%" height="100%" section="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Core Cuts" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Details" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Deficiencies" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Inspections" width="100%" height="100%">
+				<inspection:SectionInpectionsEditor width="100%" height="100%" section="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Surveys" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Expenditures" width="100%" height="100%">
+				<expenditure:SectionExpendituresEditor width="100%" height="100%" section="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Warranties" width="100%" height="100%">
+			</mx:VBox>
+		</mx:TabNavigator>
+	</mx:VBox>
+</mx:Canvas>

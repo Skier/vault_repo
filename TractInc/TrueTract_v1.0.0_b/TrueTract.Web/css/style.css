@@ -1,0 +1,332 @@
+/* CSS file */
+Application {
+   fontFamily: MyVerdana;
+}
+
+TitleWindow {
+   borderStyle: solid;
+   borderAlpha: 1;
+   roundedBottomCorners: false;
+   backgroundAlpha: 0.54;
+   headerColors: #adc6f0, #b7c6fa;
+   footerColors: #adc6f0, #b7c6fa;
+   backgroundColor: #adc6f0;
+   shadowDistance: 1;
+   borderThicknessLeft: 3;
+   borderThicknessRight: 3;
+}
+
+PanelToolTip {
+   borderStyle: solid;
+   borderColor: #ffcc00;
+   borderAlpha: 0.8;
+   borderThickness: 2;
+   roundedBottomCorners: true;
+   headerColors: #ffffcc, #ffff99;
+   backgroundColor: #ffffcc;
+   shadowDirection: center;
+}
+ControlBar {
+    padding-bottom: 3;
+    padding-left: 3;
+    padding-right: 3;
+    padding-top: 3;
+    horizontal-gap: 3;
+}
+
+ExtendedTitleWindow {
+    borderAlpha: 0.5;
+    backgroundAlpha: 0.3;
+    sliderStyleName: "fseSliders";
+}
+
+TextInput {
+    background-alpha: 0.52;
+}
+
+ComboBox {
+    background-alpha: 0.7;
+}
+
+EditButton {
+	up-skin: Embed('/assets/edit.png');
+	over-skin: Embed('/assets/edit.png');	
+	down-skin: Embed('/assets/done.png');
+	disabled-skin: Embed('/assets/edit.png');
+
+	selected-up-skin: Embed('/assets/done.png');
+	selected-over-skin: Embed('/assets/done.png');	
+	selected-down-skin: Embed('/assets/edit.png');	
+	selected-disabled-skin: Embed('/assets/done.png');
+}
+
+MenuBar {
+    background-alpha: 1;
+    background-color: #c2d8fe;
+    rollOverColor: #e3ebfa;
+    fontSize: 12;
+}
+
+TractView {
+    callStyleName: tractCall;
+    areaStyleName: tractTextArea;
+    startPointStyleName: tractStartPoint;
+    endPointStyleName: tractEndPoint;
+    controlPointStyleName: tractControlPoint;
+    textObjectStyleName: tractTextObject
+}
+
+.tractView {
+    callStyleName: tractCall;
+    areaStyleName: tractTextArea;
+    startPointStyleName: tractStartPoint;
+    endPointStyleName: tractEndPoint;
+    controlPointStyleName: tractControlPoint;
+    textObjectStyleName: tractTextObject
+}
+
+.tractTextArea {
+    color: 2;
+    font-family: Myriad;
+    text-align: center;
+    font-size: 12;
+}
+
+.tractControlPoint {
+	backgroundColor:#FFFF00;
+	backgroundRollOverColor:#FFFF66;
+	borderColor:#FF9900;
+	borderRollOverColor:#FF9900;
+	width: 8;
+}
+
+.tractStartPoint {
+	backgroundColor:#00CC00;
+	backgroundRollOverColor:#9CF787;
+	borderColor:198619;
+	borderRollOverColor:198619;
+	width: 8;
+}
+
+.tractEndPoint {
+	backgroundColor:#FF3300;
+	backgroundRollOverColor:#FA7C63;
+	borderColor:#B11D1D;
+	borderRollOverColor:#B11D1D;
+	width: 8;
+}
+
+.tractCall {
+    lineColor: #666666;
+    lineRollOverColor: #FF0000;
+    annotationStyleName: tractCallAnnotation;
+}
+
+.tractCallAnnotation {
+    color: #0B333C;
+    fontFamily: Myriad;
+    textAlign: center;
+    fontSize: 12;
+}
+
+.tractTextObject {
+    color: 3;
+    font-family: Myriad;
+    text-align: left;
+    font-size: 12;
+}
+
+MeasuringLine {
+    lineColor: #ff9900;
+    lineWidth: 2;
+    color: #0B333C;
+    fontFamily: Myriad;
+    textAlign: center;
+    fontSize: 12;
+}
+
+.sliderText {
+   backgroundAlpha: 0;
+   backgroundColor: #000000;
+   color: #ffffff;
+   borderStyle: solid;
+   borderColor: #ffffff;
+   borderThickness: 1;
+   cornerRadius: 7;
+   textIndent: 3;
+   textAlign: right;
+}
+
+.scaleInput {
+   backgroundAlpha: 0;
+   backgroundColor: #000000;
+   color: #000000;
+   borderStyle: solid;
+   borderColor: #666666;
+   borderThickness: 1;
+   cornerRadius: 7;
+   textIndent: 3;
+   textAlign: right;    
+}
+
+.fseSliders {
+    showTrackHighlight: true;
+    dataTipStyleName: sliderTips;
+    dataTipOffset: 0;
+    thumbUpSkin: Embed(source="/assets/sliderThumb.png");
+    thumbOverSkin: Embed(source="/assets/sliderThumb_over.png");
+    thumbDownSkin: Embed(source="/assets/sliderThumb_down.png");
+    themeColor: #ffffff;
+}
+
+.styleControlTabNavigator {
+    tabWidth: 80; 
+    padding-top: 5;
+    paddingLeft: 5; 
+    paddingRight: 5;
+    paddingBottom: 5; 
+    backgroundAlpha: 0; 
+    borderStyle: solid; 
+    borderColor: #FFFFFF; 
+    borderThickness: 1; 
+    cornerRadius: 4;
+    tabStyleName: "tabs";
+}
+
+.tabs {
+    cornerRadius: 6;
+    highlightAlphas: 0.4, 0;
+    fillAlphas: 0,0;
+    borderColor: #FFFFFF;
+    themeColor: #ffffff;    
+    paddingLeft: 5;
+    paddingRight: 5;
+    paddingTop: 5;
+    paddingBottom: 5;
+    backgroundAlpha: 1;
+    backgroundColor: #FFFFFF;
+    color: #0B333C;
+    textRollOverColor: #0B333C;
+    fontSize: 9;
+}
+
+.toggleButtons {
+    buttonHeight: 18;
+    buttonWidth: 20;
+    focusAlpha: 0;
+    themeColor: #FFFFFF;
+    horizontalGap: -1;
+    buttonStyleName: "buttonBarStyle";   
+}
+
+.buttonBarStyle {
+    highlightAlphas: 0.5, 0;
+    fillAlphas: 0.5, 0.15, 0.7, 0.3;
+    fillColors: #ffffff, #000000, #ffffff, #000000;
+    borderColor: #ffffff;
+}
+
+.toolButton {
+    highlightAlphas: 0.5, 0;
+    fillAlphas: 0.5, 0.15, 0.7, 0.3;
+    borderColor: #ffffff;
+    fillColors: #ffffff, #a2b3f8, #ffffff, #eeeeee;    
+    themeColor: #009dff;
+    corner-radius: 0;
+}
+
+.glassPanel {
+        backgroundSize: "100%";
+        paddingTop: 7;
+        paddingLeft: 10;
+}
+
+.glassLabels {
+        color: #FFFFFF;
+        fontSize: 12;
+        fontWeight: bold;
+        paddingLeft: 0;
+        paddingTop: 0;
+        fontFamily: Myriad;
+}
+
+.printTractInformationForm {
+    vertical-gap: -2;
+    padding-bottom: 0;
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+    font-family: Myriad;
+    font-size: 6;
+}
+
+.timeOutConfirmationDialog {
+    backgroundColor: #ffffff;
+	cornerRadius:4;
+	borderStyle: solid;
+	borderColor: #d50000;
+	borderThickness:2;
+	alpha:1;
+	padding-bottom: 10;
+	padding-left: 10;
+	padding-top: 10;
+	padding-right: 10;
+}
+
+@font-face {
+    src:url("../fonts/verdana.ttf");
+    font-family: MyVerdana;
+}
+
+@font-face {
+    src: url("../fonts/verdanab.ttf") ;
+    fontFamily: MyVerdana;
+    fontWeight: bold;
+}
+
+@font-face {
+    src:url("../fonts/MyriadWebPro.ttf");
+    font-family: Myriad;
+}
+
+@font-face {
+    src: url("../fonts/MyriadWebPro-Bold.ttf") ;
+    fontFamily: Myriad;
+    fontWeight: bold;
+}
+
+@font-face {
+    src: url("../fonts/MyriadWebPro-italic.ttf") ;
+    fontFamily: Myriad;
+    font-style: italic;
+}
+
+@font-face {
+    src: url("../fonts/verdanai.ttf") ;
+    fontFamily: MyVerdana;
+    font-style: italic;
+}
+
+@font-face {
+    src:url("../fonts/cour.ttf");
+    font-family: MyCourier;
+}
+
+@font-face {
+    src: url("../fonts/courbd.ttf") ;
+    fontFamily: MyCourier;
+    fontWeight: bold;
+}
+
+@font-face {
+    src: url("../fonts/couri.ttf") ;
+    fontFamily: MyCourier;
+    font-style: italic;
+}
+
+@font-face {
+    src: url("../fonts/courbi.ttf") ;
+    fontFamily: MyCourier;
+    font-style: italic;
+    font-weight: bold;
+}

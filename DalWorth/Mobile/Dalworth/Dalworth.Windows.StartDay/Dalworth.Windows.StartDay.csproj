@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{215B533F-D8FB-4E68-ABC1-BCD15BD98215}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Windows.StartDay</RootNamespace>
+    <AssemblyName>Dalworth.Windows.StartDay</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>Dalworth.Windows.StartDay</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="EnterEquipment\EnterEquipmentController.cs" />
+    <Compile Include="EnterEquipment\EnterEquipmentModel.cs" />
+    <Compile Include="EnterEquipment\EnterEquipmentView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EnterEquipment\EnterEquipmentView.Designer.cs">
+      <DependentUpon>EnterEquipmentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadEquipment\LoadEquipmentController.cs" />
+    <Compile Include="LoadEquipment\LoadEquipmentModel.cs" />
+    <Compile Include="LoadEquipment\LoadEquipmentView.cs">
+    </Compile>
+    <Compile Include="LoadEquipment\LoadEquipmentView.Designer.cs">
+      <DependentUpon>LoadEquipmentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadItems\LoadItemsController.cs" />
+    <Compile Include="LoadItems\LoadItemsModel.cs" />
+    <Compile Include="LoadItems\LoadItemsView.cs">
+    </Compile>
+    <Compile Include="LoadItems\LoadItemsView.Designer.cs">
+      <DependentUpon>LoadItemsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\LoginController.cs" />
+    <Compile Include="Login\LoginModel.cs" />
+    <Compile Include="Login\LoginView.cs">
+    </Compile>
+    <Compile Include="Login\LoginView.Designer.cs">
+      <DependentUpon>LoginView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Message\MessageController.cs" />
+    <Compile Include="Message\MessageModel.cs" />
+    <Compile Include="Message\MessageView.cs">
+    </Compile>
+    <Compile Include="Message\MessageView.Designer.cs">
+      <DependentUpon>MessageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StartDayBaseController.cs" />
+    <Compile Include="StartDayBaseModel.cs" />
+    <Compile Include="StartDayModel.cs" />
+    <Compile Include="VanCheck\VanCheckController.cs" />
+    <Compile Include="VanCheck\VanCheckModel.cs" />
+    <Compile Include="VanCheck\VanCheckView.cs">
+    </Compile>
+    <Compile Include="VanCheck\VanCheckView.Designer.cs">
+      <DependentUpon>VanCheckView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WorkSummary\WorkSummaryController.cs" />
+    <Compile Include="WorkSummary\WorkSummaryModel.cs" />
+    <Compile Include="WorkSummary\WorkSummaryView.cs">
+    </Compile>
+    <Compile Include="WorkSummary\WorkSummaryView.Designer.cs">
+      <DependentUpon>WorkSummaryView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EnterEquipment\EnterEquipmentView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>EnterEquipmentView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadEquipment\LoadEquipmentView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LoadEquipmentView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadItems\LoadItemsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LoadItemsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\LoginView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LoginView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Message\MessageView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MessageView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resource.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VanCheck\VanCheckView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>VanCheckView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WorkSummary\WorkSummaryView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WorkSummaryView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Controls\Dalworth.Controls.csproj">
+      <Project>{8EBF48CF-4143-4DF5-A822-626F566D3858}</Project>
+      <Name>Dalworth.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Domain\Dalworth.Domain.csproj">
+      <Project>{A5C21082-985A-4B11-8487-2649A442751B}</Project>
+      <Name>Dalworth.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Windows\Dalworth.Windows.csproj">
+      <Project>{75203AD2-1657-4574-A938-CE923D5E66C3}</Project>
+      <Name>Dalworth.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth\Dalworth.csproj">
+      <Project>{DB694166-7403-425C-912B-A9D33014299C}</Project>
+      <Name>Dalworth</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Selected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Unselected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="system, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.dll</HintPath>
+    </Reference>
+    <Reference Include="system.data, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.data.dll</HintPath>
+    </Reference>
+    <Reference Include="system.drawing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="system.web.services, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.web.services.dll</HintPath>
+    </Reference>
+    <Reference Include="system.windows.forms, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.windows.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="system.xml, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

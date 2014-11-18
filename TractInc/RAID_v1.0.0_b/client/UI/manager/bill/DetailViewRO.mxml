@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    title="{controller.model.windowTitle}"
+    minWidth="760" minHeight="500"
+    verticalAlign="middle" horizontalAlign="center"
+    alpha="2"
+    shadowDistance="0">
+
+    <mx:Script>
+        <![CDATA[
+            import App.Domain.Bill;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            [Bindable]
+            public var controller:DetailControllerRO;
+            
+            public static function Open(bill:Bill, parent:SummaryView, modal:Boolean = false):DetailViewRO {
+                var popup:DetailViewRO = new DetailViewRO();
+                popup.controller = new DetailControllerRO(popup, bill, parent.controller);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <mx:ViewStack selectedIndex="{controller.model.loaded ? 0 : 1}" width="100%" height="100%">
+        
+        <mx:VBox width="100%" height="100%">
+            
+            <mx:VBox width="100%" height="100%" verticalGap="-2" 
+                visible="{controller.model.bill.RelatedBillItem.length > 0}"
+                includeInLayout="{controller.model.bill.RelatedBillItem.length > 0}"
+                >
+                
+	            <mx:DataGrid width="100%" height="26" enabled="false" minWidth="700">
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText=" " width="27"/>
+	                    <mx:DataGridColumn headerText="AFE" width="90"/>
+	                    <mx:DataGridColumn headerText="Project"/>
+	                    <mx:DataGridColumn headerText="Days" width="80"/>
+	                    <mx:DataGridColumn headerText="Daily Amt" width="80" />
+	                    <mx:DataGridColumn headerText="Other Amt" width="80"/>
+	                    <mx:DataGridColumn headerText="Total Amt" width="80"/>
+	                    <mx:DataGridColumn headerText="Status" width="101"/>
+	                </mx:columns>
+	            </mx:DataGrid>
+	        
+                <mx:List id="afeList" width="100%" height="100%"
+                    paddingBottom="0" paddingTop="0" paddingLeft="0" paddingRight="0"
+                    dataProvider="{controller.model.assignments}"
+                    selectable="false"
+                    columnCount="1"
+                    variableRowHeight="true"
+                    itemRenderer="UI.manager.bill.afeItemRendererRO"/>
+        
+            </mx:VBox>
+            
+            <mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle"
+                visible="{controller.model.bill.RelatedBillItem.length == 0}"
+                includeInLayout="{controller.model.bill.RelatedBillItem.length == 0}"
+                >
+                
+                <mx:Panel width="250" height="100" dropShadowEnabled="false"
+                    headerHeight="8" cornerRadius="0" 
+                    horizontalAlign="center" verticalAlign="middle">
+                    <mx:Label text="No Bill Items found. Bill is empty." fontSize="13" fontWeight="bold" color="#996666"/>
+                
+                </mx:Panel>
+
+            </mx:VBox>
+
+        </mx:VBox>
+        
+        <mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+            
+            <mx:Panel width="300" height="120" dropShadowEnabled="false"
+                headerHeight="8" cornerRadius="0" 
+                horizontalAlign="center" verticalAlign="middle">
+                
+                <mx:Label text="Loading... Please wait." fontSize="15" fontWeight="bold" color="#999999"/>
+                
+            </mx:Panel>
+            
+        </mx:VBox>
+
+    </mx:ViewStack>
+    
+    <mx:ControlBar horizontalAlign="center" enabled="{controller.model.loaded}">
+        <mx:Button label="Close" click="controller.close()" />
+    </mx:ControlBar>
+
+</mx:Panel>

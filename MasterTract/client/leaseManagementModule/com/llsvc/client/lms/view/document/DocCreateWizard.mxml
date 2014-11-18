@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	xmlns:controls="com.llsvc.controls.*">
+	
+    <mx:Metadata>
+        [Event(name="newLeaseRequest", type="flash.events.Event")]
+        [Event(name="newAssignmentRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.domain.County;
+			import mx.controls.Alert;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.domain.Document;
+			import mx.rpc.Responder;
+			
+			public var doc:Document;
+			private var docRecord:DocumentRecord;
+			
+            [Bindable]
+            private var documentList:ArrayCollection = new ArrayCollection();
+            
+            public static function open(parent:DisplayObject, modal:Boolean):DocCreateWizard
+            {
+                var popup:DocCreateWizard = new DocCreateWizard();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function findLease():void {
+                
+                if (!isFormValid()) 
+                {
+                	Alert.show("Select all required fields");
+                	return;
+                }
+
+				docRecord = new DocumentRecord();
+				docRecord.state = comboState.selectedItem as com.llsvc.domain.State;
+				docRecord.county = comboCounty.selectedItem as County;
+				docRecord.docNo = txtFileNo.text;
+				docRecord.volume = txtVolume.text;
+				docRecord.page = txtPage.text;
+				
+				if (comboDocType.selectedIndex == 0) 
+				{
+					Storage.instance.findLeases(docRecord,
+						new mx.rpc.Responder
+						(
+							function (event:ResultEvent):void 
+							{
+								documentList = event.result as ArrayCollection;
+								
+				                if (documentList.length == 0)
+				                {
+				                	doc = new Document();
+				                	doc.records.addItem(docRecord);
+				                	
+	                                dispatchEvent(new Event("newLeaseRequest"));
+				                } else 
+				                {
+				                	Alert.show("Found Lease(s) with selected Recording. Please select Lease to open or change Recording Info.");
+				                	dgDocs.selectedIndex = 0;
+				                }
+							},
+							function (event:FaultEvent):void 
+							{
+				                Alert.show("Error: " + event.fault.faultString);
+				                documentList.removeAll();
+							}
+						)
+					);
+				}
+            }
+
+            private function findAssignment():void {
+                
+                if (!isFormValid()) 
+                {
+                	Alert.show("Select all required fields");
+                	return;
+                }
+
+				docRecord = new DocumentRecord();
+				docRecord.state = comboState.selectedItem as com.llsvc.domain.State;
+				docRecord.county = comboCounty.selectedItem as County;
+				docRecord.docNo = txtFileNo.text;
+				docRecord.volume = txtVolume.text;
+				docRecord.page = txtPage.text;
+				
+				if (comboDocType.selectedIndex == 0) 
+				{
+					Storage.instance.findLeases(docRecord,
+						new mx.rpc.Responder
+						(
+							function (event:ResultEvent):void 
+							{
+								documentList = event.result as ArrayCollection;
+								
+				                if (documentList.length == 0)
+				                {
+				                	doc = new Document();
+				                	doc.records.addItem(docRecord);
+
+	                                dispatchEvent(new Event("newAssignmentRequest"));
+				                } else 
+				                {
+				                	Alert.show("Found Assignment(s) with selected Recording. Please select Lease to open or change Recording Info.");
+				                	dgDocs.selectedIndex = 0;
+				                }
+							},
+							function (event:FaultEvent):void 
+							{
+				                Alert.show("Error: " + event.fault.faultString);
+				                documentList.removeAll();
+							}
+						)
+					);
+				}
+            }
+
+            private function isFormValid():Boolean 
+            {
+            	if (comboState.selectedItem != null && comboCounty.selectedItem != null
+            			&& comboDocType.selectedIndex != -1
+            			&& (txtFileNo.text.length > 0 || (txtVolume.text.length > 0 && txtPage.text.length > 0))
+            		)
+            	{
+            		return true;
+            	} else 
+            	{
+            		return false
+            	}
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	this.close();
+            }
+            
+            private function btnCreateClickHandler():void 
+            {
+            	if (comboDocType.selectedIndex == 0) 
+            	{
+	            	findLease();
+            	} else 
+            	{
+            		findAssignment();
+            	}
+            }
+            
+            private function btnSelectClickHandler():void 
+            {
+            	if (comboDocType.selectedIndex == 0) 
+            	{
+	            	findLease();
+            	} else 
+            	{
+            		findAssignment();
+            	}
+            }
+            
+		]]>
+	</mx:Script>
+	
+    <mx:HBox width="100%">
+        <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="2" indicatorGap="3">
+        
+            <mx:FormItem label="State:">
+                <controls:ComboBox id="comboState" tabIndex="10"
+                    labelField="name" width="120" 
+                    dataProvider="{dictionary.statesAndCounties.state}"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Doc Type:">
+                <controls:ComboBox id="comboDocType" tabIndex="30"
+                    dataProvider="[Lease, Assignment]" width="120"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Vol:">
+                <mx:TextInput id="txtVolume" width="120" tabIndex="50"/>
+            </mx:FormItem>
+            
+        </mx:Form>
+
+        <mx:Spacer width="100%" />
+
+        <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="2" indicatorGap="3">
+
+            <mx:FormItem label="County:">
+                <controls:ComboBox id="comboCounty" tabIndex="20"
+                    labelField="name" width="120" 
+                    dataProvider="{State(comboState.selectedItem).counties}"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="File No:">
+                <mx:TextInput id="txtFileNo" width="120" tabIndex="40" />
+            </mx:FormItem>
+
+            <mx:FormItem label="Page:">
+                <mx:TextInput id="txtPage" width="120" tabIndex="60"/>
+            </mx:FormItem>
+
+        </mx:Form>
+    </mx:HBox>
+
+    <mx:DataGrid id="dgDocs" width="100%" height="100%" dataProvider="{documentList}"
+    	includeInLayout="{documentList.length &gt; 0}" visible="{documentList.length &gt; 0}">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Doc No" dataField="DocumentNo" width="50"/>
+            <mx:DataGridColumn headerText="Doc Type" dataField="DocumentTypeName"/>
+            <mx:DataGridColumn headerText="State" dataField="StateName"/>
+            <mx:DataGridColumn headerText="County" dataField="CountyName"/>
+        </mx:columns>
+    </mx:DataGrid>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button id="btnCreate"
+        	visible="{dgDocs.selectedItem == null}" includeInLayout="{dgDocs.selectedItem == null}"
+            label="Create" width="70" 
+            click="btnCreateClickHandler()"/>
+
+        <mx:Button id="btnSelect"
+        	visible="{dgDocs.selectedItem != null}" includeInLayout="{dgDocs.selectedItem != null}"
+            label="Select" width="70" 
+            click="btnSelectClickHandler()"/>
+        
+        <mx:Spacer width="10"/>
+        
+        <mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()" width="70"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

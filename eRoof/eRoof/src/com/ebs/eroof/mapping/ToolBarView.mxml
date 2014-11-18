@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.mapping.tools.ToolBarModel;
+			import com.ebs.eroof.mapping.tools.IMapTool;
+			import com.ebs.eroof.mapping.tools.ToolBarController;
+			import com.ebs.eroof.mapping.IMapContainer;
+			import mx.core.UIComponent;
+			import mx.controls.Button;
+			
+			public function setContainer(value:IMapContainer):void 
+			{
+				controller = new ToolBarController(this as UIComponent);
+				controller.setContainer(value);
+			}
+			
+			[Bindable]
+			private var model:ToolBarModel = ToolBarModel.getInstance();
+			private var controller:ToolBarController;
+			
+			private function toolClickHandler(event:Event):void 
+			{
+				var tool:IMapTool = (event.currentTarget as UIComponent).getRepeaterItem() as IMapTool;
+				controller.activateTool(tool);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+		<mx:Repeater id="rptTools" dataProvider="{model.tools}">
+			<mx:Button id="btnTool" width="20" height="20" cornerRadius="2"
+				icon="{IMapTool(rptTools.currentItem).icon}" toolTip="{IMapTool(rptTools.currentItem).name}"
+				selected="{rptTools.currentItem == model.activeTool}"
+				click="toolClickHandler(event)"/>
+		</mx:Repeater>
+	</mx:HBox>
+	
+</mx:Canvas>

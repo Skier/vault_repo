@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+    creationComplete="Controller.CreationComplete()"
+    xmlns:Login="App.Login.*" xmlns:ScopeScetch="ScopeScetch.*"
+    xmlns:local="*" xmlns:UI="UI.*">
+    
+    <mx:Script>
+    	<![CDATA[
+    		
+    		[Bindable]
+    		private var Controller:AppController = new AppController(AppView(this));
+    		
+    	]]>
+    </mx:Script>
+    
+    <mx:XML id="statesAndCounties" source="../Assets/States.xml" />
+    	
+    
+    <mx:HBox width="100%" paddingRight="15" horizontalAlign="right" verticalAlign="middle"
+    	includeInLayout="{Controller.CurrentUser != null}" visible="{Controller.CurrentUser != null}">
+    	<mx:Label text="You are logged in as"/>
+    	<mx:Label text="{Controller.CurrentUser.Login}" fontWeight="bold"/>
+    	<mx:LinkButton label="Logout" click="Controller.logout()" textDecoration="underline"/>
+    </mx:HBox>
+    
+    <mx:ViewStack id="mainViewStack" width="100%" height="100%" creationPolicy="all" selectedIndex="{Controller.WorkflowState}">
+
+        <Login:LoginView id="loginView" AppController="{Controller}"/>
+        
+        <UI:LeaseGridView id="gridView" parentController="{Controller}"/>
+        
+        <UI:LeaseDetailView id="detailView" parentController="{Controller}"/>
+	
+		<mx:VBox id="initView" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+			<mx:Panel width="400" height="150" headerHeight="8" horizontalAlign="left" verticalAlign="top">
+				<mx:Label text="Init application... Please wait." fontSize="14" color="#999999"/>
+				<mx:TextArea id="logArea" text="" width="100%" height="100%"/>
+			</mx:Panel>
+		</mx:VBox>
+
+	</mx:ViewStack>
+
+</mx:VBox>

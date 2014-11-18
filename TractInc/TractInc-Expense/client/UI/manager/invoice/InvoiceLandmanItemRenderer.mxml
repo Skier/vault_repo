@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:local="*"
+    horizontalAlign="center"
+    verticalGap="-1" 
+    width="100%"
+    styleName="itemVbox"
+    xmlns:components="components.*">
+     
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.InvoiceStatusDataObject;
+        	import common.TypesRegistry;
+        	import App.Entity.InvoiceItemStatusDataObject;
+        	import App.Entity.InvoiceItemDataObject;
+        	import mx.controls.CheckBox;
+        	import util.DateUtil;
+        	import common.StatusesRegistry;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import mx.events.DataGridEvent;
+        	import util.NumberUtil;
+        	
+        	private static const ROW_HEIGHT:int = 26;
+        	
+        	[Embed(source="/assets/expand.png")]
+        	[Bindable]
+        	private var imgPlus:Class;
+        	
+        	[Embed(source="/assets/collapse.png")]
+        	[Bindable]
+        	private var imgMinus:Class;
+        	
+        	[Embed(source="/assets/ok.png")]
+        	[Bindable]
+        	private var imgOk:Class;
+        	
+        	[Embed(source="/assets/cancel.png")]
+        	[Bindable]
+        	private var imgCancel:Class;
+        	
+            private function expand(event:Event) : void
+            {
+                currentState = "expanded";
+            }
+            
+            private function collapse(event:Event) : void
+            {
+                currentState = "";
+            }
+            
+            private function toggleState() : void
+            {
+                invalidateDisplayList();
+                currentState = (currentState == "expanded")? "": "expanded";
+                invalidateDisplayList();
+            }
+            
+            private function setTypeGroupLabels(group:InvoiceItemGroupByType, column:DataGridColumn):String{
+            	if (column.dataField == "type") {
+            		return TypesRegistry.instance.getInvoiceItemTypeById(group.invoiceItemTypeId).Name;
+            	} else if (column.dataField == "totalDays") {
+            		return NumberUtil.fraction(group.totalDays, 8)
+            	} else if (column.dataField == "dailyAmt") {
+            		return (Math.round(group.dailyAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "otherAmt") {
+            		return (Math.round(group.otherAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "totalAmt") {
+            		return (Math.round(group.totalAmount * 100) / 100).toFixed(2);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function setItemsLabels(item:InvoiceItemDataObject, column:DataGridColumn):String {
+            	if (item.justChanged) {
+            		if (1 == item.InvoiceItemTypeId) {
+            			item.InvoiceRate /= 8;
+            		}
+            		item.justChanged = false;
+            	}
+            
+            	if (column.dataField == "date") {
+            		return DateUtil.format(new Date(Date.parse(item.InvoiceDate)));
+            	} else if (column.dataField == "quantity") {
+            		return (1 == item.InvoiceItemTypeId) ? NumberUtil.fraction(item.Qty, 8) : String(item.Qty);
+            	} else if (column.dataField == "InvoiceRate") {
+            		return (1 == item.InvoiceItemTypeId) ? (item.InvoiceRate * 8).toFixed(3) : item.InvoiceRate.toFixed(3);
+            	} else if (column.dataField == "amount") {
+            		return (Math.round(item.Qty * item.InvoiceRate * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "status") {
+            		return item.Status;
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function onItemEditEnd(event:DataGridEvent):void {
+            	var item:InvoiceItemDataObject = ColoredDataGrid(event.currentTarget).selectedItem as InvoiceItemDataObject;
+            	item.justChanged = true;
+            }
+            
+            private function disableEditing(event:DataGridEvent):void 
+            {
+            	var item:InvoiceItemDataObject = ColoredDataGrid(event.currentTarget).selectedItem as InvoiceItemDataObject;
+
+            	if (!item){
+            		return;
+            	}
+
+            	if (item.Status != InvoiceItemStatusDataObject.INVOICE_ITEM_STATUS_NEW) {
+            		event.preventDefault();
+	            	return;
+            	}
+            }
+            
+            private function selectGroupColor(item:InvoiceItemGroupByType, color:uint):uint 
+            {
+           		return color;
+            }
+            
+            private function selectItemColor(item:InvoiceItemDataObject, color:uint):uint 
+            {
+           		return color;
+            }
+            
+            private function onClickChangeRate():void 
+            {
+            	if (data.items.length == 0) {
+            		return;
+            	} else {
+	            	btnChangeRate.visible = false;
+	            	var item:InvoiceItemDataObject = InvoiceItemDataObject(data.items[0]);
+	            	txtNewRate.text = (1 == item.InvoiceItemTypeId)? (item.InvoiceRate * 8).toFixed(3): item.InvoiceRate.toFixed(3);
+	            	txtNewRate.setFocus();
+	            	txtNewRate.selectionBeginIndex = 0;
+	            	txtNewRate.selectionEndIndex = txtNewRate.text.length;
+            	}
+            }
+            
+            private function onClickOk():void 
+            {
+            	var group:InvoiceItemGroupByType = data as InvoiceItemGroupByType;
+            	var newRate:Number = Number(txtNewRate.text);
+            	
+            	if (isNaN(newRate)) {
+            		return;
+            	}
+            	
+            	for each (var item:InvoiceItemDataObject in group.items) {
+            		item.InvoiceRate = (1 == item.InvoiceItemTypeId)? (newRate / 8): newRate;
+            	}
+            	
+            	btnChangeRate.visible = true;
+            }
+            
+            private function onClickCancel():void 
+            {
+            	btnChangeRate.visible = true;
+            }
+            
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox
+    	id="headerBox"
+    	width="100%"
+    	horizontalGap="0">
+
+		<mx:VBox width="26" height="26" horizontalAlign="center" verticalAlign="middle">
+			<mx:Image source="{currentState == 'expanded' ? imgMinus : imgPlus}" click="toggleState()"/>
+		</mx:VBox>
+
+	    <components:ColoredDataGrid
+	    	id="dgTypeGroups"
+	    	dataProvider="{data}"
+	    	showHeaders="false"
+	        width="100%"
+	        height="26"
+	        borderThickness="1"
+			rowColorFunction="selectGroupColor"
+	        backgroundColor="#FFFFCC"
+	        selectable="false">
+	        <components:columns>
+				<mx:DataGridColumn dataField="type" labelFunction="setTypeGroupLabels"/>
+				<mx:DataGridColumn dataField="totalDays" labelFunction="setTypeGroupLabels" textAlign="right" width="90"/>
+				<mx:DataGridColumn dataField="dailyAmt" labelFunction="setTypeGroupLabels" textAlign="right" width="90"/>
+				<mx:DataGridColumn dataField="otherAmt" labelFunction="setTypeGroupLabels" textAlign="right" width="90"/>
+				<mx:DataGridColumn dataField="totalAmt" labelFunction="setTypeGroupLabels" textAlign="right" width="90"/>
+				<mx:DataGridColumn dataField="IsSelected" itemRenderer="UI.manager.invoice.IsSelectedRenderer" width="26" textAlign="center"/>
+	        </components:columns>
+	    </components:ColoredDataGrid>
+    
+    </mx:HBox>
+    
+    <mx:states>
+        <mx:State name="expanded">
+            <mx:AddChild position="lastChild">
+				<mx:VBox
+					id="itemsBox"
+					width="100%"
+					verticalGap="0">
+	            	<mx:HBox width="100%">
+	            		<mx:Spacer width="40"/>
+		                <components:ColoredDataGrid
+		                	id="dgInvoiceItems"
+		                	width="100%"
+		                	enabled="true"
+		                    borderThickness="1"
+		                    showHeaders="true"
+		                    focusEnabled="false"
+		                    sortableColumns="false"
+          					rowColorFunction="selectItemColor"
+		                    height="{data.items.length &lt; 5 ? ((data.items.length + 1) * ROW_HEIGHT) : (6 * ROW_HEIGHT)}"
+		                    rowHeight="{ROW_HEIGHT}"
+		                    dataProvider="{data.items}"
+		                    editable="true"
+		                    itemEditEnd="onItemEditEnd(event)"
+		                    itemEditBeginning="disableEditing(event)"		                    		                    
+		                    >
+		                    <components:columns>
+								<mx:DataGridColumn headerText="Date" dataField="date" editable="false"
+									labelFunction="setItemsLabels" width="90"/>
+								<mx:DataGridColumn headerText="Quantity" dataField="quantity" editable="false"
+									labelFunction="setItemsLabels" width="70" textAlign="right"/>
+								<mx:DataGridColumn headerText="Rate" dataField="InvoiceRate"
+									labelFunction="setItemsLabels" width="70" textAlign="right"/>
+								<mx:DataGridColumn headerText="Amount" dataField="amount" editable="false"
+									labelFunction="setItemsLabels" width="70" textAlign="right"/>
+								<mx:DataGridColumn headerText="Status" dataField="status" editable="false" 
+									labelFunction="setItemsLabels" width="90" textAlign="center"/>
+								<mx:DataGridColumn headerText="Notes" itemRenderer="common.notes.NotesRenderer" editable="false"/>
+								<mx:DataGridColumn headerText=" " dataField="IsSelected" editable="false"
+									itemRenderer="UI.manager.invoice.IsSelectedRenderer" width="26"/>
+		                    </components:columns>
+		                </components:ColoredDataGrid>
+	            	</mx:HBox>
+	            	<mx:HBox
+	            		width="100%"
+	            		verticalAlign="middle"
+	            		horizontalAlign="right"
+	            		visible="{data.invoiceItemTypeId == 1 &amp;&amp; data.parentInvoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_NEW}"
+	            		includeInLayout="{data.invoiceItemTypeId == 1 &amp;&amp; data.parentInvoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_NEW}"
+	            		>
+	            		<mx:LinkButton id="btnChangeRate" label="Change rates" 
+	            			click="onClickChangeRate()" 
+	            			color="#0000bb" textDecoration="underline"/>
+	            		<mx:TextInput
+	            			id="txtNewRate"
+	            			width="50"
+	            			enter="onClickOk()"
+		            		visible="{!btnChangeRate.visible}"
+		            		includeInLayout="{!btnChangeRate.visible}"
+	            			/>
+	            		<mx:Image
+	            			source="{imgOk}"
+	            			click="onClickOk()"
+		            		visible="{!btnChangeRate.visible}"
+		            		includeInLayout="{!btnChangeRate.visible}"
+	            			/>
+	            		<mx:Image
+	            			source="{imgCancel}"
+	            			click="onClickCancel()"
+		            		visible="{!btnChangeRate.visible}"
+		            		includeInLayout="{!btnChangeRate.visible}"
+	            			/>
+	            	</mx:HBox>
+	           		<mx:Spacer height="8"/>
+				</mx:VBox>
+            </mx:AddChild>
+        </mx:State>
+    </mx:states>
+    
+    <mx:transitions>
+        <mx:Transition fromState="*" toState="*">
+            <mx:Resize target="{this}"/>
+        </mx:Transition>
+    </mx:transitions>
+
+</mx:VBox>

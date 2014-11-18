@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee"
+	show="initStatesComboBox()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.states.State;
+			import Domain.UsStates;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var usStates:ArrayCollection = UsStates.GetItems();
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+			public function IsValid():Boolean {
+
+				var isValid:Boolean = true;
+
+				if (mailingLine1V.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(mailingLine1);
+					}
+					isValid = false;
+				}
+
+				if (mailingCityV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(mailingCity);
+					}
+					isValid = false;
+				}
+
+				if (mailingZipV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(mailingZip);
+					}
+					isValid = false;
+				}
+
+				if (mailingStateV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(mailingState);
+					}
+					isValid = false;
+				}
+
+				if (phisicalLine1V.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(phisicalLine1);
+					}
+					isValid = false;
+				}
+
+				if (phisicalCityV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(phisicalCity);
+					}
+					isValid = false;
+				}
+
+				if (phisicalZipV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(phisicalZip);
+					}
+					isValid = false;
+				}
+
+				if (phisicalStateV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid){
+						focusManager.setFocus(phisicalState);
+					}
+					isValid = false;
+				}
+
+				return isValid;
+
+			}
+			
+			public function initStatesComboBox():void {
+				for (var i:int; i<usStates.length; i++) {
+					if (usStates[i] == controller.Model.mailingAddress.State){
+						mailingState.selectedIndex = i;
+					}
+					if (usStates[i] == controller.Model.phisicalAddress.State){
+						phisicalState.selectedIndex = i;
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="mailingLine1V" source="{mailingLine1}" property="text" maxLength="50"
+		required="{mailingLine1.text.length > 0 || mailingLine2.text.length > 0 || mailingCity.text.length > 0 || mailingZip.text.length > 0 || mailingState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="mailingCityV" source="{mailingCity}" property="text" maxLength="50"
+		required="{mailingLine1.text.length > 0 || mailingLine2.text.length > 0 || mailingCity.text.length > 0 || mailingZip.text.length > 0 || mailingState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="mailingZipV" source="{mailingZip}" property="text" maxLength="10"
+		required="{mailingLine1.text.length > 0 || mailingLine2.text.length > 0 || mailingCity.text.length > 0 || mailingZip.text.length > 0 || mailingState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="mailingStateV" source="{mailingState}" property="text" maxLength="50"
+		required="{mailingLine1.text.length > 0 || mailingLine2.text.length > 0 || mailingCity.text.length > 0 || mailingZip.text.length > 0 || mailingState.selectedIndex > 0}" 
+		/>
+
+	<mx:StringValidator id="phisicalLine1V" source="{phisicalLine1}" property="text" maxLength="50"
+		required="{phisicalLine1.text.length > 0 || phisicalLine2.text.length > 0 || phisicalCity.text.length > 0 || phisicalZip.text.length > 0 || phisicalState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="phisicalCityV" source="{phisicalCity}" property="text" maxLength="50"
+		required="{phisicalLine1.text.length > 0 || phisicalLine2.text.length > 0 || phisicalCity.text.length > 0 || phisicalZip.text.length > 0 || phisicalState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="phisicalZipV" source="{phisicalZip}" property="text" maxLength="10"
+		required="{phisicalLine1.text.length > 0 || phisicalLine2.text.length > 0 || phisicalCity.text.length > 0 || phisicalZip.text.length > 0 || phisicalState.selectedIndex > 0}" 
+		/>
+	<mx:StringValidator id="phisicalStateV" source="{phisicalState}" property="text" maxLength="50"
+		required="{phisicalLine1.text.length > 0 || phisicalLine2.text.length > 0 || phisicalCity.text.length > 0 || phisicalZip.text.length > 0 || phisicalState.selectedIndex > 0}" 
+		/>
+
+	<mx:VBox id="mailingAddress" width="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		>
+		
+		<mx:HBox width="100%">
+			<mx:Label text="Mailing address" fontWeight="bold"/>
+		</mx:HBox>
+		
+		<mx:Form id="mailingAddressForm" width="100%">
+			
+			<mx:FormItem label="Line 1" width="100%">
+				<mx:TextInput id="mailingLine1" maxChars="50"  width="250"
+					text="{controller.Model.mailingAddress.Line1}"
+					change="(controller.Model.mailingAddress.Line1 = mailingLine1.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Line 2" width="100%">
+				<mx:TextInput id="mailingLine2" maxChars="50"  width="250"
+					text="{controller.Model.mailingAddress.Line2}"
+					change="(controller.Model.mailingAddress.Line2 = mailingLine2.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="City" width="100%">
+				<mx:TextInput id="mailingCity"  maxChars="50"  width="250"
+					text="{controller.Model.mailingAddress.City}"
+					change="(controller.Model.mailingAddress.City = mailingCity.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:HBox>
+				
+				<mx:FormItem label="State" width="100%">
+					<mx:ComboBox id="mailingState" 
+						text="{controller.Model.mailingAddress.State}"
+						dataProvider="{usStates}"
+						change="(controller.Model.mailingAddress.State = mailingState.selectedItem as String)"
+						/>
+				</mx:FormItem>
+				
+				<mx:Spacer width="15"/>
+		
+				<mx:FormItem label="Zip" width="100%">
+					<mx:TextInput id="mailingZip"  maxChars="5"  width="50"
+						text="{controller.Model.mailingAddress.Zip}"
+						change="(controller.Model.mailingAddress.Zip = mailingZip.text.toUpperCase())"
+						/>
+				</mx:FormItem>
+
+			</mx:HBox>
+	
+		</mx:Form>
+		
+	</mx:VBox>
+
+	<mx:VRule height="100%"	/>
+
+	<mx:VBox id="phisicalAddress" width="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		>
+		
+		<mx:HBox width="100%">
+			<mx:Label text="Phisical address" fontWeight="bold"/>
+			<mx:CheckBox id="theSameAsMailing" 
+				label=" the same as mailing" 
+				selected="{controller.Model.phisicalTheSameAsMailing}"
+				change="controller.Model.phisicalTheSameAsMailing = theSameAsMailing.selected"/> 
+		</mx:HBox>
+
+		<mx:Form id="phisicalAddressForm" width="100%" enabled="{!theSameAsMailing.selected}"
+			visible="{!controller.Model.phisicalTheSameAsMailing}"
+			>
+			
+			<mx:FormItem label="Line 1" width="100%">
+				<mx:TextInput id="phisicalLine1" maxChars="50"  width="250"
+					text="{controller.Model.phisicalAddress.Line1}"
+					change="(controller.Model.phisicalAddress.Line1 = phisicalLine1.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Line 2" width="100%">
+				<mx:TextInput id="phisicalLine2" maxChars="50"  width="250"
+					text="{controller.Model.phisicalAddress.Line2}"
+					change="(controller.Model.phisicalAddress.Line2 = phisicalLine2.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="City" width="100%">
+				<mx:TextInput id="phisicalCity" maxChars="50"  width="250"
+					text="{controller.Model.phisicalAddress.City}"
+					change="(controller.Model.phisicalAddress.City = phisicalCity.text.toUpperCase())"
+					/>
+			</mx:FormItem>
+			
+			<mx:HBox>
+				
+				<mx:FormItem label="State" width="100%">
+					<mx:ComboBox id="phisicalState" 
+						dataProvider="{usStates}"
+						text="{controller.Model.phisicalAddress.State}"
+						change="(controller.Model.phisicalAddress.State = phisicalState.selectedItem as String)"
+						/>
+				</mx:FormItem>
+		
+				<mx:Spacer width="15"/>
+		
+				<mx:FormItem label="Zip" width="100%">
+					<mx:TextInput id="phisicalZip" maxChars="5"  width="50"
+						text="{controller.Model.phisicalAddress.Zip}"
+						change="(controller.Model.phisicalAddress.Zip = phisicalZip.text.toUpperCase())"
+						/>
+				</mx:FormItem>
+
+			</mx:HBox>
+	
+		</mx:Form>
+		
+	</mx:VBox>
+	
+</mx:HBox>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Layer Editor" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Layers_DTO;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var layer:Layer;
+			
+            public static function open(parent:DisplayObject, layer:Layer, modal:Boolean = true):LayerEditPopup
+            {
+                var popup:LayerEditPopup = new LayerEditPopup();
+                
+                popup.layer = layer;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	initCombos();
+            }
+            
+            private function initCombos():void 
+            {
+            	if (layer == null)
+            		return;
+
+           		comboLayerType.selectedItemVal = layer.layerDTO.LayerType;
+           		comboAttachment.selectedItemVal = layer.layerDTO.Attachment;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vLayerType.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	layer.layerDTO.LayerType = comboLayerType.selectedItem as String;
+            	layer.layerDTO.Description = txtDescription.text;
+            	layer.layerDTO.Attachment = comboAttachment.selectedItem as String;
+            }
+            
+            private function storeLayer():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreLayer, layer.layerDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(layer.layerDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreLayer(storedLayer:Layers_DTO):void 
+            {
+            	layer.layerDTO = storedLayer;
+            	dispatchEvent(new Event("closeRequest"));
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	if (!isFormValid())
+            		return;
+            		
+            	storeLayer();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vLayerType" source="{comboLayerType}" property="selectedLabel" required="true"/>
+	
+	<mx:Form id="clientForm">
+		<mx:FormItem label="Layer Type" required="true">
+			<view:QuickBaseItemComboBox id="comboLayerType" 
+				dtoType="{Layers_DTO}" dto="{layer.layerDTO}"
+				selectedItemVal="{layer.layerDTO.LayerType}"  
+				tableField="LayerType" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Description" required="true">
+			<mx:TextArea id="txtDescription" text="{layer.layerDTO.Description}" width="100%" height="50"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Method of Attachment" required="true">
+			<view:QuickBaseItemComboBox id="comboAttachment" 
+				dtoType="{Layers_DTO}" dto="{layer.layerDTO}"
+				selectedItemVal="{layer.layerDTO.Attachment}"  
+				tableField="Attachment" width="100%"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

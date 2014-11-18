@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="shoppingCartQuick"
+	enabled="{currentCustomer.shoppingCart != null}">
+	
+    <mx:Metadata>
+        [Event(name="openShoppingCart", type="flash.events.Event")]
+        [Event(name="checkoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CustomerUI;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.PropertyChangeEvent;
+			
+			[Bindable] public var currentCustomer:CustomerUI;
+			
+			private function onShoppingCartClick():void 
+			{
+				dispatchEvent(new Event("openShoppingCart"));
+			}
+
+			private function onCheckoutClick():void 
+			{
+				dispatchEvent(new Event("checkoutRequest"));
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Box styleName="imageCart" width="16" height="16"/>
+	
+		<mx:VRule height="30"/>
+	
+		<mx:VBox id="boxEmpty" 
+			width="100%" height="100%"
+			visible="{currentCustomer.shoppingCart.totalItems == 0}"
+			includeInLayout="{currentCustomer.shoppingCart.totalItems == 0}"
+			verticalAlign="middle">
+			<mx:Label text="Your cart is empty."/>
+		</mx:VBox>
+	
+		<mx:VBox id="boxItems"
+			width="100%" height="100%"
+			visible="{!boxEmpty.visible}" includeInLayout="{!boxEmpty.visible}"
+			horizontalGap="0" verticalGap="-5">
+			<mx:HBox>
+				<mx:Label text="Items:"/>
+				<mx:Label id="lblTotalItems" text="{currentCustomer.shoppingCart.totalItems}" fontWeight="bold" width="{lblTotal.width}"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Total:"/>
+				<mx:Label id="lblTotal" text="${currentCustomer.shoppingCart.total.toFixed(2)}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Spacer height="100%"/>
+	<mx:HBox width="100%">
+		<mx:Button label="View Cart" height="22" width="80" minWidth="50"
+			enabled="{currentCustomer.shoppingCart.totalItems &gt; 0}"
+			click="onShoppingCartClick()" styleName="mainTopBarButton"/>
+		<mx:Button label="Check Out" height="22" width="80" minWidth="50"
+			enabled="{currentCustomer.shoppingCart.totalItems &gt; 0}"
+			click="onCheckoutClick()" styleName="mainTopBarButton"/>
+	</mx:HBox>
+</mx:VBox>

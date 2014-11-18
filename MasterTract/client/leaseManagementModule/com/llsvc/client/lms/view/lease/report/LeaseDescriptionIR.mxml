@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" verticalCenter="0">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseTract;
+			
+            [Embed(source="assets/icons16/bullet_green.png")]
+            [Bindable]
+            private var imgGreen:Class;
+
+            [Embed(source="assets/icons16/bullet_red.png")]
+            [Bindable]
+            private var imgRed:Class;
+
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{LeaseTract(data).qqs.length > 0 ? imgGreen : imgRed}"/>
+	
+	<mx:Label text="{LeaseTract(data).tract}" left="16" width="100%"/>
+</mx:Canvas>

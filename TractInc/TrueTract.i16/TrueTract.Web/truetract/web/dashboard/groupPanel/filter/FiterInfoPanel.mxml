@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="resetFilterRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.DateRange;
+            import truetract.domain.DocumentFilter;
+            import truetract.plotter.domain.DictionaryRegistry;
+
+            import mx.events.PropertyChangeEvent;
+
+            private var _filter:DocumentFilter;
+            [Bindable] public function get filter():DocumentFilter { return _filter; }
+            public function set filter(value:DocumentFilter):void
+            {
+                _filter = value;
+
+                if (_filter) 
+                {
+                    _filter.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, 
+                        function(event:*):void { rebuildFilterString() });
+                }
+
+                rebuildFilterString();
+            }
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            private function reset():void
+            {
+                dispatchEvent(new Event("resetFilterRequest"));
+            }
+
+            private function rebuildFilterString():void
+            {
+                filterInfoText.text = "";
+
+                if (null == filter) return;
+
+                var result:String = "";
+                var addParam:Function = function(paramName:String, paramValue:String):void
+                {
+                    result += (result.length > 0 ? "; " : "") + 
+                        paramName + ": <b>" + paramValue + "</b>";
+                }
+
+                var addDateRangeParam:Function = function(paramName:String, range:DateRange):void
+                {
+                    result += (result.length > 0 ? "; " : "") + 
+                        paramName + " from <b>" + 
+                            df.format(range.dateFrom) + "</b> to <b>" +
+                            df.format(range.dateTo);
+                }
+
+                if (filter.stateId != 0) {
+                    addParam("State", dictionary.getState(filter.stateId).@Name);
+                }
+
+                if (filter.countyId != 0) {
+                    addParam("County", dictionary.getCountyName(filter.stateId, filter.countyId));
+                }
+
+                if (filter.docTypeId != 0) {
+                    addParam("Doc.Type", dictionary.getDocumentType(filter.docTypeId).@Name);
+                }
+
+                if (filter.docNumber != null) {
+                    addParam("Doc.Number", filter.docNumber);
+                }
+
+                if (filter.volume != null) {
+                    addParam("Volume", filter.volume);
+                }
+
+                if (filter.page != null) {
+                    addParam("Page", filter.page);
+                }
+
+                if (filter.buyer != null) {
+                    addParam("Buyer", filter.buyer);
+                }
+
+                if (filter.seller != null) {
+                    addParam("Seller", filter.seller);
+                }
+
+                if (filter.signedRange != null) {
+                    addDateRangeParam("Signed", filter.signedRange);
+                }
+
+                if (filter.filedRange != null) {
+                    addDateRangeParam("Filed", filter.filedRange);
+                }
+
+                if (filter.createdRange != null) {
+                    addDateRangeParam("Created", filter.createdRange);
+                }
+
+                filterInfoText.htmlText = result;
+                filterInfoText.validateNow();
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="DD/MM/YYYY"/>
+
+    <mx:HBox 
+        paddingLeft="5" paddingRight="5" verticalAlign="middle" width="100%">
+
+        <mx:Button 
+            overSkin="@Embed('/assets/Close_Over.png')"
+            upSkin="@Embed('/assets/Close_Up.png')" 
+            downSkin="@Embed('/assets/Close_Down.png')"
+            toolTip="Reset Filter"
+            width="11" height="11"
+            click="reset()" />
+        
+        <mx:Text id="filterInfoText" width="100%"/>
+        
+    </mx:HBox>
+
+</mx:HBox>

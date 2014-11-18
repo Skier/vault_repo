@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%">
+
+	<mx:Label
+		id="itemRateLabel"
+		fontFamily="Courier"
+		width="100%"
+		styleName="{((0 == data.BillRateTemp || isNaN(data.BillRateTemp) &amp;&amp; (null == data.RelatedBillItemTypeTemp)))? 'emptyLabel': 'filledLabel'}"
+		text="{(0 == data.BillRateTemp || isNaN(data.BillRateTemp))? ((null == data.RelatedBillItemTypeTemp)? '': '*'): data.BillRateTemp.toFixed(3)}" />
+
+</mx:Canvas>

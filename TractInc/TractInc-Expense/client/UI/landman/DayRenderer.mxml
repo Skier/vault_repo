@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:components="components.*"
+	width="100%"
+	height="100%"
+	click="onDay_clickHandler()"
+	enabled="{(null != date) &amp;&amp; (null != data)}"
+	backgroundColor="#ffffff"
+	initialize="onInit()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.BillItemTypeDataObject;
+			import App.Entity.BillItemStatusDataObject;
+			import App.Entity.AssetAssignmentDataObject;
+			import App.Entity.BillItemDataObject;
+			import mx.managers.DragManager;
+			import mx.events.DragEvent;
+			import mx.collections.ListCollectionView;
+			import util.ArrayUtil;
+			import util.DateUtil;
+			import common.StatusesRegistry;
+			import common.TypesRegistry;
+			import mx.controls.DataGrid;
+			import mx.events.ListEvent;
+			import calendar.Calendar;
+			import mx.events.FlexEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import util.NumberUtil;
+			import UI.landman.DailyEvent;
+			import UI.landman.DailyEventGroup;
+			import mx.core.Application;
+			import mx.events.DynamicEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.controls.CheckBox;
+			
+			[Bindable] public var date:Date;
+			
+			[Bindable] private var day:int;
+        
+			[Bindable] public var isComposedMode:Boolean = false;
+			[Bindable] public var isExtendedMode:Boolean;
+			
+			[Bindable] public var projects:ArrayCollection;
+			
+			[Bindable]
+    	    private var isCurrentDay:Boolean;
+    	    
+    	    [Bindable]
+    	    private var diaryView:DiaryView;
+	        
+			public function onDay_clickHandler():void {
+				if (!isExtendedMode) {
+					var e:DynamicEvent = new DynamicEvent("toggleDayState");
+					e.date = this.date;
+					Application.application.dispatchEvent(e);
+				}
+			}
+			
+			private function onInit():void {
+				Application.application.addEventListener("toggleDayState", toggleDayState);
+				Application.application.addEventListener("toggleCalendarState", toggleCalendarState);
+				addEventListener(FlexEvent.DATA_CHANGE, onDataChange);
+				addEventListener(DragEvent.DRAG_ENTER, onDragEnter);
+				addEventListener(DragEvent.DRAG_OVER, onDragOver);
+				addEventListener(DragEvent.DRAG_DROP, onDragDrop);
+			}
+			
+        	public function onDragEnter(event:DragEvent):void {
+            	if (event.dragSource.hasFormat('items')) { //  && !isComposedMode
+	                DragManager.acceptDragDrop(DayRenderer(event.currentTarget));
+    	        }
+        	}
+
+        	public function onDragOver(event:DragEvent):void {
+            	if (null != date) { //  && !isComposedMode
+            		var group:DailyEventGroup = DailyEventGroup(data);
+                	if (group.bill.isBillEditable() && (8 > group.totalHours)) {
+                    	DragManager.showFeedback(DragManager.COPY);
+                    	return;
+                	}
+            	}
+            	DragManager.showFeedback(DragManager.NONE);
+        	}
+
+        	public function onDragDrop(evt:DragEvent):void {
+        		onDay_clickHandler();
+        		
+            	var group:DailyEventGroup = DailyEventGroup(data);
+            	if (null != evt.dragSource.dataForFormat('items')) {
+                	var assignment:AssetAssignmentDataObject = AssetAssignmentDataObject(evt.dragSource.dataForFormat('items')[0]);
+                	parentDocument.parentDocument.Controller.callItemsView(date, assignment);
+            	}
+        	}
+        	
+			private function onDataChange(evt:FlexEvent):void {
+				diaryView = DiaryView(Calendar(parentDocument).parentDocument);
+				if (null == data) {
+					date = null;
+    	    		isCurrentDay = false;
+					projects = null;
+				} else {
+					var group:DailyEventGroup = DailyEventGroup(data);
+					date = group.date;
+					day = date.date;
+		        	var current:Date = new Date();
+    	    		isCurrentDay = current.date == date.date
+        				&& current.month == date.month
+	   	    			&& current.fullYear == date.fullYear;
+					projects = group.events;
+					
+					if (null != dgProjectsOn) {
+						dgProjectsOn.invalidateDisplayList();
+					}
+				}
+				toggleDayStateOff();
+				invalidateDisplayList();
+			}
+			
+			private function toggleDayState(event:DynamicEvent):void 
+			{
+				var d:Date = event.date as Date;
+				if (date != null && !isComposedMode) {
+
+					if (d != null && d.date == date.date) {
+						isExtendedMode = !isExtendedMode;
+						if (isExtendedMode) {
+							this.width = 250;
+							this.height = 250;
+						} else {
+							toggleDayStateOff();
+						}
+					} else {
+						toggleDayStateOff();
+					}
+
+					validateDisplayList();
+
+				}
+			}
+			
+			private function toggleDayStateOff():void {
+				isExtendedMode = false;
+				this.percentWidth = 100;
+				this.percentHeight = 100;
+				if ((null != dgProjectsOff)
+						&& (null != dgProjectsOn)) {
+					this.dgProjectsOff.selectedItem = null;
+					this.dgProjectsOn.selectedItem = null;
+				}
+			}
+
+			private function toggleCalendarState(event:DynamicEvent):void {
+				var s:Boolean = event.isComposedMode as Boolean;
+				if (s) {
+					isComposedMode = true;
+				} else {
+					isComposedMode = false;
+				}
+			}
+
+			private function onClickCollapse(event:MouseEvent):void 
+			{
+				event.stopPropagation();
+				var e:DynamicEvent = new DynamicEvent("toggleDayState");
+				e.date = this.date;
+				Application.application.dispatchEvent(e);
+			}
+			
+			private function setProjectColor(data:DailyEvent, color:uint):uint {
+				if (!data.isEditable) {
+					return 0xC0C0C0;
+				}
+				
+				switch (data.status) {
+					case BillItemStatusDataObject.BILL_ITEM_STATUS_SUBMITTED:
+						return 0xA0A0A0;
+					case BillItemStatusDataObject.BILL_ITEM_STATUS_CHANGED:
+						return 0x90B090;
+					case BillItemStatusDataObject.BILL_ITEM_STATUS_NEW:
+						return 0x50B050;
+					case BillItemStatusDataObject.BILL_ITEM_STATUS_REJECTED:
+						return 0xB05050;
+					default:
+						return 0xD0D0D0;
+				}
+			}
+			
+			public function onItemClick(evt:Event):void {
+				var group:DailyEventGroup = DailyEventGroup(data);
+				group.composition = Composition(diaryView.dgCompositeItems.selectedItem);
+				
+				var event:DailyEvent = DailyEvent(dgProjectsOn.selectedItem);
+				
+    	        if (null == event) {
+        	        event = new DailyEvent(group, null, event.assignment);
+            	    var dailyBillItem:BillItemDataObject = new BillItemDataObject();
+                	dailyBillItem.BillId = group.bill.BillId;
+	                dailyBillItem.Qty = 0;
+    	            dailyBillItem.AssetAssignmentId = event.assignment.AssetAssignmentId;
+        	        dailyBillItem.BillRate = event.assignment.ratesHash[BillItemTypeDataObject.BILL_ITEM_TYPE_DAILY_BILLING].BillRate;
+            	    dailyBillItem.BillItemTypeId = BillItemTypeDataObject.BILL_ITEM_TYPE_DAILY_BILLING;
+                	dailyBillItem.Status = BillItemStatusDataObject.BILL_ITEM_STATUS_NEW;
+	                dailyBillItem.BillingDate = DateUtil.format(date);
+	                
+    	            event.addBillItem(dailyBillItem);
+            	}
+            	
+            	var itemsView:ItemsView = ItemsView.Open(diaryView, true);
+            	var itemsModel:ItemsModel = itemsView.Controller.Model;
+            	
+            	itemsModel.dailyEvent = event;
+            	itemsModel.bill = group.bill;
+            	itemsModel.assignment = event.assignment;
+
+        	    var dailyItemArray:Array = new Array();
+    	        dailyItemArray.push(event.dailyBillItem);
+	            itemsView.dailyBillingGrid.dataProvider = dailyItemArray;
+            	
+	            ChangeWatcher.watch(event.dailyBillItem, ['QtyTemp'], itemsView.Controller.dailyQtyChanged);
+        	    if (event.isEditable && ((event.billItems.length > 0) || (0 != event.dailyBillItem.Qty))) {
+        	    	itemsView.Controller.canSave = true;
+    	            itemsView.Controller.AddBillItem();
+	            }
+            
+	            itemsView.billItemGrid.dataProvider = event.billItems;
+            	
+        	    var toFilter:ArrayCollection = new ArrayCollection();
+    	        ArrayUtil.addRange(toFilter, TypesRegistry.instance.billItemTypes);
+	            itemsModel.billItemTypesView = new ListCollectionView(toFilter);
+            	itemsView.Controller.processBillItemTypes();
+        	    
+    	        itemsView.Controller.BillingDate = date;
+	
+    	        itemsView.Controller.recalcTotalAmount();
+	            itemsView.enabled = true;
+			}
+			
+			private function onAddProjectClick():void {
+				openSelectProject();
+			}
+			
+			public function onChangeProjectClick():void {
+				openSelectProject(DailyEvent(this.dgProjectsOn.selectedItem));
+			}
+			
+			private function onRemoveProjectClick(data:Object):void {
+				diaryView.Controller.removeProject(DailyEvent(data));
+			}
+			
+			private function openSelectProject(event:DailyEvent = null):void 
+			{
+				var newList:ArrayCollection = new ArrayCollection();
+				var originalList:ListCollectionView = diaryView.Controller.Model.currentAssignmentsFiltered;
+				
+				for each (var assignment:AssetAssignmentDataObject in originalList) {
+					if (!existInEvents(assignment)) {
+						newList.addItem(assignment);
+					}
+				}
+			
+				SelectProjectView.Open(diaryView, date, newList, event);
+			}
+			
+			private function existInEvents(assignment:AssetAssignmentDataObject):Boolean 
+			{
+				for each (var event:DailyEvent in projects) {
+					if (event.assignment == assignment) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox
+		id="header"
+		width="100%"
+		backgroundColor="#dddddd"
+		paddingLeft="3"
+		paddingRight="3"
+		paddingTop="3"
+		paddingBottom="3"
+		horizontalGap="3"
+		>
+		
+		<mx:CheckBox
+			id="cbIncludeDay"
+			visible="{isComposedMode &amp;&amp; null != date}"
+			includeInLayout="{null != date}"
+			selected="{data.selected}"
+			click="{data.setSelected(!data.selected)}"
+			enabled="{0 &lt; DailyEventGroup(data).events.length &amp;&amp; ((isComposedMode)? DailyEventGroup(data).isCompositionEditable: DailyEventGroup(data).isEditable)}"
+			/>
+		<mx:Spacer width="100%"/>
+		<mx:Label
+			text="{day.toString()}"
+			color="{(isCurrentDay)? 0x60D060: 0x000000}"
+			fontWeight="bold"
+			visible="{null != date}"
+			includeInLayout="{null != date}"
+			/>
+		<mx:Image
+			source="@Embed(source='/assets/collapse.png')"
+			visible="{isExtendedMode}"
+			click="onClickCollapse(event)"/>
+		
+	</mx:HBox>
+	
+	<mx:ViewStack
+		id="vsProjects"
+		selectedIndex="{ isExtendedMode ? 0 : 1 }"
+		width="100%"
+		height="100%"
+		visible="{null != date}"
+		includeInLayout="{null != date}"
+		>
+		
+		<mx:VBox
+			width="100%" height="100%"
+			paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" verticalGap="3"
+			backgroundColor="#eeeeee"
+			>
+
+			<mx:HBox
+				id="boxButtons"
+				height="25"
+				width="100%"
+				backgroundColor="#eeeeee"
+				verticalAlign="middle"
+				visible="{DailyEventGroup(data).bill.isBillEditable()}"
+				includeInLayout="{DailyEventGroup(data).bill.isBillEditable()}">
+
+				<mx:Spacer width="100%"/>
+				
+				<mx:LinkButton
+					label="Add"
+					icon="@Embed(source='/assets/plus.png')"
+					click="onAddProjectClick()"/>
+
+				<mx:LinkButton
+					label="Remove"
+					icon="@Embed(source='/assets/minus.png')"
+					enabled="{(null != dgProjectsOn.selectedItem) &amp;&amp; DailyEvent(dgProjectsOn.selectedItem).isRemovable()}"
+					click="onRemoveProjectClick(dgProjectsOn.selectedItem)"
+					/>
+
+			</mx:HBox>
+			
+			<components:ColoredDataGrid
+				id="dgProjectsOn"
+				dataProvider="{projects}"
+				width="100%"
+				height="100%"
+				sortableColumns="false"
+				rowColorFunction="setProjectColor"
+				itemDoubleClick="onItemClick(event)"
+				doubleClickEnabled="true">
+				<components:columns>
+					<mx:DataGridColumn
+						headerText="Project"
+						dataField="subAfeShort">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:HBox width="100%">
+									<mx:Label
+										text="{data.subAfeShort}"
+										width="100%"
+										doubleClickEnabled="true"
+										toolTip="{data.subAfe}" />
+									<mx:Button
+										label="..."
+										width="24"
+										click="outerDocument.onChangeProjectClick()"
+										enabled="{data.canChangeProject()}" />
+								</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						width="60"
+						headerText="Days"
+						dataField="daysString"/>
+					<mx:DataGridColumn
+						width="70"
+						textAlign="right"
+						fontWeight="bold"
+						headerText="Amount"
+						dataField="amountString"/>
+				</components:columns>
+			</components:ColoredDataGrid>
+		
+			<mx:HBox
+				width="100%"
+				height="25"
+				horizontalAlign="right"
+				backgroundColor="#eeeeee"
+				verticalAlign="middle"
+				>
+				<mx:Label
+					text="{NumberUtil.fraction(DailyEventGroup(data).totalHours, 8)}"
+					fontWeight="bold"
+					width="100%"
+					visible="{0 &lt; DailyEventGroup(data).totalHours}"
+					/>
+				<mx:Label
+					text="Total:"
+					visible="{0 &lt; DailyEventGroup(data).totalHours}"
+					/>
+				<mx:Label
+					text="${(Math.round(data.totalBillAmount * 100) / 100).toFixed(2)}"
+					fontWeight="bold"
+					visible="{0 &lt; DailyEventGroup(data).totalHours}"
+					/>
+			</mx:HBox>
+		
+		</mx:VBox>
+		
+		<mx:VBox
+			width="100%"
+			height="100%"
+			paddingLeft="3"
+			paddingRight="3"
+			paddingTop="3"
+			paddingBottom="3"
+			verticalGap="3"
+			backgroundColor="#eeeeee"
+			>
+
+			<components:ColoredDataGrid
+				id="dgProjectsOff"
+				dataProvider="{projects}"
+				width="100%"
+				height="100%"
+				showHeaders="false"
+				selectable="false"
+				rowColorFunction="setProjectColor"
+				toolTip="{data.subAfe}">
+				<components:columns>
+					<mx:DataGridColumn
+						headerText=""
+						width="20"
+						visible="{isComposedMode}"
+						dataField="selected">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:CheckBox
+									selected="{data.selected}"
+									click="{data.selected = !data.selected; data.group.composition.isProceeded = false; data.group.composition.isChanged = true;}"
+									enabled="{((data is DailyEvent)? (data.isCompositionEditable): false)}"
+									/>
+									<!-- enabled="{((data is DailyEvent)? (outerDocument.data.composition.isEnabled &amp;&amp; DailyEvent(data).isEditable()): false)}" -->
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						headerText="Project"
+						dataField="subAfeShort">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:HBox width="100%">
+									<mx:Label
+										text="{data.subAfeShort}"
+										width="100%"
+										toolTip="{data.subAfe}" />
+								</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						visible="{isComposedMode}"
+						headerText="Amount"
+						dataField="compositeAmountString"/>
+				</components:columns>
+			</components:ColoredDataGrid>
+			
+			<mx:HBox
+				width="100%"
+				height="25"
+				horizontalAlign="right"
+				backgroundColor="#eeeeee"
+				verticalAlign="middle">
+				<mx:Label
+					text="{NumberUtil.fraction(DailyEventGroup(data).totalHours, 8)}"
+					fontWeight="bold"
+					width="100%"
+					visible="{0 &lt; DailyEventGroup(data).totalHours}" />
+				<mx:Label 
+					text="${(isComposedMode)? data.compositeAmountString : (Math.round(data.totalBillAmount * 100) / 100).toFixed(2)}"
+					fontWeight="bold"
+					visible="{0 &lt; DailyEventGroup(data).totalHours}" />
+			</mx:HBox>
+		
+		</mx:VBox>
+		
+	</mx:ViewStack>
+	
+	
+</mx:VBox>

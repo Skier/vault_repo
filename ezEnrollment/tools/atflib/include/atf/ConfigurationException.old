@@ -1,0 +1,28 @@
+// ConfigurationException.h: interface for the CConfigurationException class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#if !defined(AFX_CONFIGURATIONEXCEPTION_H__2422147F_5A94_4897_9C43_EB4FA8468870__INCLUDED_)
+#define AFX_CONFIGURATIONEXCEPTION_H__2422147F_5A94_4897_9C43_EB4FA8468870__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <atf/Exception.h>
+
+class CConfigurationException : public CAtfException {
+public:
+    CConfigurationException(const char * file, int line, 
+                      ATF_ERROR code, const char * message): 
+        CAtfException(file, line, code, message){};
+    virtual ~CConfigurationException(){};
+
+};
+
+#define THROW_CONFIGURATION_EXCEPTION(message) \
+{ \
+    throw CConfigurationException(__FILE__, __LINE__, ATF_INVALID_CFG_ERR, message); \
+}
+
+#endif // !defined(AFX_CONFIGURATIONEXCEPTION_H__2422147F_5A94_4897_9C43_EB4FA8468870__INCLUDED_)

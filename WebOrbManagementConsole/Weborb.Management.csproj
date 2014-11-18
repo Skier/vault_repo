@@ -1,0 +1,85 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B90D9FFC-DC61-4FC9-B249-56C97D8CA59F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Weborb.Management</RootNamespace>
+    <AssemblyName>Weborb.Management</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb2\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="weborb, Version=2.1.0.5, Culture=neutral, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeGen\CodeFile.cs" />
+    <Compile Include="CodeGen\CodeDirectory.cs" />
+    <Compile Include="CodeGen\CodeItem.cs" />
+    <Compile Include="CodeGen\Codegenerator.cs" />
+    <Compile Include="CodeGen\CodegeneratorHttpHandler.cs" />
+    <Compile Include="CodeGen\CodegeneratorResult.cs" />
+    <Compile Include="CodeGen\ServiceSerializer.cs" />
+    <Compile Include="ManagementService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceBrowser\Service.cs" />
+    <Compile Include="ServiceBrowser\ServiceDataType.cs" />
+    <Compile Include="ServiceBrowser\ServiceDataTypeContainer.cs" />
+    <Compile Include="ServiceBrowser\ServiceDataTypeField.cs" />
+    <Compile Include="ServiceBrowser\ServiceMethod.cs" />
+    <Compile Include="ServiceBrowser\ServiceMethodArg.cs" />
+    <Compile Include="ServiceBrowser\ServiceNamespace.cs" />
+    <Compile Include="ServiceBrowser\ServiceNode.cs" />
+    <Compile Include="ServiceBrowser\ServiceNodeMap.cs" />
+    <Compile Include="ServiceBrowser\ServiceScanner.cs" />
+    <Compile Include="Tests\ClassA.cs" />
+    <Compile Include="Tests\ClassB.cs" />
+    <Compile Include="Tests\InvokationTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeGen\Templates\ajax-client.xslt" />
+    <Content Include="CodeGen\Templates\arp-framework.xslt" />
+    <Content Include="CodeGen\Templates\cairngorm-framework.xslt" />
+    <Content Include="CodeGen\Templates\codegen.invoke.xslt" />
+    <Content Include="CodeGen\Templates\codegen.xslt" />
+    <Content Include="CodeGen\Templates\codegen.invoke.ajax.xslt" />
+    <Content Include="CodeGen\Templates\flashcomm-fms2.xslt" />
+    <Content Include="CodeGen\Templates\flex-remoting-as2-inline.xslt" />
+    <Content Include="CodeGen\Templates\flex-remoting-as2.xslt" />
+    <Content Include="CodeGen\Templates\flex-remoting-as3.xslt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    styleName="orderHistoryOrderDetailBox"
+    enabled="{!order.isLoading}">
+
+    <mx:Script>
+        <![CDATA[
+            import AerSysCo.UI.Models.OrderDetailUI;
+            import AerSysCo.UI.Models.OrderUI;
+            
+            [Bindable] public var order:OrderUI;
+            
+        ]]>
+    </mx:Script>
+
+    <mx:HBox width="100%" 
+        styleName="orderHistoryOrderDetailHeader">
+        <mx:Label width="100%" text="Purchase Order # {order.PONumber}"/>
+    </mx:HBox>
+    
+    <mx:VBox width="100%" height="100%" verticalGap="5">
+        <mx:HBox width="100%" horizontalGap="5">
+            <mx:VBox styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Submitted Date"/>
+                </mx:Box>
+                
+                <mx:Box width="100%" styleName="orderDetailSectionContent">
+                    <mx:Label text="{order.orderDateString + ' ' + order.orderTimeString}"/>
+                </mx:Box>
+            </mx:VBox>
+                
+            <mx:VBox styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Customer #"/>
+                </mx:Box>
+                
+                <mx:Box width="100%" styleName="orderDetailSectionContent">
+                    <mx:Label text="{order.customer.customerNumber}"/>
+                </mx:Box>
+            </mx:VBox>
+    
+            <mx:VBox styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Ordered By"/>
+                </mx:Box>
+                
+                <mx:Box width="100%" styleName="orderDetailSectionContent">
+                    <mx:Label text="{order.createdByUser}"/>
+                </mx:Box>
+            </mx:VBox>
+    
+            <mx:VBox styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Grand Total"/>
+                </mx:Box>
+                
+                <mx:Box width="100%" styleName="orderDetailSectionContent">
+                    <mx:Label text="{order.grandTotalString}"/>
+                </mx:Box>
+            </mx:VBox>
+    
+            <mx:VBox width="100%" styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Factory Order Number"/>
+                </mx:Box>
+                
+                <mx:Box width="100%" styleName="orderDetailSectionContent">
+                    <mx:Label text="{order.MACPACOrderNumber}"/>
+                </mx:Box>
+            </mx:VBox>
+        </mx:HBox>
+        
+        <mx:HRule width="100%"/>
+        
+        <mx:HBox width="100%" horizontalGap="5">
+            <mx:VBox width="100%" height="100%" styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Sold To"/>
+                </mx:Box>
+
+                <mx:VBox width="100%" height="100%" 
+                    styleName="orderDetailSectionContentMultiline">
+                    <mx:Text width="100%" 
+                        text="{order.soldName}"/>
+                    <mx:Text width="100%" 
+                        text="{order.soldAddress1 
+                                + ' ' + order.soldAddress2}"/>
+                    <mx:Text width="100%" 
+                        text="{order.soldCity + ', ' 
+                                + order.soldState + ' ' 
+                                + order.soldZip}"/>
+                </mx:VBox>
+            </mx:VBox>
+
+            <mx:VBox width="100%" height="100%" styleName="orderDetailSectionBox">
+                <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                    <mx:Label text="Ship To"/>
+                </mx:Box>
+                
+                <mx:VBox width="100%" height="100%" 
+                    styleName="orderDetailSectionContentMultiline">
+                    <mx:Text width="100%" 
+                        text="{order.shipName}"/>
+                    <mx:Text width="100%" 
+                        text="{order.shipAddress1 
+                                + ' ' + order.shipAddress2}"/>
+                    <mx:Text width="100%" 
+                        text="{order.shipCity + ', ' 
+                                + order.shipState + ' ' 
+                                + order.shipZip}"/>
+                    <mx:Text width="100%" 
+                        text="{order.shipCountry}"/>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:HBox>
+        
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                <mx:Label text="Shipping Instructions"/>
+            </mx:Box>
+            
+            <mx:VBox width="100%" styleName="orderDetailSectionContentMultiline">
+                <mx:HBox width="100%" horizontalGap="0">
+                    <mx:Label text="Mark Order:" width="120" textAlign="right" fontWeight="bold"/>
+                    <mx:Label text="{order.markOrder}"/>
+                </mx:HBox>
+
+                <mx:HBox width="100%" horizontalGap="0">
+                    <mx:Label text="Jobsite Phone #:" width="120" textAlign="right" fontWeight="bold"/>
+                    <mx:Label text="{order.jobsiteContactPh}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:Box width="100%" styleName="orderDetailSectionHeader">
+                <mx:Label text="Order Detail" fontWeight="bold"/>
+            </mx:Box>
+            
+            <mx:HBox width="100%" styleName="orderDetailSectionContent">
+                <mx:HBox width="100%" horizontalGap="0">
+                    <mx:Label text="Warehouse:" fontWeight="bold"/>
+                    <mx:Label text="{order.warehouse.warehouseName}"/>
+                </mx:HBox>
+
+                <mx:HBox width="100%">
+                    <mx:Label text="PO Number:" fontWeight="bold"/>
+                    <mx:Label text="{order.PONumber}"/>
+                </mx:HBox>
+
+                <mx:HBox width="100%">
+                    <mx:Label text="Online Order Confirmation Number:" fontWeight="bold"/>
+                    <mx:Label text="{order.orderId.toString()}"/>
+                </mx:HBox>
+            </mx:HBox>
+        </mx:VBox>
+        
+        <mx:VBox width="100%" styleName="orderDetailSectionBox">
+            <mx:HBox width="100%" styleName="orderDetailSectionHeader">
+                <mx:VBox id="boxLine" width="50" horizontalAlign="center">
+                    <mx:Label text="Line"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxSku" width="60" horizontalAlign="center">
+                    <mx:Label text="SKU"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxModel" width="70" horizontalAlign="center">
+                    <mx:Label text="Model"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxDescription" width="100%" horizontalAlign="left">
+                    <mx:Label text="Description"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxQty" width="50" horizontalAlign="right">
+                    <mx:Label text="Qty"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxPrice" width="70" horizontalAlign="right">
+                    <mx:Label text="Unit Price"/>
+                </mx:VBox>
+            
+                <mx:VBox id="boxSubtotal" width="100" horizontalAlign="right">
+                    <mx:Label text="Subtotal"/>
+                </mx:VBox>
+            </mx:HBox>
+
+            <mx:Repeater id="rptDetails" width="100%" dataProvider="{order.details}">
+                <mx:HBox width="100%">
+                    <mx:VBox width="{boxLine.width}" horizontalAlign="center" horizontalScrollPolicy="off">
+                        <mx:Label text="{OrderDetailUI(rptDetails.currentItem).lineNumber.toString()}"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxSku.width}" horizontalAlign="center" horizontalScrollPolicy="off">
+                        <mx:Label text="{OrderDetailUI(rptDetails.currentItem).sku}"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxModel.width}" horizontalAlign="center" horizontalScrollPolicy="off">
+                        <mx:Label text="{OrderDetailUI(rptDetails.currentItem).modelName}"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxDescription.width}" horizontalAlign="left" horizontalScrollPolicy="off">
+                        <mx:Label text="{OrderDetailUI(rptDetails.currentItem).description}" minWidth="50"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxQty.width}" horizontalAlign="right" horizontalScrollPolicy="off">
+                        <mx:Label text="{OrderDetailUI(rptDetails.currentItem).qty}"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxPrice.width}" horizontalAlign="right" horizontalScrollPolicy="off">
+                        <mx:Label text="${Number(OrderDetailUI(rptDetails.currentItem).price * OrderDetailUI(rptDetails.currentItem).multiplier).toFixed(2)}"/>
+                    </mx:VBox>
+                
+                    <mx:VBox width="{boxSubtotal.width}" horizontalAlign="right" horizontalScrollPolicy="off">
+                        <mx:Label text="${OrderDetailUI(rptDetails.currentItem).cost.toFixed(2)}"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:Repeater>
+            
+            <mx:HBox width="100%" horizontalAlign="right">
+                <mx:VBox verticalGap="-3" fontWeight="bold">
+                    <mx:HRule width="100%"/>
+                    
+                    <mx:HBox width="100%">
+                        <mx:Label text="{order.warehouse.warehouseName} SubTotal:" width="100%" textAlign="right"/>
+                        <mx:Label width="150" text="${order.total.toFixed(2)}" textAlign="right"/>
+                    </mx:HBox>
+    
+                    <mx:HBox width="100%">
+                        <mx:Label text="Ship via {order.shippingType.shippingType}:" width="100%" textAlign="right"/>
+                        <mx:Label width="150" text="${order.shippingTotal.toFixed(2)}" textAlign="right"/>
+                    </mx:HBox>
+    
+                    <mx:HBox width="100%">
+                        <mx:Label text="{order.warehouse.name} Total:" width="100%" textAlign="right"/>
+                        <mx:Label width="150" text="${order.grandTotal.toFixed(2)}" textAlign="right"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+</mx:VBox>

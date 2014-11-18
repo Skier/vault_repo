@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.User;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.core.UIComponent;
+			import com.dalworth.leadCentral.service.UserService;
+			import com.dalworth.leadCentral.MainModel;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			private function onUpdate():void 
+			{
+				var newUser:User = viewUserInfo.getUser();
+				
+				isBusy = true;
+				UserService.getInstance().saveUser(newUser, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							isBusy = false;
+							MainModel.getInstance().currentUser.applyFields(event.result as User);
+						},
+						function (event:FaultEvent):void 
+						{
+							isBusy = false;
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=149";
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#FFFFFF" borderColor="#EEEEEE" borderStyle="solid" verticalGap="0"
+		enabled="{!isBusy}">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Current User Information {'[' + viewUserInfo.user.Name + ']'}" fontSize="24" color="#666666" width="100%" minWidth="100"/>
+	        <mx:Button label="Update" click="onUpdate()" fontSize="14" height="35" width="120" textAlign="center"/>
+		</mx:HBox> 
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<user:UserEditPanel id="viewUserInfo" width="100%" user="{MainModel.getInstance().currentUser}"/>
+	</mx:VBox>
+</mx:Canvas>

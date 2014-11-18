@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.LeaseClause;
+        
+            [Embed(source="assets/icons16/bell.png")]
+            [Bindable]
+            private var imgBell:Class;
+
+            [Embed(source="assets/icons16/bell_disabled.png")]
+            [Bindable]
+            private var imgBellDisabled:Class;
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{LeaseClause(data).alarms.length != 0 ? imgBell : imgBellDisabled}" width="16" height="16"/>
+    
+</mx:HBox>

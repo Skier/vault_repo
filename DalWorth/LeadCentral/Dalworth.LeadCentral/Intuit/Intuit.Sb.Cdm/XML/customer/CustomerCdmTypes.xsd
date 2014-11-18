@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2"
+	targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:include schemaLocation="./PartyCdmTypes.xsd"/>
+	<xs:include schemaLocation="../common/Groups.xsd"/>
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<!-- Element definitions -->
+	<!-- Party element definition -->
+	<xs:element name="Person" type="Person"/>
+	<xs:element name="Organization" type="Organization"/>
+	<xs:element name="Persons" type="Persons"/>
+	<xs:element name="Organizations" type="Organizations"/>
+	<xs:element name="Party" type="Party"/>
+	<xs:element name="Parties" type="Parties"/>
+	<!-- Role element definition -->
+	<xs:element name="Customer" type="Customer" substitutionGroup="CdmObject"/>
+	<xs:element name="CustomerType" type="CustomerType" substitutionGroup="CdmObject"/>
+	<xs:element name="Employee" type="Employee" substitutionGroup="CdmObject"/>
+	<xs:element name="JobType" type="JobType" substitutionGroup="CdmObject"/>
+	<xs:element name="OtherName" type="OtherName" substitutionGroup="CdmObject"/>
+	<xs:element name="Vendor" type="Vendor" substitutionGroup="CdmObject"/>
+	<xs:element name="VendorType" type="VendorType" substitutionGroup="CdmObject"/>
+	<!--Start complex type definitions -->
+	<xs:complexType name="Customer">
+		<xs:annotation>
+			<xs:documentation> Describes the Party as a Customer Role view </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RoleBase">
+				<xs:sequence>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Active Customer may be hidden from most display purposes</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ShowAs" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies how the name of the customer should be presented e.g. on credit cards.
+Cloud Max Length: 256
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 41
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="CustomerTypeReferenceGroup" minOccurs="0"/>
+					<xs:group ref="SalesTermReferenceGroup" minOccurs="0"/>
+					<xs:group ref="SalesRepReferenceGroup" minOccurs="0"/>
+					<xs:group ref="SalesTaxCodeReferenceGroup" minOccurs="0"/>
+					<xs:group ref="TaxChoiceGroup" minOccurs="0"/>
+					<xs:group ref="PaymentMethodReferenceGroup" minOccurs="0"/>
+					<xs:group ref="PriceLevelReferenceGroup" minOccurs="0"/>
+					<xs:element name="OpenBalance" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the open balance amount (unpaid amount by customer).
+								For the Add request it represents the Open Balance for the customer.
+								When returned in response to the Query request it represents the Current Open Balance (unpaid amount) of that customer.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="OpenBalanceDate" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the date of the Open Balance for the Add request.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="OpenBalanceWithJobs" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the cumulative open balance amount for the current customer (or Job) and all its sub-jobs.
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CreditLimit" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the maximum amount of an unpaid customer balance.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="AcctNum" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Name or number of the account associated with this customer.
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 99
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="OverDueBalance" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the over due balance amount
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TotalRevenue" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the total revenue amount
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TotalExpense" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the total expense amount
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="JobInfo" type="JobInfo" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Information about the job. Relevant only if the Customer is not just a person or organization, but also represents the actual task or project.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CustomerType">
+		<xs:annotation>
+			<xs:documentation>Customer types allow categorizing customers in ways that are meaningful to the business. For example, one could set up customer types so that they indicate which industry a customer represents, a customer's geographic location, or how a customer first heard about the business. The categorization then can be used for reporting or mailings.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>User recognizable name for the Customer Type.
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Required for the Add request.
+Max Length: 31
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="CustomerTypeParentReferenceGroup" minOccurs="0"/>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Whether or not active inactive customer types may be hidden from most display purposes and may not be used on financial transactions</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Employee">
+		<xs:annotation>
+			<xs:documentation> Describes the Party as a Employee Role view </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RoleBase">
+				<xs:sequence>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Active Employee may be hidden from most display purposes</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ShowAs" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies how the name of the employee should be presented e.g. on paychecks.
+Cloud Max Length: 256
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 41
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="EmployeeType" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the Employee type. For QB DT the acceptable values are defined in the EmployeeTypeEnum.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="EmployeeNumber" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the number of the employee (or account) in the employer's directory.
+Cloud Max Length: 256
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 99
+Unsupported field.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="BillableTime" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>BillableTime should be true if this employee’s hours are typically billed to customers. QBO only.
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Unsupported field.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="HiredDate" type="xs:date" minOccurs="0"/>
+					<xs:element name="ReleasedDate" type="xs:date" minOccurs="0"/>
+					<xs:element minOccurs="0" name="UseTimeEntry"
+						type="TimeEntryUsedForPaychecksEnum">
+						<xs:annotation>
+							<xs:documentation>Specifies whether the Time Entry (time sheets) should be used to create paychecks for the employee.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="JobInfo">
+		<xs:sequence>
+			<xs:element name="Status" type="JobStatusEnum" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>current status of the job. The acceptable values are defined in the JobStatusEnum.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StartDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="ProjectedEndDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="EndDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 4000
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 99
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="JobTypeReferenceGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="JobType">
+		<xs:annotation>
+			<xs:documentation>Job types allow categorizing jobs so that similar jobs can be grouped and subtotaled on reports. Ultimately, they will help in determining which jobs are most profitable for the business.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>User recognizable name for the Job Type.
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Required for the Add request.
+Max Length: 31
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="JobTypeParentReferenceGroup" minOccurs="0"/>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Whether or not active inactive job types may be hidden from most display purposes and may not be used on financial transactions</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Label">
+		<xs:annotation>
+			<xs:documentation> Post-it tag like usage on any of the entities, normally LabelType is used with a list
+Unsupported type.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies some text that will be added as a short post it notes tag to the entity </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Note">
+		<xs:annotation>
+			<xs:documentation> Specifies free text information that can be associated with a CDM type </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="Content" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the free form text content.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Organizations">
+		<xs:sequence>
+			<xs:element name="Organization" type="Organization" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OtherName">
+		<xs:annotation>
+			<xs:documentation> Describes the Party as a Other Name Role view (aka Payee)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RoleBase">
+				<xs:sequence>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Active Customer may be hidden from most display purposes</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="AcctNum" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Name or number of the account associated with this other name (payee).
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 41
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Party">
+		<xs:annotation>
+			<xs:documentation>Specifies the base Party that describes the party model.
+Unsupported type.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="PartyGroup"/>
+					<xs:element name="Role" type="roleType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the association relation between Party CDM and other types. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CustomField" type="CustomField" minOccurs="0"
+						maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the custom fields for which CustomFieldDefinition was previously associated with Party.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Parties">
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="CustomFieldDefinition" type="CustomFieldDefinition"
+						minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the custom field definitions for which CustomField was previously associated </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Party" type="Party" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Parties  </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Persons">
+		<xs:sequence>
+			<xs:element name="Person" type="Person" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RoleBase">
+		<xs:annotation>
+			<xs:documentation> Describes Role of a Party. Generally the role can be Customer, Vendor, Employee, Other Name.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="PartyReferenceId" type="IdType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies reference to Party UniqueId, need to be specified when Party elements can be referenced </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="PartyGroup">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Substitutes PartyGroup elements to enable reuse, all the elements appear to be defined locally </xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:group ref="PersonGroup">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Substitutes PersonGroup elements to enable reuse, all the elements appear to be defined locally </xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:group ref="OrganizationGroup">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Substitutes OrganizationGroup elements to enable reuse, all the elements appear to be defined locally </xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:element name="TaxIdentifier" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Tax ID of the Person or Organization </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Notes" type="Note" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the free form text content.
+Cloud Max Length: 4000
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Only one note (the first one) is used when writing the data back to QuickBooks.
+Max Length: 4000
+Write-Only field.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Vendor">
+		<xs:annotation>
+			<xs:documentation> Describes the Party as a Vendor Role view </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="RoleBase">
+				<xs:sequence>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Active Vendor may be hidden from most display purposes</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ShowAs" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies how the name of the vendor should be presented e.g. on checks.
+Cloud Max Length: 256
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 41
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="VendorTypeReferenceGroup" minOccurs="0"/>
+					<xs:group ref="SalesTermReferenceGroup" minOccurs="0"/>
+					<xs:element name="OpenBalance" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the open balance amount (unpaid amount the business owes to the vendor)
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="OpenBalanceDate" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the date of the Open Balance.
+Non QB-writable.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CreditLimit" type="Money" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the maximum amount of an unpaid vendor balance.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="AcctNum" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Name or number of the account associated with this vendor.
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Max Length: 41
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Vendor1099" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The Vendor is an independent contractor, someone who is given a 1099-MISC form at the end of the year. The "1099 Vendor" is paid with regular checks, and taxes are not withhold on their behalf.
+</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VendorType">
+		<xs:annotation>
+			<xs:documentation>Vendor types allow categorizing vendors in ways that are meaningful to the business. For example, one could set up vendor types so that they indicate a vendor's industry or geographic location. The categorization then can be used for reporting.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element name="Name" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>User recognizable name for the Vendor Type.
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Required for the Add request.
+Max Length: 31
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="VendorTypeParentReferenceGroup" minOccurs="0"/>
+					<xs:element name="Active" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Whether or not active inactive customer types may be hidden from most display purposes and may not be used on financial transactions</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--Simple type definitions -->
+	<xs:simpleType name="EmployeeTypeEnum">
+		<xs:annotation>
+			<xs:documentation>employee type enumeration</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Officer"/>
+			<xs:enumeration value="Owner"/>
+			<xs:enumeration value="Regular"/>
+			<xs:enumeration value="Statutory"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="JobStatusEnum">
+		<xs:annotation>
+			<xs:documentation>Job status enumeration</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Awarded"/>
+			<xs:enumeration value="Closed"/>
+			<xs:enumeration value="InProgress"/>
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="NotAwarded"/>
+			<xs:enumeration value="Pending"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partyType">
+		<xs:annotation>
+			<xs:documentation>Party type enumeration, can be a Person or Organization </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Person"/>
+			<xs:enumeration value="Organization"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TimeEntryUsedForPaychecksEnum">
+		<xs:annotation>
+			<xs:documentation>Job status enumeration</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NotSet"/>
+			<xs:enumeration value="DoNotUseTimeEntry"/>
+			<xs:enumeration value="UseTimeEntry"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--Groups definitions -->
+	<xs:group name="CustomerParentReferenceGroup">
+		<xs:sequence>
+			<xs:element name="CustomerParentId" type="IdType" minOccurs="0"/>
+			<xs:element name="CustomerParentName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="CustomerTypeParentReferenceGroup">
+		<xs:sequence>
+			<xs:element name="CustomerTypeParentId" type="IdType" minOccurs="0"/>
+			<xs:element name="CustomerTypeParentName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="CustomerTypeReferenceGroup">
+		<xs:sequence>
+			<xs:element name="CustomerTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="CustomerTypeName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="JobTypeParentReferenceGroup">
+		<xs:sequence>
+			<xs:element name="JobTypeParentId" type="IdType" minOccurs="0"/>
+			<xs:element name="JobTypeParentName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="JobTypeReferenceGroup">
+		<xs:sequence>
+			<xs:element name="JobTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="JobTypeName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PartyGroup">
+		<xs:annotation>
+			<xs:documentation> Describes PartyGroup elements as a "group" so that PartyGroup can be substituted in places where all elements of Party need to appear </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TypeOf" type="partyType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the type of party, this is very useful if a list of "parties" are returned and this element can specify the type of Party without having to look at extended elements
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Required for the Add request.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Name assigned by the CMO subsystem, it is input only element
+Cloud Max Length: 1024
+[b][i]QuickBooks Notes[/i][/b] [br /]
+Required for the Add request.[br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="ContactInfoGroup"/>
+			<xs:element name="ExternalId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the ExternalID associated with the Person.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="VendorTypeParentReferenceGroup">
+		<xs:sequence>
+			<xs:element name="VendorTypeParentId" type="IdType" minOccurs="0"/>
+			<xs:element name="VendorTypeParentName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="VendorTypeReferenceGroup">
+		<xs:sequence>
+			<xs:element name="VendorTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="VendorTypeName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

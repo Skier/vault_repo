@@ -1,0 +1,525 @@
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #F7F7F7;
+}
+body, td, th, input, select, textarea, option, optgroup {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}
+a, a:visited {
+    color: #003366;
+    cursor: pointer;
+}
+form {
+    margin: 0;
+    padding: 0;
+}
+#header {
+    height: 56px;
+    padding: 0px 30px;
+    background: url('image/header.png') repeat-x;
+    min-width: 900px;       
+}
+#header .div1 {
+    color: #FFFFFF;
+    padding: 18px 0px 0px 0px;
+    float: left;
+}
+#header .div2 {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #FFF;
+    text-align: right;
+    padding: 14px 0px 0px 0px;
+    float: right;
+}
+#header .div2 span {
+    font-weight: bold;
+}
+#menu {
+    background: url('image/menu.png') repeat-x;
+    position: relative;
+    z-index: 1;
+    height: 34px;
+    clear: both;
+    padding: 0px 30px;
+    min-width: 900px;       
+}
+ul.left {
+    float: left;
+}
+ul.right {
+    float: right;
+}
+.nav {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+.nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: url('image/transparent.png');
+}
+.nav a {
+    display: block;
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 5px;
+}
+.nav > li + li {
+    background: url('image/split.png') center left no-repeat;
+}
+.nav .top, .nav li li.sfhover {
+    padding: 10px 15px 9px 17px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #FFFFFF;
+    text-align: center;
+}
+.nav ul li {
+    padding: 2px;
+}
+.nav .selected .top {
+    background: url('image/selected.png') repeat-x;
+    color: #FFFFFF;
+}
+.nav .selected:hover a.top, .nav .sfhover a.top {
+}
+.nav .parent {
+    background: url('image/arrow_right.png') 95% center no-repeat;
+}
+.nav li {
+    float: left;
+    list-style: none;
+}
+.nav li ul {
+    position: absolute;
+}
+.nav li li {
+    clear: both;
+}
+.nav li ul a {
+    color: #FFFFFF;
+    height: 15px;
+    width: 145px;
+}
+.nav li ul ul {
+    margin: -27px 0 0 157px;
+}
+.nav li li:hover, .nav li li.sfhover {
+    background: #333;
+    color: #000000;
+}
+#content {
+    background: #FFFFFF url('image/background.png') 0px 1px repeat-x;
+    padding: 10px 30px 25px 30px;
+    min-width: 900px;   
+}
+#footer {
+    background: #F7F7F7 url('image/footer.png') repeat-x;
+    height: 38px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    clear: both;
+    text-align: center;
+    font-size: 12px;
+    color: #333;
+}
+#footer a {
+    color: #333;
+    text-decoration: underline;
+}
+.breadcrumb, .breadcrumb a {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+}
+.success {
+    padding: 15px 0px;
+    margin-bottom: 15px;
+    background: #E4F1C9;
+    border: 1px solid #A5BD71;
+    font-size: 12px;
+    text-align: center;
+}
+.warning {
+    padding: 15px 0px;
+    margin-bottom: 15px;
+    background: #FFDFE0;
+    border: 1px solid #FF9999;
+    font-size: 12px;
+    text-align: center;
+}
+.box {
+    margin-bottom: 15px;
+}
+.box > .heading {
+    height: 40px;
+    background: url('image/box_center.png') repeat-x;
+    margin-bottom: 0px;
+}
+.box > .left {
+    float: left;
+    width: 7px;
+    height: 40px;
+    background: url('image/box_left.png') no-repeat;
+}
+.box > .right {
+    float: right;
+    width: 7px;
+    height: 40px;
+    background: url('image/box_right.png') no-repeat;
+}
+.box > .heading h1 {
+    background-position:  2px 9px;
+    background-repeat: no-repeat;
+    margin: 0px;
+    padding: 11px 0px 11px 30px;
+    color: #003A88;
+    font-size: 16px;
+    float: left;
+}
+.box > .heading .buttons {
+    float: right;
+    padding-top: 8px;
+}
+.box > .content {
+    padding: 10px;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
+    min-height: 300px;
+}
+.list {
+    border-collapse: collapse;
+    width: 100%;
+    border-top: 1px solid #DDDDDD;
+    border-left: 1px solid #DDDDDD;
+}
+.list td {
+    border-right: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+}
+.list thead td {
+    background-color: #EFEFEF;
+    padding: 0px 5px;
+}
+.list thead td a, .list thead td {
+    text-decoration: none;
+    color: #222222;
+    font-weight: bold;
+}
+.list tbody a {
+    text-decoration: underline;
+}
+.list tbody td {
+    vertical-align: middle;
+    padding: 0px 5px;
+}
+.list tbody tr:odd {
+ background: #FFFFFF;
+}
+.list tbody tr:even {
+ background: #E4EEF7;
+}
+.list .left {
+    text-align: left;
+    padding: 7px;
+}
+.list .right {
+    text-align: right;
+    padding: 7px;
+}
+.list .center {
+    text-align: center;
+    padding: 7px;
+}
+.list .asc {
+    padding-right: 15px;
+    background: url('image/asc.png') right center no-repeat;
+}
+.list .desc {
+    padding-right: 15px;
+    background: url('image/desc.png') right center no-repeat;
+}
+.list .filter td {
+    padding: 5px;
+    background: #E7EFEF;
+}
+.list tr:hover {
+    padding: 5px;
+    background: #F5F5FF;
+}
+.filter {
+    padding: 5px;
+    background: #E7EFEF;
+    border: 1px solid #DDD;
+}
+.details {
+    padding: 2px;
+    background: #FFD;
+    border: 1px solid #DDD;
+}
+.info-panel {
+    border: 1px outset #DDD;
+    margin:8px 0px 8px 0px;
+    padding:8px 30px;
+    background: #CFC url('image/information_circle.png') 7px 7px no-repeat;
+}
+.attention-panel {
+    border: 1px outset #DDD;
+    margin:8px 0px 8px 0px;
+    padding:8px 30px;
+    background: #FFC url('image/exclamation.png') 7px 7px no-repeat;
+}
+.error-panel {
+    border: 1px outset #DDD;
+    margin:8px 0px 8px 0px;
+    padding:8px 30px;
+    background: #FCC url('image/cross_circle.png') 7px 7px no-repeat;
+}
+.pagination {
+    margin-top: 30px;
+    border-top: 1px solid #EEE;
+    background: #F8F8F8;
+    display: inline-block;
+    width: 100%;
+}
+.pagination .links, .pagination .results {
+    padding: 9px;
+}
+.pagination .links {
+    float: left;
+}
+.pagination .links a {
+    border: 1px solid #CCCCCC;
+    padding: 4px 7px;
+    text-decoration: none;
+    color: #000000;
+}
+.pagination .links b {
+    border: 1px solid #CCCCCC;
+    padding: 4px 7px;
+    text-decoration: none;
+    color: #000000;
+    background: #FFFFFF;
+}
+.pagination .results {
+    float: right;
+}
+.form {
+    width: 100%;
+    border-collapse: collapse;
+}
+table.form tr td:first-child {
+    width: 200px;
+}
+.form > * > * > td {
+    padding: 10px;
+    color: #000000;
+    border-bottom: 1px dotted #CCCCCC;
+}
+.form .left {
+    text-align: left;
+}
+.form .right {
+    text-align: right;
+}
+.form .center {
+    text-align: center;
+}
+.help {
+    color: #999;
+    font-size: 10px;
+    font-weight: normal;
+    font-family: Verdana, Geneva, sans-serif;
+    display: block;
+}
+.required {
+    color: #FF0000;
+    font-weight: bold;
+}
+.error {
+    color: #FF0000;
+    padding-top: 3px;
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+}
+.scrollbox {
+    border: 1px solid #CCCCCC;
+    width: 350px;
+    height: 100px;
+    background: #FFFFFF;
+    overflow-y: scroll;
+}
+.tabs {
+    padding: 0px 0px 0px 10px;
+    height: 30px;
+    border-bottom: 1px solid #DDDDDD;
+    margin-bottom: 15px;
+}
+.tabs a {
+    border-top: 1px solid #DDDDDD;
+    border-left: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    background: #FFFFFF url('image/tab.png') repeat-x;
+    padding: 6px 15px 7px 15px;
+    float: left;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: #000000;
+    margin-right: 2px;
+}
+.tabs a.selected {
+    padding-bottom: 8px;
+    background: #FFFFFF;
+}
+.vtabs {
+    width: 180px;
+    padding: 10px 0px;
+    min-height: 300px;
+    float: left;
+    border-right: 1px solid #DDDDDD;
+}
+.vtabs a {
+    display: block;
+    float: left;
+    width: 150px;
+    margin-bottom: 5px;
+    clear: both;
+    border-top: 1px solid #DDDDDD;
+    border-left: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+    background: #F7F7F7;
+    padding: 6px 14px 7px 15px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: right;
+    text-decoration: none;
+    color: #000000;
+}
+.vtabs a.selected {
+    padding-right: 15px;
+    background: #FFFFFF;
+}
+.vtabs_page {
+    margin-left: 195px;
+}
+.scrollbox div {
+    padding: 3px;
+}
+.scrollbox div input {
+    margin: 0px;
+    padding: 0px;
+    margin-right: 3px;
+}
+.scrollbox div.even {
+    background: #FFFFFF;
+}
+.scrollbox div.odd {
+    background: #E4EEF7;
+}
+
+a.button, button { display: inline-block; padding: 4px 5px 6px 5px; font-family: verdana, arial, sans-serif; font-size: 12px; color: #3C3C3D; text-shadow: 1px 1px 0 #FFFFFF; background: #ECECEC url('../images/css3buttons_backgrounds.png') 0 0 no-repeat; white-space: nowrap; overflow: visible; cursor: pointer; text-decoration: none; border: 1px solid #CACACA; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; outline: none; position: relative; zoom: 1; line-height: 1.11; *display: inline; *vertical-align: middle; }
+button { margin-left: 0; margin-right: 0; *padding: 5px 5px 3px 5px; }
+button::-moz-focus-inner { border: 0; padding:0px; }
+a.button.primary, button.primary { font-weight: bold }
+a.button:focus, button:focus,
+a.button:hover, button:hover { color: #FFFFFF; border-color: #388AD4; text-decoration: none; text-shadow: -1px -1px 0 rgba(0,0,0,0.3); background-position: 0 -40px; background-color: #2D7DC5; }
+a.button:active, button:active,
+a.button.active, button.active { background-position: 0 -81px; border-color: #347BBA; background-color: #0F5EA2; color: #FFFFFF; text-shadow: none; }
+a.button:active, button:active { top: 1px }
+a.button.negative:focus, button.negative:focus,
+a.button.negative:hover, button.negative:hover { color: #FFFFFF; background-position: 0 -121px; background-color: #D84743; border-color: #911D1B; }
+a.button.negative:active, button.negative:active,
+a.button.negative.active, button.negative.active { background-position: 0 -161px; background-color: #A5211E; border-color: #911D1B; }
+a.button.positive:focus, button.positive:focus,
+a.button.positive:hover, button.positive:hover { background-position: 0 -280px; background-color: #96ED89; border-color: #45BF55; }
+a.button.positive:active, button.positive:active,
+a.button.positive.active, button.positive.active { background-position: 0 -320px; background-color: #45BF55; }
+a.button.pill, button.pill { -webkit-border-radius: 19px; -moz-border-radius: 19px; border-radius: 19px; padding: 5px 10px 4px 10px; *padding: 4px 10px; }
+a.button.left, button.left { -webkit-border-bottom-right-radius: 0px; -webkit-border-top-right-radius: 0px; -moz-border-radius-bottomright: 0px; -moz-border-radius-topright: 0px; border-bottom-right-radius: 0px; border-top-right-radius: 0px; margin-right: 0px; }
+a.button.middle, button.middle { margin-right: 0px; margin-left: 0px; -webkit-border-radius: 0px; -moz-border-radius: 0px; border-radius: 0px; border-right: none; border-left: none; }
+a.button.right, button.right { -webkit-border-bottom-left-radius: 0px; -webkit-border-top-left-radius: 0px; -moz-border-radius-bottomleft: 0px; -moz-border-radius-topleft: 0px; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-left: 0px; }
+a.button.left:active, button.left:active,
+a.button.middle:active, button.middle:active,
+a.button.right:active, button.right:active { top: 0px }
+a.button.big, button.big { font-size: 16px; padding-left: 17px; padding-right: 17px; }
+button.big { *padding: 17px 1px 17px 1px; }
+a.button span.icon, button span.icon { display: inline-block; width: 14px; height: 12px; margin: auto 7px auto auto; position: relative; top: 2px; *top: 0px; background-image: url('../images/css3buttons_icons.png'); background-repeat: no-repeat; }
+a.big.button span.icon, button.big span.icon, { top: 0px }
+a.button span.icon.book, button span.icon.book { background-position: 0 0 }
+a.button:hover span.icon.book, button:hover span.icon.book { background-position: 0 -15px }
+a.button span.icon.calendar, button span.icon.calendar { background-position: 0 -30px }
+a.button:hover span.icon.calendar, button:hover span.icon.calendar { background-position: 0 -45px }
+a.button span.icon.chat, button span.icon.chat { background-position: 0 -60px }
+a.button:hover span.icon.chat, button:hover span.icon.chat { background-position: 0 -75px }
+a.button span.icon.check, button span.icon.check { background-position: 0 -90px }
+a.button:hover span.icon.check, button:hover span.icon.check { background-position: 0 -103px }
+a.button span.icon.clock, button span.icon.clock { background-position: 0 -116px }
+a.button:hover span.icon.clock, button:hover span.icon.clock { background-position: 0 -131px }
+a.button span.icon.cog, button span.icon.cog { background-position: 0 -146px }
+a.button:hover span.icon.cog, button:hover span.icon.cog { background-position: 0 -161px }
+a.button span.icon.comment, button span.icon.comment { background-position: 0 -176px }
+a.button:hover span.icon.comment, button:hover span.icon.comment { background-position: 0 -190px }
+a.button span.icon.cross, button span.icon.cross { background-position: 0 -204px }
+a.button:hover span.icon.cross, button:hover span.icon.cross { background-position: 0 -219px }
+a.button span.icon.downarrow, button span.icon.downarrow { background-position: 0 -234px }
+a.button:hover span.icon.downarrow, button:hover span.icon.downarrow { background-position: 0 -249px }
+a.button span.icon.fork, button span.icon.fork { background-position: 0 -264px }
+a.button:hover span.icon.fork, button:hover span.icon.fork { background-position: 0 -279px }
+a.button span.icon.heart, button span.icon.heart { background-position: 0 -294px }
+a.button:hover span.icon.heart, button:hover span.icon.heart { background-position: 0 -308px }
+a.button span.icon.home, button span.icon.home { background-position: 0 -322px }
+a.button:hover span.icon.home, button:hover span.icon.home { background-position: 0 -337px }
+a.button span.icon.key, button span.icon.key { background-position: 0 -352px }
+a.button:hover span.icon.key, button:hover span.icon.key { background-position: 0 -367px }
+a.button span.icon.leftarrow, button span.icon.leftarrow { background-position: 0 -382px }
+a.button:hover span.icon.leftarrow, button:hover span.icon.leftarrow { background-position: 0 -397px }
+a.button span.icon.lock, button span.icon.lock { background-position: 0 -412px }
+a.button:hover span.icon.lock, button:hover span.icon.lock { background-position: 0 -427px }
+a.button span.icon.loop, button span.icon.loop { background-position: 0 -442px }
+a.button:hover span.icon.loop, button:hover span.icon.loop { background-position: 0 -457px }
+a.button span.icon.magnifier, button span.icon.magnifier { background-position: 0 -472px }
+a.button:hover span.icon.magnifier, button:hover span.icon.magnifier { background-position: 0 -487px }
+a.button span.icon.mail, button span.icon.mail { background-position: 0 -502px }
+a.button:hover span.icon.mail, button:hover span.icon.mail { background-position: 0 -514px }
+a.button span.icon.move, button span.icon.move { background-position: 0 -526px }
+a.button:hover span.icon.move, button:hover span.icon.move { background-position: 0 -541px }
+a.button span.icon.pen, button span.icon.pen { background-position: 0 -556px }
+a.button:hover span.icon.pen, button:hover span.icon.pen { background-position: 0 -571px }
+a.button span.icon.pin, button span.icon.pin { background-position: 0 -586px }
+a.button:hover span.icon.pin, button:hover span.icon.pin { background-position: 0 -601px }
+a.button span.icon.plus, button span.icon.plus { background-position: 0 -616px }
+a.button:hover span.icon.plus, button:hover span.icon.plus { background-position: 0 -631px }
+a.button span.icon.reload, button span.icon.reload { background-position: 0 -646px }
+a.button:hover span.icon.reload, button:hover span.icon.reload { background-position: 0 -660px }
+a.button span.icon.rightarrow, button span.icon.rightarrow { background-position: 0 -674px }
+a.button:hover span.icon.rightarrow, button:hover span.icon.rightarrow { background-position: 0 -689px }
+a.button span.icon.rss, button span.icon.rss { background-position: 0 -704px }
+a.button:hover span.icon.rss, button:hover span.icon.rss { background-position: 0 -719px }
+a.button span.icon.tag, button span.icon.tag { background-position: 0 -734px }
+a.button:hover span.icon.tag, button:hover span.icon.tag { background-position: 0 -749px }
+a.button span.icon.trash, button span.icon.trash { background-position: 0 -764px }
+a.button:hover span.icon.trash, button:hover span.icon.trash { background-position: 0 -779px }
+a.button span.icon.unlock, button span.icon.unlock { background-position: 0 -794px }
+a.button:hover span.icon.unlock, button:hover span.icon.unlock { background-position: 0 -809px }
+a.button span.icon.uparrow, button span.icon.uparrow { background-position: 0 -824px }
+a.button:hover span.icon.uparrow, button:hover span.icon.uparrow { background-position: 0 -839px }
+a.button span.icon.user, button span.icon.user { background-position: 0 -854px }
+a.button:hover span.icon.user, button:hover span.icon.user { background-position: 0 -869px }

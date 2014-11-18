@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:login="com.llsvc.startup.login.*" 
+    xmlns:desktop="com.llsvc.startup.desktop.*"
+    xmlns:startup="com.llsvc.startup.*"
+    >
+    
+    <startup:MainController id="controller" view="{this}"/>
+    
+    <mx:ViewStack id="mainViewStack" width="100%" height="100%" 
+        selectedIndex="{controller.model.loggedOut ? 0 : 1}">
+        
+        <login:LoginView id="viewLogin" 
+            width="100%" 
+            height="100%" 
+            verticalAlign="middle" 
+            horizontalAlign="center"
+            loginComplete="controller.onLoginCompleteHandler(event)"
+            loginFailed="controller.onLoginFailedHandler(event)"
+            />
+        
+        <desktop:DesktopView id="viewDesktop" 
+            width="100%" 
+            height="100%"
+            logoutEvent="controller.onLogoutHandler(event)"
+            />
+        
+    </mx:ViewStack>
+
+</mx:Canvas>

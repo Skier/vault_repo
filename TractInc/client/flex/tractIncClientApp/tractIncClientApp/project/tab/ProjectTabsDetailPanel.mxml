@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:containers="truetract.web.containers.*" 
+	xmlns:tab="tractIncClientApp.project.tab.*">
+	
+    <mx:Metadata>
+        [Event(name="openProjectTab", type="mx.events.DynamicEvent")]
+        [Event(name="deleteProjectTab", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import mx.events.DynamicEvent;
+			import mx.controls.Alert;
+			import truetract.domain.ProjectTab;
+			import truetract.domain.Project;
+			
+			[Bindable] public var project:Project;
+			[Bindable] public var readOnly:Boolean = false;
+
+			public function openProjectTab(projectTab:ProjectTab):void 
+			{
+				var event:DynamicEvent = new DynamicEvent("openProjectTab");
+				event.projectTab = projectTab;
+				
+				dispatchEvent(event);
+			}
+			
+			public function deleteProjectTab(projectTab:ProjectTab):void 
+			{
+				var event:DynamicEvent = new DynamicEvent("deleteProjectTab");
+				event.projectTab = projectTab;
+				
+				dispatchEvent(event);
+			}
+			
+			public function setSelected(projectTab:ProjectTab):void 
+			{
+				dgTabs.selectedIndex = project.TabsList.getItemIndex(projectTab);
+			}
+			
+			private function tabMouseOverHandler(event:MouseEvent):void 
+			{
+				var target:IProjectTabUI = event.currentTarget as IProjectTabUI;
+			}
+			
+			private function dgTabsDoubleClickHandler():void 
+			{
+				var projectTab:ProjectTab = dgTabs.selectedItem as ProjectTab;
+
+				openProjectTab(projectTab);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+	    <mx:DataGrid id="dgTabs"
+	        dataProvider="{project.TabsList}"
+	        height="100%" width="100%" sortableColumns="false" draggableColumns="false"
+	        doubleClickEnabled="true"
+	        itemDoubleClick="dgTabsDoubleClickHandler()"
+	        dragEnabled="{!readOnly}" dropEnabled="{!readOnly}" dragMoveEnabled="{!readOnly}"
+	        >
+	        <mx:columns>
+	            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+	            	itemRenderer="tractIncClientApp.project.tab.TabStatusIR"/>
+	            <mx:DataGridColumn headerText="Tab Name" dataField="Name"/>
+	            <mx:DataGridColumn headerText="Instrument" dataField="instrument"/>
+	            <mx:DataGridColumn headerText="Date Signed" dataField="dateSigned"/>
+	            <mx:DataGridColumn headerText="Date Filed" dataField="dateFiled"/>
+	            <mx:DataGridColumn headerText="Grantor" dataField="sellerName"/>
+	            <mx:DataGridColumn headerText="Grantee" dataField="buyerName"/>
+	            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+	            	itemRenderer="tractIncClientApp.project.tab.ProjectTabActionsIR"/>
+	        </mx:columns>
+	    </mx:DataGrid>
+
+		<tab:ProjectTabQuickDetail width="100%"
+			visible="{dgTabs.selectedItem != null}" includeInLayout="{dgTabs.selectedItem != null}"
+			projectTab="{ProjectTab(dgTabs.selectedItem)}"/>
+	</mx:VBox>
+</mx:Canvas>

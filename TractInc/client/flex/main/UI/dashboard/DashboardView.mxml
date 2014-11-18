@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" verticalGap="0"
+    xmlns:flexlib="http://code.google.com/p/flexlib/"
+    xmlns:dashboard="UI.dashboard.*" 
+	xmlns:modules="TractInc.modules.*"
+	creationComplete="creationCompleteHandler()">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.Module;
+			import TractInc.Domain.User;
+			
+			public function init(user:User):void 
+			{
+				callLater(controller.init, [user]);
+			}
+	
+	        public function creationCompleteHandler():void
+	        {
+    			mainMenu.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+    			mainMenu.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+	        }		
+		]]>
+	</mx:Script>
+	
+    <mx:Metadata>
+        [Event(name="logoutEvent", type="common.events.LogoutEvent")]
+    </mx:Metadata>
+
+	<dashboard:DashboardController id="controller" view="{this}"/>
+	
+    <mx:WipeUp id="minimizeEffect" duration="400"/>	
+    <mx:WipeDown id="appearEffect" duration="400"/>	
+    
+	<mx:HBox id="taskBar" width="100%" backgroundColor="#dddddd" borderStyle="outset" borderThickness="2" verticalAlign="middle" visible="false">
+	
+        <mx:MenuBar id="mainMenu" 
+                dataProvider="{controller.model.menuData}" 
+                itemClick="controller.runModule(event)"
+                labelField="label"/>
+                
+ 		<mx:HBox id="runningModulesBar">
+
+			<mx:VRule height="20"/>
+
+ 		</mx:HBox>
+ 		
+		<mx:Spacer width="100%"/>
+		
+<mx:TextArea visible="false" width="0" height="0"/>
+<mx:Tree visible="false" width="0" height="0"/>
+<flexlib:TreeGrid visible="false" width="0" height="0">
+<flexlib:columns>
+                <flexlib:TreeGridColumn dataField="@name" />
+                <mx:DataGridColumn dataField="@desc" />
+            </flexlib:columns>
+</flexlib:TreeGrid>            
+
+
+		<mx:Label text="{controller.model.currentUser.Login}"/>
+		<mx:VRule height="20"/>
+		<mx:LinkButton id="btnLogout" label="Logout" click="controller.btnLogout_clickHandler()"/>
+	
+	</mx:HBox>
+	
+	<mx:Canvas id="desktop" width="100%" height="100%">
+   		<mx:ViewStack id="vsDynamicModules" width="100%" height="100%"/>
+	</mx:Canvas>
+
+</mx:VBox>

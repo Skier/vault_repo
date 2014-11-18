@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="left" verticalAlign="middle" horizontalGap="0"
+    paddingLeft="5">
+
+    <mx:Script>
+    <![CDATA[
+        import UI.MessageBox.MessageBoxView;
+        import UI.MessageBox.MessageBoxController;
+        
+        import mx.core.Application;
+        
+        [Bindable]
+        [Embed(source="/Images/plus_icon.png")]
+        private var openIcon:Class;
+        
+        [Bindable]
+        [Embed(source="/Images/minus_icon.png")]
+        private var closeIcon:Class;
+
+        private function onIconClick(event:Event):void
+        {
+    		var group:MessageTreeGroup = MessageTreeGroup(data);
+    		var controller:MessageBoxController = MessageBoxView(this.parentDocument).Controller;
+    		
+            controller.OnGroupIconClick(group);
+        }
+        
+    ]]>
+    </mx:Script>
+    
+    <mx:Image id="imageIcon" width="13"
+        source="{(data.isOpened) ? closeIcon : openIcon}"
+        visible="{data is MessageTreeGroup}" click="onIconClick(event)"/>
+    <mx:Label id="labelValue" width="100%" text="{data.groupName}"/>
+
+</mx:HBox>

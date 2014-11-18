@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.LeadSourceService;
+			import com.dalworth.leadCentral.events.TrackingPhoneEvent;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.graphics.codec.PNGEncoder;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.events.LeadSourcePhoneEvent;
+			import com.dalworth.leadCentral.domain.LeadSourcePhone;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import mx.core.Application;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var trackingPhones:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] private var phonePlace:String; 
+			[Bindable] private var embedScript:String; 
+			
+			[Embed(source="/assets/icons16/information-frame.png")]
+			[Bindable]
+			private var imgInfo:Class;
+			
+			private var _leadSource:LeadSource;
+			[Bindable]
+			public function get leadSource():LeadSource { return _leadSource; }
+			public function set leadSource(value:LeadSource):void 
+			{
+				_leadSource = value;
+				initPhones();
+			}
+			
+			[Bindable]
+			public var leadSourceName:String; 
+			public var customPhonesFrom:ArrayCollection; 
+			
+			public function getTrackingPhones():Array
+			{
+				return trackingPhones.source;
+			}
+			
+			private function initPhones():void 
+			{
+				trackingPhones.removeAll();
+				
+				if (leadSource == null)
+					return;
+					
+				PhoneService.getInstance().getTrackingPhonesByLeadSource(leadSource, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							trackingPhones.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}
+					));
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function onRemoveClick():void 
+			{
+				var selectedPhone:TrackingPhone = dgTrackingPhones.selectedItem as TrackingPhone;
+				
+				Alert.show("Do you really want to unassign selected Tracking Phone from current Lead Source?", "Unassign Phone",
+					Alert.YES | Alert.NO, null,
+					function (event:CloseEvent):void 
+					{
+						if (event.detail == Alert.YES)
+						{
+//							startRemoting();
+//							LeadSourceService.getInstance().removeCompanyPhone(leadSource, selectedPhone, 
+//								new mx.rpc.Responder(
+//									function (event:ResultEvent):void 
+//									{
+//										stopRemoting();
+//										selectedPhone.applyFields(event.result as TrackingPhone);
+										trackingPhones.removeItemAt(trackingPhones.getItemIndex(selectedPhone));
+//									}, 
+//									function (event:FaultEvent):void 
+//									{
+//										stopRemoting();
+//										Alert.show(event.fault.message);
+//									}));
+						}
+					});
+			}
+			
+			private function onAddClick():void 
+			{
+				var popup:TrackingPhoneAssignment = TrackingPhoneAssignment.open(Application.application as DisplayObject, leadSourceName, trackingPhones, customPhonesFrom);
+				popup.addEventListener(TrackingPhoneEvent.PHONE_COMMIT, 
+					function (event:TrackingPhoneEvent):void 
+					{
+						var phone:TrackingPhone = event.phone;
+//						startRemoting();
+//						LeadSourceService.getInstance().addCompanyPhone(leadSource, phone, 
+//							new mx.rpc.Responder(
+//								function (event:ResultEvent):void 
+//								{
+//									stopRemoting();
+//									phone.applyFields(event.result as TrackingPhone);
+									trackingPhones.addItem(phone);
+//								}, 
+//								function (event:FaultEvent):void 
+//								{
+//									stopRemoting();
+//									Alert.show(event.fault.message);
+//								}));
+					});
+			}
+			
+			private function onClickEmbed():void 
+			{
+				phonePlace = "<span id='lead-central-dynamic-phone'></span>";
+				embedScript = "<script type='text/javascript'>\n" +
+									"var curRef = document.referrer ? document.referrer.replace(/&/g, '@@@') : '';\n" + 
+									"var lnk = '" + MainModel.APPLICATION_ROOT_URL + 
+									"GetDynamicPhoneNumber.ashx?realmId=" +	MainModel.getInstance().currentRealm + 
+									"&leadSource=" + leadSource.Id + 
+									"&ref='+curRef;\n" +
+									"document.write(unescape(\"%3Cscript src='\"+lnk+\"' type='text/javascript'%3E%3C/script%3E\"));\n" + 
+									"</script>";
+				boxEmbedHelp.visible = true;
+				boxPhones.enabled = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="boxPhones" verticalGap="5" horizontalAlign="right" width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" backgroundColor="#EEEEFF">
+
+		<mx:HBox width="100%" verticalAlign="bottom">
+			<mx:VBox width="100%" verticalGap="0">
+				<mx:Label text="Tracking Phone Numbers:" fontSize="14" color="#666666" fontWeight="bold"/>
+				<mx:LinkButton label="How to embed phone into your web site" 
+					click="onClickEmbed()" visible="{leadSource.Id != 0}"
+					icon="{imgInfo}"
+					textDecoration="underline"/>
+			</mx:VBox>
+			<mx:Button label="Remove" width="100" height="30" enabled="{dgTrackingPhones.selectedItem != null}" click="onRemoveClick()"/>
+			<mx:Button label="Add" width="100" height="30" click="onAddClick()"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgTrackingPhones" width="100%" height="100%" dataProvider="{trackingPhones}"
+			sortableColumns="false" draggableColumns="false" editable="false">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Phone Number" dataField="Number" width="120" minWidth="120"/>
+				<mx:DataGridColumn dataField="ScreenNumber" headerText="Screen Number" width="150" minWidth="150"/>
+				<mx:DataGridColumn dataField="Description" headerText="Description"/>
+				<mx:DataGridColumn headerText="Assignments" 
+					itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.AssignmentsIR" textAlign="center"/>
+				<mx:DataGridColumn dataField="IsSuspended" itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.PhoneStatusIR" 
+					textAlign="center" headerText="Status" width="100" minWidth="100"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+				
+	<mx:VBox id="boxEmbedHelp" width="80%" right="4" bottom="4" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#FFFFEE"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" visible="false">
+		<mx:HBox width="100%" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#EEEEEE" verticalAlign="middle"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+			<mx:Label text="How to embed phone into your web site:" fontSize="12" fontWeight="bold" color="#666666"/>
+			<mx:Spacer width="100%"/>
+			<mx:LinkButton label="CLOSE" click="boxEmbedHelp.visible = false; boxPhones.enabled = true; "/>
+		</mx:HBox>
+		<mx:VBox width="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:Grid width="100%">
+				<mx:GridRow width="100%">
+					<mx:GridItem width="200">
+						<mx:Text text="Copy and paste next text into your phone number place" fontSize="11" width="100%"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<mx:TextArea editable="false" width="100%" height="30" text="{phonePlace}" fontSize="12"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%">
+					<mx:GridItem width="200">
+						<mx:Text text="Copy and paste next text before closing body tag (&lt;/body&gt;)" fontSize="11" width="100%"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<mx:TextArea editable="false" width="100%" height="60" text="{embedScript}" fontSize="12"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

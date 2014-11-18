@@ -1,0 +1,17 @@
+Need to to following operations on generated script
+
+In Mobile:
+---------------------
+remove: [dbo].
+remove: ON [PRIMARY]
+remove:  COLLATE Cyrillic_General_CI_AS
+remove:   CLUSTERED
+
+In Server:
+---------------------
+remove:  COLLATE Cyrillic_General_CI_AS
+ 
+In Mobile (Data):
+---------------------
+remove: [dbo].
+add (on new line after "values"): Go 

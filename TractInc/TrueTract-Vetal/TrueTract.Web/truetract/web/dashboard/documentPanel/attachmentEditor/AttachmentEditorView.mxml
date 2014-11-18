@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    title="File" layout="vertical" 
+    xmlns:net="flash.net.*"     
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:steps="truetract.web.wizards.steps.*"
+    xmlns:editTractWizard="truetract.web.wizards.editTractWizard.*"
+    xmlns:wizard="truetract.web.util.wizard.*" 
+    xmlns:tractEditor="truetract.web.dashboard.documentPanel.tractEditor.*"    
+    xmlns:validators="truetract.plotter.validators.*">
+
+    <mx:Metadata>
+        [Event(name="commit", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.events.DynamicEvent;
+            import truetract.domain.DictionaryRegistry;
+            import truetract.domain.DocumentAttachment;
+            import truetract.web.util.wizard.AbstractStep;
+            import truetract.domain.Tract;
+            import truetract.web.AppController;
+
+            import mx.collections.ArrayCollection;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.Responder;
+
+            public static function open(parent:DisplayObject, modal:Boolean = false):AttachmentEditorView
+            {
+                var dialog:AttachmentEditorView = new AttachmentEditorView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+
+                return dialog;
+            }
+
+            private var _attachment:DocumentAttachment;
+            [Bindable] public function get attachment():DocumentAttachment { return _attachment };
+            public function set attachment(value:DocumentAttachment):void
+            {
+                _attachment = value;
+                
+                if (attachment.DocumentAttachmentId == 0)
+                {
+                    fr.browse();
+                }
+            }
+
+            [Bindable] public var uploadInProgress:Boolean;
+            [Bindable] public var isFileSelected:Boolean;
+
+            [Bindable] private var dicts:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            public var uploadID:String = "myupload-" + new Date().time;
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            private function closeButton_clickHandler():void
+            {
+                close();
+            }
+
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            private function okButton_clickHandler():void
+            {
+                if (!isFormValid()) return;
+
+                attachment.FileName = fileNameLabel.text;
+                attachment.Description = descriptionTxt.text;
+                attachment.DocumentAttachmentTypeId = int(typeCmb.selectedItem.@Id);
+
+                dispatchEvent(new Event("commit"));
+            }
+            
+            private function fr_selectHandler(event:Event):void
+            {
+                fileNameLabel.text = fr.name;
+
+                var urlRequest:URLRequest = new URLRequest("weborb.aspx");
+                var variables:URLVariables = new URLVariables();
+                variables.UPLOADID = uploadID;
+                urlRequest.data = variables;
+                fr.upload(urlRequest);
+                
+                isFileSelected = true;
+                uploadInProgress = true;
+            }
+
+            private function fr_cancelHandler():void
+            {
+                close();
+            }                       
+
+            private function fr_completeHandler():void
+            {
+                uploadInProgress = false;
+                pb.label = "UPLOADED";
+            }                       
+
+            private function fr_progressHandler(event:ProgressEvent):void
+            {
+                pb.setProgress(event.bytesLoaded, event.bytesTotal);
+            }                       
+
+            private function fr_ioErrorHandler(event:IOErrorEvent):void
+            {
+                Alert.show("Unable to upload file.", event.text);
+            }                       
+
+        ]]>
+    </mx:Script>
+
+    <net:FileReference id="fr" 
+        select="fr_selectHandler(event)" 
+        complete="fr_completeHandler()"
+        progress="fr_progressHandler(event)"
+        ioError="fr_ioErrorHandler(event)"
+        cancel="fr_cancelHandler()"/>
+
+    <validators:ValidatorsGroup id="formValidator">
+
+        <mx:StringValidator
+            source="{fileNameLabel}" property="text" required="true"/>
+
+        <mx:StringValidator
+            source="{typeCmb}" property="selectedLabel" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form styleName="popupPanel">
+
+        <mx:FormItem id="fileFormItem" label="File:" width="100%" labelWidth="100">
+            <mx:HBox width="100%">
+                <mx:Label id="fileNameLabel" text="{attachment.FileName}" width="100%"/>
+            </mx:HBox>
+        </mx:FormItem>
+
+        <mx:HBox width="100%" visible="{isFileSelected}" includeInLayout="{isFileSelected}">
+            <mx:Spacer width="100"/>
+            <mx:ProgressBar id="pb" 
+                width="100%" label="{uploadInProgress ? 'UPLOADING 0%' : ''}" mode="manual"/>
+        </mx:HBox>
+
+        <mx:FormItem label="Description :" width="100%" labelWidth="100">
+            <mx:TextInput id="descriptionTxt" text="{attachment.Description}" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Type :" width="100%" labelWidth="100">
+            <mx:ComboBox id="typeCmb" 
+                dataProvider="{dicts.documentAttachmentTypes.DocumentAttachmentType}"
+                selectedItem="{dicts.documentAttachmentTypes.
+                    DocumentAttachmentType.(@Id == attachment.DocumentAttachmentTypeId)}"
+                labelField="@Name" width="100%"/>
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+
+        <mx:Button 
+            label="Ok"
+            click="okButton_clickHandler()"/>
+
+        <mx:Button 
+            label="Cancel" 
+            click="closeButton_clickHandler()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

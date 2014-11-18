@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+            import truetract.plotter.domain.Document;
+            
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            private var _docum:Document;
+            [Bindable] public function get docum():Document { return _docum; }
+            public function set docum(value:Document):void
+            {
+                _docum = value;
+
+                callLater(
+                    function():void {
+                        stateCmb.validateNow();
+        
+                        var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == docum.State).county;
+                        countyCmb.dataProvider = countyList;
+                        countyCmb.selectedItem = countyList.(@CountyId == docum.County);
+                    }
+                );
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="3">
+    
+        <mx:FormItem label="State">
+            <mx:ComboBox id="stateCmb"
+                labelField="@Name" width="120"
+                dataProvider="{dictionary.statesAndCounties.state}"
+                selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State)}"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Doc Type">
+            <components:ExtendedComboBox id="documentTypeCmb"
+                labelField="@Name" keepOptimalDropDownWidth="true"
+                dataProvider="{dictionary.documentTypes.DocumentType}" width="120"
+                selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId)}"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Vol">
+            <mx:TextInput id="volumeTxt" text="{docum.Volume}" width="120"/>
+        </mx:FormItem>
+        
+    </mx:Form>
+
+    <mx:Spacer width="100%" />
+
+    <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3">
+
+        <mx:FormItem label="County">
+            <mx:ComboBox id="countyCmb"
+                labelField="@Name" width="120"
+                dataProvider="{dictionary.statesAndCounties.state.(@StateId == stateCmb.selectedItem.@StateId).county}"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Doc No">
+            <mx:TextInput id="documNoTxt"  text="{docum.DocumentNo}" width="120" />
+        </mx:FormItem>
+
+        <mx:FormItem label="Page">
+            <mx:TextInput id="pageTxt" text="{docum.Page}" width="120"/>
+        </mx:FormItem>
+
+    </mx:Form>
+    
+</mx:HBox>

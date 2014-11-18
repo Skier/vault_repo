@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	paddingBottom="5"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingTop="5">
+
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.model.CatalogItem;
+			import com.titus.catalog.view.ControlPanel;
+			import com.titus.catalog.view.Search;
+			import com.titus.catalog.storage.DBStorage;
+			import mx.collections.ArrayCollection;
+		
+			[Bindable]
+			private var _resultsFound:ArrayCollection = null;
+		
+			private function onSearchClick():void {
+				_resultsFound = DBStorage.getInstance().searchModel(txtModelName.text, cbExactMatch.selected, cbCaseSensitive.selected);
+			}
+			
+			private function onResultDoubleClick():void {
+				ControlPanel(Search(this.parent.parent).parent.parent).vwCategories.selectItem(CatalogItem(dgSearchResults.selectedItem));
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox
+		width="100%">
+		<mx:TextInput
+			id="txtModelName"
+			enter="onSearchClick()"
+			width="130" />
+		<mx:Button
+			label="Search"
+			click="onSearchClick()" />
+	</mx:HBox>
+	
+	<mx:HBox
+		width="100%">
+		<mx:CheckBox
+			id="cbExactMatch"
+			label="exact match"
+			color="0xFFFFFF"
+			textRollOverColor="0xFFFFFF"
+			textSelectedColor="0xFFFFFF" />
+		<mx:CheckBox
+			id="cbCaseSensitive"
+			label="case sensitive"
+			color="0xFFFFFF"
+			textRollOverColor="0xFFFFFF"
+			textSelectedColor="0xFFFFFF"
+			visible="{cbExactMatch.selected}"
+			includeInLayout="{cbExactMatch.selected}" />
+	</mx:HBox>
+	
+	<mx:DataGrid
+		id="dgSearchResults"
+		width="100%"
+		height="100%"
+		includeInLayout="{null != _resultsFound}"
+		visible="{null != _resultsFound}"
+		dataProvider="{_resultsFound}"
+		click="onResultDoubleClick()">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Results" dataField="name" />
+		</mx:columns>
+	</mx:DataGrid>
+	
+</mx:VBox>

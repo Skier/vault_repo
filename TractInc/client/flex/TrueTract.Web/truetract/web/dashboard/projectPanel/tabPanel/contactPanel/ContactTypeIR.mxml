@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.ProjectTabContact;
+			
+        	[Embed(source="/assets/office-building.png")]
+        	[Bindable]
+        	private var imgOffice:Class;
+        	
+        	[Embed(source="/assets/user1.png")]
+        	[Bindable]
+        	private var imgUser:Class;
+        	
+        	[Embed(source="/assets/group.png")]
+        	[Bindable]
+        	private var imgGroup:Class;
+        	
+		]]>
+	</mx:Script>
+
+	<mx:Image source="{ProjectTabContact(data).IsEntity ? imgOffice : imgUser}"/>
+</mx:HBox>

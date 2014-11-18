@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Segment Editor">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Segments_DTO;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			import com.ebs.eroof.model.wrapper.Segment;
+			
+			[Bindable]
+			public var segment:Segment;
+			
+            public static function open(parent:DisplayObject, segment:Segment, modal:Boolean = true):SegmentEditPopup
+            {
+                var popup:SegmentEditPopup = new SegmentEditPopup();
+                
+                popup.segment = segment;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function populateSegment():void 
+            {
+            	segment.segmentDTO.SegmentName = txtSegmentName.text;
+            }
+            
+            private function storeSegment():void 
+            {
+            	populateSegment();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreSegment, segment.segmentDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(segment.segmentDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreSegment(storedSegment:Segments_DTO):void 
+            {
+            	segment.segmentDTO = storedSegment;
+            	segment.addToCompany();
+            	
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	storeSegment();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="segmentForm">
+		<mx:FormItem label="Segment Name" required="true">
+			<mx:TextInput id="txtSegmentName" text="{segment.name}"/>
+		</mx:FormItem>
+	</mx:Form>
+<!--	
+	<widgets:IDNForm id="segmentForm" dto="{segment.segmentDTO}">
+		<widgets:IDNField fieldName="SegmentName" fieldLabel="Segment Name" required="true"/>
+	</widgets:IDNForm>
+-->	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

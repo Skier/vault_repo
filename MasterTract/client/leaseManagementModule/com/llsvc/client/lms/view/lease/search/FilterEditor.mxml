@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"  
+	width="500" xmlns:component="com.llsvc.component.*" xmlns:controls="com.llsvc.controls.*"
+	creationComplete="creationCompleteHandler()"
+	initialize="initHandler()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Project;
+			import com.llsvc.client.lms.LocalCash;
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+
+			private var _criterias:LeaseSearchCriterias;
+			[Bindable]
+			public function get criterias():LeaseSearchCriterias { return _criterias; }
+			public function set criterias(value:LeaseSearchCriterias):void 
+			{
+				_criterias = value;
+				initTracts();
+			}
+			
+			[Bindable]
+			private var tracts:ArrayCollection;
+			
+			[Bindable]
+			private var comboVariants:ArrayCollection = new ArrayCollection(['ANY', 'EQUAL', 'LESS THAN', 'GREATER THAN', 'BETWEEN']);
+			
+			[Bindable]
+			private var projectList:ArrayCollection;
+			
+			[Bindable] private var comboProjectIndex:int; 
+			[Bindable] private var comboExpDateIndex:int; 
+			[Bindable] private var comboGrossAcIndex:int; 
+			[Bindable] private var comboNetAcIndex:int; 
+			[Bindable] private var comboInterestIndex:int; 
+			[Bindable] private var comboLeaseBurdenIndex:int; 
+			[Bindable] private var comboLeaseNriIndex:int; 
+			[Bindable] private var comboWiIndex:int; 
+			[Bindable] private var comboAddBurdenIndex:int; 
+			[Bindable] private var comboNriIndex:int; 
+			[Bindable] private var comboNetIndex:int; 
+			
+			private function initTracts():void 
+			{
+				if (tracts == null)
+					tracts = new ArrayCollection();
+				
+				tracts.removeAll();
+				for each (var t:TractSearchCriteria in criterias.tracts) 
+				{
+					tracts.addItem(t.copy());
+				}
+			}
+			
+            private function formIsValid():Boolean 
+            {
+            	return true;
+            }
+            
+            private function openTractCriteria(tract:TractSearchCriteria):void 
+            {
+            	if (tract == null)
+            		return;
+            		
+            	var popup:TractSearchCriteriaEditPanel = TractSearchCriteriaEditPanel.open(this, tract, true);
+            	popup.addEventListener("commitRequest", 
+            		function (event:Event):void 
+	            	{
+	            		if (!tracts.contains(tract))
+	            			tracts.addItem(tract);
+	            		
+	            		popup.close();
+	            	});
+            }
+            
+            private function initHandler():void 
+            {
+           		projectList = new ArrayCollection(LocalCash.getInstance().getProjects().toArray());
+            	projectList.addItemAt({name:"ANY"}, 0);
+            }
+            
+            private function creationCompleteHandler():void 
+            {
+	            dgTracts.addEventListener("editTractCriteriaRequest", 
+	            	function(event:Event):void 
+	            	{
+	            		var idx:int = dgTracts.selectedIndex;
+	            		if (idx > -1) 
+	            		{
+		            		var tract:TractSearchCriteria = tracts.getItemAt(idx) as TractSearchCriteria;
+		            		openTractCriteria(tract);
+	            		}
+	            	});
+
+	            dgTracts.addEventListener("deleteTractCriteriaRequest", 
+	            	function(event:Event):void 
+	            	{
+	            		var idx:int = dgTracts.selectedIndex;
+	            		if (idx > -1)
+	            			tracts.removeItemAt(idx);
+	            	});
+            }
+            
+            public function submitFields():void 
+            {
+            	if (!formIsValid())
+            		return;
+            	
+            	if (txtLeaseNo.text.length > 0) 
+					criterias.leaseNo = txtLeaseNo.text;
+				else 
+					criterias.leaseNo = null;
+
+            	if (txtLeaseName.text.length > 0) 
+					criterias.leaseName = txtLeaseName.text;
+				else 
+					criterias.leaseName = null;
+				
+				if (comboProject.selectedIndex == -1 || comboProject.selectedLabel == "ANY")
+					criterias.projectId = null;
+				else
+					criterias.projectId = Project(comboProject.selectedItem).id.toString();  
+
+				if (comboExpDate.selectedIndex == 0) 
+				{
+					criterias.expDate.dateFrom = null;
+					criterias.expDate.dateTo = null;
+				} else if (comboExpDate.selectedIndex == 1) 
+				{
+					criterias.expDate.dateFrom = dateExpDateTo.selectedDate;
+					criterias.expDate.dateTo = dateExpDateTo.selectedDate;
+				} else if (comboExpDate.selectedIndex == 2) 
+				{
+					criterias.expDate.dateFrom = null;
+					criterias.expDate.dateTo = dateExpDateTo.selectedDate;
+				} else if (comboExpDate.selectedIndex == 3) 
+				{
+					criterias.expDate.dateFrom = dateExpDateFrom.selectedDate;
+					criterias.expDate.dateTo = null;
+				} else if (comboExpDate.selectedIndex == 4) 
+				{
+					criterias.expDate.dateFrom = dateExpDateFrom.selectedDate;
+					criterias.expDate.dateTo = dateExpDateTo.selectedDate;
+				}
+
+				if (comboGrossAc.selectedIndex == 0) 
+				{
+					criterias.grossAc.min = NaN;
+					criterias.grossAc.max = NaN;
+				} else if (comboGrossAc.selectedIndex == 1) 
+				{
+					criterias.grossAc.min = isNaN(Number(txtGrossAcMax.text)) ? NaN : Number(txtGrossAcMax.text);
+					criterias.grossAc.max = isNaN(Number(txtGrossAcMax.text)) ? NaN : Number(txtGrossAcMax.text);
+				} else if (comboGrossAc.selectedIndex == 2) 
+				{
+					criterias.grossAc.min = NaN;
+					criterias.grossAc.max = isNaN(Number(txtGrossAcMax.text)) ? NaN : Number(txtGrossAcMax.text);
+				} else if (comboGrossAc.selectedIndex == 3) 
+				{
+					criterias.grossAc.min = isNaN(Number(txtGrossAcMin.text)) ? NaN : Number(txtGrossAcMin.text);
+					criterias.grossAc.max = NaN;
+				} else if (comboGrossAc.selectedIndex == 4) 
+				{
+					criterias.grossAc.min = isNaN(Number(txtGrossAcMin.text)) ? NaN : Number(txtGrossAcMin.text);
+					criterias.grossAc.max = isNaN(Number(txtGrossAcMax.text)) ? NaN : Number(txtGrossAcMax.text);
+				}
+
+				if (comboNetAc.selectedIndex == 0) 
+				{
+					criterias.netAc.min = NaN;
+					criterias.netAc.max = NaN;
+				} else if (comboNetAc.selectedIndex == 1) 
+				{
+					criterias.netAc.min = isNaN(Number(txtNetAcMax.text)) ? NaN : Number(txtNetAcMax.text);
+					criterias.netAc.max = isNaN(Number(txtNetAcMax.text)) ? NaN : Number(txtNetAcMax.text);
+				} else if (comboNetAc.selectedIndex == 2) 
+				{
+					criterias.netAc.min = NaN;
+					criterias.netAc.max = isNaN(Number(txtNetAcMax.text)) ? NaN : Number(txtNetAcMax.text);
+				} else if (comboNetAc.selectedIndex == 3) 
+				{
+					criterias.netAc.min = isNaN(Number(txtNetAcMin.text)) ? NaN : Number(txtNetAcMin.text);
+					criterias.netAc.max = NaN;
+				} else if (comboNetAc.selectedIndex == 4) 
+				{
+					criterias.netAc.min = isNaN(Number(txtNetAcMin.text)) ? NaN : Number(txtNetAcMin.text);
+					criterias.netAc.max = isNaN(Number(txtNetAcMax.text)) ? NaN : Number(txtNetAcMax.text);
+				}
+
+				if (comboInterest.selectedIndex == 0) 
+				{
+					criterias.interest.min = NaN;
+					criterias.interest.max = NaN;
+				} else if (comboInterest.selectedIndex == 1) 
+				{
+					criterias.interest.min = isNaN(Number(txtInterestMax.text)) ? NaN : Number(txtInterestMax.text);
+					criterias.interest.max = isNaN(Number(txtInterestMax.text)) ? NaN : Number(txtInterestMax.text);
+				} else if (comboInterest.selectedIndex == 2) 
+				{
+					criterias.interest.min = NaN;
+					criterias.interest.max = isNaN(Number(txtInterestMax.text)) ? NaN : Number(txtInterestMax.text);
+				} else if (comboInterest.selectedIndex == 3) 
+				{
+					criterias.interest.min = isNaN(Number(txtInterestMin.text)) ? NaN : Number(txtInterestMin.text);
+					criterias.interest.max = NaN;
+				} else if (comboInterest.selectedIndex == 4) 
+				{
+					criterias.interest.min = isNaN(Number(txtInterestMin.text)) ? NaN : Number(txtInterestMin.text);
+					criterias.interest.max = isNaN(Number(txtInterestMax.text)) ? NaN : Number(txtInterestMax.text);
+				}
+
+				if (comboLeaseBurden.selectedIndex == 0) 
+				{
+					criterias.leaseBurden.min = NaN;
+					criterias.leaseBurden.max = NaN;
+				} else if (comboLeaseBurden.selectedIndex == 1) 
+				{
+					criterias.leaseBurden.min = isNaN(Number(txtLeaseBurdenMax.text)) ? NaN : Number(txtLeaseBurdenMax.text);
+					criterias.leaseBurden.max = isNaN(Number(txtLeaseBurdenMax.text)) ? NaN : Number(txtLeaseBurdenMax.text);
+				} else if (comboLeaseBurden.selectedIndex == 2) 
+				{
+					criterias.leaseBurden.min = NaN;
+					criterias.leaseBurden.max = isNaN(Number(txtLeaseBurdenMax.text)) ? NaN : Number(txtLeaseBurdenMax.text);
+				} else if (comboLeaseBurden.selectedIndex == 3) 
+				{
+					criterias.leaseBurden.min = isNaN(Number(txtLeaseBurdenMin.text)) ? NaN : Number(txtLeaseBurdenMin.text);
+					criterias.leaseBurden.max = NaN;
+				} else if (comboLeaseBurden.selectedIndex == 4) 
+				{
+					criterias.leaseBurden.min = isNaN(Number(txtLeaseBurdenMin.text)) ? NaN : Number(txtLeaseBurdenMin.text);
+					criterias.leaseBurden.max = isNaN(Number(txtLeaseBurdenMax.text)) ? NaN : Number(txtLeaseBurdenMax.text);
+				}
+
+				if (comboLeaseNri.selectedIndex == 0) 
+				{
+					criterias.leaseNri.min = NaN;
+					criterias.leaseNri.max = NaN;
+				} else if (comboLeaseNri.selectedIndex == 1) 
+				{
+					criterias.leaseNri.min = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+					criterias.leaseNri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				} else if (comboLeaseNri.selectedIndex == 2) 
+				{
+					criterias.leaseNri.min = NaN;
+					criterias.leaseNri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				} else if (comboLeaseNri.selectedIndex == 3) 
+				{
+					criterias.leaseNri.min = isNaN(Number(txtNriMin.text)) ? NaN : Number(txtNriMin.text);
+					criterias.leaseNri.max = NaN;
+				} else if (comboLeaseNri.selectedIndex == 4) 
+				{
+					criterias.leaseNri.min = isNaN(Number(txtNriMin.text)) ? NaN : Number(txtNriMin.text);
+					criterias.leaseNri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				}
+
+				if (comboWi.selectedIndex == 0) 
+				{
+					criterias.wi.min = NaN;
+					criterias.wi.max = NaN;
+				} else if (comboWi.selectedIndex == 1) 
+				{
+					criterias.wi.min = isNaN(Number(txtWiMax.text)) ? NaN : Number(txtWiMax.text);
+					criterias.wi.max = isNaN(Number(txtWiMax.text)) ? NaN : Number(txtWiMax.text);
+				} else if (comboWi.selectedIndex == 2) 
+				{
+					criterias.wi.min = NaN;
+					criterias.wi.max = isNaN(Number(txtWiMax.text)) ? NaN : Number(txtWiMax.text);
+				} else if (comboWi.selectedIndex == 3) 
+				{
+					criterias.wi.min = isNaN(Number(txtWiMin.text)) ? NaN : Number(txtWiMin.text);
+					criterias.wi.max = NaN;
+				} else if (comboWi.selectedIndex == 4) 
+				{
+					criterias.wi.min = isNaN(Number(txtWiMin.text)) ? NaN : Number(txtWiMin.text);
+					criterias.wi.max = isNaN(Number(txtWiMax.text)) ? NaN : Number(txtWiMax.text);
+				}
+
+				if (comboAddBurden.selectedIndex == 0) 
+				{
+					criterias.additionalBurden.min = NaN;
+					criterias.additionalBurden.max = NaN;
+				} else if (comboAddBurden.selectedIndex == 1) 
+				{
+					criterias.additionalBurden.min = isNaN(Number(txtAddBurdenMax.text)) ? NaN : Number(txtAddBurdenMax.text);
+					criterias.additionalBurden.max = isNaN(Number(txtAddBurdenMax.text)) ? NaN : Number(txtAddBurdenMax.text);
+				} else if (comboAddBurden.selectedIndex == 2) 
+				{
+					criterias.additionalBurden.min = NaN;
+					criterias.additionalBurden.max = isNaN(Number(txtAddBurdenMax.text)) ? NaN : Number(txtAddBurdenMax.text);
+				} else if (comboAddBurden.selectedIndex == 3) 
+				{
+					criterias.additionalBurden.min = isNaN(Number(txtAddBurdenMin.text)) ? NaN : Number(txtAddBurdenMin.text);
+					criterias.additionalBurden.max = NaN;
+				} else if (comboAddBurden.selectedIndex == 4) 
+				{
+					criterias.additionalBurden.min = isNaN(Number(txtAddBurdenMin.text)) ? NaN : Number(txtAddBurdenMin.text);
+					criterias.additionalBurden.max = isNaN(Number(txtAddBurdenMax.text)) ? NaN : Number(txtAddBurdenMax.text);
+				}
+
+				if (comboNri.selectedIndex == 0) 
+				{
+					criterias.nri.min = NaN;
+					criterias.nri.max = NaN;
+				} else if (comboNri.selectedIndex == 1) 
+				{
+					criterias.nri.min = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+					criterias.nri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				} else if (comboNri.selectedIndex == 2) 
+				{
+					criterias.nri.min = NaN;
+					criterias.nri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				} else if (comboNri.selectedIndex == 3) 
+				{
+					criterias.nri.min = isNaN(Number(txtNriMin.text)) ? NaN : Number(txtNriMin.text);
+					criterias.nri.max = NaN;
+				} else if (comboNri.selectedIndex == 4) 
+				{
+					criterias.nri.min = isNaN(Number(txtNriMin.text)) ? NaN : Number(txtNriMin.text);
+					criterias.nri.max = isNaN(Number(txtNriMax.text)) ? NaN : Number(txtNriMax.text);
+				}
+
+				if (comboNet.selectedIndex == 0) 
+				{
+					criterias.net.min = NaN;
+					criterias.net.max = NaN;
+				} else if (comboNet.selectedIndex == 1) 
+				{
+					criterias.net.min = isNaN(Number(txtNetMax.text)) ? NaN : Number(txtNetMax.text);
+					criterias.net.max = isNaN(Number(txtNetMax.text)) ? NaN : Number(txtNetMax.text);
+				} else if (comboNet.selectedIndex == 2) 
+				{
+					criterias.net.min = NaN;
+					criterias.net.max = isNaN(Number(txtNetMax.text)) ? NaN : Number(txtNetMax.text);
+				} else if (comboNet.selectedIndex == 3) 
+				{
+					criterias.net.min = isNaN(Number(txtNetMin.text)) ? NaN : Number(txtNetMin.text);
+					criterias.net.max = NaN;
+				} else if (comboNet.selectedIndex == 4) 
+				{
+					criterias.net.min = isNaN(Number(txtNetMin.text)) ? NaN : Number(txtNetMin.text);
+					criterias.net.max = isNaN(Number(txtNetMax.text)) ? NaN : Number(txtNetMax.text);
+				}
+				
+				criterias.tracts.removeAll();
+				for each (var t:TractSearchCriteria in tracts) 
+				{
+					criterias.tracts.addItem(t);
+				}
+				
+            	dispatchEvent(new Event("submitRequest"));
+            }
+            
+            private function btnAddTractClickHandler():void 
+            {
+            	var newTract:TractSearchCriteria = new TractSearchCriteria();
+            	
+            	if (tracts.length > 0) 
+            	{
+	            	var lastTract:TractSearchCriteria = tracts.getItemAt(tracts.length - 1) as TractSearchCriteria;
+	            	newTract = lastTract.copy();
+            	}
+            	
+            	openTractCriteria(newTract);
+            }
+            
+            private function dgTractsDoubleClickHandler():void 
+            {
+            	var tract:TractSearchCriteria = dgTracts.selectedItem as TractSearchCriteria;
+            	openTractCriteria(tract);
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%" verticalGap="2">
+		<mx:FormItem label="Lease No:" width="100%">
+			<mx:TextInput id="txtLeaseNo" text="{criterias.leaseNo}" width="100%"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Lease Name:" width="100%">
+			<mx:TextInput id="txtLeaseName" text="{criterias.leaseName}" width="100%"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Prospect:" width="100%">
+			<mx:ComboBox id="comboProject" dataProvider="{projectList}" labelField="name" selectedIndex="{comboProjectIndex}" change="comboProjectIndex = comboProject.selectedIndex"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Expiration Date:">
+			<mx:HBox>
+				<mx:ComboBox id="comboExpDate" dataProvider="{comboVariants}" selectedIndex="{comboExpDateIndex}" change="comboExpDateIndex = comboExpDate.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboExpDate.selectedIndex &gt; 2}" includeInLayout="{comboExpDate.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboExpDate.selectedIndex == 4}" 
+						includeInLayout="{comboExpDate.selectedIndex == 4}" 
+						/>
+					<mx:DateField id="dateExpDateFrom" 
+						selectedDate="{criterias.expDate.dateFrom}" editable="true"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboExpDate.selectedIndex != 3 &amp;&amp; comboExpDate.selectedIndex != 0}" 
+					includeInLayout="{comboExpDate.selectedIndex != 3 &amp;&amp; comboExpDate.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboExpDate.selectedIndex == 4}" 
+						includeInLayout="{comboExpDate.selectedIndex == 4}" 
+						/>
+					<mx:DateField id="dateExpDateTo" 
+						selectedDate="{criterias.expDate.dateTo}" editable="true"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Gross AC:">
+			<mx:HBox>
+				<mx:ComboBox id="comboGrossAc" dataProvider="{comboVariants}" selectedIndex="{comboGrossAcIndex}" change="comboGrossAcIndex = comboGrossAc.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboGrossAc.selectedIndex &gt; 2}" includeInLayout="{comboGrossAc.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboGrossAc.selectedIndex == 4}" 
+						includeInLayout="{comboGrossAc.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtGrossAcMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.grossAc.min) ? '' : criterias.grossAc.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboGrossAc.selectedIndex != 3 &amp;&amp; comboGrossAc.selectedIndex != 0}" 
+					includeInLayout="{comboGrossAc.selectedIndex != 3 &amp;&amp; comboGrossAc.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboGrossAc.selectedIndex == 4}" 
+						includeInLayout="{comboGrossAc.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtGrossAcMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.grossAc.max) ? '' : criterias.grossAc.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Net AC:">
+			<mx:HBox>
+				<mx:ComboBox id="comboNetAc" dataProvider="{comboVariants}" selectedIndex="{comboNetAcIndex}" change="comboNetAcIndex = comboNetAc.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNetAc.selectedIndex &gt; 2}" includeInLayout="{comboNetAc.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboNetAc.selectedIndex == 4}" 
+						includeInLayout="{comboNetAc.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNetAcMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.netAc.min) ? '' : criterias.netAc.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNetAc.selectedIndex != 3 &amp;&amp; comboNetAc.selectedIndex != 0}" 
+					includeInLayout="{comboNetAc.selectedIndex != 3 &amp;&amp; comboNetAc.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboNetAc.selectedIndex == 4}" 
+						includeInLayout="{comboNetAc.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNetAcMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.netAc.max) ? '' : criterias.netAc.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Interest:">
+			<mx:HBox>
+				<mx:ComboBox id="comboInterest" dataProvider="{comboVariants}" selectedIndex="{comboInterestIndex}" change="comboInterestIndex = comboInterest.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboInterest.selectedIndex &gt; 2}" includeInLayout="{comboInterest.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboInterest.selectedIndex == 4}" 
+						includeInLayout="{comboInterest.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtInterestMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.interest.min) ? '' : criterias.interest.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboInterest.selectedIndex != 3 &amp;&amp; comboInterest.selectedIndex != 0}" 
+					includeInLayout="{comboInterest.selectedIndex != 3 &amp;&amp; comboInterest.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboInterest.selectedIndex == 4}" 
+						includeInLayout="{comboInterest.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtInterestMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.interest.max) ? '' : criterias.interest.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Lease Burden:">
+			<mx:HBox>
+				<mx:ComboBox id="comboLeaseBurden" dataProvider="{comboVariants}" selectedIndex="{comboLeaseBurdenIndex}" change="comboLeaseBurdenIndex = comboLeaseBurden.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboLeaseBurden.selectedIndex &gt; 2}" includeInLayout="{comboLeaseBurden.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboLeaseBurden.selectedIndex == 4}" 
+						includeInLayout="{comboLeaseBurden.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtLeaseBurdenMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.leaseBurden.min) ? '' : criterias.leaseBurden.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboLeaseBurden.selectedIndex != 3 &amp;&amp; comboLeaseBurden.selectedIndex != 0}" 
+					includeInLayout="{comboLeaseBurden.selectedIndex != 3 &amp;&amp; comboLeaseBurden.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboLeaseBurden.selectedIndex == 4}" 
+						includeInLayout="{comboLeaseBurden.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtLeaseBurdenMax" width="60" restrict="0-9,."  textAlign="right"
+						text="{isNaN(criterias.leaseBurden.max) ? '' : criterias.leaseBurden.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Lease NRI:">
+			<mx:HBox>
+				<mx:ComboBox id="comboLeaseNri" dataProvider="{comboVariants}" selectedIndex="{comboLeaseNriIndex}" change="comboLeaseNriIndex = comboLeaseNri.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboLeaseNri.selectedIndex &gt; 2}" includeInLayout="{comboLeaseNri.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboLeaseNri.selectedIndex == 4}" 
+						includeInLayout="{comboLeaseNri.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtLeaseNriMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.leaseNri.min) ? '' : criterias.leaseNri.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboLeaseNri.selectedIndex != 3 &amp;&amp; comboLeaseNri.selectedIndex != 0}" 
+					includeInLayout="{comboLeaseNri.selectedIndex != 3 &amp;&amp; comboLeaseNri.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboLeaseNri.selectedIndex == 4}" 
+						includeInLayout="{comboLeaseNri.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtLeaseNriMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.leaseNri.max) ? '' : criterias.leaseNri.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="WI:">
+			<mx:HBox>
+				<mx:ComboBox id="comboWi" dataProvider="{comboVariants}" selectedIndex="{comboWiIndex}" change="comboWiIndex = comboWi.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboWi.selectedIndex &gt; 2}" includeInLayout="{comboWi.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboWi.selectedIndex == 4}" 
+						includeInLayout="{comboWi.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtWiMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.wi.min) ? '' : criterias.wi.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboWi.selectedIndex != 3 &amp;&amp; comboWi.selectedIndex != 0}" 
+					includeInLayout="{comboWi.selectedIndex != 3 &amp;&amp; comboWi.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboWi.selectedIndex == 4}" 
+						includeInLayout="{comboWi.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtWiMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.wi.max) ? '' : criterias.wi.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Additional Burden:">
+			<mx:HBox>
+				<mx:ComboBox id="comboAddBurden" dataProvider="{comboVariants}" selectedIndex="{comboAddBurdenIndex}" change="comboAddBurdenIndex = comboAddBurden.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboAddBurden.selectedIndex &gt; 2}" includeInLayout="{comboAddBurden.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboAddBurden.selectedIndex == 4}" 
+						includeInLayout="{comboAddBurden.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtAddBurdenMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.additionalBurden.min) ? '' : criterias.additionalBurden.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboAddBurden.selectedIndex != 3 &amp;&amp; comboAddBurden.selectedIndex != 0}" 
+					includeInLayout="{comboAddBurden.selectedIndex != 3 &amp;&amp; comboAddBurden.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboAddBurden.selectedIndex == 4}" 
+						includeInLayout="{comboAddBurden.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtAddBurdenMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.additionalBurden.max) ? '' : criterias.additionalBurden.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="NRI:">
+			<mx:HBox>
+				<mx:ComboBox id="comboNri" dataProvider="{comboVariants}" selectedIndex="{comboNriIndex}" change="comboNriIndex = comboNri.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNri.selectedIndex &gt; 2}" includeInLayout="{comboNri.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboNri.selectedIndex == 4}" 
+						includeInLayout="{comboNri.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNriMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.nri.min) ? '' : criterias.nri.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNri.selectedIndex != 3 &amp;&amp; comboNri.selectedIndex != 0}" 
+					includeInLayout="{comboNri.selectedIndex != 3 &amp;&amp; comboNri.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboNri.selectedIndex == 4}" 
+						includeInLayout="{comboNri.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNriMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.nri.max) ? '' : criterias.nri.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Net:">
+			<mx:HBox>
+				<mx:ComboBox id="comboNet" dataProvider="{comboVariants}" selectedIndex="{comboNetIndex}" change="comboNetIndex = comboNet.selectedIndex"/>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNet.selectedIndex &gt; 2}" includeInLayout="{comboNet.selectedIndex &gt; 2}"
+					>
+					<mx:Label text="from"
+						visible="{comboNet.selectedIndex == 4}" 
+						includeInLayout="{comboNet.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNetMin" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.net.min) ? '' : criterias.net.min.toString()}"/>
+				</mx:HBox>
+				<mx:HBox horizontalGap="0"
+					visible="{comboNet.selectedIndex != 3 &amp;&amp; comboNet.selectedIndex != 0}" 
+					includeInLayout="{comboNet.selectedIndex != 3 &amp;&amp; comboNet.selectedIndex != 0}"
+					>
+					<mx:Label text="to"
+						visible="{comboNet.selectedIndex == 4}" 
+						includeInLayout="{comboNet.selectedIndex == 4}" 
+						/>
+					<mx:TextInput id="txtNetMax" width="60" restrict="0-9,." textAlign="right"
+						text="{isNaN(criterias.net.max) ? '' : criterias.net.max.toString()}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:FormItem>
+		
+		<mx:VBox width="100%" height="100%" verticalGap="0">
+			<mx:HBox width="100%" backgroundColor="#dddddd" verticalAlign="middle"
+				borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Filter tracts by description:"/>
+				
+				<mx:Spacer width="100%"/>
+		
+		        <mx:Button toolTip="Add filter"
+		        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+		        	icon="@Embed('assets/icon_plus.png')"
+		        	click="btnAddTractClickHandler()"/>
+			</mx:HBox>
+			
+			<controls:ColoredDataGrid id="dgTracts" 
+				width="100%" minWidth="200" rowCount="4" dataProvider="{tracts}"
+				doubleClickEnabled="true" itemDoubleClick="dgTractsDoubleClickHandler()">
+				<controls:columns>
+					<mx:DataGridColumn width="65" dataField="twn" headerText="Township" textAlign="center"/>
+					<mx:DataGridColumn width="50" dataField="twnDir" headerText="TwnDir" textAlign="center"/>
+					<mx:DataGridColumn width="60" dataField="rng" headerText="Range" textAlign="center"/>
+					<mx:DataGridColumn width="50" dataField="rngDir" headerText="RngDir" textAlign="center"/>
+					<mx:DataGridColumn dataField="pm" headerText="PM" textAlign="center"/>
+					<mx:DataGridColumn width="50" dataField="sec" headerText="Section" textAlign="center"/>
+					<mx:DataGridColumn width="40" dataField="stateStr" headerText="State" textAlign="center"/>
+					<mx:DataGridColumn dataField="countyStr" headerText="County" textAlign="center"/>
+					<mx:DataGridColumn width="38" minWidth="38" headerText=" " 
+						itemRenderer="com.llsvc.client.lms.view.lease.search.TractCriteriaActionIR" editable="false"/>
+				</controls:columns>
+			</controls:ColoredDataGrid>
+			
+		</mx:VBox>
+	</mx:Form>
+</mx:VBox>

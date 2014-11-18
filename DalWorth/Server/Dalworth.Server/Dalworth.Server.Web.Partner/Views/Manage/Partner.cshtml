@@ -1,0 +1,144 @@
+﻿@model Dalworth.Server.Web.Partner.Models.Partner
+
+@{
+    ViewBag.Title = "Partner In Profit - Partner Details";
+    ViewBag.Header = "Partner Details";
+
+    ViewBag.ActiveTopMenu = "Manage";
+    ViewBag.ActiveSubMenu = "Partners";
+}
+
+<table>
+    <tr>
+        <td><h2>@Model.Name 
+        @if (!Model.IsActive)
+        {
+        <span class="red-text">&nbsp;- Inactive</span>
+        }
+        </h2></td>
+    </tr>
+</table>
+<br><br>
+
+<table>
+<tr>    
+    <td valign="top">
+    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="2">Tracking Phones</th>
+            </tr>
+        @if (Model.TrackingPhones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+        @foreach (var item in Model.TrackingPhones) {
+            <tr>
+                <td width="100px">
+                    @item.NumberText        
+                </td>
+                <td>
+                    @Html.ActionLink(" ", "UnassignTrackingPhone", new { @PartnerId=Model.Id,  @TrackingPhoneId=item.Id }, new { @class = "icon-2 info-tooltip" })
+                </td>
+            </tr>
+        }
+        </table>
+        @if (Model.IsActive){
+        @Html.ActionLink("Add", "AssignTrackingPhone", new { @PartnerId=Model.Id }, new { @class="back-link" })    
+        }
+    </td>
+    <td width="100px"></td>
+    <td valign="top">
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat" colspan="2">Personal Phones</th>
+            </tr>
+        @if (Model.PersonalPhones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+        @foreach (var item in Model.PersonalPhones) {
+            <tr>
+                <td>
+                    @item.NumberText
+                </td>
+                <td>
+                    @Html.ActionLink(" ", "DeletePersonalPhone", new { @PartnerId=Model.Id, @PersonalPhoneId=item.Id }, new { @class = "icon-2 info-tooltip" })
+                </td>
+            </tr>
+        }
+        </table>
+        @if (Model.IsActive){
+        @Html.ActionLink("Add", "AddPersonalPhone", new { @PartnerId=Model.Id }, new { @class="back-link" })    
+        }
+    </td>
+    <td width="100px"></td>
+    <td valign="top">
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="3">Users</th>
+            </tr>
+
+        @if (Model.Users.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+        @foreach (var item in Model.Users) {
+            <tr>                
+                <td>
+                    @Html.ActionLink(item.Name, "UserDetails", new { @UserId=item.Id })                      
+                </td>
+                <td>
+                    @item.StatusText
+                </td>
+                <td>
+                    @Html.ActionLink(" ", "DeleteUserOnPartner", new { @UserId=item.Id }, new { @class = "icon-2 info-tooltip" })
+                </td>
+            </tr>
+        }
+
+        </table>
+        @if (Model.IsActive){
+        @Html.ActionLink("Add", "UserDetails", new { @PartnerId=Model.Id }, new { @class="back-link" })
+        }
+    </td>
+    <td width="100px"></td>
+    <td valign="top">    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="2">Advertising Sources</th>
+            </tr>
+        @if (Model.AdvertisingSources.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+        @foreach (var item in Model.AdvertisingSources) {
+            <tr>
+                <td width="200px">
+                    @item.Name        
+                </td>
+                <td>
+                    @Html.ActionLink(" ", "UnassignAdvertisingSource", new { @AdvertisingSourceId=item.ID }, new { @class = "icon-2 info-tooltip" })
+                </td>
+            </tr>
+        }
+        </table>
+        @if (Model.IsActive){
+        @Html.ActionLink("Add", "AssignAdvertisingSource", new { @PartnerId=Model.Id }, new { @class="back-link" })    
+        }
+    </td>
+</tr>
+</table>
+
+<br>
+<br>
+
+
+@if (Model.TrackingPhones.Count == 0 && Model.PersonalPhones.Count == 0 && Model.Users.Count == 0 && Model.IsActive){
+<p>
+Partner is currently Active, <a href="Partner?PartnerId=@Model.Id&Activate=false" class="link" onclick="return confirm('You are about to deactivate partner. This action cannot be undone, are you sure?')">Click here</a> to deactivate
+</p>
+<br/>
+<br/>
+}
+<p>
+<a href="@Model.BackLink" class='back-link'>@Model.BackLinkText</a>
+</p>
+
+

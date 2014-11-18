@@ -1,0 +1,494 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5E8A7EFF-721F-401F-993E-D464C4EFFDEA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.Domain</RootNamespace>
+    <AssemblyName>Dalworth.Server.Domain</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="Address.cs" />
+    <Compile Include="AdvertisingSource.cs" />
+    <Compile Include="Area.cs" />
+    <Compile Include="BackgroundJobPending.cs" />
+    <Compile Include="BackgroundJobType.cs" />
+    <Compile Include="BankCheckAccountType.cs" />
+    <Compile Include="BusinessPartner.cs" />
+    <Compile Include="codegen\Address.Generator.cs" />
+    <Compile Include="codegen\AdvertisingSource.Generator.cs" />
+    <Compile Include="codegen\Area.Generator.cs" />
+    <Compile Include="codegen\BackgroundJobPending.Generator.cs" />
+    <Compile Include="codegen\BackgroundJobType.Generator.cs" />
+    <Compile Include="codegen\BankCheckAccountType.Generator.cs" />
+    <Compile Include="codegen\BusinessPartner.Generator.cs" />
+    <Compile Include="codegen\ConnectionKey.Generator.cs" />
+    <Compile Include="codegen\ConstructionDamageType.Generator.cs" />
+    <Compile Include="codegen\Counter.Generator.cs" />
+    <Compile Include="codegen\CreditCardCVV2Type.Generator.cs" />
+    <Compile Include="codegen\CreditCardType.Generator.cs" />
+    <Compile Include="codegen\Customer.Generator.cs" />
+    <Compile Include="codegen\CustomerAddressAdditional.Generator.cs" />
+    <Compile Include="codegen\CustomerType.Generator.cs" />
+    <Compile Include="codegen\CustomerWebAccount.Generator.cs" />
+    <Compile Include="codegen\DashboardSharedSetting.Generator.cs" />
+    <Compile Include="codegen\DashboardState.Generator.cs" />
+    <Compile Include="codegen\DashboardUserSettings.Generator.cs" />
+    <Compile Include="codegen\DefloodDetail.Generator.cs" />
+    <Compile Include="codegen\DeletedTask.Generator.cs" />
+    <Compile Include="codegen\DigiumLogItem.Generator.cs" />
+    <Compile Include="codegen\Employee.Generator.cs" />
+    <Compile Include="codegen\EmployeeType.Generator.cs" />
+    <Compile Include="codegen\EquipmentTransaction.Generator.cs" />
+    <Compile Include="codegen\EquipmentTransactionDetail.Generator.cs" />
+    <Compile Include="codegen\EquipmentType.Generator.cs" />
+    <Compile Include="codegen\EventLog.Generator.cs" />
+    <Compile Include="codegen\InsuranceCompany.Generator.cs" />
+    <Compile Include="codegen\InventoryRoomStatus.Generator.cs" />
+    <Compile Include="codegen\Item.Generator.cs" />
+    <Compile Include="codegen\ItemShape.Generator.cs" />
+    <Compile Include="codegen\ItemType.Generator.cs" />
+    <Compile Include="codegen\Lead.Generator.cs" />
+    <Compile Include="codegen\LeadStatus.Generator.cs" />
+    <Compile Include="codegen\MapscoAddress.Generator.cs" />
+    <Compile Include="codegen\MonitoringDetail.Generator.cs" />
+    <Compile Include="codegen\MonitoringReading.Generator.cs" />
+    <Compile Include="codegen\MonitoringReadingType.Generator.cs" />
+    <Compile Include="codegen\Order.Generator.cs" />
+    <Compile Include="codegen\OrderSource.Generator.cs" />
+    <Compile Include="codegen\OrderSourceAdvertisingSource.Generator.cs" />
+    <Compile Include="codegen\OrderSourceOwnPhone.Generator.cs" />
+    <Compile Include="codegen\PartnerInvitation.Generator.cs" />
+    <Compile Include="codegen\PartnerSummaryReportItem.Generator.cs" />
+    <Compile Include="codegen\PendingTaskGridState.Generator.cs" />
+    <Compile Include="codegen\Project.Generator.cs" />
+    <Compile Include="codegen\Mapsco.Generator.cs" />
+    <Compile Include="codegen\Message.Generator.cs" />
+    <Compile Include="codegen\MessageType.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionBillPay.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionBillPayType.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionDetail.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionProgress.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionScope.Generator.cs" />
+    <Compile Include="codegen\ProjectConstructionScopeType.Generator.cs" />
+    <Compile Include="codegen\ProjectFeedback.Generator.cs" />
+    <Compile Include="codegen\ProjectFeedbackRate.Generator.cs" />
+    <Compile Include="codegen\ProjectInsurance.Generator.cs" />
+    <Compile Include="codegen\ProjectLog.Generator.cs" />
+    <Compile Include="codegen\ProjectPayment.Generator.cs" />
+    <Compile Include="codegen\ProjectStatus.Generator.cs" />
+    <Compile Include="codegen\ProjectType.Generator.cs" />
+    <Compile Include="codegen\ProjectTypeQbAccount.Generator.cs" />
+    <Compile Include="codegen\ProjectTypeQbItem.Generator.cs" />
+    <Compile Include="codegen\ProjectTypeQbTemplate.Generator.cs" />
+    <Compile Include="codegen\QbAccount.Generator.cs" />
+    <Compile Include="codegen\QbClass.Generator.cs" />
+    <Compile Include="codegen\QbCreditMemo.Generator.cs" />
+    <Compile Include="codegen\QbCreditMemoLine.Generator.cs" />
+    <Compile Include="codegen\QbCustomer.Generator.cs" />
+    <Compile Include="codegen\QbCustomerType.Generator.cs" />
+    <Compile Include="codegen\QbInvoice.Generator.cs" />
+    <Compile Include="codegen\QbInvoiceLine.Generator.cs" />
+    <Compile Include="codegen\QbInvoiceTerm.Generator.cs" />
+    <Compile Include="codegen\QbItem.Generator.cs" />
+    <Compile Include="codegen\QbItemType.Generator.cs" />
+    <Compile Include="codegen\QbPayment.Generator.cs" />
+    <Compile Include="codegen\QbPaymentMethod.Generator.cs" />
+    <Compile Include="codegen\QbSalesRep.Generator.cs" />
+    <Compile Include="codegen\QbSalesRepType.Generator.cs" />
+    <Compile Include="codegen\QbSalesTaxCode.Generator.cs" />
+    <Compile Include="codegen\QbSyncAction.Generator.cs" />
+    <Compile Include="codegen\QBSyncLog.Generator.cs" />
+    <Compile Include="codegen\QbSyncLogDetail.Generator.cs" />
+    <Compile Include="codegen\QbSyncRequest.Generator.cs" />
+    <Compile Include="codegen\QbTemplate.Generator.cs" />
+    <Compile Include="codegen\SecurityPermission.Generator.cs" />
+    <Compile Include="codegen\SecurityRole.Generator.cs" />
+    <Compile Include="codegen\SecurityRolePermission.Generator.cs" />
+    <Compile Include="codegen\SyncToolInfo.Generator.cs" />
+    <Compile Include="codegen\SystemLog.Generator.cs" />
+    <Compile Include="codegen\SystemOperation.Generator.cs" />
+    <Compile Include="codegen\Task.Generator.cs" />
+    <Compile Include="codegen\TaskFailType.Generator.cs" />
+    <Compile Include="codegen\TaskItemRequirement.Generator.cs" />
+    <Compile Include="codegen\TaskStatus.Generator.cs" />
+    <Compile Include="codegen\TaskType.Generator.cs" />
+    <Compile Include="codegen\TaskTypeQbItem.Generator.cs" />
+    <Compile Include="codegen\TrackingPhone.Generator.cs" />
+    <Compile Include="codegen\TrackingPhoneOrderSource.Generator.cs" />
+    <Compile Include="codegen\Transaction.Generator.cs" />
+    <Compile Include="codegen\Van.Generator.cs" />
+    <Compile Include="codegen\VanDetail.Generator.cs" />
+    <Compile Include="codegen\Visit.Generator.cs" />
+    <Compile Include="codegen\VisitStatus.Generator.cs" />
+    <Compile Include="codegen\VisitTask.Generator.cs" />
+    <Compile Include="codegen\WebLog.Generator.cs" />
+    <Compile Include="codegen\WebSite.Generator.cs" />
+    <Compile Include="codegen\WebSiteArticle.Generator.cs" />
+    <Compile Include="codegen\WebSiteArticleCategory.Generator.cs" />
+    <Compile Include="codegen\WebSiteArticlePart.Generator.cs" />
+    <Compile Include="codegen\WebSiteArticlePartType.Generator.cs" />
+    <Compile Include="codegen\WebSitePhone.Generator.cs" />
+    <Compile Include="codegen\WebUser.Generator.cs" />
+    <Compile Include="codegen\WebUserRole.Generator.cs" />
+    <Compile Include="codegen\Work.Generator.cs" />
+    <Compile Include="codegen\WorkDetail.Generator.cs" />
+    <Compile Include="codegen\WorkDetailLog.Generator.cs" />
+    <Compile Include="codegen\WorkDetailStatus.Generator.cs" />
+    <Compile Include="codegen\WorkEquipment.Generator.cs" />
+    <Compile Include="codegen\WorkStatus.Generator.cs" />
+    <Compile Include="codegen\WorkTransaction.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionEtc.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionGps.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionPayment.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionPaymentType.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionProject.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionQbInvoice.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionTask.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionTaskAction.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionType.Generator.cs" />
+    <Compile Include="codegen\WorkTransactionVanCheck.Generator.cs" />
+    <Compile Include="codegen\Zip.Generator.cs" />
+    <Compile Include="ConnectionKey.cs" />
+    <Compile Include="ConstructionDamageType.cs" />
+    <Compile Include="Counter.cs" />
+    <Compile Include="CreditCardCVV2Type.cs" />
+    <Compile Include="CreditCardType.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="CustomerAddressAdditional.cs" />
+    <Compile Include="CustomerType.cs" />
+    <Compile Include="CustomerWebAccount.cs" />
+    <Compile Include="DashboardSharedSetting.cs" />
+    <Compile Include="DashboardState.cs" />
+    <Compile Include="DashboardUserSettings.cs" />
+    <Compile Include="DateRange.cs" />
+    <Compile Include="DefloodDetail.cs" />
+    <Compile Include="DeletedTask.cs" />
+    <Compile Include="DigiumLogItem.cs" />
+    <Compile Include="DigiumRequestProcessor.cs" />
+    <Compile Include="DomainObject.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="EmployeeType.cs" />
+    <Compile Include="EquipmentTransaction.cs" />
+    <Compile Include="EquipmentTransactionDetail.cs" />
+    <Compile Include="EquipmentType.cs" />
+    <Compile Include="EventLog.cs" />
+    <Compile Include="InsuranceCompany.cs" />
+    <Compile Include="InventoryRoomStatus.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemShape.cs" />
+    <Compile Include="ItemType.cs" />
+    <Compile Include="Lead.cs" />
+    <Compile Include="LeadStatus.cs" />
+    <Compile Include="MapscoAddress.cs" />
+    <Compile Include="MonitoringDetail.cs" />
+    <Compile Include="MonitoringReading.cs" />
+    <Compile Include="MonitoringReadingType.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderSource.cs" />
+    <Compile Include="OrderSourceAdvertisingSource.cs" />
+    <Compile Include="OrderSourceOwnPhone.cs" />
+    <Compile Include="package\LeadPrint.cs" />
+    <Compile Include="package\PagerMessage.cs" />
+    <Compile Include="package\ProjectPrint.cs" />
+    <Compile Include="package\ServmanExportPackage.cs" />
+    <Compile Include="package\TaskPackage.cs" />
+    <Compile Include="package\VisitCompletePackage.cs" />
+    <Compile Include="package\VisitCompleteResultPackage.cs" />
+    <Compile Include="package\VisitSummaryPackage.cs" />
+    <Compile Include="package\WorkItemPackage.cs" />
+    <Compile Include="PartnerInvitation.cs" />
+    <Compile Include="PartnerSummaryReportItem.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="ProjectConstructionBillPay.cs" />
+    <Compile Include="ProjectConstructionBillPayType.cs" />
+    <Compile Include="ProjectConstructionDetail.cs" />
+    <Compile Include="ProjectConstructionProgress.cs" />
+    <Compile Include="ProjectConstructionScope.cs" />
+    <Compile Include="ProjectConstructionScopeType.cs" />
+    <Compile Include="ProjectFeedback.cs" />
+    <Compile Include="ProjectFeedbackRate.cs" />
+    <Compile Include="ProjectInsurance.cs" />
+    <Compile Include="ProjectLog.cs" />
+    <Compile Include="ProjectPayment.cs" />
+    <Compile Include="ProjectStatus.cs" />
+    <Compile Include="Mapsco.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="MessageType.cs" />
+    <Compile Include="package\ProjectPackage.cs" />
+    <Compile Include="package\PaymentResult.cs" />
+    <Compile Include="package\StartDayDonePackage.cs" />
+    <Compile Include="package\StartDayPackage.cs" />
+    <Compile Include="package\TechnicianPackage.cs" />
+    <Compile Include="PendingTaskGridState.cs" />
+    <Compile Include="ProjectType.cs" />
+    <Compile Include="ProjectTypeQbAccount.cs" />
+    <Compile Include="ProjectTypeQbItem.cs" />
+    <Compile Include="ProjectTypeQbTemplate.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="QbAccount.cs" />
+    <Compile Include="QbClass.cs" />
+    <Compile Include="QbCreditMemo.cs" />
+    <Compile Include="QbCreditMemoLine.cs" />
+    <Compile Include="QbCustomer.cs" />
+    <Compile Include="QbCustomerType.cs" />
+    <Compile Include="QbInvoice.cs" />
+    <Compile Include="QbInvoiceLine.cs" />
+    <Compile Include="QbInvoiceTerm.cs" />
+    <Compile Include="QbItem.cs" />
+    <Compile Include="QbItemType.cs" />
+    <Compile Include="QbPayment.cs" />
+    <Compile Include="QbPaymentMethod.cs" />
+    <Compile Include="QbSalesRep.cs" />
+    <Compile Include="QbSalesRepType.cs" />
+    <Compile Include="QbSalesTaxCode.cs" />
+    <Compile Include="QbSyncAction.cs" />
+    <Compile Include="QBSyncLog.cs" />
+    <Compile Include="QbSyncLogDetail.cs" />
+    <Compile Include="QbSyncRequest.cs" />
+    <Compile Include="QbTemplate.cs" />
+    <Compile Include="Reports\AdSourceByYear.cs" />
+    <Compile Include="Reports\Booking.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reports\ConstructionSummary.cs" />
+    <Compile Include="Reports\ConstructionLead.cs" />
+    <Compile Include="Reports\ConstructionManager.cs" />
+    <Compile Include="Reports\ConstructionTimeLine.cs" />
+    <Compile Include="Reports\FloodProduction.cs" />
+    <Compile Include="Reports\Revenue.cs" />
+    <Compile Include="Reports\RugPending.cs" />
+    <Compile Include="Reports\RugProduction.cs" />
+    <Compile Include="Reports\RugReadyAging.cs" />
+    <Compile Include="Reports\TechnicianProduction.cs" />
+    <Compile Include="SecurityPermission.cs" />
+    <Compile Include="SecurityRole.cs" />
+    <Compile Include="SecurityRolePermission.cs" />
+    <Compile Include="ServmanSync\BackgroundJobPendingModel.cs" />
+    <Compile Include="ServmanSync\DalworthExportModel.cs" />
+    <Compile Include="ServmanSync\ImportModel.cs" />
+    <Compile Include="ServmanSync\ServmanExportModel.cs" />
+    <Compile Include="SyncToolInfo.cs" />
+    <Compile Include="Sync\DalworthSyncService.cs" />
+    <Compile Include="Sync\TrustAllCertificatePolicy.cs" />
+    <Compile Include="SystemLog.cs" />
+    <Compile Include="SystemOperation.cs" />
+    <Compile Include="Task.cs" />
+    <Compile Include="TaskFailType.cs" />
+    <Compile Include="TaskStatus.cs" />
+    <Compile Include="TaskTypeQbItem.cs" />
+    <Compile Include="TrackingPhone.cs" />
+    <Compile Include="TrackingPhoneOrderSource.cs" />
+    <Compile Include="Transaction.cs" />
+    <Compile Include="Visit.cs" />
+    <Compile Include="TaskItemRequirement.cs" />
+    <Compile Include="package\VisitPackage.cs" />
+    <Compile Include="VisitStatus.cs" />
+    <Compile Include="TaskType.cs" />
+    <Compile Include="Van.cs" />
+    <Compile Include="VanDetail.cs" />
+    <Compile Include="VisitTask.cs" />
+    <Compile Include="Web References\ServerSyncService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="WebLog.cs" />
+    <Compile Include="WebSite.cs" />
+    <Compile Include="WebSiteArticle.cs" />
+    <Compile Include="WebSiteArticleCategory.cs" />
+    <Compile Include="WebSiteArticlePart.cs" />
+    <Compile Include="WebSiteArticlePartType.cs" />
+    <Compile Include="WebSitePhone.cs" />
+    <Compile Include="WebUser.cs" />
+    <Compile Include="WebUserRole.cs" />
+    <Compile Include="Work.cs" />
+    <Compile Include="WorkDetail.cs" />
+    <Compile Include="WorkDetailLog.cs" />
+    <Compile Include="WorkDetailStatus.cs" />
+    <Compile Include="WorkEquipment.cs" />
+    <Compile Include="package\WorkPackage.cs" />
+    <Compile Include="WorkStatus.cs" />
+    <Compile Include="WorkTransaction.cs" />
+    <Compile Include="WorkTransactionEtc.cs" />
+    <Compile Include="WorkTransactionGps.cs" />
+    <Compile Include="WorkTransactionPayment.cs" />
+    <Compile Include="WorkTransactionPaymentType.cs" />
+    <Compile Include="WorkTransactionProject.cs" />
+    <Compile Include="WorkTransactionQbInvoice.cs" />
+    <Compile Include="WorkTransactionTask.cs" />
+    <Compile Include="WorkTransactionTaskAction.cs" />
+    <Compile Include="WorkTransactionType.cs" />
+    <Compile Include="WorkTransactionVanCheck.cs" />
+    <Compile Include="Zip.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Enterprise.Framework, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Enterprise.InfoStore, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Server.Servman.Domain\Dalworth.Server.Servman.Domain.csproj">
+      <Project>{D499A154-EE50-4C41-845B-F402198C0516}</Project>
+      <Name>Dalworth.Server.Servman.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{FA543470-1332-48A2-A600-0BEE5BC1CF86}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MSXML2">
+      <Guid>{F5078F18-C551-11D3-89B9-0000F81FE221}</Guid>
+      <VersionMajor>3</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://192.168.1.14:8080/Dalworth.Server.Web/ServerSyncService.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\ServerSyncService\</RelPath>
+      <UpdateFromURL>http://192.168.1.14:8080/Dalworth.Server.Web/ServerSyncService.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Dalworth_Server_Domain_ServerSyncService_ServerSyncService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\ServerSyncService\ServerSyncService.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\ServerSyncService\h_order.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\ServerSyncService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\ServerSyncService\ServerSyncService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{967B4E0D-AD0C-4609-AB67-0FA40C0206D8}" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+</Project>

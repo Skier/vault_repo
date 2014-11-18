@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.DocumentAttachment;
+        	import com.llsvc.client.lms.events.AttachmentEvent;
+            [Embed(source="assets/icons16/page_white_acrobat.png")]
+            [Bindable]
+            private var imgAcrobat:Class;
+            
+            [Embed(source="assets/icons16/pencil.png")]
+            [Bindable]
+            private var imgEdit:Class;
+            
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            private function onOpenPdfHandler():void 
+            {
+            	var event:AttachmentEvent = new AttachmentEvent(AttachmentEvent.OPEN_PDF_ATTACHMENT, DocumentAttachment(data), true);
+            	dispatchEvent(event);
+            }
+
+            private function onEditHandler():void 
+            {
+            	var event:AttachmentEvent = new AttachmentEvent(AttachmentEvent.OPEN_ATTACHMENT, DocumentAttachment(data), true);
+            	dispatchEvent(event);
+            }
+
+            private function onDeleteHandler():void 
+            {
+            	var event:AttachmentEvent = new AttachmentEvent(AttachmentEvent.REMOVE_ATTACHMENT, DocumentAttachment(data), true);
+            	dispatchEvent(event);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Image source="{imgAcrobat}" width="16" height="16" toolTip="Open Pdf copy" click="onOpenPdfHandler()"
+    	visible="{DocumentAttachment(data).file != null}"/>
+    	
+    <mx:Image source="{imgEdit}" width="16" height="16" toolTip="Edit attachment" click="onEditHandler()"/>
+    
+    <mx:Image source="{imgDelete}" width="16" height="16" toolTip="Delete attachment" click="onDeleteHandler()"/>
+</mx:HBox>

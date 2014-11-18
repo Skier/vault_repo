@@ -1,0 +1,118 @@
+<%@ Page language="c#" Codebehind="SummaryPrint.aspx.cs" AutoEventWireup="false"  Inherits="DPI.Ordering.SummaryPrint" %>
+<%@ Register TagPrefix="dPiUser" TagName="SideControl" Src="control/SideControl2.ascx" %>
+<%@ Register TagPrefix="dPiUser" TagName="SiteFooter" Src="control/SiteFooter.ascx" %>
+<%@ Register TagPrefix="dPiUser" TagName="SiteHeader" Src="control/SiteHeader.ascx" %>
+<%@ Register TagPrefix="subhdr" TagName="subheader" Src="control/subheader.ascx" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<HEAD>
+		<title>dPi Web Ordering - Order Summary Print</title>
+		<LINK href="Styles/Navigator.css" rel="stylesheet">
+			<LINK href="Styles/DPI.css" rel="stylesheet">
+	</HEAD>
+	<body text="#000000" bgColor="#ffffff" leftMargin="0" topMargin="0" ms_positioning="GridLayout">
+		<TABLE height="513" cellSpacing="0" cellPadding="0" width="236" border="0" ms_2d_layout="TRUE">
+			<TR vAlign="top">
+				<TD width="236" height="513">
+					<form id="Form1" action="post" runat="server">
+						<TABLE height="234" cellSpacing="0" cellPadding="0" width="511" border="0" ms_2d_layout="TRUE">
+							<TR vAlign="top">
+								<TD width="511" height="234">
+									<table cellSpacing="0" cellPadding="0" width="510" align="left" border="0" height="233">
+										<tr>
+											<td vAlign="top" bgColor="white" colSpan="2" align="center">
+												<!------------------------------------------------->
+												<table cellSpacing="0" cellPadding="0" width="510" border="0">
+													<tr>
+														<td align="center" colspan="6"><asp:image id="Image1" runat="server" ImageUrl="images/printheader.jpg" ImageAlign="Middle"></asp:image></td>
+													</tr>
+													<tr>
+														<td rowspan="9" width="5">&nbsp;</td>
+														<td class="05_con_sublabel_zip" vAlign="middle" align="right" bgColor="white" colSpan="4"
+															height="61" width="636">
+															ZipCode:
+															<asp:label id="lblZipCode" runat="server" BackColor="White"></asp:label>&nbsp;&nbsp;&nbsp;
+															<asp:label id="lblIlec" runat="server" BackColor="White"></asp:label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+														</td>
+														<td rowspan="9">&nbsp;</td>
+													</tr>
+													<tr>
+														<td colspan="6" align="center"><asp:label id="lblDate" runat="server" Width="205px"></asp:label></td>
+													</tr>
+													<tr>
+														<td align="center" colSpan="4" width="636"><asp:placeholder id="phldrOrdrDetails" runat="server"></asp:placeholder></td>
+													</tr>
+													<tr>
+														<td colspan="4" width="637" align="center">
+															<!------------------------------------------------->
+															<TABLE cellSpacing="0" cellPadding="0" width="97%" border="0">
+																<tr>
+																	<td vAlign="top" colSpan="3">&nbsp;</td>
+																</tr>
+																<tr>
+																	<td vAlign="top" colSpan="3"><IMG height="1" src="images/pixel_gray.jpg" width="100%" border="0"></td>
+																</tr>
+																<TR bgColor="aliceblue">
+																	<TD align="left" colSpan="1" rowSpan="1" width="175">Product&nbsp;Total&nbsp;</TD>
+																	<TD align="right" height="9" width="326"><asp:label id="lblOrderTotal" runat="server" Width="72px" ForeColor="Red"></asp:label>&nbsp;</TD>
+																	<td align="right" width="125" height="9">
+																		<asp:label id="lblOrderTotal2" runat="server" Width="72px" ForeColor="Red"></asp:label>
+																		&nbsp;
+																	</td>
+																</TR>
+																<tr>
+																	<td vAlign="top" colSpan="3"><IMG height="1" src="images/pixel_gray.jpg" width="100%" border="0"></td>
+																</tr>
+																<TR bgColor="floralwhite">
+																	<TD align="left" height="2" width="175">Taxes, Fees and Surcharges</TD>
+																	<TD align="right" height="2" width="326">
+																		<asp:label id="lblFees" runat="server" Width="72px" ForeColor="Red"></asp:label>&nbsp;</TD>
+																	<td align="right" colSpan="1" height="2" rowSpan="1">&nbsp;&nbsp;&nbsp;&nbsp;
+																		<asp:label id="lblFees2" runat="server" Width="72px" ForeColor="Red"></asp:label>&nbsp;</td>
+																</TR>
+																<tr>
+																	<td vAlign="top" colSpan="3"><IMG height="1" src="images/pixel_gray.jpg" width="100%" border="0"></td>
+																</tr>
+																<TR bgColor="aliceblue">
+																	<TD align="left" width="175"><asp:label id="Label2" runat="server" Width="166px" Font-Size="Medium" ForeColor="#C04000"
+																			Font-Names="Arial" Font-Bold="True">Order Total</asp:label></TD>
+																	<TD align="right" width="326">
+																		<asp:label id="lblAmountDue" runat="server" Width="90px" Font-Size="Medium" ForeColor="Red"
+																			Font-Names="Arial" Font-Bold="True"></asp:label>&nbsp;</TD>
+																	<td align="right">
+																		<asp:label id="lblAmtDue2" runat="server" Width="90px" ForeColor="Red" Font-Bold="True" Font-Names="Arial"
+																			Font-Size="Medium"></asp:label>
+																		&nbsp;</td>
+																</TR>
+																<tr>
+																	<td vAlign="top" colSpan="3"><IMG height="1" src="images/pixel_gray.jpg" width="100%" border="0"></td>
+																</tr>
+															</TABLE>
+															<!------------------------------------------------->
+														</td>
+													</tr>
+													<tr>
+														<td align="left" width="121" bgColor="#ffffff" colSpan="3" height="1"><STRONG><FONT color="dimgray">
+																	&nbsp;&nbsp;</FONT></STRONG></td>
+														<td align="right" bgColor="#ffffff" height="1" width="624">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+													</tr>
+													<tr>
+														<td align="center" colSpan="6">
+															<P>&nbsp;</P>
+															<P><asp:imagebutton id="btnPrint" runat="server" ImageUrl="images/btn_print2.jpg" CausesValidation="False"></asp:imagebutton></P>
+														</td>
+													</tr>
+												</table>
+												<asp:Button id="btnClose" runat="server" Text="Close"></asp:Button>
+											</td>
+										</tr>
+									</table>
+								</TD>
+							</TR>
+						</TABLE>
+					</form>
+				</TD>
+			</TR>
+		</TABLE>
+	</body>
+</HTML>

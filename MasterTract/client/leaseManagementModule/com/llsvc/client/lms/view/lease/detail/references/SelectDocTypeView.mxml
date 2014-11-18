@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.llsvc.controls.*"
+	paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+	title="Select Document type">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import com.llsvc.domain.DocumentType;
+			import mx.collections.ArrayCollection;
+			
+			public var currentType:DocumentType = new DocumentType();
+			
+			[Bindable]
+			private var docTypes:ArrayCollection = new ArrayCollection(['Recorded','Urecorded','Correspondence','Other Document']);
+			[Bindable]
+			private var isTractSensitive:Boolean = false;
+			
+            public static function open(parent:DisplayObject, modal:Boolean):SelectDocTypeView
+            {
+                var popup:SelectDocTypeView = new SelectDocTypeView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function comboDocTypeChangeHandler():void 
+			{
+				var typeName:String = comboDocType.selectedItem as String;
+				
+				if (typeName == DocumentType.DOC_TYPE_LEASE || typeName == DocumentType.DOC_TYPE_ASSIGNMENT) 
+				{
+					radioAllTractsYes.selected = false;
+					radioAllTractsNo.selected = false;
+
+					isTractSensitive = true;
+				} else {
+					radioAllTractsYes.selected = false;
+					radioAllTractsNo.selected = false;
+
+					isTractSensitive = false;
+				}
+				
+				currentType.name = typeName;
+				currentType.giverRole = "From";
+				currentType.receiverRole = "To";
+			}
+			
+			private function btnOkClickHandler():void 
+			{
+				dispatchEvent(new Event("submitRequest"));
+			}
+			
+			private function btnCancelClickHandler():void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="Select Document Type:" fontWeight="bold"/>
+		
+		<controls:ComboBox id="comboDocType" 
+			dataProvider="{docTypes}" prompt="" change="comboDocTypeChangeHandler()"/>
+	</mx:HBox>
+	
+	<mx:VBox width="100%" 
+		borderColor="#999999" borderStyle="solid" cornerRadius="2" backgroundColor="#ffffdd" horizontalAlign="center"
+		visible="{isTractSensitive}" includeInLayout="{isTractSensitive}">
+		<mx:Label text="Does document pertain to all tracts?" fontWeight="bold"/>
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:RadioButton id="radioAllTractsYes" groupName="allTracts" label="Yes"/>
+			<mx:RadioButton id="radioAllTractsNo" groupName="allTracts" label="No"/>
+		</mx:HBox>
+	</mx:VBox> 
+
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button id="btnOk" label="Ok" click="btnOkClickHandler()" height="28" 
+			enabled="{!isTractSensitive || radioAllTractsYes.selected || radioAllTractsNo.selected}"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()" height="28"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

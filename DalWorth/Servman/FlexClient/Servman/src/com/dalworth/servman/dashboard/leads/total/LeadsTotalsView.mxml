@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollapsiblePanel xmlns="com.affilia.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()">
+
+	<mx:Script>
+		<![CDATA[
+			
+			private var controller:LeadsTotalsController;
+			
+			[Bindable] 
+			private var model:LeadsTotalsModel;
+			
+			private function onInit():void 
+			{
+				controller = new LeadsTotalsController(this);
+				model = LeadsTotalsModel.getInstance();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf"/>
+	
+	<mx:VBox width="100%">
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:Label width="100%" textAlign="right" text="Total leads:"/>
+			<mx:Label width="100" textAlign="left" text="{model.leadsTotal}" fontWeight="bold"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:Label width="100%" textAlign="right" text="Converted leads:"/>
+			<mx:Label width="100" textAlign="left" text="{model.leadsConverted + ' ' + model.leadsConvertedPercent + '%'}" fontWeight="bold"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:Label width="100%" textAlign="right" text="Average time to contact:"/>
+			<mx:Label width="100" textAlign="left" text="{model.averageTimeToContact}" fontWeight="bold"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:Label width="100%" textAlign="right" text="Closed amount:"/>
+			<mx:Label width="100" textAlign="left" text="{cf.format(model.closedAmount)}" fontWeight="bold"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</CollapsiblePanel>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="onCreate()"
+	xmlns:breadCrumb="com.dalworth.leadCentral.breadCrumb.*" xmlns:dashboard="com.dalworth.leadCentral.dashboard.*" xmlns:businessPartner="com.dalworth.leadCentral.businessPartner.*" xmlns:lead="com.dalworth.leadCentral.lead.*">
+
+	<mx:Script>
+		<![CDATA[
+		
+		
+			private function onCreate():void 
+			{
+				viewLeads.init();
+			}
+			
+			private function onTabNavigatorChange():void 
+			{
+				var index:int = tnOwner.selectedIndex;
+				
+				switch (index) 
+				{
+					case 0:
+						viewLeads.init();
+						break;
+
+					case 1:
+						viewDashboard.init();
+						break;
+
+					case 2:
+						viewSetting.init();
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator id="tnOwner" width="100%" height="100%"
+		tabHeight="30" fontSize="14" creationPolicy="all"
+		historyManagementEnabled="false" change="onTabNavigatorChange()"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#EEEEEE">
+		<lead:LeadsView id="viewLeads" width="100%" height="100%" label="My Leads" fontSize="12" isReadOnly="true" />
+		<dashboard:DashboardView id="viewDashboard" width="100%" height="100%" label="Dashboard" fontSize="12"/>
+<!--
+		<businessPartner:BusinessPartnerReportsView id="viewReports" width="100%" height="100%" label="Reports" fontSize="12"/>
+-->
+		<businessPartner:BusinessPartnerSettingView id="viewSetting" width="100%" height="100%" label="Setting" fontSize="12"/>
+	</mx:TabNavigator>
+</mx:Canvas>

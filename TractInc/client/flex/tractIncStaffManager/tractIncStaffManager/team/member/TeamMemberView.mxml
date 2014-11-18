@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:smTeamMember="tractIncStaffManager.team.member.*">
+    
+    <mx:Script>
+        <![CDATA[
+        ]]>
+    </mx:Script>
+
+    <smTeamMember:TeamMemberController id="controller" view="{this}"/>
+
+    <mx:DataGrid id="memberDataGrid" width="100%" height="100%">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Id" width="20" dataField="TeamMemberId"/>
+            <mx:DataGridColumn headerText="Name" width="140"  labelFunction="controller.nameLabelFunction"/>
+            <mx:DataGridColumn headerText="Start Date" width="85" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="End Date" width="85" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                    itemRenderer="tractIncStaffManager.team.member.ActionIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+    <mx:Button id="addMemberButton" label="Add Team Member" 
+            click="controller.addMemberButtonOnClickHandler(event)"
+            visible="{null != controller.team}"/>
+    
+</mx:VBox>

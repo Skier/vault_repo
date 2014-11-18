@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.CompanyContact;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            [Embed(source="/assets/page_go.png")]
+            [Bindable]
+            private var imgDocOpen:Class;
+            
+            private function openClickHandler():void 
+            {
+                CompanyContactController.getInstance().openCompanyContact(data as CompanyContact);
+            }
+
+            private function removeClickHandler():void 
+            {
+                CompanyContactController.getInstance().removeCompanyContact(data as CompanyContact);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{imgDocOpen}" 
+        toolTip="Open Company Contact" 
+        click="openClickHandler()"/>
+        
+    <mx:Image source="{imgDelete}"
+        toolTip="Remove Company Contact" 
+        click="removeClickHandler()"/>
+        
+</mx:HBox>

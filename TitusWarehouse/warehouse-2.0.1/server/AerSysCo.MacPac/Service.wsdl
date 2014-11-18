@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.airsysco.com/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.airsysco.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.airsysco.com/">
+      <s:element name="GetOrderHeader">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="po" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="begorderdate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="endorderdate" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOrderHeaderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOrderHeaderResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SpHeader" type="tns:SpHeader" />
+      <s:complexType name="SpHeader">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="GetOrderDetail">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="orderno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="releaseno" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetOrderDetailResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOrderDetailResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCustStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCustStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCustStatusResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetOrderHeaderSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOrderHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetOrderHeaderSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOrderHeaderResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOrderHeaderSpHeader">
+    <wsdl:part name="SpHeader" element="tns:SpHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetOrderDetailSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOrderDetail" />
+  </wsdl:message>
+  <wsdl:message name="GetOrderDetailSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOrderDetailResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOrderDetailSpHeader">
+    <wsdl:part name="SpHeader" element="tns:SpHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetCustStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCustStatus" />
+  </wsdl:message>
+  <wsdl:message name="GetCustStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCustStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCustStatusSpHeader">
+    <wsdl:part name="SpHeader" element="tns:SpHeader" />
+  </wsdl:message>
+  <wsdl:portType name="ServiceSoap">
+    <wsdl:operation name="GetOrderHeader">
+      <wsdl:input message="tns:GetOrderHeaderSoapIn" />
+      <wsdl:output message="tns:GetOrderHeaderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOrderDetail">
+      <wsdl:input message="tns:GetOrderDetailSoapIn" />
+      <wsdl:output message="tns:GetOrderDetailSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCustStatus">
+      <wsdl:input message="tns:GetCustStatusSoapIn" />
+      <wsdl:output message="tns:GetCustStatusSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServiceSoap" type="tns:ServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetOrderHeader">
+      <soap:operation soapAction="http://www.airsysco.com/GetOrderHeader" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetOrderHeaderSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOrderDetail">
+      <soap:operation soapAction="http://www.airsysco.com/GetOrderDetail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetOrderDetailSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustStatus">
+      <soap:operation soapAction="http://www.airsysco.com/GetCustStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetCustStatusSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServiceSoap12" type="tns:ServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetOrderHeader">
+      <soap12:operation soapAction="http://www.airsysco.com/GetOrderHeader" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetOrderHeaderSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOrderDetail">
+      <soap12:operation soapAction="http://www.airsysco.com/GetOrderDetail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetOrderDetailSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustStatus">
+      <soap12:operation soapAction="http://www.airsysco.com/GetCustStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetCustStatusSpHeader" part="SpHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service">
+    <wsdl:port name="ServiceSoap" binding="tns:ServiceSoap">
+      <soap:address location="http://76.225.134.22/ws_macpac/Service.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ServiceSoap12" binding="tns:ServiceSoap12">
+      <soap12:address location="http://76.225.134.22/ws_macpac/Service.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

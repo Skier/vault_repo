@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" width="350"
+	title="Purchase Phone Number" xmlns:controls="com.affilia.controls.*"
+	initialize="onInit()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.Phone;
+			import mx.managers.PopUpManager;
+			
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			[Bindable]
+			public var phone:Phone;
+			
+			[Bindable]
+			private var purchaseMode:Boolean = false;
+
+            public static function open(parent:DisplayObject, modal:Boolean = true):PurchasePhonePopup
+            {
+                var popup:PurchasePhonePopup = new PurchasePhonePopup();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            [Bindable]
+            private var usStates:ArrayCollection;
+            
+            [Bindable]
+            private var prefixes:ArrayCollection;
+            
+            [Bindable]
+            private var tollFreePrefixes:ArrayCollection = new ArrayCollection(["855", "866", "877", "888"]);
+            
+            private function onInit():void 
+            {
+            	usStates = UsState.getStates();
+            }
+            
+            private function onStateChange():void 
+            {
+            	var usState:UsState = comboState.selectedItem as UsState;
+            	if (usState)
+            	{
+            		prefixes = usState.codes;
+            	} else 
+            	{
+            		prefixes = null;
+            	}
+            }
+            
+            private function onGetAvailable():void 
+            {
+            	var responder:mx.rpc.Responder = new mx.rpc.Responder(
+        			function (event:ResultEvent):void 
+        			{
+		            	isBusy = false;
+		            	var result:Array = event.result as Array;
+		            	if (result.length > 0)
+		            	{
+			            	lblError.visible = false;
+		            		phone = result[0] as Phone;
+			            	purchaseMode = true;
+		            	} else 
+		            	{
+			            	lblError.visible = true;
+		            		phone = null;
+		            		purchaseMode = false;
+		            	}
+        			},
+        			function (event:FaultEvent):void 
+        			{
+		            	isBusy = false;
+        				Alert.show(event.fault.message);
+        			}
+        		);
+        		
+            	isBusy = true;
+
+            	lblError.visible = false;
+
+            	if (tnPrefix.selectedIndex == 0) 
+	            	PhoneService.getInstance().getAvailablePhoneNumbers(comboPrefix.selectedLabel).addResponder(responder);
+            	else if (tnPrefix.selectedIndex == 1) 
+	            	PhoneService.getInstance().getAvailableTollFreePhoneNumbers(comboTollFreePrefix.selectedLabel).addResponder(responder);
+            }
+            
+            private function onPurchase():void 
+            {
+            	var responder:mx.rpc.Responder = new mx.rpc.Responder(
+        			function (event:ResultEvent):void 
+        			{
+		            	isBusy = false;
+		            	var result:Phone = event.result as Phone;
+	            		phone.applyFields(result);
+		            	dispatchEvent(new Event("purchasePhoneComplete"));
+		            	close();
+        			},
+        			function (event:FaultEvent):void 
+        			{
+		            	isBusy = false;
+        				Alert.show(event.fault.message);
+        			}
+        		);
+        		
+            	isBusy = true;
+
+            	if (tnPrefix.selectedIndex == 0) 
+	            	PhoneService.getInstance().purchasePhoneNumber(phone).addResponder(responder);
+            	else if (tnPrefix.selectedIndex == 1) 
+	            	PhoneService.getInstance().purchaseTollFreePhoneNumber(phone).addResponder(responder);
+            }
+            
+            private function onCancel():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsMain" creationPolicy="all" width="100%" selectedIndex="{purchaseMode ? 1 : 0}"
+		enabled="{!isBusy}">
+		<mx:VBox id="boxSelectPrefix" width="100%" verticalGap="0">
+			<mx:Label id="lblError" fontSize="12"
+				text="No available Phone Numbers in selected area" color="#CC0000" 
+				visible="false"/>
+				
+			<mx:TabNavigator id="tnPrefix" width="100%" creationPolicy="all"
+				historyManagementEnabled="false" fontSize="12"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+				<mx:Form width="100%" label="Local Phone">
+					<mx:FormItem label="Select State:" width="100%" fontSize="12">
+						<controls:ComboBox id="comboState"  fontSize="12"
+							dataProvider="{usStates}" change="onStateChange()" prompt="" labelField="name"
+							valueField="code" width="100%"/>
+					</mx:FormItem>
+		
+					<mx:FormItem label="Select Prefix:" width="100%" fontSize="12">
+						<mx:ComboBox id="comboPrefix"  fontSize="12"
+							dataProvider="{prefixes}" enabled="{(comboState.selectedItem as UsState) != null}"
+							width="100%"/>
+					</mx:FormItem>
+				</mx:Form>
+
+				<mx:Form width="100%" label="Toll Free">
+					<mx:FormItem label="Select Prefix:" width="100%" fontSize="12">
+						<mx:ComboBox id="comboTollFreePrefix"  fontSize="12"
+							dataProvider="{tollFreePrefixes}"
+							width="100%"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:TabNavigator>
+		</mx:VBox>
+
+		<mx:VBox id="boxPurchase" width="100%" height="100%" verticalAlign="middle"
+			borderColor="#666666" borderStyle="solid">
+			<mx:Label text="Available Phone Number:" fontSize="12" width="100%" textAlign="center"/>
+			<mx:Label text="{phone.Number}" fontSize="24" width="100%" textAlign="center" color="#666666"/>
+		</mx:VBox>
+	</mx:ViewStack>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnGetAvailable" label="Get Available Number" click="onGetAvailable()" fontSize="12" 
+			enabled="{(tnPrefix.selectedIndex == 0 ? comboPrefix.selectedItem != null : comboTollFreePrefix.selectedItem != null) &amp;&amp; !isBusy}"
+			visible="{!purchaseMode}" includeInLayout="{!purchaseMode}"/>
+		<mx:Button id="btnPurchase" label="Purchase Number" click="onPurchase()" enabled="{!isBusy}" fontSize="12"
+			visible="{purchaseMode}" includeInLayout="{purchaseMode}"/>
+		<mx:LinkButton label="Cancel" click="onCancel()" fontSize="12"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

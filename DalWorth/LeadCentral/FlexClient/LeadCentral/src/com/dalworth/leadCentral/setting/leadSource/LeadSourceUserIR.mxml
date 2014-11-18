@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.User;
+			
+            [Embed(source="/assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+            [Embed(source="/assets/icons16/user--exclamation.png")]
+            [Bindable]
+            private var imgUserAttention:Class;
+
+			private function getLabel(obj:Object):String
+			{
+				if (obj is User)
+					return User(obj).Name;
+				else 
+					return "";
+			}
+
+			private function getSource(obj:Object):Class
+			{
+				if (obj is User)
+				{
+					if (User(obj).IsActive)
+						return imgUser;
+					else 
+						return imgUserAttention;
+				} else 
+				{
+					return null;
+				} 
+			}
+
+			private function getNameStyle(obj:Object):String
+			{
+				if (obj is User && (User(obj).IsActive || User(obj).Id == 0))
+					return "normal";
+				else 
+					return "italic";
+			}
+
+			private function getNameColor(obj:Object):uint
+			{
+				if (obj is User && (User(obj).IsActive || User(obj).Id == 0))
+					return 0x333333;
+				else 
+					return 0x999999;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" verticalAlign="middle">
+		<mx:Image source="{getSource(data)}" width="16" />
+		<mx:Label fontSize="12" text="{getLabel(data)}" color="{getNameColor(data)}" fontStyle="{getNameStyle(data)}"/>
+	</mx:HBox>
+</mx:Canvas>

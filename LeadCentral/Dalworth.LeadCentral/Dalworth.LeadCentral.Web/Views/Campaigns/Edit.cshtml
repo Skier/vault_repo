@@ -1,0 +1,63 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Campaign
+@model CampaignEdit
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Details", new { id = Model.CurrentCampaign.Id }, new{@class="button"})</div>
+      <h1>Campaign [@Model.CurrentCampaign.CampaignName]</h1>
+    </div>
+    <div class="content">
+        @Html.HiddenFor(model => model.CurrentCampaign.Id)
+        @Html.HiddenFor(model => model.CurrentCampaign.DateCreated)
+        @Html.HiddenFor(model => model.CurrentCampaign.DateStart)
+        @Html.HiddenFor(model => model.CurrentCampaign.DateEnd)
+        @if (Model.DenyChangePartner)
+        {
+            <text>@Html.HiddenFor(model => model.PartnerId)</text>
+        }
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;font-size:16px;"><span class="required">*</span> Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.CampaignName, new { @style = "font-size:16px;width:250px;" })
+                @Html.ValidationMessageFor(model => model.CampaignName)
+              </td>
+            </tr>
+            @if (!Model.DenyChangePartner){
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.CurrentCampaign.BusinessPartnerId))</td>
+            </tr>
+            } else
+            {
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.ActionLink(Model.CurrentCampaign.PartnerName, "Details", new { controller = "Partners", id = Model.CurrentCampaign.BusinessPartnerId })</td>
+            </tr>
+            }
+            <tr>
+              <td style="text-align:right;">Assigned to</td>
+              <td>@Html.DropDownList("UserId", new SelectList(Model.UserList, "Id", "Name", Model.CurrentCampaign.UserId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Started</td>
+              <td>@String.Format("{0:d}", Model.CurrentCampaign.DateStart)</td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+
+}

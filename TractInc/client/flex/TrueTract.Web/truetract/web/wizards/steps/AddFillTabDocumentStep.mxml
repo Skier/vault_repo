@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractStep 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:steps="truetract.web.wizards.steps.*"
+    verticalScrollPolicy="off" verticalGap="5" xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.domain.ProjectTabDocument;
+        	import truetract.domain.DictionaryRegistry;
+            import mx.controls.DateField;
+            import truetract.domain.Participant;
+            import truetract.domain.Document;
+
+			[Bindable] public var docum:Document;
+            [Bindable] public var tabDocum:ProjectTabDocument;
+
+            override public function validateForm():Boolean 
+            {
+                var result:Boolean = super.validateForm();
+
+                if (result)
+                {
+                    if (!tabDocum)
+                        tabDocum = new ProjectTabDocument();
+                    
+                    tabDocum.Description = txtDescription.text;
+                    tabDocum.Remarks = txtRemarks.text;
+                }
+
+                return result;
+            }
+            
+            override public function clean():void
+            {
+                txtDescription.text = "";
+                txtRemarks.text = "";
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtDescription}" property="text" required="true"/>
+        <mx:StringValidator source="{txtRemarks}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <steps:DocumentInfoView docum="{docum}" enabled="false" width="100%"/>
+
+    <mx:HRule width="100%" strokeColor="#000000"/>
+
+    <mx:Form width="100%" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="3">
+        <mx:FormItem label="Description:" width="100%">
+            <mx:TextArea id="txtDescription" width="100%" height="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Remarks:" width="100%">
+            <mx:TextArea id="txtRemarks" width="100%" height="100%"/>
+        </mx:FormItem>
+    </mx:Form>
+</AbstractStep>

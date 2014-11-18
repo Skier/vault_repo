@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:DownloadItem="UI.ProcessManager.Upload.UploadItem.*"
+    borderStyle="solid"
+    paddingTop="5" paddingBottom="5" paddingRight="5" paddingLeft="5"
+    horizontalScrollPolicy="off"
+    height="100%" width="100%"
+    > 
+
+    <mx:Script>
+    	<![CDATA[
+    		import UI.ProcessManager.ProcessManagerController;
+
+			public function set ParentController(parent:ProcessManagerController):void {
+				Controller = new UploadController( UploadView(this), parent );
+			}
+			
+			[Bindable]
+			public var Controller:UploadController;
+				
+    	]]>
+    </mx:Script>
+	
+	<mx:VBox height="100%" width="100%">
+
+		<mx:HBox  width="100%" visible="{Controller.Model.UploaderUrl == null}" includeInLayout="{Controller.Model.UploaderUrl == null}">
+			<mx:Spacer width="100%"/>
+			<mx:Button id="btnRefresh" label="Re-Init" click="Controller.InitUploaderUrl()" enabled="{Controller.Model.UploaderUrl == null}"/>
+		</mx:HBox>
+
+		<mx:List id="uploadItems" 
+		    horizontalScrollPolicy="off" height="100%" width="100%"
+			dataProvider="{Controller.Model.Items}" 
+			itemRenderer="UI.ProcessManager.Upload.UploadItemRenderer"/>
+
+	</mx:VBox>
+
+</mx:Canvas>

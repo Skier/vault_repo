@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="com.ebs.eroof.mapping.IMapContainer">
+
+    <mx:Metadata>
+        [Event(name="mapIsReady", type="flash.events.Event")]
+        [Event(name="mapMouseClick", type="flash.events.Event")]
+        [Event(name="mouseLatLngChange", type="flash.events.DynamicEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.afcomponents.umap.overlays.Polygon;
+			import com.afcomponents.umap.types.LatLng;
+			import com.afcomponents.umap.interfaces.IOverlay;
+			import com.afcomponents.umap.overlays.Overlay;
+			import com.afcomponents.umap.gui.MapTypeControl;
+			import com.afcomponents.umap.gui.MapControl;
+			import com.afcomponents.umap.gui.ZoomControl;
+			import com.afcomponents.umap.events.MapEvent;
+			import com.afcomponents.umap.providers.microsoft.MicrosoftProvider;
+			import com.afcomponents.umap.providers.Providers;
+			import com.afcomponents.umap.overlays.Marker;
+			import com.afcomponents.umap.overlays.Layer;
+			import mx.events.ResizeEvent;
+			import com.afcomponents.umap.core.UMap;
+			
+			public static const DEFAULT_ZOOM:Number = 4;
+			public static const DEFAULT_CENTER_LAT:Number = 45.97649;
+			public static const DEFAULT_CENTER_LNG:Number = -97.05322;
+			
+			public static const MAP_TYPE_ROAD:String = "mapTypeRoad";
+			public static const MAP_TYPE_AERIAL:String = "mapTypeAerial";
+			public static const MAP_TYPE_HYBRID:String = "mapTypeHybrid";
+			
+			private var mainMap:UMap;
+			
+			private var markerLayer:Layer;
+			private var polygonLayer:Layer;
+			
+			public function getUMap():UMap
+			{
+				return mainMap;
+			}
+			
+			public function getCurrentMousePosition():LatLng 
+			{
+				if (mainMap)
+					return mainMap.getMouseLatLng();
+				else 
+					return null;
+			}
+			
+			public function getMapZoom():Number 
+			{
+				if (mainMap)
+					return mainMap.zoom;
+				else 
+					return NaN;
+			}
+			
+			public function setMapZoom(value:Number):void 
+			{
+				if (mainMap)
+					mainMap.setZoom(value);
+			}
+			
+			public function getMapCenter():LatLng 
+			{
+				if (mainMap)
+					return mainMap.getCenter();
+				else
+					return null;
+			}
+			
+			public function setMapCenter(value:LatLng):void 
+			{
+				if (mainMap)
+					mainMap.setCenter(value);
+			}
+			
+			public function getMapType():String 
+			{
+				if (mainMap)
+					return mainMap.mapType;
+				else
+					return null;
+			}
+			
+			public function setMapType(value:String):void 
+			{
+				if (mainMap)
+					mainMap.setMapType(value);
+			}
+			
+			public function clearMap():void 
+			{
+				getPolygonLayer().clearOverlays();
+				getMarkerLayer().clearOverlays();
+			}
+			
+			public function addMarker(marker:Marker):void 
+			{
+				if (!marker)
+					return;
+					
+				getMarkerLayer().addOverlay(marker);
+			}
+			
+			public function addPolygon(polygon:Polygon):void 
+			{
+				if (!polygon)
+					return;
+					
+				getPolygonLayer().addOverlay(polygon);
+			}
+			
+			public function getMarkerLayer():Layer 
+			{
+				if (!markerLayer)
+					markerLayer = getNewLayer(mainMap);
+				
+				return markerLayer;
+			}
+			
+			public function getPolygonLayer():Layer 
+			{
+				if (!polygonLayer)
+					polygonLayer = getNewLayer(mainMap);
+				
+				return polygonLayer;
+			}
+			
+			private function getNewLayer(map:UMap):Layer 
+			{
+				var result:Layer = new Layer();
+				
+				map.addOverlay(result);
+				
+				return result;
+			}
+			
+			private function initMap():void
+			{
+				if (mainMap != null && mapContainer.contains(mainMap))
+					mapContainer.removeChild(mainMap);
+					
+				mainMap = new UMap();
+				
+				mainMap.setProvider(Providers.MICROSOFT);
+				mainMap.setMapType(MicrosoftProvider.ROAD);
+				mainMap.enableKeyboardHandler = false;
+				
+				//mainMap.addControl(new ZoomControl());
+				//mainMap.addControl(new MapTypeControl());
+				
+				mainMap.addEventListener(MapEvent.READY, mapReadyHandler);
+
+				mainMap.addEventListener(MapEvent.DRAG_START, mapDragStartHandler);
+				mainMap.addEventListener(MapEvent.DRAG_STOP, mapDragStopHandler);
+				mainMap.addEventListener(MapEvent.CLICK, mapGridClickHandler);
+				//mainMap.addEventListener(DisplayEvent.UPDATE_ZOOM, updateZoomHandler);
+				//mainMap.addEventListener(DisplayEvent.UPDATE_MAP_TYPE, mapTypeChangeHandler);
+				//mainMap.addEventListener(MouseEvent.MOUSE_MOVE, mapMouseMoveHandler);
+				
+				mapContainer.addChild(mainMap);
+				mapContainer.focusManager.deactivate();
+				mapContainer.addEventListener(ResizeEvent.RESIZE, mapContainerResizeHandler);
+			}
+			
+			private function adjustMap():void 
+			{
+				mainMap.setSize(mapContainer.width, mapContainer.height);
+			}
+
+			private function setDefaultView():void 
+			{
+				mainMap.setZoom(DEFAULT_ZOOM);
+				mainMap.setCenter(new LatLng(DEFAULT_CENTER_LAT, DEFAULT_CENTER_LNG));
+			}
+			
+			private function mapReadyHandler(event:*):void
+			{
+				adjustMap();
+				
+				setDefaultView();
+				
+				mainMap.focusManager.deactivate();
+				mainMap.doubleClickEnabled = false;
+
+				dispatchEvent(new Event("mapIsReady"));
+            }
+            
+            private function mapContainerResizeHandler(event:ResizeEvent):void 
+            {
+            	adjustMap();
+            }
+
+			private function mapContainerCreationCompleteHandler(event:Event):void 
+			{
+				initMap();
+			}
+			
+			private var mapIsDragging:Boolean;
+			private function mapDragStartHandler(event:MapEvent):void 
+			{
+				mapIsDragging = true;
+			}
+			
+			private function mapDragStopHandler(event:MapEvent):void 
+			{
+				mapIsDragging = false;
+			}
+			
+			private function mapGridClickHandler(event:MapEvent):void 
+			{
+				if (!mapIsDragging)
+					dispatchEvent(new Event("mapMouseClick"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:UIComponent id="mapContainer" left="0" right="0" top="0" bottom="0"
+		creationComplete="mapContainerCreationCompleteHandler(event)"/>
+</mx:Canvas>

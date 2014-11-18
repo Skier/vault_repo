@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()"
+	creationComplete="onCreate()" 
+	xmlns:breadCrumb="com.dalworth.leadCentral.breadCrumb.*" xmlns:lead="com.dalworth.leadCentral.lead.*" xmlns:dashboard="com.dalworth.leadCentral.dashboard.*" xmlns:staff="com.dalworth.leadCentral.staff.*" xmlns:phone="com.dalworth.leadCentral.phone.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.MainModel;
+			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			
+			[Bindable]
+			private var model:StaffModel;
+			private var controller:StaffController;
+
+			public function onInit():void 
+			{
+				model = StaffModel.getInstance();
+				controller = new StaffController(this);
+			}
+			
+			public function onCreate():void 
+			{
+				addEventListener("ModelInited", onModelInit);
+				startRemoting();
+				controller.initModel();
+			}
+			
+			private function onModelInit(event:Event):void 
+			{
+				stopRemoting();
+				viewLeads.init();
+			}
+
+			private function startRemoting():void 
+			{
+				boxProgress.visible = true;
+				tnStaff.enabled = false;
+			}
+
+			private function stopRemoting():void 
+			{
+				boxProgress.visible = false;
+				tnStaff.enabled = true;
+			}
+
+			private function onTabNavigatorChange():void 
+			{
+				var index:int = tnStaff.selectedIndex;
+				
+				switch (index) 
+				{
+					case 0:
+						viewLeads.init();
+						break;
+
+					case 1:
+						viewDashboard.init();
+						break;
+/* 						
+					case 2:
+						viewReports.init();
+						break;
+ */						
+					case 2:
+						viewSetting.init();
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator id="tnStaff" width="100%" height="100%"
+		tabHeight="30" fontSize="14" creationPolicy="all"
+		historyManagementEnabled="false" change="onTabNavigatorChange()"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#EEEEEE">
+		<lead:LeadsView id="viewLeads" width="100%" height="100%" label="Leads" fontSize="12"/>
+		<dashboard:DashboardView id="viewDashboard" width="100%" height="100%" label="Dashboard" fontSize="12"/>
+<!--
+		<staff:StaffReportsView id="viewReports" width="100%" height="100%" label="Reports" fontSize="12"/>
+-->
+		<staff:StaffSettingView id="viewSetting" width="100%" height="100%" label="Settings" fontSize="12"/>
+	</mx:TabNavigator>
+<!--
+	<phone:ActiveCallsView right="5" bottom="5" user="{MainModel.getInstance().currentUser}"/>
+-->
+
+	<mx:VBox id="boxProgress" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Panel title="Init environment" width="350" layout="vertical" horizontalAlign="center" 
+			borderColor="#FFFFFF" borderStyle="solid" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+			<mx:Text width="100%" text="Init Environment..." fontSize="16"/>
+			<mx:ProgressBar width="100%"  height="10" indeterminate="true" labelPlacement="center" label=""/>
+		</mx:Panel>
+	</mx:VBox>
+</mx:Canvas>

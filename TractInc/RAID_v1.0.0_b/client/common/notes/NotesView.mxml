@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	width="500" height="400" title="Notes for current item"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	showCloseButton="true" close="controller.onClickClose()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+		
+			[Bindable]
+			public var controller:NotesController;
+			
+            public static function Open(item:*, parent:DisplayObject, modal:Boolean = true):NotesView {
+                var popup:NotesView = new NotesView();
+                popup.controller = new NotesController(popup, item);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+			
+		]]>
+	</mx:Script>
+<!--	
+	<mx:Label text="Notes:" fontWeight="bold"/>
+	<mx:List width="100%" height="100%" 
+		variableRowHeight="true" selectable="false"
+		dataProvider="{controller.model.item.relatedNotes}" 
+		itemRenderer="common.notes.NotesItemRenderer"/>
+ -->
+
+	<mx:Canvas width="100%" height="100%" backgroundColor="#ffffff" horizontalScrollPolicy="off">
+		
+		<mx:VBox width="100%" height="100%" borderColor="#999999" borderStyle="solid"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			
+			<mx:Repeater id="r" dataProvider="{controller.model.item.relatedNotes}">
+				
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="{r.currentItem.RelatedUser.Login} says:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Label text="{r.currentItem.Posted.toLocaleString()}" fontStyle="italic"/>
+				</mx:HBox>
+				<mx:Text id="txtBody" width="100%" text="{r.currentItem.NoteText}"/>
+	
+			</mx:Repeater>
+			
+		</mx:VBox>
+		
+	</mx:Canvas>
+	<mx:HBox id="boxControls" width="100%">
+		<mx:TextInput id="txtNewNote" width="100%" enter="controller.onClickOk()" maxChars="250"/>
+		<mx:Button label="Ok" click="controller.onClickOk()" enabled="{txtNewNote.text.length > 0}"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SnmpAgent>
+	<!-- General Properties
+version	:               The newest version number supported by this agent. 1 for snmpv1, 2 for snmpv2c, 3 for snmpv3
+port:           	    SNMP agent UDP port number, default is 161
+encryptPassword-
+AndCommunity            If yes, all the unencrypted communities and passwords are changed to encrypted 
+                        format and saved to file when agent starts. If no, values will not be changed, 
+                        even if they're in encrypted format (but they will be decrypted). The length of 
+                        communities and passwords must be less than 32 characters in order to be
+                        successfully encrypted.
+readCommunity:	        the community names for SNMP GET/GETNEXT/GETBULK 
+                        operations. Names are separated by ","
+                        No SNMP read operations is allowed if this field is empty
+writeCommunity:	        the community names for SNMP SET. Names are separated by ","
+                        No SNMP SET is allowed if this field is empty
+maxPacketSize:	        max number of bytes in a packet. Note: The max packet 
+                        size of ethernet is 1500 bytes.
+useThreadPool:	        If yes, a thread pool is used to improve performance. 
+                        But it also means more system resources are needed
+engineID:	            SNMPv3's engineID of this agent. If it's empty, the first IP
+	                    address found for the hostname of the machine will be used.
+engineBoots:	        agent reboot times. Its value is updated whenever 
+                        agent restarts if agent is a SNMPv3 agent
+informTimeout:	        the timeout value for agent to send INFORM request, in milliseconds
+informRetries:	        number of retries after timeout for INFORM request
+reloadConfigOID:	    an OID for reloading this file. SNMP manager can issue a 
+                        SET request with only this OID and its value is any integer, 
+                        it forces agent to reload config file.
+authTrapEnabled:        Possible values are "yes" or "no". If "yes", authenticationFailure
+                        traps will be generated if authentication failed
+ipAddress:  	        IP address of this agent. Agent will bind to this particular
+	                    address, it's also used as one of the field in SNMPv1 
+                        trap. the first IP address found for the hostname of the machine 
+                        will be used if this field is empty.
+masterAgentPort:        master agent TCP port number. 
+remoteMasterAgentPort:  When this agent is a subagent, this property specifies the remote master
+                        agent's listening port
+remoteMasterAgentIpAddress:  When this agent is a subagent, this property specifies the remote master
+                        agent's ip Address or host name
+subagentIpAddresses:    IP addresses of authorized subagent, separated by ",". 
+                        Empty value means accepting all IP addresses.
+managerIpAddresses: 	IP addresses of authorized SNMP managers, separated by 
+                        ",". Empty value means accepting all IP addresses.
+system.sysObjectID:     It is used as Enterprise OID in SNMP V1 trap 
+
+system.sysLocation system.sycContact  system.sysObjectID etc. :Static values for MIB objects. 
+Use the format "GroupName.ScalarObject". Their values will be updated and saved if SNMP SET
+changes their values. For example, if manager issues a SNMP SET to change sysContact's value
+successfully, the sysContact value in config file will be updated and saved.These values will 
+overwrite corresponding methods in java classes. For example, if system.sysLocation value is
+"building1",  getSysLocation() method in SystemGroup class will be ignored, sysLocation will 
+be always "building1". To make that method take effect, system.sysLocation needs to be deleted
+from config file.
+-->
+	<properties version="2" port="161" encryptPasswordAndCommunity="no" readCommunity="public" writeCommunity="private" maxPacketSize="4000" useThreadPool="yes" engineID="" engineBoots="0" informTimeout="1000" informRetries="3" ipAddress="" reloadConfigOID=".1.3.6.1.2.1.5000.1.0" authTrapEnabled="no" system.sysObjectID=".1.3.1.4.15145.1.1" masterAgentPort="705" remoteMasterAgentPort="705" remoteMasterAgentIpAddress="" subagentIpAddresses="" managerIpAddresses="" system.sysLocation="unknown" system.sysContact="somebody@somewhere.com" system.sysServices="72"/>
+	<!-- properties:
+      system.sysDescr    = "iReasoning SNMP Agent Example"  
+      system.sysName     = "iReasoning SNMP agent"
+  -->
+	<!-- SNMP Trap Sink Properties
+hostname:	host name or IP address of trap receiver
+port:   	port number of trap receiver
+community:	trap receiver's community name
+version:	trap receiver's SNMP version number. 1: SNMPv1 trap; 2: SNMPv2 trap
+isInform:	set "yes" to send SNMP INFORM request instead of trap. 
+            INFORM request is more reliable than trap.
+-->
+	<trapSink hostname="localhost" port="162" community="public" version="2" isInform="no"/>
+	<!-- 
+<trapSink
+	hostname="localhost"
+	port="162"
+	community="public"
+	version="1"
+	isInform="no"
+/>
+-->
+	<!-- SNMPv3 Trap Sink Properties
+    snmpV3TrapSink's security level is determined by the authPassword and 
+    privPassword. If both of them are empty strings, security level is 
+    noAuthNoPriv. If privPassword is empty string, security level is authNoPriv. 
+    If both of them are non-empty strings, security level is authPriv. 
+    
+hostname:	    host name or ip address of trap receiver
+port:   	    port number of trap receiver
+isInform:	    set "yes" to send SNMP INFORM request instead of trap
+userName:	    one of user names in trap receiver's user list
+auth:   	    authentication algorithm, one of "MD5" and "SHA"
+priv:           privacy algorithm, one of "DES" and "AES". Default is "DES"
+authPassword:	authentication password
+privPassword:	privacy password
+-->
+	<!--
+<snmpV3TrapSink
+	hostname="localhost"
+	port="162"
+	userName="newUser"
+	auth="MD5"
+	authPassword="abc12345"
+    priv="DES"
+	privPassword="abc12345"
+	isInform="no"
+/>
+-->
+	<!-- SNMPV3 config -->
+	<!-- User Properties
+    User's security level is determined by the security level of its group, not by the values of authPassword 
+    and privPassword. This is different from snmpV3TrapSink node. If security level is authNoPriv, privPassword
+    field's value will be ignored.
+    
+name:       	user name. It should be unique, that is, two users can't have same name
+auth:   	    authentication algorithm. One of "MD5" and "SHA"
+authPassword:	authentication password
+priv:           privacy algorithm, one of "DES" and "AES". Default is "DES"
+privPassword:	privacy password
+group:      	the group that this user associated with
+-->
+	<user name="newUser" auth="MD5" authPassword="abc12345" priv="DES" privPassword="abc12345" group="aGroup"/>
+	<!-- newUser2 uses "AES" encryption -->
+	<user name="newUser2" auth="MD5" authPassword="abc12345" priv="AES" privPassword="abc12345" group="aGroup"/>
+	<!-- Group Properties
+name:       	group name. It should be unique, that is, two groups can't have same name
+securityLevel:	security level. One of { noAuthNoPriv, authNoPriv, authPriv}
+match:      	context match. Either "prefix" or "exact".
+contextPrefix:	if the match is "prefix", context match only checks if context starts with this contextPrefix. But if the match is "exact", context must be exactly matched, so this contextPrefix is ignored in this case.
+readView:   	the view associated with this group for "READ" operations, such as GET, GETNEXT, GETBULK.
+writeView:  	the view associated with this group for "WRITE" operations, such as SET
+notifyView: 	the view associated with this group for notification operations
+-->
+	<group name="aGroup" securityLevel="authPriv" contextPrefix="" match="exact" readView="view1" writeView="view1" notifyView="view1"/>
+	<!-- View Properties
+name:   	view name. Multiple views can have same name.
+type:   	view type, either "included" or "excluded"
+subtree:    subtree oid
+mask:   	a list of "0" or "1", separated by '.' or ':'.
+-->
+	<view name="view2" type="included" subTree=".1.2.6.1.2.1.1.2" mask=".1.0.1.1.1.1.1.1"/>
+	<view name="view1" type="included" subTree=".1.3" mask=".1.1"/>
+	<!-- proxy sample settings -->
+	<!--
+<proxy
+    ipAddress="127.0.0.1"
+    port="200"
+    included="no"
+    subTree=".1.3.6.1.2.1.31,.1.3.6.1.2.1.1"
+    timeout="500" 
+    readCommunity="public"
+    writeCommunity="public"
+/>
+<trapProxy
+    trapForwarderPort="192"
+/>
+-->
+</SnmpAgent>

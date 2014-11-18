@@ -1,0 +1,198 @@
+<!-- saved from url=(0014)about:internet -->
+<html lang="en">
+
+<!-- 
+Smart developers always View Source. 
+
+This application was built using Adobe Flex, an open source framework
+for building rich Internet applications that get delivered via the
+Flash Player or to desktops via Adobe AIR. 
+
+Learn more about Flex at http://flex.org 
+// -->
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<!--  BEGIN Browser History required section -->
+<link rel="stylesheet" type="text/css" href="history/history.css" />
+<!--  END Browser History required section -->
+
+<title>${title}</title>
+<script src="AC_OETags.js" language="javascript"></script>
+
+<!--  BEGIN Browser History required section -->
+<script src="history/history.js" language="javascript"></script>
+<!--  END Browser History required section -->
+
+<style>
+body { margin: 0px; overflow:hidden }
+</style>
+<script language="JavaScript" type="text/javascript">
+<!--
+// -----------------------------------------------------------------------------
+// Globals
+// Major version of Flash required
+var requiredMajorVersion = ${version_major};
+// Minor version of Flash required
+var requiredMinorVersion = ${version_minor};
+// Minor version of Flash required
+var requiredRevision = ${version_revision};
+// -----------------------------------------------------------------------------
+// -->
+</script>
+
+<link href="/inc/main.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="/inc/writeFlash.js"></script>
+
+<style>
+
+#mainContentRow {
+    height: 100%;
+}
+
+#mainContentCell {
+    height: 100%;
+}
+
+#mainContentTable {
+    width: 100%;
+    height: 100%;
+
+}
+
+</style>
+
+</head>
+
+<body scroll="no">
+
+<div id="main" class="main">
+
+<table id="mainContentTable" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+
+    <div id="topBanner" class="topBanner">
+        <div style="float:left;width:208px;height:90px;padding-left: 10px;">
+            <script type="text/javascript">writeFlash("/images/logoMain_turn",208,90);</script>
+        </div>
+        <div style="float:left;width:752px;height:90px;">
+            <img src="/images/img_logoHeader1.jpg" width="752" height="90" border="0" usemap="#myTitus">
+            <map name="myTitus">
+                <area shape="rect" coords="577,35,677,55" href="/repsonly/">
+            </map>
+            <div id="location"><a href="/">Home</a></div>
+        </div>
+    </div>
+
+        </td>
+    </tr>
+    <tr id="mainContentRow">
+        <td id="mainContentCell">
+
+
+<div style="height: 100%"><script language="JavaScript" type="text/javascript">
+<!--
+// Version check for the Flash Player that has the ability to start Player Product Install (6.0r65)
+var hasProductInstall = DetectFlashVer(6, 0, 65);
+
+// Version check based upon the values defined in globals
+var hasRequestedVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
+
+if ( hasProductInstall && !hasRequestedVersion ) {
+    // DO NOT MODIFY THE FOLLOWING FOUR LINES
+    // Location visited after installation is complete if installation is required
+    var MMPlayerType = (isIE == true) ? "ActiveX" : "PlugIn";
+    var MMredirectURL = window.location;
+    document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+    var MMdoctitle = document.title;
+
+    AC_FL_RunContent(
+        "src", "playerProductInstall",
+        "FlashVars", "MMredirectURL="+MMredirectURL+'&MMplayerType='+MMPlayerType+'&MMdoctitle='+MMdoctitle+"",
+        "width", "${width}",
+        "height", "${height}",
+        "align", "middle",
+        "id", "${application}",
+        "quality", "high",
+        "bgcolor", "${bgcolor}",
+        "name", "${application}",
+        "allowScriptAccess","sameDomain",
+        "type", "application/x-shockwave-flash",
+        "pluginspage", "http://www.adobe.com/go/getflashplayer"
+    );
+} else if (hasRequestedVersion) {
+    // if we've detected an acceptable version
+    // embed the Flash Content SWF when all tests are passed
+    AC_FL_RunContent(
+            "src", "${swf}",
+            "width", "${width}",
+            "height", "${height}",
+            "align", "middle",
+            "id", "${application}",
+            "quality", "high",
+            "bgcolor", "${bgcolor}",
+            "name", "${application}",
+            "allowScriptAccess","sameDomain",
+            "type", "application/x-shockwave-flash",
+            "pluginspage", "http://www.adobe.com/go/getflashplayer"
+    );
+} else {  // flash is too old or we can't detect the plugin
+  var alternateContent = 'Alternate HTML content should be placed here. '
+  + 'This content requires the Adobe Flash Player. '
+  + '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>';
+  document.write(alternateContent);  // insert non-flash content
+}
+
+// -->
+</script></div>
+
+<!-- noscript>
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+            id="${application}" width="${width}" height="${height}"
+            codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+            <param name="movie" value="${swf}.swf" />
+            <param name="quality" value="high" />
+            <param name="bgcolor" value="${bgcolor}" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <embed src="${swf}.swf" quality="high" bgcolor="${bgcolor}"
+                width="${width}" height="${height}" name="${application}" align="middle"
+                play="true"
+                loop="false"
+                quality="high"
+                allowScriptAccess="sameDomain"
+                type="application/x-shockwave-flash"
+                pluginspage="http://www.adobe.com/go/getflashplayer">
+            </embed>
+    </object>
+</noscript -->
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+
+<!-- div id="crumbsCont"><a href="/">Home</a> | <a href="/repsonly/">MyTitus</a> | Warehouse</div -->
+
+        <div id="footer" class="footer">
+            <img src="/images/img_footer.jpg" width="960" height="40" border="0" usemap="#incFooter">
+            <map name="incFooter">
+                <area shape="rect" coords="20,11,103,30" href="/legal/terms.asp">
+                <area shape="rect" coords="94,11,147,30" href="/sitemap.asp">
+                <area shape="rect" coords="173,11,252,30" href="/legal/privacy.asp">
+                <area shape="rect" coords="732,5,847,35" href="http://www.adobe.com/products/acrobat/readstep2.html" target="_blank">
+                <area shape="rect" coords="855,5,936,35" href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" target="_blank">
+            </map>
+            <!--div style="width:780px;height:40px;background-image:url(/images/img_footer.jpg);">s</div-->
+        </div>
+
+        </td>
+    </tr>
+</table>
+
+</div>
+
+</body>
+</html>

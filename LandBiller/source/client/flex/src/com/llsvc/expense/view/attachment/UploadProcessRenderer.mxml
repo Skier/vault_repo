@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="{HEIGHT}" verticalAlign="middle" 
+	paddingLeft="2" paddingRight="2" paddingTop="1" paddingBottom="1"
+	backgroundColor="#ffffdd" 
+	borderColor="#dddddd" borderStyle="outset" cornerRadius="2"
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.registry.MainModel;
+			import mx.utils.UIDUtil;
+			
+			public static const HEIGHT:int = 24;
+
+			[Bindable] 
+			public var fileRef:FileReference;
+			public var uniqueFileName:String;
+			
+			private var request:URLRequest;
+
+			[Bindable]
+			private var errorMessage:String = "";
+			
+			public function startUpload(fr:FileReference):void
+			{
+				fileRef = fr;
+				
+				var uid:String = UIDUtil.createUID();
+				var fileName:String = fileRef.name.substring(0, fileRef.name.lastIndexOf("."));
+				var fileExt:String = fileRef.name.substring(fileRef.name.lastIndexOf("."));
+				
+				uniqueFileName = fileName + "_" + uid + fileExt;
+
+        		request = new URLRequest("uploader.cfm?uniqueFileName=" + uniqueFileName);
+				
+				fileRef.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+				fileRef.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+                fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeHandler);
+                
+                callLater(tryUpload);
+			}
+			
+			public function cancel():void 
+			{
+				fileRef.cancel();
+				dispatchEvent(new Event("cancelUploadProcess", true));
+			}
+			
+			public function tryUpload():void 
+			{
+				switchToRegularState();
+				
+				try 
+				{
+					fileRef.upload(request);
+				} 
+				catch (e:Error) 
+				{
+					switchToErrorState();
+					errorMessage = "Upload Error";
+				}
+			}
+			
+			private function switchToRegularState():void
+			{
+				errorMessage = "";
+				pbUpload.visible = true;
+				btnCancel.label = "Cancel";
+				btnTryAgain.visible = false;
+				btnTryAgain.includeInLayout = false;
+			}
+			
+			private function switchToErrorState():void
+			{
+				pbUpload.visible = false;
+				btnCancel.label = "Close";
+				btnTryAgain.visible = true;
+				btnTryAgain.includeInLayout = true;
+			}
+			
+			private function progressHandler(event:ProgressEvent):void 
+			{
+				pbUpload.setProgress(event.bytesLoaded, event.bytesTotal);
+			}
+			
+			private function completeHandler(e:DataEvent):void 
+			{
+				var event:DataEvent = new DataEvent(DataEvent.UPLOAD_COMPLETE_DATA, true);
+				event.data = e.data;
+				
+				dispatchEvent(event);
+			}
+			
+			private function ioErrorHandler(event:IOErrorEvent):void 
+			{
+				switchToErrorState();
+				errorMessage = event.text;
+			}
+			
+			private function onCancelClick():void 
+			{
+				cancel();
+			}
+			
+			private function onTryAgainClick():void 
+			{
+				tryUpload();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="lblFilename" text="{fileRef.name}" fontWeight="bold" width="100%" minWidth="80"/>
+
+	<mx:Canvas width="100%">
+		<mx:ProgressBar id="pbUpload" 
+			width="100%" labelPlacement="center" mode="manual"/>
+		<mx:Label id="lblError" 
+			text="{errorMessage}" width="100%" color="#dd0000" maxWidth="80" toolTip="{errorMessage}"/>
+	</mx:Canvas> 
+
+	<mx:Button height="22" id="btnTryAgain" label="Try Again" width="120" horizontalCenter="0" verticalCenter="0"
+		visible="false" includeInLayout="false"
+		click="onTryAgainClick()"/>
+
+	<mx:Button height="22" id="btnCancel" 
+		label="Cancel" width="90" horizontalCenter="0" verticalCenter="0"
+		click="onCancelClick()"/>
+</mx:HBox>

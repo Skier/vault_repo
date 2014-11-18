@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="controlPanel" xmlns:view="com.titus.catalog.view.*">
+	
+    <mx:Metadata>
+        [Event(name="catalogItemChanged", type="com.titus.catalog.events.CatalogItemEvent")]
+    </mx:Metadata>
+	
+	<mx:ToggleButtonBar dataProvider="{vsControlPanel}"/>
+	
+	<mx:ViewStack id="vsControlPanel" width="100%" height="100%">
+		<view:Categories id="vwCategories" width="100%" height="100%" label="Contents" catalogItemChanged="dispatchEvent(event)" />
+		<view:Search width="100%" height="100%" label="Search" />
+	</mx:ViewStack>
+</mx:VBox>

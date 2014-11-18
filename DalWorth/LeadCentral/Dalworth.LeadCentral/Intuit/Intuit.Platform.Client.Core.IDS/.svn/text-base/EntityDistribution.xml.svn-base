@@ -1,0 +1,1052 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+  <Platforms> :
+    tag specifies the list of paltforms with this SDK works.
+  <SupportedPlatforms> :
+    tag specifies the list of platfroms on which the specified operation is supported.
+  <Operations>:
+    tag specifies the list of operations supported by object.
+  <Namespace>:
+    tag specifies the Category of:
+      1. Common: specifies list of objects supported in all platforms
+      2. QBO: specifies list of objects supported in QuickBooks Online
+      3. QB: specifies list of objects supported in QuickBooks Desktop
+  <Query>:
+    tag specifies the filters and corresponding operands.
+-->
+<Model>
+  <Platforms>
+    <Platform Name="QB"></Platform>
+    <Platform Name="QBO"></Platform>
+  </Platforms>
+
+  <Classes>
+    <Namespace Name="Common">
+      <Class Name="Account" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+
+        <Query>
+          <Filters>
+            <Filter Name="CDCAsOf">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="SynchronizedFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="DraftFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldEnable">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldQueryParam">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldDefinitionIdSet">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="In"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Items">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="In"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ItemsElementName">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="In"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="OfferingId">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Item">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ItemElementName">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="IncludeTagElements">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="DeletedObjects">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ErroredObjectsOnly">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals">
+                </Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ActiveOnly">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="IteratorId">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="StartPage">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ChunckSize">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Name">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CreateTime">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+                <Operand Name="before"></Operand>
+                <Operand Name="after"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="LastUpdatedTimeName">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+                <Operand Name="before"></Operand>
+                <Operand Name="after"></Operand>
+              </Operands>
+            </Filter>
+          </Filters>
+        </Query>
+      </Class>
+      <Class Name="Bill" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+        <Query>
+          <Filters>
+            <Filter Name="MinimumAmount">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="MinimumBalance">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="IncludeLine">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CDCAsOf">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="SynchronizedFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="DraftFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldEnable">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldQueryParam">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldFilter">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CustomFieldDefinitionIdSet">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Item1">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Item1ElementName">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="StartCreatedTMS">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="EndCreatedTMS">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="StartModifiedTMS">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="EndModifiedTMS">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="StartTransactionDate">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="EndTransactionDate">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ThinObject">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="TemplateRefMapEnable">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ErroredObjectsOnly">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="IncludeGroupMemberFlag">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="OfferingId">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="Item">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ItemElementName">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="ChunkSize">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="IncludeTagElements">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="DeletedObjects">
+              <SupportedPlatforms>
+                <Platform>QB</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="TxnId">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="DocNumber">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="VendorId">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="TxnDate">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+                <Operand Name="before"></Operand>
+                <Operand Name="after"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="CreateTime">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+                <Operand Name="before"></Operand>
+                <Operand Name="after"></Operand>
+              </Operands>
+            </Filter>
+            <Filter Name="LastUpdatedTimeName">
+              <SupportedPlatforms>
+                <Platform>QBO</Platform>
+              </SupportedPlatforms>
+              <Operands>
+                <Operand Name="Equals"></Operand>
+                <Operand Name="before"></Operand>
+                <Operand Name="after"></Operand>
+              </Operands>
+            </Filter>
+          </Filters>
+        </Query>
+      </Class>
+      <Class Name="BillPayment" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete"/>
+        </Operations>
+      </Class>
+      <Class Name="Check" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete"/>
+        </Operations>
+      </Class>
+      <Class Name="CreditCardCharge" >
+        <Operations>
+          <Operation Name="Add" >
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Customer" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Employee" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Estimate" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Invoice" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Item" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Payment" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete"/>
+        </Operations>
+      </Class>
+      <Class Name="PaymentMethod" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete"/>
+        </Operations>
+      </Class>
+      <Class Name="SalesTerm" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update">
+            <SupportedPlatforms>
+              <Platform>QBO</Platform>
+            </SupportedPlatforms>
+          </Operation>
+          <Operation Name="Delete"/>
+        </Operations>
+      </Class>
+      <Class Name="SalesReceipt" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+      <Class Name="Vendor" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert">
+            <SupportedPlatforms>
+              <Platform>QB</Platform>
+            </SupportedPlatforms>
+          </Operation>
+        </Operations>
+      </Class>
+    </Namespace>
+    <Namespace Name ="QBO">
+      <Class Name="CashPurchase" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+    </Namespace>
+    <Namespace Name="QB">
+      <Class Name="BillPaymentCreditCard" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="BOMComponent" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="Charge" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="Class" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="CreditCardCredit" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="CreditCardRefund" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="CreditMemo" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="CustomerMsg" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="CustomerType" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="Deposit" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="Discount" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert"/>
+        </Operations>
+      </Class>
+      <Class Name="FixedAsset" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="InventoryAdjustment" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="ItemConsolidated" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="ItemReceipt" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="SalesTaxGroup" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="Job" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert"/>
+        </Operations>
+      </Class>
+      <Class Name="JobType" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="JournalEntry" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="OtherName" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="PayrollItem" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="PurchaseOrder" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="SalesOrder" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="SalesRep" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="SalesTax" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="SalesTaxCode" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="SalesTaxPaymentCheck" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="ShipMethod" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="SyncActivityRequest" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+        </Operations>
+      </Class>
+      <Class Name="TimeActivity" >
+        <Operations>
+          <Operation Name="Add" />
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Update"/>
+          <Operation Name="Delete"/>
+          <Operation Name="Revert"/>
+        </Operations>
+      </Class>
+      <Class Name="UOM" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="VendorType" >
+        <Operations>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+        </Operations>
+      </Class>
+      <Class Name="VendorCredit" >
+        <Operations>
+          <Operation Name="Add"/>
+          <Operation Name="FindAll" />
+          <Operation Name="FindById" />
+          <Operation Name="Get" />
+          <Operation Name="Delete" />
+        </Operations>
+      </Class>
+      <Class Name="Preferences" >
+        <Operations>
+          <Operation Name="FindAll" />
+        </Operations>
+      </Class>
+    </Namespace>
+  </Classes>
+
+  <Reports>
+    <Namespace Name="QB">
+      <Report Name="AccountBalances">
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="BalanceSheet" >
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="CustomersWhoOweMe" >
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="CustomTxnDetail" >
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="IncomeBreakdown" >
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="ProfitAndLoss">
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="SalesSummary">
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+      <Report Name="TopCustomersBySales">
+        <Operations>
+          <Operation Name="Get" />
+        </Operations>
+      </Report>
+    </Namespace>
+  </Reports>
+</Model>

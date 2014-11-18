@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:maps="com.ebs.eroof.view.maps.*" xmlns:mapping="com.ebs.eroof.mapping.*">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.mapping.mapClasses.SectionPolygon;
+			import com.ebs.eroof.mapping.mapClasses.FacilityMarker;
+			import com.afcomponents.umap.overlays.Polygon;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.afcomponents.umap.types.LatLng;
+			import com.afcomponents.umap.overlays.Marker;
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.model.wrapper.Client;
+			
+			private var mapIsReady:Boolean = false;
+			private var facilityMarker:FacilityMarker;
+			
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				_model = value;
+				refreshContent();
+			}
+			
+			public function getPosition():LatLng
+			{
+				if (facilityMarker)
+					return facilityMarker.position;
+				else 
+					return null;
+			}
+			
+			private function refreshContent():void 
+			{
+				if (!model || !mapIsReady)
+					return;
+				
+				mapContainer.clearMap();
+				for each (var section:Section in model.sectionsCollection) 
+				{
+					for each (var roof:SectionPolygon in section.getRoofs()) 
+					{
+						addPolygonToMap(roof.toPolygon());
+					}
+				}
+
+				setMapView();
+			}
+			
+			private function addPolygonToMap(polygon:Polygon):void 
+			{
+				mapContainer.addPolygon(polygon);
+			}
+			
+			private function setMapView():void 
+			{
+				if (model)
+				{
+					mapContainer.setMapZoom(model.facilityDTO.MapZoom);
+					mapContainer.setMapCenter(model.getPosition());
+				}
+			}
+			
+			private function mapIsReadyHandler(event:Event):void 
+			{
+				mapIsReady = true;
+				refreshContent();
+			}
+			
+		]]>
+	</mx:Script>
+
+
+	<mapping:MapContainer id="mapContainer" left="0" right="0" top="0" bottom="0"
+		mapIsReady="mapIsReadyHandler(event)"/>
+</mx:Canvas>

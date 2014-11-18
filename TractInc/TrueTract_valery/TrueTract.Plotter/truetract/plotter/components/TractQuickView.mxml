@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns="truetract.plotter.components.tractPrintViewClasses.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:containers="truetract.plotter.containers.*"
+    xmlns:components="truetract.plotter.components.*"
+    backgroundAlpha="0.8" alpha="1.0"
+    creationComplete="view_creationCompleteHandler(event)" >
+
+    <mx:Metadata>
+        [Event(name="close", type="flash.events.Event")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+        	import truetract.plotter.events.TractExportEvent;
+        	import truetract.plotter.utils.ScaleValue;
+        	import mx.core.EdgeMetrics;
+        	import mx.printing.FlexPrintJobScaleType;
+        	import mx.printing.FlexPrintJob;
+        	import truetract.plotter.utils.BitmapUtil;
+        	import truetract.plotter.components.tractPrintViewClasses.ScaleBarPropertiesView;
+        	import truetract.utils.GeoPosition;
+        	import mx.events.ListEvent;
+        	import mx.events.FlexEvent;
+        	import truetract.domain.Tract;
+            
+            private const SCREEN_DPI:Number = 72;
+            private const PRINT_PAGE_MARGIN:Number = SCREEN_DPI / 2;
+
+            private function calculateLabelScale(label:Label, text:String):Number
+            {
+                label.validateNow();
+
+                var labelWidth:Number = label.width;
+                var textWidth:Number = label.textWidth;
+
+                if (isNaN(labelWidth) || isNaN(textWidth) || textWidth == 0) {
+                    return 1;
+                }
+
+                return Math.min(labelWidth / textWidth, 1);
+            }
+////
+
+		    private var _tract:Tract;
+		    [Bindable] public function get tract():Tract { return _tract };
+		    public function set tract(value:Tract):void 
+		    {
+		        _tract = value;
+		        tractView.tract = value;
+		        callLater(fitToPage);
+		    }
+		
+		    [Bindable] public var userName:String;
+		
+		    //--------------------------------------------------------------------------
+		    //
+		    //  Class methods
+		    //
+		    //--------------------------------------------------------------------------
+		
+		    public function zoom(scaleDelta:Number):void 
+		    {
+		        var tractBounds:Rectangle = tractView.getComponentBounds();
+		        
+		        var zoomPoint:Point = new Point (
+		            tractBounds.x + (tractBounds.width / 2),
+		            tractBounds.y  + (tractBounds.height / 2)
+		        );
+		        
+		        var zoomPositionBefore:GeoPosition = dataFrame.GetGeoPosition(zoomPoint);
+		
+		        dataFrame.Scale.PointsInOneFeet += scaleDelta;
+		        dataFrame.Scale = dataFrame.Scale; //TODO: 
+		
+		        var zoomPositionAfter:GeoPosition = dataFrame.GetGeoPosition(zoomPoint);
+		    
+		        var deltaX:Number = (zoomPositionAfter.Easting - zoomPositionBefore.Easting) 
+		            * dataFrame.Scale.PointsInOneFeet;
+		        var deltaY:Number = - (zoomPositionAfter.Northing - zoomPositionBefore.Northing) 
+		            * dataFrame.Scale.PointsInOneFeet;
+		
+		        dataFrame.scroll(deltaX, deltaY);
+		    }
+		    
+		    public function zoomOut():void 
+		    {
+		        zoom( -2 );
+		    }
+		
+		    public function zoomIn():void 
+		    {
+		        zoom( 2 );
+		    }
+		
+		    public function fitToPage():void 
+		    {
+		        var dataFrameWidth:Number = dataFrame.width;
+		        var dataFrameHeight:Number = dataFrame.height;
+		
+		        dataFrame.Scale = tractView.calcaluateRequiredScaling(
+		            dataFrameWidth, dataFrameHeight, dataFrame.Scale.uom);
+		
+		        doTractCentering();
+		    }
+		
+		    public function showScaleBarProperties():void
+		    {
+		        var view:ScaleBarPropertiesView = ScaleBarPropertiesView.Open(this, true);
+		        view.scaleBar = scaleBar;
+		        view.printDataFrame = dataFrame; //TODO: refactore this !!!
+		    }
+		
+		    public function close():void 
+		    {
+		        dispatchEvent(new Event("close"));
+		    }
+		
+		    public function getPrintPageBitmapData():BitmapData
+		    {
+		//        printPage.visible = false;
+		        printPage.scaleX = printPage.scaleY = 1;
+		        printPage.setStyle("borderStyle", "none");
+		        printPage.setStyle("dropShadowEnabled", false);
+		        printPage.validateSize(true);
+		        printPage.validateDisplayList();
+		        printPage.validateNow();
+		
+		        var result:BitmapData = BitmapUtil.getUIComponentBitmapData(printPage, new Matrix());
+		
+		/*         //return to page preview
+		        printPage.scaleY = printPage.scaleX = previewScale.selectedItem.scaleValue;
+		        printPage.rotation = 0;
+		        printPage.setStyle("borderStyle", "solid");
+		        printPage.setStyle("dropShadowEnabled", true);
+		        printPage.visible = true;
+		 */
+		        return result;
+		    }
+		
+		    public function doTractCentering():void 
+		    {
+		        var tractStartPoint:Point = calculateTractCenterPosition(
+		            dataFrame.width, dataFrame.height);
+		        
+		        if (tractMoveEffect.isPlaying) tractMoveEffect.end();
+		        tractMoveEffect.xTo = tractStartPoint.x;
+		        tractMoveEffect.yTo = tractStartPoint.y;
+		        tractMoveEffect.play();
+		    }
+		
+		    private function calculateTractCenterPosition(pageWidth:Number, pageHeight:Number):Point 
+		    {
+		        var tractBounds:Rectangle = tractView.getComponentBounds();
+		        
+		        var pageMiddlePoint:Point = new Point (
+		            (pageWidth / dataFrame.scaleX) / 2,
+		            (pageHeight / dataFrame.scaleY) / 2
+		        );
+		        
+		        var tractMiddlePoint:Point = new Point (
+		            tractBounds.x + (tractBounds.width / 2),
+		            tractBounds.y  + (tractBounds.height / 2)
+		        );
+		
+		        return new Point (
+		            pageMiddlePoint.x - (tractMiddlePoint.x * tractView.scaleX),
+		            pageMiddlePoint.y - (tractMiddlePoint.y * tractView.scaleY)
+		        );
+		    }
+		    
+		    private function getTractBitmapData():BitmapData
+		    {
+		        tractView.validateNow();
+		
+		        var tractBounds:Rectangle = tractView.getComponentBounds();
+		        if (tractBounds.width == 0) tractBounds.width = 1;
+		        if (tractBounds.height == 0) tractBounds.height = 1;
+		
+			    //TODO: Need refactoring: TractView should follow the correct positioning and sizing
+			    var m:Matrix = new Matrix(1,0,0,1, -tractBounds.x, -tractBounds.y);
+			    var bd:BitmapData = new BitmapData(tractBounds.width, tractBounds.height, true, 0);
+			    bd.draw(tractView, m);
+		
+			    return bd;
+		    }
+		    
+		    private function getScaleBarBitmapData():BitmapData
+		    {
+		        scaleBar.validateProperties();
+		        scaleBar.validateSize(true);
+		        scaleBar.validateDisplayList();
+		        scaleBar.validateNow();
+		
+		        return BitmapUtil.getUIComponentBitmapData(scaleBar, new Matrix());
+		    }
+		    
+		    //--------------------------------------------------------------------------
+		    //
+		    //  Event handlers
+		    //
+		    //--------------------------------------------------------------------------
+		
+		    private function view_creationCompleteHandler(event:FlexEvent):void 
+		    {
+		        printPage.validateNow();
+		    }
+		
+		    private function resizeEffect_endHandler(event:Event):void 
+		    {
+		        fitToPage();
+		    }
+		
+		    private function zoomEffect_endHandler(event:Event):void
+		    {
+		        previewArea.validateSize();
+		        previewArea.invalidateDisplayList();
+		        previewArea.invalidateProperties();
+		    }
+		
+////        
+        
+        ]]>
+    </mx:Script>
+    
+    
+    <mx:Parallel id="resizeMove">
+        <mx:Resize id="pageResizeEffectParalel" 
+            target="{printPage}" effectEnd="resizeEffect_endHandler(event)"/>
+        <mx:Move id="tractMoveEffectParalel" target="{tractView}"/>
+    </mx:Parallel>
+
+    <mx:Zoom id="pageZoomEffect" target="{printPage}" effectEnd="zoomEffect_endHandler(event)"/>
+    <mx:Zoom id="tractZoomEffect" target="{tractView}"/>
+    <mx:Move id="tractMoveEffect" target="{tractView}" effectEnd="tractView.invalidateDisplayList()"/>
+
+    <mx:DateFormatter id="dateFormatter" formatString="D/M/YYYY" />
+
+    <mx:VBox width="100%" height="100%" verticalGap="3">
+
+        <mx:VBox id="toolbar" horizontalAlign="left" horizontalGap="3">
+            <mx:HBox horizontalGap="1" verticalAlign="middle">
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom_in.png')" toolTip="Tract Zoom In"
+                    styleName="toolButton" width="25" height="25"
+                    click="zoomIn()"/>
+                
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom_out.png')" toolTip="Tract Zoom Out"
+                    styleName="toolButton" width="25" height="25"
+                    click="zoomOut()"/>
+    
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom.png')" toolTip="Size To Page" 
+                    styleName="toolButton" width="25" height="25"
+                    click="fitToPage()"/>
+    
+                <mx:Button 
+                    icon="@Embed(source='/assets/center2.png')"
+                    toolTip="Center Tract"
+                    styleName="toolButton" width="25" height="25"
+                    click="doTractCentering()"/>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:Box id="previewArea" 
+            width="100%" height="100%" backgroundColor="#808080"
+            paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
+            backgroundAlpha="0.77" borderStyle="solid" borderColor="#400040">
+            
+            <mx:VBox id="printPage" 
+            	width="100%" height="100%"
+                backgroundColor="#ffffff" clipContent="false" horizontalAlign="center" 
+                borderStyle="solid" dropShadowEnabled="true" shadowDistance="0" 
+                shadowDirection="right"
+                paddingTop="3" paddingLeft="3" paddingRight="3" paddingBottom="3"
+                borderColor="#000000">
+                
+                <containers:GeoCanvas id="dataFrame" 
+                    width="100%" height="100%"
+                    borderColor="#999999" borderStyle="solid"
+                    mouseButton="{truetract.plotter.containers.DraggableCanvas.PRIMARY_MOUSE_BUTTON}">
+
+                    <components:TractView id="tractView" 
+                        mouseEnabled="false" mouseChildren="false" showArea="true" 
+                        showTractPoints="false" surfaceScale="{dataFrame.Scale}"/>
+
+                </containers:GeoCanvas>
+
+                <mx:VBox id="centerTractInfo"
+                	verticalGap="-5"
+                    horizontalScrollPolicy="off"
+                    width="100%" clipContent="false"
+                    horizontalAlign="center" fontFamily="Arial">
+                    <components:ScaleBar id="scaleBar"
+                        scaleValue="{dataFrame.Scale}" verticalGap="0"
+                        width="100%" minWidth="200"/>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:Box>
+        
+    	<mx:HBox width="100%">
+            <mx:Label text="Tract Scaling"/>
+            
+            <components:ScaleInput id="scaleInput" 
+                scaleValue="{dataFrame.Scale}" showIcon="true" 
+                change="dataFrame.Scale = scaleInput.scaleValue" commitOnEnter="true"
+                enableIcon="true" editOnClick="true"/>
+    	</mx:HBox>
+    </mx:VBox>
+</mx:VBox>

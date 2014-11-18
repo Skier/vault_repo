@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	width="400" xmlns:component="com.llsvc.component.*"
+	title="Project Detail">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var project:ProjectWrapper;
+			
+            public static function open(parent:DisplayObject, project:ProjectWrapper, modal:Boolean):ProjectEditView
+            {
+                var popup:ProjectEditView = new ProjectEditView();
+                popup.project = project;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	project.project.name = txtProjectName.text;
+            	project.project.isActive = cbIsActive.selected;
+            	
+            	dispatchEvent(new Event("submitRequest"));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%">
+		<mx:FormItem label="Project Name:" width="100%">
+			<component:SelectableInput id="txtProjectName" text="{project.project.name}" width="100%" enabled="{!project.isLoading}"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Is Active:">
+			<mx:CheckBox id="cbIsActive" selected="{project.project.isActive}" enabled="{!project.isLoading}"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button height="28" width="100" label="Ok" click="btnSubmitClickHandler()" 
+			enabled="{txtProjectName.text.length > 1 &amp;&amp; !project.isLoading}"/>
+		<mx:Button height="28" width="100" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

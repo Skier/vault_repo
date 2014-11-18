@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:controls="com.llsvc.controls.*"
+    xmlns:component="com.llsvc.component.*"
+    icon="@Embed('assets/icons16/page.png')" label="{lease.document.id == 0 ? 'Lease [New]' : lease.leaseName}" 
+    xmlns:tracts="com.llsvc.client.lms.view.lease.detail.tracts.*" 
+    xmlns:map="com.llsvc.client.lms.view.lease.detail.map.*" 
+    xmlns:clause="com.llsvc.client.lms.view.lease.detail.clause.*" 
+    xmlns:attachments="com.llsvc.client.lms.view.lease.detail.attachments.*" xmlns:document="com.llsvc.client.lms.view.document.*" xmlns:terms="com.llsvc.client.lms.view.lease.detail.terms.*" xmlns:references="com.llsvc.client.lms.view.lease.detail.references.*" xmlns:project="com.llsvc.client.lms.view.project.*">
+
+    <mx:Metadata>
+        [Event(name="closeTabRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.ValidationResultEvent;
+        	import mx.core.Application;
+        	import com.llsvc.client.lms.view.project.ProjectSelector;
+        	import com.llsvc.client.lms.LocalCash;
+        	import com.llsvc.client.lms.control.TabManager;
+        	import com.llsvc.client.lms.events.LeaseEvent;
+        	import mx.rpc.Responder;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.controls.Alert;
+        	import mx.events.ItemClickEvent;
+        	import mx.events.CloseEvent;
+
+            import com.llsvc.domain.Lease;
+            import com.llsvc.client.lm.storage.Storage;
+            
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+            
+            private var waitingForClose:Boolean = false;
+
+            private function isLeaseValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (!panelTerms.isValid())
+            		result = false;
+            	
+            	if (vName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            		
+	            return result;
+            }
+
+            private function startRemoting(name:String):void 
+            {
+                content.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                content.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+            private function create():void 
+            {
+            	var currentTractIndex:int = panelTracts.getSelectedIndex();
+            	
+                startRemoting("Creating Lease");
+                
+                var panel:LeaseDetailView = this;
+                
+                Storage.instance.createLease(this.lease,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            if(waitingForClose)
+                            {
+                            	dispatchEvent(new Event("closeTabRequest"));
+                            	return;
+                            }
+                            
+                            Alert.show("Lease is created.");
+                            lease.populate(event.result as Lease);
+                            lease.isDirty = false;
+            
+                            TabManager.setUniqueTab("LEASE DETAIL:" + lease.document.id.toString(), panel); 
+                            
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+                            dispatchEvent(new LeaseEvent(LeaseEvent.CREATE_LEASE, lease));
+                            
+                            if (currentTractIndex > -1)
+                            	callLater(panelTracts.setSelectedIndex, [currentTractIndex]);
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function save():void 
+            {
+            	var currentTractIndex:int = panelTracts.getSelectedIndex();
+
+                startRemoting("Saving Lease");
+                
+                Storage.instance.storeLease(this.lease,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+
+                            lease.populate(event.result as Lease);
+                            lease.isDirty = false;
+                            
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+                            dispatchEvent(new LeaseEvent(LeaseEvent.UPDATE_LEASE, lease));
+
+                            if(waitingForClose)
+                            {
+                            	dispatchEvent(new Event("closeTabRequest"));
+                            	return;
+                            }
+                            
+                            if (currentTractIndex > -1)
+                            	callLater(panelTracts.setSelectedIndex, [currentTractIndex]);
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function remove():void 
+            {
+                startRemoting("Deleting Lease");
+                
+                Storage.instance.deleteLease(this.lease.document.id,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            content.enabled = false;
+                            
+                            dispatchEvent(new Event("closeTabRequest"));
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+							dispatchEvent(new LeaseEvent(LeaseEvent.REMOVE_LEASE, lease));
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function buttonBarClick(event:ItemClickEvent):void
+            {
+                switch (event.index) 
+                {
+                    case 0:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 1:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 2:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 3:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 4:
+                        Alert.show("Do not realised yet !");
+                        break;
+                }
+            }
+        
+            public function onSaveClick(event:Event):void 
+            {
+            	lease.leaseName = (txtLeaseName.text.length == 0) ? lease.leasorStr : txtLeaseName.text;
+            	
+                if (!isLeaseValid()) {
+                    Alert.show("Please enter required fields", "Validation error");
+                    waitingForClose = false;
+                    return;
+                }
+                
+                panelTerms.getResult();   
+                
+                if ( lease != null && lease.document != null ) 
+                {
+	           		lease.document.user = LocalCash.getInstance().getCurrentUser();
+					lease.document.checkInActors();
+
+	                if ( lease.document.id > 0 ) 
+	                {
+	                    save();
+	                } else 
+	                {
+	                    create();
+	                }
+                }
+            }   
+                    
+            private function onDeleteClick():void 
+            {
+                Alert.show("Do you really want to delete this Lease ?", 
+                   "Delete Lease", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                            remove();
+                        }
+                    });
+            }
+            
+            private function onCloseClick():void 
+            {
+            	//if (!lease.isDirty) {
+            	//	dispatchEvent(new Event("closeTabRequest"));
+            	//	return;
+            	//}
+            	
+                Alert.show("Do you want to save Lease before closing?", 
+                   "Close Lease", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.NO)
+                        {
+			                dispatchEvent(new Event("closeTabRequest"));
+                        } else if (event.detail == Alert.YES) 
+                        {
+                        	onSaveClick(null);
+                        	waitingForClose = true;
+                        }
+                    });
+
+            }
+            
+            private function btnProjectsClickHandler(event:Event):void 
+            {
+            	var obj:DisplayObject = event.target as DisplayObject;
+	            var popup:ProjectSelector = ProjectSelector.open(Application.application as DisplayObject, lease.document, true);
+	            
+	            var p1:Point = obj.localToGlobal(new Point(obj.x, obj.y));
+	            var p2:Point = popup.globalToLocal(p1);
+	            popup.x = p2.x;
+	            popup.y = p2.y;
+	            popup.width = 240;
+	            popup.height = 180;
+            }
+            
+        ]]>
+    </mx:Script>
+<!--    
+    <mx:Binding source="txtProspectName.text" destination="lease.prospectName"/>
+-->
+
+	<mx:StringValidator id="vName" source="{txtLeaseName}" property="text" required="true" minLength="1"/>
+	
+    <mx:VBox id="content" width="100%" height="100%"
+    	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <mx:HBox width="100%" verticalAlign="top">
+            <mx:HBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" 
+                borderColor="#cccccc" borderStyle="solid" backgroundColor="#ffffdd" cornerRadius="2"
+                verticalAlign="middle">
+                <mx:Label text="Lease Reference Name:" fontWeight="bold"/>
+                <component:SelectableInput id="txtLeaseName" 
+                    text="{lease.leaseName}" 
+                    width="200" maxChars="150"
+                    change="{lease.leaseName = (txtLeaseName.text.length == 0) ? lease.leasorStr : txtLeaseName.text}"/>
+            </mx:HBox>
+
+			<tracts:LeaseTractsSummaryBox lease="{lease}" fontSize="10"/>
+
+            <mx:Spacer width="100%"/>
+    
+            <mx:ButtonBar id="bbUtil" right="10" itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="30" buttonHeight="24">
+                <mx:dataProvider>
+                    <mx:Object icon="@Embed('assets/icons16/page_excel.png')" toolTip="Export to Excel"/>
+                    <mx:Object icon="@Embed('assets/icons16/page_white_acrobat.png')" toolTip="Create PDF Report"/>
+                    <mx:Object icon="@Embed('assets/icons16/printer.png')" toolTip="Print"/>
+                    <mx:Object icon="@Embed('assets/icons16/chart_bar.png')" toolTip="Compare against other"/>
+                    <mx:Object icon="@Embed('assets/icons16/calculator.png')" toolTip="Calculator"/>
+                </mx:dataProvider>
+            </mx:ButtonBar>
+        </mx:HBox>
+    
+        <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+    
+		<mx:HBox width="100%" height="100%">
+			<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+				<document:DocActorsPanel width="250" height="100%" docum="{lease.document}"/>
+				<mx:TabNavigator width="100%" height="100%" paddingTop="5">
+					<mx:VBox width="100%" height="100%" label="Tracts" verticalGap="5">
+						<mx:LinkBar id="lbTracts" dataProvider="{vsTracts}"/>
+						
+						<mx:ViewStack id="vsTracts" width="100%" height="100%">
+							<tracts:QuickLeaseTractsPanel id="panelTracts" 
+								label="Tract List" 
+								width="100%" height="100%" lease="{lease}"/>
+							<map:LeaseMapPanel id="mapTracts"
+								label="Map View" 
+								width="100%" height="100%" lease="{lease}"/>
+						</mx:ViewStack>
+
+						<tracts:LeaseTractEditPanel tract="{panelTracts.dgTracts.selectedItem as LeaseTract}" width="100%"
+							visible="{panelTracts.dgTracts.selectedItem != null}"
+							includeInLayout="{panelTracts.dgTracts.selectedItem != null}"
+							backgroundColor="#ffffee" borderColor="#cccccc" borderStyle="solid" borderThickness="1"/>
+					</mx:VBox>
+					
+					<clause:LeaseTermsPanel width="100%" height="100%" label="Terms" lease="{lease}"/>
+				</mx:TabNavigator>
+			</mx:HDividedBox>
+				
+			<mx:VBox width="300" height="100%">
+				<mx:TabNavigator width="100%" height="100%" paddingTop="0">
+					<attachments:DocAttachmentsPanel 
+						label="Attachments"
+						width="100%" height="100%" docum="{lease.document}"/>
+					<project:ProjectSelector
+						label="Projects"
+						width="100%" height="100%" 
+						docum="{lease.document}"/>
+				</mx:TabNavigator>
+					
+				<clause:LeaseOptionsPanel id="panelOptions" width="100%" lease="{lease}"/>
+				<terms:LeaseTermsPanel id="panelTerms" width="100%" lease="{lease}"/>
+			</mx:VBox>
+		</mx:HBox>
+        
+        <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+
+        <mx:HBox width="100%">
+            <mx:Button width="100" label="Close Tab" icon="@Embed('assets/icon_close16.png')" toolTip="Close Tab" 
+                horizontalCenter="0" verticalCenter="0" click="onCloseClick()"/>
+                
+            <mx:Spacer width="100%"/>
+
+            <mx:Button width="100" label="Save" icon="@Embed('assets/icons16/disk.png')" toolTip="Save Lease Package" 
+                horizontalCenter="0" verticalCenter="0" click="onSaveClick(event)"/>
+                
+            <mx:Button width="100" label="Delete" icon="@Embed('assets/icons16/delete.png')" toolTip="Delete Current Lease Package" 
+                horizontalCenter="0" verticalCenter="0" click="onDeleteClick()"/>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:Canvas>

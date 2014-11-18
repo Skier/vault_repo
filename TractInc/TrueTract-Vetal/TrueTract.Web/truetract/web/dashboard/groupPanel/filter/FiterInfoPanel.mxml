@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="resetFilterRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.*;
+
+            import mx.events.PropertyChangeEvent;
+
+            private var _filter:IItemsFilter;
+            [Bindable] public function get filter():IItemsFilter { return _filter; }
+            public function set filter(value:IItemsFilter):void
+            {
+                _filter = value;
+
+                if (_filter && _filter is EventDispatcher) 
+                {
+                    EventDispatcher(_filter).addEventListener(
+                        PropertyChangeEvent.PROPERTY_CHANGE, 
+                        function(event:*):void { rebuildFilterString() });
+                }
+
+                rebuildFilterString();
+            }
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            private function reset():void
+            {
+                dispatchEvent(new Event("resetFilterRequest"));
+            }
+
+            private function rebuildFilterString():void
+            {
+                filterInfoText.text = "";
+
+                if (null == filter) return;
+
+                var result:String = "";
+                var params:Object = filter.getFilterParams();
+
+                for (var paramName:String in params)
+                {
+                    var paramValue:* = params[paramName];
+
+                    if (paramValue is DateRange)
+                    {
+                        result += (result.length > 0 ? "; " : "") + 
+                            paramName + " from <b>" + 
+                                df.format(paramValue.dateFrom) + "</b> to <b>" +
+                                df.format(paramValue.dateTo);
+                    }
+                    else 
+                    {
+                        result += (result.length > 0 ? "; " : "") + 
+                            paramName + ": <b>" + paramValue + "</b>";
+                    }
+                }
+
+                filterInfoText.htmlText = result;
+                filterInfoText.validateNow();
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="DD/MM/YYYY"/>
+
+    <mx:HBox 
+        paddingLeft="5" paddingRight="5" verticalAlign="middle" width="100%">
+
+        <mx:Button 
+            overSkin="@Embed('/assets/Close_Over.png')"
+            upSkin="@Embed('/assets/Close_Up.png')" 
+            downSkin="@Embed('/assets/Close_Down.png')"
+            toolTip="Reset Filter"
+            width="11" height="11"
+            click="reset()" />
+        
+        <mx:Text id="filterInfoText" width="100%"/>
+        
+    </mx:HBox>
+
+</mx:HBox>

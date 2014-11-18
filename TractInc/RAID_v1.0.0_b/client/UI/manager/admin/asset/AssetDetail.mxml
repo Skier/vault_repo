@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	title="Edit Asset info."
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import weborb.data.DynamicLoadEvent;
+			import App.Domain.Asset;
+			import App.Domain.AssetType;
+			import App.Domain.ActiveRecords;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.managers.PopUpManager;
+			import App.Domain.Client;
+			import mx.rpc.Responder;
+
+			[Bindable]
+			private var chiefs:ArrayCollection;
+			
+			[Bindable]
+			private var types:ArrayCollection;
+			
+			[Bindable]
+			public var asset:Asset;
+			
+            public static function Open(asset:Asset, chiefs:ArrayCollection, parent:DisplayObject, modal:Boolean = true):AssetDetail 
+            {
+                var popup:AssetDetail = new AssetDetail();
+                popup.asset = asset;
+                popup.chiefs = chiefs;
+
+                popup.init();
+	
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            public function isValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (valBusinessName.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valFirstName.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valLastName.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valSSN.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valLogin.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valPassword.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valConfirmPwd.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	if (valEmail.validate().type == ValidationResultEvent.INVALID) {
+            		result = false;
+            	}
+            	
+            	return result;
+            }
+            
+            private function init():void 
+            {
+            	this.enabled = false;
+            	types = ActiveRecords.AssetType.findAll();
+            	types.addEventListener("loaded", onTypesLoaded);
+            	types.addEventListener(FaultEvent.FAULT, onFault);
+            }
+            
+            private function onTypesLoaded(event:DynamicLoadEvent):void 
+            {
+            	this.enabled = true;
+            	types.removeEventListener("loaded", onTypesLoaded);
+            	types = event.data as ArrayCollection;
+            	cbAssetType.selectedIndex = types.getItemIndex(asset.RelatedAssetType);
+            	cbCrewChief.selectedIndex = chiefs.getItemIndex(getChiefById(asset.ChiefAssetId));
+            }
+            
+            private function onFault(event:FaultEvent):void 
+            {
+            	this.enabled = true;
+            	Alert.show(event.fault.message);
+            }
+            
+            private function getChiefById(id:int):Asset 
+            {
+            	for each (var chief:Asset in chiefs) {
+            		if (chief.AssetId == id) {
+            			return chief;
+            		}
+            	}
+
+            	return null;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="valLogin" source="{txtUserLogin}" property="text" minLength="4" 
+		required="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"/>
+
+	<mx:StringValidator id="valPassword" source="{txtUserPassword}" property="text" minLength="4" 
+		required="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"/>
+
+	<mx:StringValidator id="valConfirmPwd" source="{txtUserConfirmPswd}" property="text" minLength="4" 
+		required="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"/>
+
+	<mx:EmailValidator id="valEmail" source="{txtUserEmail}" property="text" 
+		required="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"/>
+		
+	<mx:StringValidator id="valBusinessName" source="{txtBusinessName}" property="text" minLength="2"
+		/>
+
+	<mx:StringValidator id="valFirstName" source="{txtFirstName}" property="text" minLength="2"
+		/>
+
+	<mx:StringValidator id="valLastName" source="{txtLastName}" property="text" minLength="2"
+		/>
+
+	<mx:StringValidator id="valSSN" source="{txtSSN}" property="text" minLength="9" maxLength="9"
+		/>
+	
+	<mx:VBox width="100%">
+		<mx:HBox>
+			<mx:Label text="Type:" width="100" textAlign="right"/>
+			<mx:ComboBox id="cbAssetType" width="150" labelField="_Type"
+				dataProvider="{types}"/>
+		</mx:HBox>
+		
+		<mx:VBox width="100%"
+			includeInLayout="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"
+			visible="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN &amp;&amp; asset.AssetId == 0}"
+			>
+			
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Add User info:" fontWeight="bold"/>
+				<mx:HRule width="100%"/>
+			</mx:HBox>
+			
+			<mx:HBox>
+				<mx:Label text="Login:" width="100" textAlign="right"/>
+				<mx:TextInput id="txtUserLogin" width="150" maxChars="45"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Password:" width="100" textAlign="right"/>
+				<mx:TextInput id="txtUserPassword" width="150" maxChars="45" displayAsPassword="true"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Confirm pwd:" width="100" textAlign="right"/>
+				<mx:TextInput id="txtUserConfirmPswd" width="150" maxChars="45" displayAsPassword="true"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Email:" width="100" textAlign="right"/>
+				<mx:TextInput id="txtUserEmail" width="150" maxChars="45"/>
+			</mx:HBox>
+
+			<mx:HRule width="100%"/>
+			
+		</mx:VBox>
+		
+		<mx:HBox
+			includeInLayout="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN}"
+			visible="{AssetType(cbAssetType.selectedItem)._Type == AssetType.ASSET_TYPE_LANDMAN}"
+			>
+			<mx:Spacer width="100"/>
+			<mx:CheckBox id="cbIsCrewChief" label="is crew chief" 
+				selected="{asset.AssetId == asset.ChiefAssetId}"/>
+		</mx:HBox>
+
+		<mx:HBox
+			includeInLayout="{!cbIsCrewChief.selected}"
+			visible="{!cbIsCrewChief.selected}"
+			>
+			<mx:Label text="Crew chief:" width="100" textAlign="right"/>
+			<mx:ComboBox id="cbCrewChief" width="150" labelField="Name"
+				dataProvider="{chiefs}"/>
+		</mx:HBox>
+
+		<mx:HBox>
+			<mx:Label text="Business Name:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtBusinessName" text="{asset.BusinessName}" width="150" maxChars="45"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="First Name:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtFirstName" text="{asset.FirstName}" width="150" maxChars="45"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Middle Name:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtMiddleName" text="{asset.MiddleName}" width="150" maxChars="45"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Last Name:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtLastName" text="{asset.LastName}" width="150" maxChars="45"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="SSN:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtSSN" text="{asset.SSN}" width="100" maxChars="9"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:HRule width="100%"/>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Ok"
+			enabled="{txtBusinessName.text.length > 0 &amp;&amp; txtFirstName.text.length > 0 &amp;&amp; txtLastName.text.length > 0 &amp;&amp; txtSSN.text.length > 0 &amp;&amp; cbAssetType.selectedItem != null &amp;&amp; (cbIsCrewChief.selected || cbCrewChief.selectedItem != null)}"/>
+		<mx:Button id="btnCancel" label="Cancel"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

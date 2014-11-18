@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:local="*"
+    horizontalAlign="center" verticalGap="-1" 
+    width="100%" styleName="itemVbox" xmlns:components="components.*">
+     
+    <mx:Script>
+        <![CDATA[
+        	import common.TypesRegistry;
+        	import App.Entity.BillItemDataObject;
+        	import mx.collections.ListCollectionView;
+        	import App.Entity.AssignmentBillItemsGroup;
+        	import util.DateUtil;
+        	import common.StatusesRegistry;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import App.Domain.BillItemStatus;
+        	import mx.events.DataGridEvent;
+        	import App.Domain.BillItem;
+        	import util.NumberUtil;
+        	
+        	[Embed(source="/assets/expand.png")]
+        	[Bindable]
+        	private var imgPlus:Class;
+        	
+        	[Embed(source="/assets/collapse.png")]
+        	[Bindable]
+        	private var imgMinus:Class;
+        	
+            private function expand(event:Event) : void
+            {
+                currentState = "expanded";
+            }
+            
+            private function collapse(event:Event) : void
+            {
+                currentState = "";
+            }
+            
+            private function toggleState() : void
+            {
+                currentState = currentState == "expanded" ? "" : "expanded";
+                invalidateDisplayList();
+            }
+            
+            private function setGroupLabels(group:AssignmentBillItemsGroup, column:DataGridColumn):String{
+            	if (column.dataField == "afe") {
+            		return group.assetAssignment.AFE;
+            	} else if (column.dataField == "subAfe") {
+            		return group.assetAssignment.SubAFE;
+            	} else if (column.dataField == "totalDailyBill") {
+            		return NumberUtil.fraction(group.totalDailyBill, 8)
+            	} else if (column.dataField == "otherAmt") {
+            		return (Math.round(group.otherAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "status") {
+            		return group.statusTemp;
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function setBillItemsLabels(item:BillItemDataObject, column:DataGridColumn):String {
+            	if (column.dataField == "type") {
+            		return TypesRegistry.instance.getBillItemTypeById(item.BillItemTypeId).Name;
+            	} else if (column.dataField == "date") {
+            		return DateUtil.format(new Date(Date.parse(item.BillingDate)));
+            	} else if (column.dataField == "quantity") {
+            		return (1 == item.BillItemTypeId) ? NumberUtil.fraction(item.Qty, 8) : String(item.Qty);
+            	} else if (column.dataField == "rate") {
+            		return (1 == item.BillItemTypeId) ? "N/A" : item.BillRate.toFixed(3);
+            	} else if (column.dataField == "amount") {
+            		return (1 == item.BillItemTypeId) ? "N/A" : (Math.round(item.Qty * item.BillRate * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "status") {
+            		return item.StatusTemp;
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function selectGroupColor(item:AssignmentBillItemsGroup, color:uint):uint 
+            {
+            	if (!item) {
+            		return color;
+            	} else {
+            		return StatusesRegistry.instance.getColorByName(item.statusTemp);
+            	}
+
+            	if (item.statusTemp == BillItemDataObject.BILL_ITEM_STATUS_REJECTED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_REJECTED);
+            	} else if (item.statusTemp == BillItemDataObject.BILL_ITEM_STATUS_APPROVED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_APPROVED);
+            	} else if (item.statusTemp == BillItemDataObject.BILL_ITEM_STATUS_CORRECTED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_CORRECTED);
+            	} else if (item.statusTemp == BillItemDataObject.BILL_ITEM_STATUS_DECLINED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_DECLINED);
+            	} else if (item.statusTemp == BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED);
+            	} else {
+            		return color;
+            	}
+            }
+            
+            private function selectItemColor(item:BillItemDataObject, color:uint):uint 
+            {
+            	if (!item) {
+            		return color;
+            	} else {
+            		return StatusesRegistry.instance.getColorByName(item.StatusTemp);
+            	}
+
+            	if (item.StatusTemp == BillItemDataObject.BILL_ITEM_STATUS_REJECTED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_REJECTED);
+            	} else if (item.StatusTemp == BillItemDataObject.BILL_ITEM_STATUS_APPROVED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_APPROVED);
+            	} else if (item.StatusTemp == BillItemDataObject.BILL_ITEM_STATUS_CORRECTED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_CORRECTED);
+            	} else if (item.StatusTemp == BillItemDataObject.BILL_ITEM_STATUS_DECLINED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_DECLINED);
+            	} else if (item.StatusTemp == BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED) {
+            		return StatusesRegistry.instance.getColorByName(BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED);
+            	} else {
+            		return color;
+            	}
+            }
+            
+            private function showWorkLog():void {
+            	var group:AssignmentBillItemsGroup = AssignmentBillItemsGroup(data);
+            	
+            	var log:ListCollectionView = new ListCollectionView(group.billItems);
+            	log.filterFunction = filterDailyItems;
+            	log.refresh();
+            	
+    	    	WorkLogView.Open(group.assetAssignment.SubAFE, log, DisplayObject(parentDocument));
+            }
+            
+            private function filterDailyItems(item:Object):Boolean {
+            	return 1 == BillItemDataObject(item).BillItemTypeId;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" horizontalGap="0">
+<!--
+    	<mx:Label text="{currentState == 'expanded' ? '-' : '+'}" fontSize="12" 
+    		click="toggleState()" width="25" textAlign="center" color="#990000"/>
+ -->
+		<mx:VBox width="26" height="26" horizontalAlign="center" verticalAlign="middle">
+			<mx:Image source="{currentState == 'expanded' ? imgMinus : imgPlus}" click="toggleState()"/>
+		</mx:VBox>
+	    <components:ColoredDataGrid id="dgGroup" dataProvider="{data}" showHeaders="false"
+	        width="100%" height="26" borderThickness="1" minWidth="669"
+			rowColorFunction="selectGroupColor">
+	        <components:columns>
+				<mx:DataGridColumn dataField="afe" labelFunction="setGroupLabels" width="90"/>
+				<mx:DataGridColumn dataField="subAfe" labelFunction="setGroupLabels"/>
+				<mx:DataGridColumn dataField="totalDailyBill" labelFunction="setGroupLabels" textAlign="right" width="80"/>
+				<mx:DataGridColumn dataField="otherAmt" labelFunction="setGroupLabels" textAlign="right" width="80"/>
+				<mx:DataGridColumn dataField="status" labelFunction="setGroupLabels" width="100"/>
+	        </components:columns>
+	    </components:ColoredDataGrid>
+    
+    </mx:HBox>
+    
+    <mx:states>
+        <mx:State name="expanded">
+            <mx:AddChild position="lastChild">
+				<mx:VBox width="100%" verticalGap="0">
+	            	<mx:HBox width="100%">
+	            		<mx:Spacer width="40"/>
+		                <components:ColoredDataGrid id="dgItem" 
+		                	width="100%" enabled="true" minWidth="660"
+		                    borderThickness="1" showHeaders="true"
+          					rowColorFunction="selectItemColor" sortableColumns="false"
+		                    height="{data.billItems.length &lt; 5 ? ((data.billItems.length + 1) * 26) : (6 * 26)}" rowHeight="26"
+		                    dataProvider="{data.billItems}">
+		                    <components:columns>
+								<mx:DataGridColumn headerText="Type" dataField="type"
+									labelFunction="setBillItemsLabels"/>
+								<mx:DataGridColumn headerText="Date" dataField="date" 
+									labelFunction="setBillItemsLabels" width="80" textAlign="right"/>
+								<mx:DataGridColumn headerText="Quantity" dataField="quantity"
+									labelFunction="setBillItemsLabels" width="60" textAlign="right"/>
+								<mx:DataGridColumn headerText="Rate" dataField="rate"
+									labelFunction="setBillItemsLabels" width="70" textAlign="right"/>
+								<mx:DataGridColumn headerText="Amount" dataField="amount" 
+									labelFunction="setBillItemsLabels" width="70" textAlign="right"/>
+								<mx:DataGridColumn headerText="Status" dataField="status" 
+									labelFunction="setBillItemsLabels" textAlign="center" width="100"/>
+								<mx:DataGridColumn headerText="Attach" width="70" textAlign="center"
+									itemRenderer="common.attachment.AttachItemRendererRO"/>
+								<mx:DataGridColumn
+									headerText=""
+									width="80"
+									itemRenderer="common.notes.NotesRendererRO"/>
+		                    </components:columns>
+		                </components:ColoredDataGrid>
+	            	</mx:HBox>
+	           		<mx:Spacer height="5"/>
+				</mx:VBox>
+            </mx:AddChild>
+        </mx:State>
+    </mx:states>
+    
+    <mx:transitions>
+        <mx:Transition fromState="*" toState="*">
+            <mx:Resize target="{this}"/>
+        </mx:Transition>
+    </mx:transitions>
+
+</mx:VBox>

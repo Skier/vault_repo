@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" 
+	verticalAlign="middle" horizontalAlign="center">
+    
+    <mx:Script>
+ 		<![CDATA[
+ 			import Domain.Employee;
+ 			import mx.controls.Alert;
+ 			import Service.ServerSyncService;
+			
+ 			[Bindable]
+ 			public var appController:AppController;
+ 			
+ 			private function onBtnLoginClick():void{
+ 					
+ 				var service:ServerSyncService = new ServerSyncService(); 				
+ 			 	service.FindDispatcherByName(username.text, onServiceOk, onServiceFailed); 	
+ 			}
+ 			
+ 			
+ 			private function onServiceOk(emp:Employee):void{
+ 				
+ 				if (emp == null){
+ 					Alert.show("Incorrect login");
+ 					return;
+ 				}
+ 				
+ 				if (emp.Password != password.text){
+ 					Alert.show("Invalid password");
+ 					return;
+ 				}
+ 				 				 				
+ 				appController.CurrentEmployee = emp;
+ 				
+ 				var service:ServerSyncService = new ServerSyncService();
+ 				service.IsDashboardDirty(appController.CurrentEmployee.ID, OnIsDashBoardDirtyOk, onServiceFailed);
+ 				 				
+ 				appController.showMainDash();
+ 				
+ 			}
+ 			
+ 			private function onServiceFailed(msg:String):void{
+ 				Alert.show(msg);
+ 			}
+ 			
+			private function OnIsDashBoardDirtyOk(result:Boolean):void{
+			} 
+
+			 			
+ 			
+ 			
+ 			
+
+ 		]]>
+ 	</mx:Script>
+
+    <mx:StringValidator id="usernameV" source="{username}" 
+        property="text" required="true" minLength="4" maxLength="12"/>
+    <mx:StringValidator id="passwordV" source="{password}" 
+        property="text" required="false" maxLength="12"/>
+
+    <mx:TitleWindow title="Welcome to Dalworth" showCloseButton="false" id="titlewindow1">
+    	<mx:Form id="content">
+    	    <mx:Label id="msgLabel" color="#990000" includeInLayout="{msgLabel.text.length > 0}"/>
+    	    
+    		<mx:FormItem label="Username" id="usernameItem">
+    			<mx:TextInput id="username" text="Andres" />
+    		</mx:FormItem>
+    		<mx:FormItem label="Password" id="passwordItem">
+    			<mx:TextInput id="password" 
+    				text ="1" displayAsPassword="true"/>
+    		</mx:FormItem>
+    	</mx:Form>
+    	
+    	<mx:ControlBar id="buttonBar">
+    		<mx:Spacer width="100%" id="spacer"/>
+    		<mx:Button id="btnLogin" label="Login" click="onBtnLoginClick()"/>
+    	</mx:ControlBar>
+    	
+    </mx:TitleWindow>
+</mx:HBox>

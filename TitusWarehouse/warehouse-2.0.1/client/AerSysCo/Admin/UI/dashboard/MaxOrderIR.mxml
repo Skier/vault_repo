@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CustomerUI;
+		
+			private function onChange():void 
+			{
+				if (!isNaN(Number(txtMaxOrderTotal.text))) 
+				{
+					var inputMax:Number = Number(txtMaxOrderTotal.text);
+					var item:CustomerUI = CustomerUI(data);
+
+					if (inputMax != item.maxOrderTotal) 
+					{
+						item.setMemento();
+						item.maxOrderTotal = inputMax;
+						DashboardView(parentDocument).controller.saveCustomer(item);
+					}
+				} else 
+				{
+					txtMaxOrderTotal.text = CustomerUI(data).maxOrderTotal.toFixed(2);
+				}
+			}
+			
+			private function onFocusIn():void 
+			{
+				txtMaxOrderTotal.selectionBeginIndex = 0;
+				txtMaxOrderTotal.selectionEndIndex = txtMaxOrderTotal.text.length;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:TextInput id="txtMaxOrderTotal" 
+		width="100%" height="100%" 
+		text="{CustomerUI(data).maxOrderTotal.toFixed(2)}"
+		textAlign="right"
+		focusIn="onFocusIn()"
+		focusOut="onChange()"
+		enter="onChange()"
+		enabled="{CustomerUI(data).enabled}"/>
+</mx:Canvas>

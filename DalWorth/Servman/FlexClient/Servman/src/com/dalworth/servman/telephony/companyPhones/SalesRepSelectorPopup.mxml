@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="450" title="Select Business Partner" 
+    xmlns:controls="com.affilia.controls.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.servman.events.SalesRepEvent;
+        	import com.dalworth.servman.service.SalesRepService;
+        	import com.dalworth.servman.service.BusinessPartnerService;
+        	import mx.events.ValidationResultEvent;
+        	import com.dalworth.servman.events.BusinessPartnerEvent;
+        	import com.dalworth.servman.domain.SalesRep;
+        	import com.dalworth.servman.domain.User;
+        	import com.dalworth.servman.domain.BusinessPartner;
+        	import com.dalworth.servman.main.MainAppModel;
+        	import com.dalworth.servman.main.owner.OwnerModel;
+        	import com.dalworth.servman.domain.LeadStatus;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import com.dalworth.servman.events.LeadEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import com.dalworth.servman.service.LeadService;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+        	import com.dalworth.servman.domain.Lead;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            [Bindable]
+            private var salesReps:ArrayCollection;
+            
+            private var excludes:ArrayCollection;
+            
+            public static function open(parent:DisplayObject, excludes:ArrayCollection, isReadOnly:Boolean = false, modal:Boolean = true):SalesRepSelectorPopup
+            {
+                var popup:SalesRepSelectorPopup = new SalesRepSelectorPopup();
+                popup.excludes = excludes;
+                
+                popup.init();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	salesReps = new ArrayCollection();
+            	
+            	SalesRepService.getInstance().getAll().addResponder(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+            				var result:Array = event.result as Array;
+            				for each (var sr:SalesRep in result)
+            				{
+            					if (!existsInExcludes(sr))
+            						salesReps.addItem(sr);
+            				}
+            			}, 
+            			function (event:FaultEvent):void 
+            			{
+            				Alert.show(event.fault.message);
+            			}));
+            }
+            
+            private function existsInExcludes(salesRep:SalesRep):Boolean 
+            {
+            	for each (var sr:SalesRep in excludes)
+            	{
+            		if (salesRep.Id == sr.Id)
+            			return true;
+            	}
+            	return false;
+            } 
+            
+			private function onOkClick():void 
+			{
+				dispatchEvent(new SalesRepEvent(SalesRepEvent.SALES_REP_SELECT, comboSalesReps.selectedItem as SalesRep));
+				close();
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:Form width="100%" minWidth="250" fontSize="12">
+		<mx:FormItem label="Select Sales Rep:" width="100%" required="true">
+			<controls:ComboBox id="comboSalesReps" width="100%" dataProvider="{salesReps}" labelField="ShowAs"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%" fontSize="12">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" width="80" click="onOkClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

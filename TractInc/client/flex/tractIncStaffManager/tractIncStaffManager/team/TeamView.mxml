@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:flexlib="http://code.google.com/p/flexlib/"
+    xmlns:smTeam="tractIncStaffManager.team.*">
+    
+    <mx:Script>
+        <![CDATA[
+        ]]>
+    </mx:Script>
+
+    <smTeam:TeamController id="controller" view="{this}"/>
+    
+    <mx:Button id="addButton" label="Add Team" click="controller.addButtonOnClickHandler(event)"/>
+    
+    <mx:HBox width="100%" height="100%">
+        <flexlib:TreeGrid id="masterDataGrid"
+            click="controller.masterGridOnClickHandler(event)"
+            headerStyleName="dataGridHeader"
+            width="100%" height="100%" 
+            paddingLeft="25"
+            verticalTrunks="none"
+            showRoot="false"
+            disclosureClosedIcon="@Embed(source='/assets/treeAssets.swf#TreeDisclosureClosed')"
+            disclosureOpenIcon="@Embed(source='/assets/treeAssets.swf#TreeDisclosureOpen')">
+            <flexlib:columns>
+                <flexlib:TreeGridColumn dataField="label" headerText="Team Name" />
+                <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                        itemRenderer="tractIncStaffManager.team.ActionIR"/>
+            </flexlib:columns>
+        </flexlib:TreeGrid>
+        <mx:DataGrid id="detailDataGrid" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="20" dataField="TeamMemberId"/>
+                <mx:DataGridColumn headerText="Asset" width="85" labelFunction="controller.assetNameLabelFunction"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:HBox>
+    
+</mx:VBox>

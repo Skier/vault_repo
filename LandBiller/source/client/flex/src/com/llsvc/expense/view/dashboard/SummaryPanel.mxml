@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="addCompanyRequest", type="com.llsvc.domain.events.UserEvent")]
+        [Event(name="selectCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+    </mx:Metadata>
+    
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.CompanyEvent;
+			import com.llsvc.domain.Company;
+			import com.llsvc.expense.view.login.UserEditView;
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.domain.User;
+			
+			private var _user:User;
+			[Bindable]
+			public function get user():User { return _user; };
+			public function set user(value:User):void 
+			{
+				_user = value;
+			}
+			
+			private function editUser():void 
+			{
+				if (user == null)
+					return;
+				
+				var userView:UserEditView = UserEditView.open(this, user);
+				userView.addEventListener(UserEvent.REGISTRATION_SUCCESSFULL, 
+					function (event:UserEvent):void 
+					{
+						userView.close();
+					}); 
+				userView.addEventListener("cancelRequest", 
+					function (event:Event):void 
+					{
+						userView.close();
+					}); 
+			}
+			
+			private function btnAddProjectClickHandler():void 
+			{
+				dispatchEvent(new UserEvent("addCompanyRequest", user));
+			}
+			
+			private function btnEditClickHandler():void 
+			{
+				editUser();
+			}
+			
+			private function dgCompaniesDoublecClickHandler():void 
+			{
+				var company:Company = dgCompanies.selectedItem as Company;
+				dispatchEvent(new CompanyEvent("selectCompanyRequest", company));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+		<mx:VBox width="100%" height="100%">
+			<mx:Label text="summary panel for {user.login.person.fullName}" fontSize="16"/>
+		</mx:VBox>
+		
+		<mx:VBox width="100%">
+			<mx:Label text="Companies" fontWeight="bold"/>
+			<mx:DataGrid id="dgCompanies" width="100%" height="100%" dataProvider="{user.companies}"
+				doubleClickEnabled="true" doubleClick="dgCompaniesDoublecClickHandler()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name" headerText="Company Name" width="200"/>
+					<mx:DataGridColumn dataField="description" headerText="Description"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button height="24" label="Add new Company" click="btnAddProjectClickHandler()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+
+	<mx:HRule width="100%"/>
+		
+	<mx:HBox width="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:Spacer width="100%"/>
+		<mx:Button height="24" label="Edit User info" click="btnEditClickHandler()"/>
+	</mx:HBox>
+	
+</mx:VBox>

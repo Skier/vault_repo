@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    label="Contact Map"
+    xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.binding.utils.ChangeWatcher;
+    	import mx.controls.TextInput;
+    	import mx.controls.Label;
+    	import mx.collections.ArrayCollection;
+    	import mx.events.DataGridEventReason;
+    	import mx.events.DataGridEvent;
+    	import mx.controls.Alert;
+    	import mx.events.CloseEvent;
+        import truetract.domain.mementos.ProjectAttachmentMemento;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.AsyncToken;
+        import mx.rpc.events.ResultEvent;
+        import truetract.web.util.TokenResponder;
+        import truetract.web.services.ProjectService;
+        import truetract.domain.*;
+
+        private static const CONTACT_MAP_ATTACHMENT_TYPE:String = "Contact Map";
+
+        private var dictionaries:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+        [Bindable] private var contactMapAttachment:ProjectAttachment;
+
+	    [Bindable] public var readOnly:Boolean = false;
+
+        private var _project:Project;
+        [Bindable] public function get project():Project { return _project; }
+        public function set project(value:Project):void
+        {
+            _project = value;
+            
+            ChangeWatcher.watch(project, "Attachments", attachmentsChangeHandler);
+            
+            parseProjectAttachments();
+        }
+        
+        private function attachmentsChangeHandler(e:*):void 
+        {
+            parseProjectAttachments();
+        }
+
+        private function parseProjectAttachments():void
+        {
+            contactMapAttachment = null;
+
+            if (!project.Attachments) return;
+            
+            for each (var attachment:ProjectAttachment in project.Attachments)
+            {
+                if (attachment.TypeName == CONTACT_MAP_ATTACHMENT_TYPE) {
+                    contactMapAttachment = attachment;
+                    break;
+                }
+            }
+        }
+
+        private function doOpenFile():void
+        {
+            var urlRequest:URLRequest = new URLRequest(contactMapAttachment.FileRef.fileFullUrl);
+
+            navigateToURL(urlRequest, "_blank");
+        }
+
+    ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:HBox 
+        width="100%" visible="{null == contactMapAttachment}" includeInLayout="{null == contactMapAttachment}">
+        <mx:Label text="Contact Map is not specified"/>
+    </mx:HBox>
+
+	<mx:VBox 
+		width="100%" height="100%" 
+        visible="{null != contactMapAttachment}" includeInLayout="{null != contactMapAttachment}"
+		>
+	    <mx:Form 
+			borderColor="#999999" borderStyle="solid" borderThickness="1" backgroundColor="#eeeeee"
+	        paddingBottom="0" paddingLeft="3" paddingRight="0" paddingTop="0" verticalGap="-3"
+	        width="100%" verticalScrollPolicy="off">
+	
+	        <mx:FormItem label="Reference Name :" width="100%">
+	            <mx:LinkButton 
+	                label="{contactMapAttachment.FileRef.Description}" height="16"
+	                click="doOpenFile()"
+	                textAlign="left" 
+	                textDecoration="underline" color="#000099"/>
+	        </mx:FormItem>
+	
+	        <mx:FormItem label="Created :" width="100%">
+	            <mx:HBox>
+	                <mx:Label text="{df.format(contactMapAttachment.FileRef.Created)}" fontWeight="bold"/>
+	                <mx:Label text="Added By :"/>
+	                <mx:Label text="{contactMapAttachment.FileRef.CreatedByName}" fontWeight="bold"/>
+	            </mx:HBox>
+	        </mx:FormItem>
+	    </mx:Form>
+	    
+	    <mx:HBox width="100%" height="100%">
+	    	<mx:VBox width="100%" height="100%" verticalGap="-5">
+	    		<mx:Label text="Project's Tabs:" fontWeight="bold"/>
+			    <mx:DataGrid id="dgTabs"
+			        dataProvider="{project.TabsList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%" minWidth="100"
+			        editable="false">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Label" width="100" dataField="Label"/>
+			            <mx:DataGridColumn headerText="Tab Name" dataField="Name"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+	    	</mx:VBox>
+	
+	    	<mx:VBox width="100%" height="100%" verticalGap="-5">
+	    		<mx:Label text="Tab's Contacts:" fontWeight="bold"/>
+			    <mx:DataGrid id="dgContacts" 
+			        dataProvider="{ProjectTab(dgTabs.selectedItem).ContactsList}" 
+			        sortableColumns="false" draggableColumns="false"
+			        fontSize="9" height="100%" width="100%" minWidth="300" 
+			        itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ProjectTabContactGridIR">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="IsEntity"
+			            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ContactTypeIR"/>
+			            <mx:DataGridColumn headerText="Type" width="85" dataField="Type"/>
+			            <mx:DataGridColumn headerText="Name" dataField="Name"/>
+			            <mx:DataGridColumn headerText="Phone" width="85" dataField="PhoneNumber"/>
+			            <mx:DataGridColumn headerText="Email" dataField="Email"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+	    	</mx:VBox>
+	    </mx:HBox>
+	</mx:VBox>
+</mx:Box>

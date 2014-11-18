@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectPanel_code 
+    icon="@Embed(source='/assets/report.png')"
+    xmlns="truetract.web.dashboard.projectPanel.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:tabPanel="truetract.web.dashboard.projectPanel.tabPanel.*"
+    paddingBottom="5" paddingLeft="5" paddingTop="5" paddingRight="5"
+    label="{project.ShortName}" verticalScrollPolicy="on" verticalGap="2" xmlns:containers="truetract.web.containers.*">
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+        [Event(name="addDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.domain.Project;
+            import mx.controls.Alert;
+
+        ]]>
+    </mx:Script>
+
+	<mx:HBox width="100%" verticalAlign="middle" 
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		backgroundColor="#dddddd" borderColor="#bbbbbb" borderStyle="solid">
+        <mx:Button 
+        	label="Set complete"
+            icon="@Embed(source='/assets/lock.png')" height="20" 
+            styleName="toolButton" toolTip="Set current project as complete"
+            click="setProjectComplete(true)"
+            visible="{project.ProjectStatusId != Project.PROJECT_STATUS_COMPLETE}"
+            includeInLayout="{project.ProjectStatusId != Project.PROJECT_STATUS_COMPLETE}"/>
+
+        <mx:Button 
+        	label="Set incomplete"
+            icon="@Embed(source='/assets/lock_break.png')" height="20" 
+            styleName="toolButton" toolTip="Set current project as incomplete"
+            click="setProjectComplete(false)"
+            visible="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"
+            includeInLayout="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"/>
+        
+        <mx:Spacer width="100%"/>
+        
+        <mx:Label text="Current status: {1 == project.ProjectStatusId ? 'ACTIVE' : 'COMPLETE'}" color="#666666"/>
+	</mx:HBox>
+
+    <mx:VBox verticalGap="2" id="boxExpanded" width="100%">
+	    <WellPlansSection id="wellPlansPanel" 
+	        titleIcon="@Embed(source='/assets/attach.png')"
+	        project="{this.project}" width="100%" collapsed="true"
+	        readOnly="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"
+	        styleName="CollapsiblePanel"/>
+	    
+	    <ProjectMapsSection id="projectMapsPanel"
+	        titleIcon="@Embed(source='/assets/attach.png')"
+	        project="{this.project}" width="100%" collapsed="true"
+	        readOnly="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"
+	        styleName="CollapsiblePanel"/>
+	        
+	    <ContactMapSection id="contactMapPanel"
+	        titleIcon="@Embed(source='/assets/attach.png')"
+	        project="{this.project}" width="100%" collapsed="true" 
+	        readOnly="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"
+	        styleName="CollapsiblePanel"/>
+    </mx:VBox>
+
+	<ProjectTabsLayout id="tabsPanel" 
+		width="100%" height="100%" project="{project}"
+        readOnly="{project.ProjectStatusId == Project.PROJECT_STATUS_COMPLETE}"
+		openDocument="dispatchEvent(event)"
+		addDocument="addDocumentHandler(event)"/>
+   
+</ProjectPanel_code>

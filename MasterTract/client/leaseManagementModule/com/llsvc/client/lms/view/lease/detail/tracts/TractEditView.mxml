@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Tract Detail"
+	creationComplete="onCreate()" xmlns:component="com.llsvc.component.*">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import com.llsvc.client.lms.controls.TextInputUpper;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.llsvc.domain.LeaseBreakdown;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.domain.LeaseTractQQ;
+			import com.llsvc.domain.Tract;
+			import com.llsvc.util.TractDescriptionUtil;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentActorPhone;
+			import com.llsvc.domain.DocumentActor;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Responder;
+			
+			private static const DG_ROW_HEIGHT:int = 20;
+			
+			[Bindable] private var errorMessage:String;
+			
+			[Bindable] private var isProcessing:Boolean = false;
+			
+			[Bindable] private var breakdowns:ArrayCollection = new ArrayCollection();
+			[Bindable] private var useBreakdowns:Boolean = false;
+			[Bindable] private var stateList:ArrayCollection = LocalCash.getInstance().getStates();
+
+			private var _tract:LeaseTract;
+			[Bindable]
+			public function get tract():LeaseTract { return _tract; }
+			public function set tract(value:LeaseTract):void 
+			{
+				_tract = value;
+				
+				checkOutBreakdowns();
+				callLater(populateFields);
+			}
+			
+            public static function open(parent:DisplayObject, tract:LeaseTract, modal:Boolean):TractEditView
+            {
+                var popup:TractEditView = new TractEditView();
+                popup.tract = tract;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	focusManager.setFocus(txtTownship);
+            }
+            
+            private function checkOutBreakdowns():void 
+            {
+            	if (tract.lease != null 
+            		&& tract.lease.document != null 
+            		&& tract.lease.document.givers != null) 
+            	{
+	           		breakdowns.removeAll();
+            		for each (var actor:DocumentActor in tract.lease.document.givers) 
+            		{
+            			breakdowns.addItem(getBreakdown(actor));
+            		}
+            	}
+            }
+            
+            private function getBreakdown(actor:DocumentActor):LeaseBreakdown 
+            {
+            	for each (var b:LeaseBreakdown in tract.breakdown) 
+            	{
+            		if (b.actor.id == actor.id) {
+            			return b;
+            		}
+            	}
+            	
+            	var lb:LeaseBreakdown = new LeaseBreakdown();
+            	lb.actor = actor;
+            	lb.tract = tract;
+				lb.fromDepth = "SURFACE";
+				lb.toDepth = "ALL";
+				lb.product = "ALL";
+				lb.formation = "ALL";
+            	
+            	return lb;
+            }
+            
+            private function checkInBreakdowns():void 
+            {
+            	if (tract.lease != null 
+            		&& tract.lease.document != null 
+            		&& tract.lease.document.givers != null) 
+            	{
+            		tract.breakdown.source = this.breakdowns.source;
+            	}
+            }
+            
+            private function populateFields():void 
+            {
+            	txtTownship.text = tract.townshipStr;
+            	txtRange.text = tract.rangeStr;
+            	comboPM.value = tract.meridianStr;
+            	comboNorth.selectedIndex = (tract.townshipDirStr == "N") ? 0 : 1;
+            	comboEast.selectedIndex = (tract.rangeDirStr == "E") ? 0 : 1;
+            	txtSection.text = tract.section;
+            	txtDescription.text = tract.tract;
+            	if (tract.breakdown != null && tract.breakdown.length > 0)
+            		useBreakdowns = true;
+            	
+            	cbState.value = (tract.state == null) ? null : tract.state.fips;
+            	cbCounty.value = (tract.county == null) ? null : tract.county.fips;
+
+            	cbIsSO.selected = tract.isSurfaceOwner;
+            	txtSOContact.text = tract.surfaceOwnerContact;
+            	txtTractNote.text = tract.note;
+
+           		txtTractName.text = tract.tract;
+            	
+            	if (isPlssFieldsFilled()) 
+            	{
+            		cbIsPlss.selected = true;
+            	} else 
+            	{
+            		cbIsPlss.selected = false;
+            	}
+            }
+            
+            private function isFormValid():Boolean 
+            {
+/* 
+            	if (
+            		   txtTownship.text.length > 0
+            		&& comboNorth.selectedIndex != -1
+            		&& comboPM.selectedIndex != -1 
+            		&& txtRange.text.length > 0 
+            		&& comboEast.selectedIndex != -1 
+            		&& txtSection.text.length > 0
+            		&& txtDescription.text.length > 0
+            		
+            		&& !isNaN(Number(txtTownship.text))
+            		&& !isNaN(Number(txtRange.text))
+            		&& !isNaN(Number(txtSection.text))
+            		)
+            	{
+            		return true;
+            	} else 
+            	{
+            		return false;
+            	}
+ */
+            	if ( (txtTownship.text.length > 0 
+            		&& !isNaN(Number(txtTownship.text)))
+					||
+					(txtRange.text.length > 0 
+            		&& !isNaN(Number(txtRange.text)))
+            		||
+            		(txtSection.text.length > 0
+            		&& !isNaN(Number(txtSection.text))) )
+            	{
+            		return false;
+            	}
+           		return true;
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+            	errorMessage = "";
+/*
+	        	if (isFormValid()) 
+	        	{
+*/	        	
+	        		checkInBreakdowns();
+	        		processGeoTracts();
+/*	        		
+	        	} else 
+	        	{
+            		errorMessage = "Not all required fields filled correctly !";
+	        	}
+*/	        	
+	        }
+	        
+			private function processGeoTracts():void 
+			{
+				addEventListener("processTractSuccess", processTractSuccessHandler);
+				addEventListener("processTractFault", processTractFaultHandler);
+/* temporary, because cant diselect it via gui 
+				if ( cbDontProcess.selected ) 
+				{
+					dispatchEvent(new Event("processTractSuccess"));
+					return;
+				}
+*/
+				tract.isProcessed = false;
+				tract.isProcessing = true;
+				
+	        	var tractMask:Tract = new Tract();
+		        	tractMask.township = txtTownship.text;
+		        	tractMask.townshipDir = comboNorth.selectedLabel;
+		        	tractMask.range = txtRange.text;
+		        	tractMask.rangeDir = comboEast.selectedLabel;
+		        	tractMask.meridian = comboPM.value.toString();
+		        	tractMask.section = txtSection.text;
+//Alert.show("Before findTracts.");
+				Storage.instance.findTracts(tractMask, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+				        	var allExists:Boolean = true;
+				        	
+							var existingGeoTracts:ArrayCollection = event.result as ArrayCollection; 
+							
+							var qqs:ArrayCollection = new ArrayCollection();
+							for each (var key:String in TractDescriptionUtil.parse(txtDescription.text)) 
+							{
+								var t:Tract = getTractByKey(key, existingGeoTracts);
+								if (t == null) 
+								{
+									allExists = false;
+								} else 
+								{
+									var qq:LeaseTractQQ = new LeaseTractQQ();
+										qq.leaseTract = tract;
+										qq.tract = t;
+
+									qqs.addItem(qq);
+								}
+							}
+
+							tract.isProcessing = false;
+							
+							if (allExists) 
+							{
+								tract.isProcessed = true;
+								tract.qqs.source = qqs.source;
+								dispatchEvent(new Event("processTractSuccess"));
+							} else 
+							{
+								dispatchEvent(new Event("processTractFault"));
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							tract.isProcessing = false;
+							dispatchEvent(new Event("processTractFault"));
+						}
+					)
+				);
+			}
+			
+			private function get primeMeridians():ArrayCollection 
+			{
+				var result:ArrayCollection = new ArrayCollection();
+				
+                result.addItem({value:"1", label:"01-FIRST PRINCIPAL MERIDIAN 1819", code:"1ST PRINCIPAL MRDN"});
+                result.addItem({value:"2", label:"02-SECOND PRINCIPAL MERIDIAN 1805", code:"2ND PRINCIPAL MRDN"});
+                result.addItem({value:"3", label:"03-THIRD PRINCIPAL MERIDIAN 1805", code:"3RD PRINCIPAL MRDN"});
+                result.addItem({value:"4", label:"04-FOURTH PRINCIPAL MERIDIAN 1815", code:"4TH PRINCIPAL MRDN"});
+                result.addItem({value:"5", label:"05-FIFTH PRINCIPAL MERIDIAN 1815", code:"5TH PRINCIPAL MRDN"});
+                result.addItem({value:"6", label:"06-SIXTH PRINCIPAL MERIDIAN 1855", code:"6TH PRINCIPAL MRDN"});
+                result.addItem({value:"7", label:"07-BLACK HILLS 1878", code:"BLACK HILLS"});
+                result.addItem({value:"8", label:"08-BOISE 1867", code:"BOISE"});
+                result.addItem({value:"9", label:"09-CHICKASAW 1833", code:"CHICKASAW"});
+                result.addItem({value:"10", label:"10-CHOCTAW 1821", code:"CHOCTAW"});
+                result.addItem({value:"11", label:"11-CIMARRON 1881", code:"CIMARRON"});
+                result.addItem({value:"12", label:"12-COPPER RIVER 1905", code:"COPPER RIVER"});
+                result.addItem({value:"13", label:"13-FAIRBANKS 1910", code:"FAIRBANKS"});
+                result.addItem({value:"14", label:"14-GILA AND SALT RIVER 1865", code:"GILA AND SALT RIVER"});
+                result.addItem({value:"15", label:"15-HUMBOLDT 1853", code:"HUMBOLDT"});
+                result.addItem({value:"16", label:"16-HUNTSVILLE 1807", code:"HUNTSVILLE"});
+                result.addItem({value:"17", label:"17-INDIAN 1870", code:"INDIAN"});
+                result.addItem({value:"18", label:"18-LOUISIANA 1807", code:"LOUISIANA"});
+                result.addItem({value:"19", label:"19-MICHIGAN 1815", code:"MICHIGAN"});
+                result.addItem({value:"20", label:"20-MONTANA 1867 (PRINCIPAL 1867)", code:"MONTANA"});
+                result.addItem({value:"21", label:"21-MOUNT DIABLO 1851", code:"MT DIABLO"});
+                result.addItem({value:"22", label:"22-NAVAJO 1869", code:"NAVAJO"});
+                result.addItem({value:"23", label:"23-NEW MEXICO 1855", code:"NEW MEXICO"});
+                result.addItem({value:"24", label:"24-ST HELENA 1819", code:"ST HELENA"});
+                result.addItem({value:"25", label:"25-ST STEPHENS 1805", code:"ST STEPHENS"});
+                result.addItem({value:"26", label:"26-SALT LAKE 1855", code:"SALT LAKE"});
+                result.addItem({value:"27", label:"27-SAN BERNARDINO 1852", code:"SAN BERNARDINO"});
+                result.addItem({value:"28", label:"28-SEWARD 1911", code:"SEWARD"});
+                result.addItem({value:"29", label:"29-TALLAHASSEE 1824", code:"TALLAHASSEE"});
+                result.addItem({value:"30", label:"30-UINTAH 1875", code:"UINTAH"});
+                result.addItem({value:"31", label:"31-UTE 1880", code:"UTE"});
+                result.addItem({value:"32", label:"32-WASHINGTON 1803", code:"WASHINGTON"});
+                result.addItem({value:"33", label:"33-WILLAMETTE 1851", code:"WILLAMETTE"});
+                result.addItem({value:"34", label:"34-WIND RIVER 1875", code:"WIND RIVER"});
+                result.addItem({value:"35", label:"35-OHIO RIVER SURVEY", code:"OHIO RIVER SURVEY"});
+                result.addItem({value:"36", label:"36-BETWEEN THE MIAMIS 1802", code:"BETWEEN THE MIAMIS"});
+                result.addItem({value:"37", label:"37-MUSKINGUM RIVER", code:"MUSKINGUM RIVER"});
+                result.addItem({value:"38", label:"38-OHIO RIVER BASE 1799", code:"OHIO RIVER BASE"});
+                result.addItem({value:"39", label:"39-SCIOTO RIVER 1799", code:"SCIOTO RIVER"});
+                result.addItem({value:"40", label:"40-SECOND SCIOTO RIVER 1799", code:"2ND SCIOTO RIVER"});
+                result.addItem({value:"41", label:"41-THIRD SCIOTO RIVER 1799", code:"3RD SCIOTO RIVER"});
+                result.addItem({value:"42", label:"42-ELLICOTTS LINE 1785", code:"ELLICOTTS LINE"});
+                result.addItem({value:"43", label:"43-TWELVE-MILE SQUARE 1805", code:"TWELVE-MILE SQUARE"});
+                result.addItem({value:"44", label:"44-KATEEL RIVER 1956", code:"KATEEL RIVER"});
+                result.addItem({value:"45", label:"45-UMIAT 1956", code:"UMIAT"});
+                result.addItem({value:"46", label:"46-FOURTH PRINCIPAL EXTENDED MERIDIAN 1831", code:"4TH PRINCIPAL EXT"});
+                result.addItem({value:"47", label:"47-WEST OF THE GREAT MIAMI 1798", code:"W OF THE GREAT MIAMI"});
+                result.addItem({value:"48", label:"48-US MILITARY SURVEY 1797 (OHIO)", code:"U S MILITARY SUR"});
+                result.addItem({value:"64", label:"64-COSTILLA ESTATE SURVEY", code:"COSTILLA EST SUR"});
+                result.addItem({value:"65", label:"65-FIRST PRINCIPAL MERIDIAN 1799", code:"1ST PRINCIPAL 1799"});
+                result.addItem({value:"66", label:"66-LAKE TRAVERSE LANDS LAKE", code:"TRAVERSE LANDS"});
+                result.addItem({value:"67", label:"67-MARTIN BORDEN SURVEY", code:"MARTIN BORDEN SUR"});
+                result.addItem({value:"68", label:"68-SYMMES PURCHASE/MIAMI 1802", code:"SYMMES/MIAMI"});
+                result.addItem({value:"69", label:"69-TERRITORY EAST OF RIVER 1802", code:"TERRITORY E OF RIVER"});
+                result.addItem({value:"70", label:"70-UTE LINE (COLORADO)", code:"UTE LINE (CO)"});
+                result.addItem({value:"71", label:"71-TENNESSEE", code:"TENNESSEE"});
+                result.addItem({value:"72", label:"72-KENTUCKY", code:"KENTUCKY"});
+                result.addItem({value:"74", label:"74-SISSETON INDIAN RESRV IN ND", code:"SISSETON INDIAN ND"});
+                result.addItem({value:"87", label:"87-SISSETON INDIAN RESRV IN SD", code:"SISSETON INDIAN SD"});
+                result.addItem({value:"91", label:"91-CONNECTICUT WESTERN RESERVE", code:"CONN WESTERN RESERVE"});
+                result.addItem({value:"92", label:"92-OHIO COMPANY PURCHASE", code:"OHIO CO PURCHASE"});
+                result.addItem({value:"93", label:"93-VIRGINIA MILITARY DISTRICT", code:"VA MILITARY DIST"});
+                result.addItem({value:"99", label:"99-NOT PUBLIC LAND SURVEY", code:"NOT PUBLIC LAND SUR"});
+				
+				return result;
+			}
+	        
+			private function processTractSuccessHandler(event:Event):void 
+			{
+				tract.isProcessed = true;
+				tract.isProcessing = false;
+				
+				if (isPlssFieldsFilled() && !isPlssFieldsCorrect()) 
+				{
+					Alert.show("Plss fields are filled incorrect", "Input error");
+					return;
+				}
+				
+				if (isPlssFieldsFilled() && isPlssFieldsCorrect()) 
+				{
+	        		tract.township = txtTownship.text + " Dir " + comboNorth.selectedLabel;
+	        		tract.range = txtRange.text + " Dir " + comboEast.selectedLabel  + " PM " + comboPM.value;
+	        		tract.section = txtSection.text;
+	        		tract.tract = txtDescription.text;
+				} else 
+				{
+	        		tract.township = "";
+	        		tract.range = "";
+	        		tract.section = "";
+	        		tract.tract = txtTractName.text;
+				}
+				
+        		tract.isSurfaceOwner = cbIsSO.selected;
+        		if (cbIsSO.selected)
+        			tract.surfaceOwnerContact = "";
+        		else 
+	        		tract.surfaceOwnerContact = txtSOContact.text;
+	        	
+	        	tract.note = txtTractNote.text;
+        		tract.state = cbState.selectedItem as State;
+        		tract.county = cbCounty.selectedItem as County;
+        		
+        		//if (tract.lease != null) tract.burden = tract.lease.royalty;
+        		
+		        dispatchEvent(new Event("commitRequest"));
+			}
+			
+			private function isPlssFieldsFilled():Boolean 
+			{
+				if (
+            		   txtTownship.text.length > 0
+            		&& comboNorth.selectedIndex != -1
+            		&& comboPM.selectedIndex != -1 
+            		&& txtRange.text.length > 0 
+            		&& comboEast.selectedIndex != -1 
+            		&& txtSection.text.length > 0
+            		&& txtDescription.text.length > 0
+            	)
+            	{
+            		return true;
+            	}
+            	
+            	return false;
+			}
+			
+			private function isPlssFieldsCorrect():Boolean 
+			{
+				if (
+            		   !isNaN(Number(txtTownship.text))
+            		&& !isNaN(Number(txtRange.text))
+            		&& !isNaN(Number(txtSection.text))
+            	)
+            	{
+            		return true;
+            	}
+            	
+            	return false;
+			}
+			
+			private function processTractFaultHandler(event:Event):void 
+			{
+				Alert.show("Can not process GeoTracts for description");
+				tract.isProcessing = false;
+			}
+			
+			private function getTractByKey(key:String, tractCollection:ArrayCollection):Tract 
+			{
+				for each (var tract:Tract in tractCollection) 
+				{
+					if (tract.qq == key || tract.lot == key) 
+						return tract;
+				}
+				
+				return null;
+			}
+
+			private function getLabel(item:LeaseBreakdown, column:DataGridColumn):String
+			{
+				if (column.dataField == "interest") {
+					return LeaseBreakdown(item).interestStr; 
+				} else {
+					return ""; 
+				}
+			} 
+			
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+			private function onItemEditEnd(event:DataGridEvent):void 
+			{
+				if (event.columnIndex == 5) {
+					var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+					checkInPercentField(ti);
+				}
+			}
+			
+			private function checkInPercentField(ti:TextInput):void 
+			{
+				var percentInput:String = ti.text;
+				var value:Number;
+				
+				if ( percentInput.length > 0 && percentInput.indexOf("%") > 0 ) 
+				{
+					var p1:String = percentInput.substr(0, percentInput.indexOf("%"));
+					if ( !isNaN(Number(p1)) ) {
+						value = new Number(p1)/100;
+					} else {
+						value = 0.00;
+					}
+				} else if ( !isNaN(Number(percentInput)) ) 
+				{
+					value = new Number(percentInput);
+				} else 
+				{
+					value = 0.00;
+				}
+				
+				if (value > 1) {
+					value = 1.00;
+				} else if (value < 0) {
+					value = 0.00;
+				}
+				
+				ti.text = value.toString();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formMain" width="100%" enabled="{!tract.isProcessing}" 
+		borderColor="#999999" borderStyle="solid" borderThickness="1"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15">
+        
+        <mx:FormItem label="" width="100%" horizontalGap="2">
+        	<mx:CheckBox id="cbIsPlss" label="Show PLSS entry fields" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="TWN" horizontalGap="2"
+        	visible="{cbIsPlss.selected}" includeInLayout="{cbIsPlss.selected}">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+	            <mx:TextInput id="txtTownship" width="40" maxChars="3" restrict="0-9"/>
+	            <mx:Label text="Dir"/>
+	            <mx:ComboBox id="comboNorth" dataProvider="[N, S]"/>
+	            <mx:Label text="RNG"/>
+	            <mx:TextInput id="txtRange" width="40" maxChars="3" restrict="0-9"/>
+	            <mx:Label text="Dir"/>
+	            <mx:ComboBox id="comboEast" dataProvider="[E, W]"/>
+	        </mx:HBox>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Prime Meridian" width="100%" horizontalGap="2"
+        	visible="{cbIsPlss.selected}" includeInLayout="{cbIsPlss.selected}">
+            <controls:ComboBox id="comboPM" width="100%" dataProvider="{primeMeridians}" valueField="value"/>
+        </mx:FormItem>
+
+		<mx:FormItem label="Section" width="100%"
+        	visible="{cbIsPlss.selected}" includeInLayout="{cbIsPlss.selected}">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+	            <mx:TextInput id="txtSection" width="40" maxChars="3" restrict="0-9"/>
+	            <mx:Label text="Desc"/>
+	            <component:SelectableInput id="txtDescription" width="250"/>
+	        </mx:HBox>
+		</mx:FormItem>        
+
+		<mx:FormItem label="Tract" width="100%"
+        	visible="{!cbIsPlss.selected}" includeInLayout="{!cbIsPlss.selected}">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+	            <mx:TextInput id="txtTractName" width="100%"/>
+	        </mx:HBox>
+		</mx:FormItem>        
+
+		<mx:FormItem label="State" width="100%">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+				<controls:ComboBox id="cbState" 
+					prompt=""
+					valueField="fips" labelField="name"
+					dataProvider="{stateList}"/>
+	            <mx:Label text="County"/>
+				<controls:ComboBox id="cbCounty" 
+					width="100%" prompt=""
+					valueField="fips" labelField="name"
+					dataProvider="{cbState.selectedItem == null ? null : State(cbState.selectedItem).counties}"/>
+	        </mx:HBox>
+		</mx:FormItem>        
+
+        <mx:FormItem label="">
+	        <mx:CheckBox id="cbIsSO" label="Mineral Owner Is Same As Surface Owner"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="SO Contact:" width="100%"
+        	visible="{!cbIsSO.selected}" includeInLayout="{!cbIsSO.selected}">
+        	<mx:TextArea id="txtSOContact" width="100%" height="50" text="{tract.surfaceOwnerContact}"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Description:" width="100%">
+        	<mx:TextArea id="txtTractNote" width="100%" height="80" text="{tract.note}"/>
+        </mx:FormItem>
+	</mx:Form>
+	
+	<mx:VBox width="100%" 
+		visible="{breakdowns.length &gt; 1}" includeInLayout="{breakdowns.length &gt; 1}"
+		verticalGap="0">
+		<mx:HBox width="100%" 
+			backgroundColor="#eeeeee" borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+			verticalAlign="middle">
+			<mx:Label text="Tract Breakdowns" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:CheckBox selected="{useBreakdowns}" click="(useBreakdowns = !useBreakdowns)"/>
+		</mx:HBox>
+		<mx:VBox width="100%" verticalGap="0" visible="{useBreakdowns}" includeInLayout="{useBreakdowns}">
+			<mx:Spacer height="2"/>
+			<mx:DataGrid id="dgBreakdowns" 
+				width="100%" rowHeight="{DG_ROW_HEIGHT}" height="{(breakdowns.length + 1) * (DG_ROW_HEIGHT + 2)}"
+				headerHeight="{DG_ROW_HEIGHT}"
+				dataProvider="{breakdowns}"
+				editable="true"
+				itemEditEnd="onItemEditEnd(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" dataField="actorName" editable="false"/>
+					<mx:DataGridColumn headerText="Product" dataField="product" editable="true" itemEditor="com.llsvc.client.lms.controls.TextInputUpper"/>
+					<mx:DataGridColumn headerText="To Depth" dataField="toDepth" editable="true" itemEditor="com.llsvc.client.lms.controls.TextInputUpper"/>
+					<mx:DataGridColumn headerText="From Depth" dataField="fromDepth" editable="true" itemEditor="com.llsvc.client.lms.controls.TextInputUpper"/>
+					<mx:DataGridColumn headerText="Formation" dataField="formation" editable="true" itemEditor="com.llsvc.client.lms.controls.TextInputUpper"/>
+					<mx:DataGridColumn headerText="Interest" dataField="interest" editable="true" labelFunction="getLabel"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+		<mx:Canvas width="100%">
+			<mx:Label fontSize="12" color="#ff0000" text="{errorMessage}" minWidth="200"/>
+			<mx:ProgressBar indeterminate="true" width="100%" label=" " visible="{tract.isProcessing}"/>
+		</mx:Canvas>
+        <mx:CheckBox id="cbDontProcess" label="don't process" selected="true" visible="false"/>
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()" enabled="{!tract.isProcessing}"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

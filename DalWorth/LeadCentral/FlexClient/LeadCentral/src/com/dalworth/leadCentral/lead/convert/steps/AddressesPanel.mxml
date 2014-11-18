@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.PhysicalAddress;
+			import mx.collections.ArrayCollection;
+			
+            [Embed(source="/assets/icons16/toggle.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+            [Bindable]
+            public var editable:Boolean = false;
+
+			[Bindable]
+			private var _addresses:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public function get addresses():Array { return _addresses.source; }
+			public function set addresses(value:Array):void 
+			{
+				_addresses.source = value;
+			}
+			
+			private function setEditor(obj:Object):void 
+			{
+				var rowIndex:int = _addresses.getItemIndex(obj);
+				var columnIndex:int = 0;
+				dgAddresses.editedItemPosition = {columnIndex:columnIndex, rowIndex:rowIndex};
+			}
+			
+			private function onAdd():void 
+			{
+				var address:PhysicalAddress = new PhysicalAddress();
+				address.Line1 = address.Line2 = "[address]";
+				address.City = "[city]";
+				address.CountrySubDivisionCode = "[state]";
+				address.PostalCode = "[zip]";
+				
+				_addresses.addItem(address);
+				
+				setEditor(address);
+			} 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#EEEEEE" horizontalGap="-1">
+			<mx:Label text="ADDRESSES:" fontSize="12"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button height="24" click="onAdd()" cornerRadius="2" label="Add new" fontSize="12" visible="{editable}"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgAddresses" width="100%" height="100%" dataProvider="{_addresses}" editable="{editable}" showHeaders="true">
+			<mx:columns>
+				<mx:DataGridColumn dataField="Line1" headerText="Address" editable="{editable}"/>
+				<mx:DataGridColumn dataField="City" headerText="City" editable="{editable}"/>
+				<mx:DataGridColumn dataField="CountrySubDivisionCode" headerText="State" editable="{editable}"/>
+				<mx:DataGridColumn dataField="PostalCode" headerText="Zip" editable="{editable}"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	
+</mx:Canvas>

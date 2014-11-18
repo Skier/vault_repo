@@ -1,0 +1,28 @@
+<?
+    if (isset($_SESSION["location"])) {
+        echo(LocationInfo::getPath($_SESSION["location"], $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SELECT_ACTIVITIES) ?>:</b>
+
+<form action="OwnerSelectActivities.php" method="get">
+    <table>
+        <?
+            for ($index = 0; $index < count($this->activities); $index ++) {
+                $activity = $this->activities[$index]; ?>
+                <tr>
+                    <td><input type="checkbox" name="ac<? echo($activity->getActivityId()) ?>" /></td>
+                    <td><b><? echo($activity->getActivityName()) ?></b></td>
+                </tr>
+                <?
+            }
+        ?>
+        <tr>
+            <td align="right" colspan="2">
+                <input type="submit" name="submit" value="<? echo(MSG_NEXT) ?>" />
+            </td>
+        </tr>
+    </table>
+</form>

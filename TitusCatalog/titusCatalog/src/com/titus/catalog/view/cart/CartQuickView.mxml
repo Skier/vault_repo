@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	backgroundColor="#ffffcc" borderColor="#dddddd" borderStyle="solid" cornerRadius="2"
+	width="150" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.titus.catalog.model.cart.Cart;
+			
+			[Bindable]
+			public var cart:Cart = Cart.getInstance();
+			
+			private function openCartDetail():void 
+			{
+				var popup:CartDetailView = CartDetailView.open(Application.application as DisplayObject, this.cart, true);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack selectedIndex="{(cart.items.length &gt; 0) ? 1 : 0}" width="100%">
+		<mx:HBox width="100%" horizontalScrollPolicy="off" horizontalAlign="center" verticalAlign="middle">
+			<mx:Label text="Your cart is empty."/>
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalScrollPolicy="off" horizontalAlign="center" verticalAlign="middle" horizontalGap="0">
+			<mx:LinkButton label="{cart.items.length} items" click="openCartDetail()" height="20" verticalCenter="0"/>
+			<mx:Label text="in your cart"/>
+		</mx:HBox>
+	</mx:ViewStack>
+	
+</mx:Canvas>

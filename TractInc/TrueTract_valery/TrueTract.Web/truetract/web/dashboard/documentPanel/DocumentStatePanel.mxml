@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	backgroundColor="#ffffcc" borderColor="#dd6666" borderStyle="solid"
+	paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Tract;
+			import truetract.domain.Document;
+			
+			private const COMPLETE:String = "Complete";
+			
+			private const NO_TRACTS:String = "No tracts in the document";
+			private const NO_PDF_COPY:String = "No PDF copy of the document";
+			private const NO_REFERENCES:String = "No referenced documents";
+			
+			[Bindable] public var docum:Document;
+			
+        	[Embed(source="/assets/checked.png")]
+        	[Bindable]
+        	private var imgChecked:Class;
+        	
+		]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Label text="Tracts:" textAlign="right"/>
+		<mx:Image source="{imgChecked}"
+			visible="{docum.TractsList.length > 0}"
+			includeInLayout="{docum.TractsList.length > 0}"/>
+		<mx:Label id="txtTractsState"
+			width="100%" fontWeight="bold"
+			visible="{docum.TractsList.length == 0}"
+			includeInLayout="{docum.TractsList.length == 0}"
+			text="{NO_TRACTS}" color="#990000"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="Attachments:" textAlign="right"/>
+		<mx:Image source="{imgChecked}"
+			visible="{docum.PdfCopy != null}"
+			includeInLayout="{docum.PdfCopy != null}"/>
+		<mx:Label id="txtAttachmentsState"
+			width="100%" fontWeight="bold"
+			visible="{docum.PdfCopy == null}"
+			includeInLayout="{docum.PdfCopy == null}"
+			text="{NO_PDF_COPY}" color="#990000"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="References:" textAlign="right"/>
+		<mx:Image source="{imgChecked}"
+			visible="{docum.ReferencesList.length > 0}"
+			includeInLayout="{docum.ReferencesList.length > 0}"/>
+		<mx:Label id="txtReferencesState"
+			width="100%" fontWeight="bold"
+			visible="{docum.ReferencesList.length == 0}"
+			includeInLayout="{docum.ReferencesList.length == 0}"
+			text="{NO_REFERENCES}" color="#000099"/>
+	</mx:HBox>
+</mx:HBox>

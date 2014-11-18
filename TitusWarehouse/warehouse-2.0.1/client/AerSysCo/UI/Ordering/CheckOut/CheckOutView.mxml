@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:CheckOut="AerSysCo.UI.Ordering.CheckOut.*">
+
+    <mx:Metadata>
+        [Event(name="backToShoppingCart", type="flash.events.Event")]
+        [Event(name="createFinalOrders", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import AerSysCo.UI.Models.ShippingAddressUI;
+			import AerSysCo.UI.Models.CustomerUI;
+			
+			[Bindable] private var controller:CheckOutController;
+			[Bindable] public var currentCustomer:CustomerUI;
+
+			public function init(customer:CustomerUI):void 
+			{
+				controller = new CheckOutController();
+				controller.init(customer, this);
+			}
+			
+			private function shipmentAddressContinueHandler():void 
+			{
+				var sa:ShippingAddressUI = viewShipmentAddress.address;
+				controller.proceedAddressScreen(sa);
+			}
+
+			private function shippingOptionsPrevHandler():void 
+			{
+				vsCheckOut.selectedChild = viewShipmentAddress;
+			}
+
+			private function shippingOptionsContinueHandler():void 
+			{
+				if (viewShippingOptions.updateShipments()) 
+				{
+					controller.proceedShippingOptions();
+				}
+			}
+
+			private function finalPrevHandler():void 
+			{
+				vsCheckOut.selectedChild = viewShippingOptions;
+			}
+
+			private function finalContinueHandler():void 
+			{
+				controller.submitOrders();
+			}
+
+			private function termsRequestHandler():void 
+			{
+				controller.showTerms();
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="vsCheckOut" width="100%" height="100%" creationPolicy="auto">
+		<CheckOut:ShipmentAddressView id="viewShipmentAddress" 
+			width="100%" height="100%"
+			currentCustomer="{controller.model.currentCustomer}"
+			backToShoppingCart="dispatchEvent(event)"
+			continueCheckout="shipmentAddressContinueHandler()"/>
+
+		<CheckOut:ShippingOptionsView id="viewShippingOptions"
+			width="100%" height="100%"
+			currentCustomer="{controller.model.currentCustomer}"
+			previousStepRequest="shippingOptionsPrevHandler()"
+			continueCheckout="shippingOptionsContinueHandler()"/>
+		
+		<CheckOut:CheckoutFinalView id="viewFinalCheckout"
+			width="100%" height="100%"
+			currentCustomer="{controller.model.currentCustomer}"
+			previousStepRequest="finalPrevHandler()"
+			continueCheckout="finalContinueHandler()"
+			termsRequest="termsRequestHandler()"/>
+	</mx:ViewStack>
+
+</mx:Canvas>

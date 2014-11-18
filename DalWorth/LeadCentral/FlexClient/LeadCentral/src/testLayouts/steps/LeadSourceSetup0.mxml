@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="622" height="516"
+	creationComplete="treeSources.expandChildrenOf(treeData[0], true)" xmlns:steps="testLayouts.steps.*">
+	
+    <mx:XMLList id="treeData">
+        <node label="AllTypes">
+            <node label="Larry Dilan">
+                <node label="John Doe"/>
+                <node label="Ivan Ivanovich"/>
+                <node label="Vasya Pupkind"/>
+            </node>
+            <node label="Boris Furman">
+                <node label="Valery Yaworsky"/>
+                <node label="Sergey Kalashnikov"/>
+            </node>
+            <node label="Boris Furman">
+                <node label="Valery Yaworsky"/>
+                <node label="Sergey Kalashnikov"/>
+            </node>
+            <node label="DalworthRestoration.com"/>
+            <node label="Carpet Cleaning Inc."/>
+        </node>    
+    </mx:XMLList>
+    
+	<mx:ViewStack id="vsStep" width="100%" height="100%" creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<mx:LinkButton label="Video" click="vsStep.selectedIndex = 1" x="555" y="10" fontSize="12" color="#003399"/>
+		    <mx:Label x="10" y="14" text="Create Sources of Leads:" fontSize="14" fontWeight="bold"/>
+		    <mx:Tree id="treeSources" x="10" y="45" height="461" width="250"
+		    	dataProvider="{treeData}" labelField="@label" showRoot="false"/>
+		    <mx:TextInput x="268" y="46" width="344" fontSize="14"/>
+		    <mx:Button x="496" y="262" label="Create New" fontSize="14" cornerRadius="0"/>
+		   	<mx:Label text="Select existing from Quickbooks:" fontSize="14" x="268" y="81" width="344"/>
+		   	<mx:Label text="OR" fontSize="14" x="449" y="264" fontWeight="bold"/>
+		    <mx:VBox id="boxExists" x="268" y="112" width="344" backgroundColor="#FFFFFF" borderStyle="solid" borderColor="#CCCCCC"
+		    	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" verticalGap="4">
+		        <mx:HBox width="100%" verticalAlign="middle" fontSize="12" backgroundColor="#FFFFCC">
+		            <mx:Label text="Sales rep:"/>
+		            <mx:Label text="John Deer" width="100%" fontWeight="bold" minWidth="50"/>
+		            <mx:Button label="Select" fontSize="12" cornerRadius="0"/>
+		        </mx:HBox>
+		        <mx:HBox width="100%" verticalAlign="middle" fontSize="12" backgroundColor="#FFFFCC">
+		            <mx:Label text="Vendor:"/>
+		            <mx:Label text="Smith Sally" width="100%" fontWeight="bold" minWidth="50"/>
+		            <mx:Button label="Select" fontSize="12" cornerRadius="0"/>
+		        </mx:HBox>
+		        <mx:HBox width="100%" verticalAlign="middle" fontSize="12" backgroundColor="#FFFFCC">
+		            <mx:Label text="Employee:"/>
+		            <mx:Label text="Bruce Carpenter" width="100%" fontWeight="bold" minWidth="50"/>
+		            <mx:Button label="Select" fontSize="12" cornerRadius="0"/>
+		        </mx:HBox>
+		        <mx:HBox width="100%" verticalAlign="middle" fontSize="12" backgroundColor="#FFFFCC">
+		            <mx:Label text="Sales rep:"/>
+		            <mx:Label text="John Deer" width="100%" fontWeight="bold" minWidth="50"/>
+		            <mx:Button label="Select" fontSize="12" cornerRadius="0"/>
+		        </mx:HBox>
+		        <mx:HBox width="100%" verticalAlign="middle" fontSize="12" backgroundColor="#FFFFCC">
+		            <mx:Label text="Vendor:"/>
+		            <mx:Label text="Smith Sally" width="100%" fontWeight="bold" minWidth="50"/>
+		            <mx:Button label="Select" fontSize="12" cornerRadius="0"/>
+		        </mx:HBox>
+		    </mx:VBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<steps:VideoTutorial label="Video Tutorial" width="622" height="516"/>
+			<mx:LinkButton label="Back to Wizard" click="vsStep.selectedIndex = 0" fontSize="12" color="#003399" right="10" top="10"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+    
+</mx:Canvas>

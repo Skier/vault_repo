@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			
+			public function init():void 
+			{
+			}
+			
+			private function onMenuItemClick(event:ItemClickEvent):void 
+			{
+				
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox height="100%" backgroundColor="#dddddd" width="200">
+			<mx:LinkBar direction="vertical" color="#0000FF" 
+					dataProvider="{vsSetting}" labelField="label"
+					itemClick="onMenuItemClick(event)"/>
+		</mx:VBox>
+		
+		<mx:ViewStack id="vsSetting" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%" label="Lead Report"/>
+			<mx:VBox width="100%" height="100%" label="Project Report"/>
+			<mx:VBox width="100%" height="100%" label="Customer Report"/>
+		</mx:ViewStack>
+		
+	</mx:HBox>
+</mx:VBox>

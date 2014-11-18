@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FilterPanel
+    xmlns="truetract.web.dashboard.groupPanel.filter.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:validators="truetract.plotter.validators.*"
+    title="Group Filter">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.containers.TitleWindow;
+            import truetract.domain.*;
+
+            import mx.managers.PopUpManager;
+
+            private const labelWidth:Number = 100;
+            
+            [Bindable] public var keyFieldsRequired:Boolean = false;
+
+            public override function set filter(value:IItemsFilter):void
+            {
+                super.filter = value;
+
+                callLater(function():void 
+                {
+                    var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == filter.stateId).county;
+                    countyCmb.dataProvider = countyList;
+                    countyCmb.selectedItem = countyList.(@CountyId == filter.countyId);
+                    
+                    isFormValid();
+                });
+            }
+
+            private function applyFilter():void
+            {
+                if (!isFormValid()) return;
+
+                DocumentsFilter(filter).countyId = countyCmb.selectedItem ? countyCmb.selectedItem.@CountyId : 0;
+                DocumentsFilter(filter).stateId = stateCmb.selectedItem.@StateId;
+                DocumentsFilter(filter).docTypeId = docTypeCmb.selectedItem.@DocTypeID;
+                DocumentsFilter(filter).docNumber = (docNumberTxt.text.length > 0) ? docNumberTxt.text : null;
+            	DocumentsFilter(filter).volume = (volumeTxt.text.length > 0) ? volumeTxt.text : null;
+            	DocumentsFilter(filter).page = (pageTxt.text.length > 0) ? pageTxt.text : null;
+                DocumentsFilter(filter).buyer = (buyerTxt.text.length > 0) ? buyerTxt.text : null;
+                DocumentsFilter(filter).seller = (sellerTxt.text.length > 0) ? sellerTxt.text : null;
+
+                if (signedFromDateField.value) {
+                    DocumentsFilter(filter).signedRange = DateRange.create(
+                        signedFromDateField.value, 
+                        signedToDateField.value);
+                } else {
+                    DocumentsFilter(filter).signedRange = null;
+                }
+
+                if (filedFromDateField.value) {
+                    DocumentsFilter(filter).filedRange = DateRange.create(
+                        filedFromDateField.value, 
+                        filedToDateField.value);
+                } else {
+                    DocumentsFilter(filter).filedRange = null;
+                }
+
+                if (createdFromDateField.value) {
+                    DocumentsFilter(filter).createdRange = DateRange.create(
+                        createdFromDateField.value, 
+                        createdToDateField.value);
+                } else {
+                    DocumentsFilter(filter).createdRange = null;
+                }
+
+                dispatchEvent(new Event("applyFilter"));
+
+                close();
+            }
+            
+            private function resetFilter():void
+            {
+                filter.reset();
+                dispatchEvent(new Event("resetFilter"));
+                
+                close();
+            }
+            
+            private function isFormValid():Boolean
+            {
+                var keyFieldsValid:Boolean = keyFieldsValidator.validate(true);
+                var formValid:Boolean = formValidator.validate(true);
+
+                return keyFieldsValid && formValid;
+            }
+            
+            private function stateCmb_changeHandler():void
+            {
+                var stateId:int = stateCmb.selectedItem.@StateId;
+                var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == stateId).county;
+                countyCmb.dataProvider = countyList;
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{docNumberTxt}" property="text" required="false"/>
+
+        <mx:DateValidator 
+            daySource="{signedFromDateField.dayTxt}" dayProperty="text"
+            monthSource="{signedFromDateField.monthTxt}" monthProperty="text"
+            yearSource="{signedFromDateField.yearTxt}" yearProperty="text"
+            enabled="{!signedFromDateField.isEmpty || !signedToDateField.isEmpty}"
+            required="{!signedFromDateField.isEmpty || !signedToDateField.isEmpty}"  />
+
+        <mx:DateValidator 
+            daySource="{signedToDateField.dayTxt}" dayProperty="text"
+            monthSource="{signedToDateField.monthTxt}" monthProperty="text"
+            yearSource="{signedToDateField.yearTxt}" yearProperty="text"
+            enabled="{!signedFromDateField.isEmpty || !signedToDateField.isEmpty}"
+            required="{!signedFromDateField.isEmpty || !signedToDateField.isEmpty}"/>
+
+        <mx:DateValidator 
+            daySource="{filedFromDateField.dayTxt}" dayProperty="text"
+            monthSource="{filedFromDateField.monthTxt}" monthProperty="text"
+            yearSource="{filedFromDateField.yearTxt}" yearProperty="text"
+            enabled="{!filedFromDateField.isEmpty || !filedToDateField.isEmpty}"
+            required="{!filedFromDateField.isEmpty || !filedToDateField.isEmpty}"/>
+
+        <mx:DateValidator 
+            daySource="{filedToDateField.dayTxt}" dayProperty="text"
+            monthSource="{filedToDateField.monthTxt}" monthProperty="text"
+            yearSource="{filedToDateField.yearTxt}" yearProperty="text"
+            enabled="{!filedFromDateField.isEmpty || !filedToDateField.isEmpty}"
+            required="{!filedFromDateField.isEmpty || !filedToDateField.isEmpty}"/>
+
+        <mx:DateValidator 
+            daySource="{createdFromDateField.dayTxt}" dayProperty="text"
+            monthSource="{createdFromDateField.monthTxt}" monthProperty="text"
+            yearSource="{createdFromDateField.yearTxt}" yearProperty="text"
+            enabled="{!createdFromDateField.isEmpty || !createdToDateField.isEmpty}"
+            required="{!createdFromDateField.isEmpty || !createdToDateField.isEmpty}"/>
+
+        <mx:DateValidator 
+            daySource="{createdToDateField.dayTxt}" dayProperty="text"
+            monthSource="{createdToDateField.monthTxt}" monthProperty="text"
+            yearSource="{createdToDateField.yearTxt}" yearProperty="text"
+            enabled="{!createdFromDateField.isEmpty || !createdToDateField.isEmpty}"
+            required="{!createdFromDateField.isEmpty || !createdToDateField.isEmpty}"/>
+    </validators:ValidatorsGroup>
+
+    <validators:ValidatorsGroup id="keyFieldsValidator">
+        <mx:StringValidator
+            source="{stateCmb}" property="selectedLabel" required="{keyFieldsRequired}"/>
+
+        <mx:StringValidator
+            source="{countyCmb}" property="selectedLabel" required="{keyFieldsRequired}"/>
+    </validators:ValidatorsGroup>
+
+    <mx:DateFormatter id="df" formatString="DD/MM/YYYY"/>
+
+    <mx:Form width="100%" verticalGap="1" height="100%" 
+	    backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+	    paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="State" width="100%" >
+
+            <components:ExtendedComboBox id="stateCmb"
+                labelField="@Name" width="100%" keepOptimalDropDownWidth="true"
+                selectedItem="{dictionary.statesAndCounties.state.(@StateId == filter.stateId)}"
+                dataProvider="{dictionary.statesAndCounties.state}" 
+                change="stateCmb_changeHandler()"
+                minWidth="50" styleName="toolButton"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="County" width="100%" >
+
+            <components:ExtendedComboBox id="countyCmb"
+                labelField="@Name" width="100%" styleName="toolButton" minWidth="50"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Doc.Type" width="100%" >
+
+            <components:ExtendedComboBox id="docTypeCmb"
+                selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == filter.docTypeId)}"
+                labelField="@Name" keepOptimalDropDownWidth="true"
+                dataProvider="{dictionary.documentTypes.DocumentType}" 
+                width="100%" styleName="toolButton" minWidth="50"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Doc.Number" width="100%">
+
+            <mx:TextInput id="docNumberTxt" 
+                width="100%" maxWidth="100"  text="{DocumentsFilter(filter).docNumber}"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Volume" width="100%" >
+
+            <mx:TextInput id="volumeTxt" 
+                width="100%" maxWidth="100" text="{DocumentsFilter(filter).volume}"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Page" width="100%" >
+
+            <mx:TextInput id="pageTxt" 
+                width="100%" maxWidth="100" text="{DocumentsFilter(filter).page}"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Seller" width="100%" >
+
+            <mx:TextInput id="sellerTxt" width="100%" text="{DocumentsFilter(filter).seller}"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Buyer" width="100%" >
+
+            <mx:TextInput id="buyerTxt" width="100%" text="{DocumentsFilter(filter).buyer}"/>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Signed" width="100%" >
+
+            <mx:HBox>
+                <mx:Label text="From"/>
+                <components:CombinedDateField id="signedFromDateField"
+                    width="120" value="{DocumentsFilter(filter).signedRange.dateFrom}" />
+
+                <mx:Label paddingLeft="10" text="To"/>
+                <components:CombinedDateField id="signedToDateField"
+                    width="120" value="{DocumentsFilter(filter).signedRange.dateTo}" />
+            </mx:HBox>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Filed" width="100%" >
+
+            <mx:HBox>
+                <mx:Label text="From"/>
+                <components:CombinedDateField id="filedFromDateField"
+                    width="120" value="{DocumentsFilter(filter).filedRange.dateFrom}" />
+
+                <mx:Label paddingLeft="10" text="To"/>
+                <components:CombinedDateField id="filedToDateField"
+                    width="120" value="{DocumentsFilter(filter).filedRange.dateTo}" />
+            </mx:HBox>
+
+        </mx:FormItem>
+
+        <mx:FormItem label="Created" width="100%" >
+
+            <mx:HBox>
+                <mx:Label text="From"/>
+                <components:CombinedDateField id="createdFromDateField"
+                    width="120" value="{DocumentsFilter(filter).createdRange.dateFrom}" />
+
+                <mx:Label paddingLeft="10" text="To"/>
+                <components:CombinedDateField id="createdToDateField"
+                    width="120" value="{DocumentsFilter(filter).createdRange.dateTo}" />
+            </mx:HBox>
+
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Apply" styleName="toolButton" click="applyFilter()"/>
+        <mx:Button label="Clear" styleName="toolButton" click="resetFilter()"/>
+        <mx:Button label="Close" styleName="toolButton" click="close()"/>
+    </mx:ControlBar>
+    
+</FilterPanel>

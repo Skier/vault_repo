@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.ProjectTabContact;
+			
+        	[Embed(source="/assets/delete2.png")]
+        	[Bindable]
+        	private var imgDelete:Class;
+        	
+			private function removeContactButton_clickHandler():void 
+			{
+				ProjectTabContactPanel(parentDocument).removeContact(data as ProjectTabContact);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Image source="{imgDelete}"
+        toolTip="Remove Contact from Project Tab" 
+        includeInLayout="{!ProjectTabContactPanel(parentDocument).readOnly}"
+        visible="{!ProjectTabContactPanel(parentDocument).readOnly}"
+        click="removeContactButton_clickHandler()"/>
+</mx:HBox>

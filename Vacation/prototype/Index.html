@@ -1,0 +1,11 @@
+<script language="JavaScript" src="scripts/language.js">
+</script>
+
+<script>
+    lang = getLanguage();
+    if (('ru' == lang) || ('ua' == lang)) {
+        window.navigate('Index.php?language=RU');
+    } else {
+        window.navigate('Index.php?language=EN');
+    }
+</script>

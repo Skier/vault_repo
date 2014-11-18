@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="truetract.plotter.validators.*"
+    title="Edit Project Tab Info" layout="vertical"
+    creationComplete="onCreateHandler()">
+
+    <mx:Metadata>
+        [Event(name="commit", type="flash.events.Event")]
+        [Event(name="cancel", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.DictionaryRegistry;
+            import mx.events.DynamicEvent;
+            import mx.managers.PopUpManager;
+            import truetract.domain.ProjectTab;
+
+            private var _projectTab:ProjectTab;
+            [Bindable] public function get projectTab():ProjectTab {return _projectTab;}
+            public function set projectTab(value:ProjectTab):void
+            {
+                _projectTab = value;
+/*                 
+                callLater(function():void 
+                {
+                    var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == projectTab.ContactState).county;
+                    countyCmb.dataProvider = countyList;
+                    countyCmb.selectedItem = countyList.(@CountyId == projectTab.ContactCounty);
+                });
+ */
+            }
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            private function onCreateHandler():void 
+            {
+            	focusManager.setFocus(tabNameTxt);
+            }
+            
+            private function doSubmit():void
+            {
+                if (!isFormValid()) return;
+                
+                projectTab.Name = tabNameTxt.text;
+//                projectTab.Description = tractDescriptionTxt.text;
+/* 
+                projectTab.ContactName = contactNameTxt.text;
+                projectTab.ContactAddress = addressTxt.text;
+                projectTab.ContactCounty = countyCmb.selectedItem.@CountyId;
+                projectTab.ContactState = stateCmb.selectedItem.@StateId;
+                projectTab.ContactZip = zipTxt.text;
+                projectTab.ContactPhone = phoneNumberTxt.text;
+ */
+            	dispatchEvent(new Event("commit"));
+            }
+            
+            private function doCancel():void
+            {
+                dispatchEvent(new Event("cancel"));
+                close();
+            }
+
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            public static function open(parent:DisplayObject, modal:Boolean):ProjectTabEditView
+            {
+                var popup:ProjectTabEditView = new ProjectTabEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+/* 
+            private function stateCmb_changeHandler():void
+            {
+                countyCmb.dataProvider = stateCmb.selectedItem.county;
+            }
+ */
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{tabNameTxt}" property="text" required="true"/>
+<!--
+        <mx:StringValidator source="{tractDescriptionTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{contactNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{stateCmb}" property="selectedLabel" required="true"/>
+        <mx:StringValidator source="{countyCmb}" property="selectedLabel" required="true"/>
+        <mx:StringValidator source="{addressTxt}" property="text" required="true"/>
+        <mx:NumberValidator source="{zipTxt}" property="text" required="true"/>
+ -->
+    </validators:ValidatorsGroup>
+
+    <mx:Form styleName="popupPanel" width="100%">
+    
+        <mx:FormItem label="Tab Name :">
+            <mx:TextInput id="tabNameTxt" text="{projectTab.Name}" width="150" enter="doSubmit()"/>
+        </mx:FormItem>
+        
+<!--        
+        <mx:FormItem label="Tract Description :">
+            <mx:TextArea id="tractDescriptionTxt" text="{projectTab.Description}"/>
+        </mx:FormItem>
+
+        <mx:FormHeading label="Contact Info"/>
+        
+        <mx:FormItem label="Name :">
+            <mx:TextInput id="contactNameTxt" text="{projectTab.ContactName}"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Address :">
+            <mx:TextInput id="addressTxt" text="{projectTab.ContactAddress}"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="State :" width="100%">
+            <mx:ComboBox id="stateCmb"
+                labelField="@Name"
+                dataProvider="{dictionary.statesAndCounties.state}"
+                selectedItem="{dictionary.statesAndCounties.state.(@StateId == projectTab.ContactState)}" 
+                change="stateCmb_changeHandler()"
+                width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="County :" width="100%">
+            <mx:ComboBox id="countyCmb" labelField="@Name" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Zip :">
+            <mx:TextInput id="zipTxt" text="{projectTab.ContactZip}"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Phone Number :">
+            <mx:TextInput id="phoneNumberTxt" text="{projectTab.ContactPhone}"/>
+        </mx:FormItem>
+ -->
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Submit" click="doSubmit()"/>
+        <mx:Button label="Cancel" click="doCancel()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

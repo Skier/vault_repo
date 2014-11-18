@@ -1,0 +1,76 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{321290A8-0653-4306-BCCB-1B1F9DC896E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.Lease</RootNamespace>
+    <AssemblyName>TractInc.Lease</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="weborb, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Inetpub\wwwroot\weborb\bin\weborb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\codegen.cs" />
+    <Compile Include="Domain\County.cs" />
+    <Compile Include="Domain\CountyDataMapper.cs" />
+    <Compile Include="Domain\Lease.cs" />
+    <Compile Include="Domain\LeaseDataMapper.cs" />
+    <Compile Include="Domain\LeaseEditHistory.cs" />
+    <Compile Include="Domain\LeaseEditHistoryDataMapper.cs" />
+    <Compile Include="Domain\Module.cs" />
+    <Compile Include="Domain\ModuleDataMapper.cs" />
+    <Compile Include="Domain\Permission.cs" />
+    <Compile Include="Domain\PermissionAssignment.cs" />
+    <Compile Include="Domain\PermissionAssignmentDataMapper.cs" />
+    <Compile Include="Domain\PermissionDataMapper.cs" />
+    <Compile Include="Domain\Role.cs" />
+    <Compile Include="Domain\RoleDataMapper.cs" />
+    <Compile Include="Domain\State.cs" />
+    <Compile Include="Domain\StateDataMapper.cs" />
+    <Compile Include="Domain\TermUnit.cs" />
+    <Compile Include="Domain\TermUnitDataMapper.cs" />
+    <Compile Include="Domain\User.cs" />
+    <Compile Include="Domain\UserDataMapper.cs" />
+    <Compile Include="Domain\UserRole.cs" />
+    <Compile Include="Domain\UserRoleDataMapper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="UserService.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:project="tractIncClientApp.project.*" 
+    xmlns:search="tractIncClientApp.search.*" 
+    xmlns:document="tractIncClientApp.document.*" 
+    horizontalGap="5"
+    xmlns:domain="truetract.domain.*" 
+    xmlns:components="truetract.plotter.components.*"
+    xmlns:containers="truetract.web.containers.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.SortField;
+            import mx.collections.Sort;
+            import mx.messaging.Producer;
+            import truetract.events.ProjectFilterEvent;
+            import mx.events.EffectEvent;
+            import mx.effects.Resize;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import tractIncClientApp.services.ProjectService;
+            import mx.collections.ArrayCollection;
+            import truetract.domain.Project;
+            import mx.controls.Alert;
+            import tractIncClientApp.tract.TractEvent;
+            import mx.binding.utils.ChangeWatcher;
+            import tractIncClientApp.document.DocumentReferenceEvent;
+            import truetract.domain.DocumentReference;
+            import mx.events.DynamicEvent;
+            import truetract.domain.DocumentAttachment;
+            import truetract.domain.DictionaryRegistry;
+            import truetract.domain.Tract;
+            import mx.rpc.Responder;
+            
+            [Embed(source="/assets/view_next.png")]
+            [Bindable]
+            private var imgSearchShow:Class;
+            
+            [Embed(source="/assets/view_previous.png")]
+            [Bindable]
+            private var imgSearchHide:Class;
+            
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+//            [Bindable] private var selectedTile:ProjectTile = null;
+            
+            [Bindable] public var selectedProject:Project = null;
+            
+            [Bindable] public var singleProjectMode:Boolean = false;
+            
+            private var _dataProvider:ArrayCollection = null;
+            [Bindable] public function set dataProvider(value:ArrayCollection):void 
+            {
+                _dataProvider = value;
+                
+                var projectsSort:Sort = new Sort();
+                projectsSort.fields = [new SortField("ProjectId")];
+                _dataProvider.sort = projectsSort;
+                
+                ChangeWatcher.watch(this, "selectedProject", 
+                    function (e:*):void {
+                        if (selectedProject == null) 
+                        {
+                            if (searchPanel.width == 0)
+                                showHideSearchPanel(true);
+
+                            if (boxProjectDetail.width > 0)
+                                showHideProjectDetail(false);
+                        } else 
+                        {
+                            if (searchPanel.width > 0)
+                                showHideSearchPanel(false);
+
+                            if (boxProjectDetail.width == 0)
+                                showHideProjectDetail(true);
+                        }
+                    });
+            }
+            public function get dataProvider():ArrayCollection {return _dataProvider;}
+            
+            private function projectClickHandler(e:*):void 
+            {
+                var tile:ProjectTile = ProjectTile(e.currentTarget);
+
+                selectedProject = tile.project;
+                loadSelectedProject();
+/* 
+                setSelectedTile(tile);
+
+                if (selectedTile != null) 
+                {
+                    selectedProject = selectedTile.project;
+                    loadSelectedProject();
+                } else 
+                {
+                    selectedProject = null;
+                }
+ */
+            }
+            
+            public function loadSelectedProject():void 
+            {
+                if (selectedProject == null)
+                    return;
+                
+                ProjectService.getInstance().loadFullProject(selectedProject).addResponder(
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            if (boxProjectDetail.width == 0) 
+                            {
+                                selectedProject = null;
+                            }
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            selectedProject = null;
+                        }
+                    )
+                );
+            }
+/*             
+            private function setSelectedTile(tile:ProjectTile):void 
+            {
+                if (selectedTile == tile)
+                    return;
+                
+                selectedTile = null;
+                
+                for each (var projectTile:ProjectTile in projectTiles as Array) 
+                {
+                    if (projectTile == tile) 
+                    {
+                        projectTile.selected = true;
+                        selectedTile = projectTile;
+                    } else 
+                    {
+                        projectTile.selected = false;
+                    }
+                }
+            }
+ */            
+            private function showHideClickHandler():void 
+            {
+                if (resizeSearch.isPlaying) 
+                {
+                    return;
+                } else 
+                {
+                    if (searchPanel.width == 0) 
+                    {
+                        showHideSearchPanel(true);
+//                      setSelectedTile(null);
+                        selectedProject = null;
+                        applyFilter();
+                    } else 
+                    {
+                        showHideSearchPanel(false);
+                    }
+                }
+            }
+            
+            private function showHideSearchPanel(show:Boolean):void 
+            {
+                if (show) 
+                {
+                    resizeSearch.widthFrom = searchPanel.width;
+                    resizeSearch.widthTo = 200;
+                    singleProjectMode = false;
+                } else 
+                {
+                    resizeSearch.widthFrom = searchPanel.width;
+                    resizeSearch.widthTo = 0;
+                }
+
+                resizeSearch.play();
+            }
+
+            private function showHideProjectDetail(show:Boolean):void 
+            {
+                if (resizeProjectDetail.isPlaying)
+                    resizeProjectDetail.pause();
+                
+                var widthFrom:Number;
+                var widthTo:Number;
+
+                if (show) 
+                {
+                    widthFrom = boxProjectDetail.width;
+                    widthTo = viewProjects.width - 117 + searchPanel.width;
+
+                    flowProjects.width = 100;
+
+                    boxProjectDetail.percentHeight = 100;
+                    projectDetailViewPanel.panelAttachments.collapsed = true;
+                } else 
+                {
+
+                    widthFrom = boxProjectDetail.width;
+                    widthTo = 0;
+
+                    flowProjects.percentWidth = 100;
+                }
+                
+                resizeProjectDetail.widthFrom = widthFrom;
+                resizeProjectDetail.widthTo = widthTo;
+
+                resizeProjectDetail.play();
+                resizeProjectDetail.addEventListener(EffectEvent.EFFECT_END, 
+                    function (e:*):void {
+                        if (boxProjectDetail.width > 0) 
+                        {
+                            boxProjectDetail.percentWidth = 100;
+                        }
+                    });
+
+            }
+            
+            private function applyFilter(event:ProjectFilterEvent = null):void 
+            {
+                if (!panelFilter.filterEnabled)
+                {
+                    dataProvider.filterFunction = null;
+                    dataProvider.refresh();
+                } else 
+                {
+                    dataProvider.filterFunction = filterFunc;
+                    dataProvider.refresh();
+                }
+            }
+            
+            private function filterFunc(project:Project):Boolean 
+            {
+                if (panelFilter.filterEnabled) 
+                {
+                    return panelFilter.filter.accept(project);
+                } else 
+                {
+                    return true;
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+        [Event(name="openProject", type="tractIncClientApp.project.ProjectEvent")]
+    </mx:Metadata>
+
+    <mx:Resize id="resizeSearch" target="{searchPanel}"/>
+    
+    <mx:Resize id="resizeProjectDetail" target="{boxProjectDetail}"/>
+    
+    <mx:HBox id="leftPanel" 
+        height="100%" horizontalGap="0"
+        backgroundColor="#eeeeee">
+        <mx:VBox width="20" height="100%"
+            paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+            click="showHideClickHandler()">
+            <mx:Image source="{searchPanel.width != 0 ? imgSearchHide : imgSearchShow}"/>
+        </mx:VBox>
+        <mx:VBox id="searchPanel" width="200" height="100%">
+            <project:ProjectFilterPanel id="panelFilter" width="100%" applyProjectFilter="applyFilter(event)"/>
+            <project:ProjectFavoritsPanel id="panelFavorits" width="100%" height="100%"/>
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:HBox id="viewProjects"
+        backgroundColor="#ffffee" width="100%" height="100%" 
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        horizontalGap="5"
+        borderColor="#cccccc" borderStyle="solid">
+        <mx:Box id="boxProjectDetail"
+            width="0" height="100%">
+            <project:ProjectDetailView id="projectDetailViewPanel"
+                width="100%" height="100%"
+                project="{selectedProject}"
+                openDocument="dispatchEvent(event)"/>
+        </mx:Box>
+
+        <containers:FlowContainer id="flowProjects" 
+            width="100%" height="100%" minWidth="100"
+            paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+            horizontalGap="4" verticalGap="4"
+            includeInLayout="{!singleProjectMode}" visible="{!singleProjectMode}">
+            <mx:Repeater id="projectRepeater" dataProvider="{dataProvider}">
+                <project:ProjectTile id="projectTiles" 
+                    selected="{Project(projectRepeater.currentItem) == selectedProject}"
+                    project="{projectRepeater.currentItem}"
+                    click="projectClickHandler(event)"/>
+            </mx:Repeater>
+        </containers:FlowContainer>
+    </mx:HBox>
+</mx:HBox>

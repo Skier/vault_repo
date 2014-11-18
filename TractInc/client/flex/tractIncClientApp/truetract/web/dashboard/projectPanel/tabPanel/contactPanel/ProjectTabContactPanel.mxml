@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.web.dashboard.projectPanel.tabPanel.ProjectTabDetailView;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.CollectionEventKind;
+			import mx.states.State;
+			import mx.events.PropertyChangeEvent;
+			import truetract.domain.DictionaryRegistry;
+			import mx.events.CloseEvent;
+			import truetract.domain.mementos.ProjectTabContactMemento;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import truetract.web.services.ProjectService;
+			import mx.core.Application;
+			import mx.rpc.AsyncToken;
+			import truetract.domain.ProjectTab;
+			import mx.controls.Alert;
+			import mx.events.CollectionEvent;
+			import truetract.domain.ProjectTabContact;
+			import mx.collections.ArrayCollection;
+			
+			private var projectService:ProjectService = ProjectService.getInstance();
+			
+			[Bindable] private var contacts:ArrayCollection;
+			[Bindable] private var currentContact:ProjectTabContact;
+			
+			[Bindable] private var currentPhysicalLocation:String;
+			[Bindable] private var currentMailingLocation:String;
+			
+			[Bindable] public var readOnly:Boolean = false;
+			
+			private var _projectTab:ProjectTab;
+			public function get projectTab():ProjectTab {return _projectTab;}
+			public function set projectTab(value:ProjectTab):void 
+			{
+				_projectTab = value;
+				
+				contacts = value.ContactsList;
+				contacts.addEventListener(CollectionEvent.COLLECTION_CHANGE, contactList_changeHandler);
+
+				ChangeWatcher.watch(dgContacts, "selectedItem", currentContactChangeHandler);
+			}
+			
+			private function addContactButton_clickHandler():void 
+			{
+		        var projectTabContact:ProjectTabContact = new ProjectTabContact();
+		        projectTabContact.ProjectTabId = projectTab.ProjectTabId;
+		
+		        var popup:ProjectTabContactEditView = 
+		            ProjectTabContactEditView.open(Application(Application.application), true);
+		
+		        popup.projectTabContact = projectTabContact;
+		        popup.addEventListener("commit", 
+		            function(event:Event):void
+		            {
+		                var asynToken:AsyncToken = projectService.addProjectTabContact(projectTab, projectTabContact);
+		                asynToken.addResponder(new mx.rpc.Responder(
+		                    function (event:ResultEvent):void
+		                    {
+		                        popup.close();
+		                    },
+		                    function (event:FaultEvent):void { }
+		                ));
+		            }
+		        );
+			}
+			
+			private function currentContactChangeHandler(e:*):void 
+			{
+				if (dgContacts.selectedItem && dgContacts.selectedItem is ProjectTabContact) 
+				{
+					currentContact = dgContacts.selectedItem as ProjectTabContact
+
+					currentPhysicalLocation = currentContact.PhysicalAddress.Address1 + ' ' +
+						currentContact.PhysicalAddress.Address2 + ', ' +
+						currentContact.PhysicalAddress.City + ' ' + 
+						DictionaryRegistry.getInstance().getState(currentContact.PhysicalAddress.State).@Name + ', ' + 
+						currentContact.PhysicalAddress.Zip;
+					
+					currentMailingLocation = currentContact.MailingAddress.Address1 + ' ' +
+						currentContact.MailingAddress.Address2 + ', ' +
+						currentContact.MailingAddress.City + ' ' + 
+						DictionaryRegistry.getInstance().getState(currentContact.MailingAddress.State).@Name + ', ' + 
+						currentContact.MailingAddress.Zip;
+				} else 
+				{
+					currentContact = null;
+					currentPhysicalLocation = "";
+					currentMailingLocation = "";
+				}
+			}
+			
+			public function removeContact(contact:ProjectTabContact):void 
+			{
+				if (!contact) return;
+			
+                Alert.show("Are you really want to remove selected contacts ?", 
+                   "Remove Contacts", Alert.YES | Alert.NO, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+		                    projectService.deleteProjectTabContacts(projectTab, [contact]);
+                        }
+                    });
+			}
+			
+			public function changePrimaryStatus(tabContact:ProjectTabContact):void 
+			{
+				if (!tabContact) return;
+				
+				tabContact.IsActive = !tabContact.IsActive;
+
+           		projectService.updateProjectTabContact(tabContact);
+			}
+			
+			private function currentContact_doubleClickHandler():void 
+			{
+                editTabContact(currentContact);
+			}
+			
+			private function dgContacts_doubleClickHandler():void 
+			{
+                var tabContact:ProjectTabContact = ProjectTabContact(dgContacts.selectedItem);
+
+                editTabContact(tabContact);
+			}
+			
+			private function editTabContact(tabContact:ProjectTabContact):void 
+			{
+                var tabContactMemento:ProjectTabContactMemento = 
+                    ProjectTabContactMemento(tabContact.getMemento());
+
+                var popup:ProjectTabContactEditView = ProjectTabContactEditView.open(Application.application as DisplayObject, true);
+                popup.projectTabContact = tabContact;
+                popup.addEventListener("commit", 
+                    function(event:Event):void
+                    {
+                        var asynToken:AsyncToken = projectService.updateProjectTabContact(tabContact);
+                        asynToken.addResponder(new mx.rpc.Responder(
+                            function (event:ResultEvent):void
+                            {
+                                popup.close();
+                            },
+                            function (event:FaultEvent):void { }
+                        ));
+                    }
+                );
+                popup.addEventListener("cancel", 
+                    function(event:Event):void
+                    {
+                        tabContact.setMemento(tabContactMemento);
+                    }
+                );
+			}
+			
+			private function contactList_changeHandler(event:CollectionEvent):void 
+			{
+				if (event.kind == CollectionEventKind.ADD) 
+				{
+					for each (var item:ProjectTabContact in event.items) 
+					{
+						var index:int = contacts.getItemIndex(item);
+						if (index > -1) 
+						{
+							dgContacts.selectedIndex = index;
+						}
+					}
+				}
+
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:HBox width="100%" verticalAlign="top"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}">
+        <mx:Button 
+            icon="@Embed(source='/assets/id_card_add.png')" width="20" height="20" 
+            styleName="toolButton"
+            toolTip="Add Contact to Project Tab" 
+            click="addContactButton_clickHandler()"/>
+    </mx:HBox>
+
+	<mx:HBox width="100%" height="100%">
+	    <mx:VBox 
+	    	id="boxMultipleContact"
+	    	visible="{contacts.length > 0}" includeInLayout="{contacts.length > 0}"
+	        width="100%" height="100%">
+		    <mx:DataGrid id="dgContacts" 
+		        dataProvider="{contacts}" sortableColumns="false" draggableColumns="false"
+		        fontSize="9" height="100%" width="100%" minWidth="300" allowMultipleSelection="false" 
+		        itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ProjectTabContactGridIR"
+		        doubleClickEnabled="{!readOnly}"
+		        itemDoubleClick="dgContacts_doubleClickHandler()">
+		        <mx:columns>
+		            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="IsEntity"
+		            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ContactTypeIR"/>
+		            <mx:DataGridColumn headerText="Type" width="85" dataField="Type"/>
+		            <mx:DataGridColumn headerText="Name" dataField="Name"/>
+		            <mx:DataGridColumn headerText="Phone" width="85" dataField="PhoneNumber"/>
+		            <mx:DataGridColumn headerText="Email" dataField="Email"/>
+		            <mx:DataGridColumn headerText="Primary" width="45" minWidth="45" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ContactIsActiveIR"/>
+		            <mx:DataGridColumn headerText=" " width="22" minWidth="22" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.ContactActionsIR"/>
+		        </mx:columns>
+		    </mx:DataGrid>
+	    </mx:VBox>
+	    
+	    <mx:VBox id="boxSingleContact"
+	        verticalGap="-5" width="100%" height="100%"
+	        visible="{currentContact != null}" includeInLayout="{currentContact != null}"
+		    doubleClickEnabled="true"
+		    doubleClick="currentContact_doubleClickHandler()"
+		    borderStyle="solid" borderColor="#aeaeff" 
+		    backgroundAlpha="0.1" backgroundColor="#aeaeff">
+		    <mx:HBox width="100%" verticalAlign="top">
+		    	<mx:Label text="Name: " fontWeight="bold"/>
+		        <mx:Label text="{currentContact.Name}" width="100%"/>
+		    </mx:HBox>
+
+		    <mx:HBox width="100%" verticalAlign="top">
+		    	<mx:Label text="Phisical address: " fontWeight="bold"/>
+	    	    <mx:Text text="{currentPhysicalLocation}" width="100%"/>
+		    </mx:HBox>
+
+		    <mx:HBox width="100%" verticalAlign="top">
+		    	<mx:Label text="Mailing address: " fontWeight="bold"/>
+	    	    <mx:Text text="{currentMailingLocation}" width="100%"/>
+		    </mx:HBox>
+
+		    <mx:HBox width="100%" verticalAlign="top">
+		    	<mx:Label text="Phone: " fontWeight="bold"/>
+		        <mx:Label text="{currentContact.PhoneNumber}" width="100%"/>
+		    </mx:HBox>
+
+		    <mx:HBox width="100%" verticalAlign="top">
+		    	<mx:Label text="Email: " fontWeight="bold"/>
+		        <mx:Label text="{currentContact.Email}" width="100%"/>
+		    </mx:HBox>
+	    </mx:VBox>
+	</mx:HBox>
+</mx:VBox>

@@ -1,0 +1,213 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69568EB7-CE14-4D09-BE67-31AE3B79A739}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.Expense</RootNamespace>
+    <AssemblyName>TractInc.Expense</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>c:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ApacheFop.Net, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\ApacheFop.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="vjslib" />
+    <Reference Include="weborb, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\weborb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseService.cs" />
+    <Compile Include="Data\AFE.cs" />
+    <Compile Include="Data\AFEStatus.cs" />
+    <Compile Include="Data\Asset.cs" />
+    <Compile Include="Data\AssetAssignment.cs" />
+    <Compile Include="Data\AssetType.cs" />
+    <Compile Include="Data\Bill.cs" />
+    <Compile Include="Data\BillItem.cs" />
+    <Compile Include="Data\BillItemAttachment.cs" />
+    <Compile Include="Data\BillItemComposition.cs" />
+    <Compile Include="Data\BillItemStatus.cs" />
+    <Compile Include="Data\BillItemType.cs" />
+    <Compile Include="Data\BillStatus.cs" />
+    <Compile Include="Data\Client.cs" />
+    <Compile Include="Data\DefaultBillRate.cs" />
+    <Compile Include="Data\DefaultInvoiceRate.cs" />
+    <Compile Include="Data\Invoice.cs" />
+    <Compile Include="Data\InvoiceItem.cs" />
+    <Compile Include="Data\InvoiceItemStatus.cs" />
+    <Compile Include="Data\InvoiceItemType.cs" />
+    <Compile Include="Data\InvoiceStatus.cs" />
+    <Compile Include="Data\Message.cs" />
+    <Compile Include="Data\Note.cs" />
+    <Compile Include="Data\Project.cs" />
+    <Compile Include="Data\ProjectStatus.cs" />
+    <Compile Include="Data\RateByAssignment.cs" />
+    <Compile Include="Data\ReportAttachment.cs" />
+    <Compile Include="Data\User.cs" />
+    <Compile Include="Data\UserAsset.cs" />
+    <Compile Include="Data\UserRole.cs" />
+    <Compile Include="Data\WorkLog.cs" />
+    <Compile Include="Domain\BillItemAttachment.cs" />
+    <Compile Include="Domain\BillItemAttachmentDataMapper.cs" />
+    <Compile Include="Domain\BillItemComposition.cs" />
+    <Compile Include="Domain\BillItemCompositionDataMapper.cs" />
+    <Compile Include="Domain\DefaultBillRate.cs" />
+    <Compile Include="Domain\DefaultBillRateDataMapper.cs" />
+    <Compile Include="Domain\DefaultInvoiceRate.cs" />
+    <Compile Include="Domain\DefaultInvoiceRateDataMapper.cs" />
+    <Compile Include="Domain\Invoice.cs" />
+    <Compile Include="Domain\InvoiceDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItem.cs" />
+    <Compile Include="Domain\InvoiceItemDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItemStatus.cs" />
+    <Compile Include="Domain\InvoiceItemStatusDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItemType.cs" />
+    <Compile Include="Domain\InvoiceItemTypeDataMapper.cs" />
+    <Compile Include="Domain\InvoiceStatus.cs" />
+    <Compile Include="Domain\InvoiceStatusDataMapper.cs" />
+    <Compile Include="Domain\Message.cs" />
+    <Compile Include="Domain\MessageDataMapper.cs" />
+    <Compile Include="Domain\Note.cs" />
+    <Compile Include="Domain\NoteDataMapper.cs" />
+    <Compile Include="Domain\TractIncRAIDDb.cs" />
+    <Compile Include="Domain\WorkLog.cs" />
+    <Compile Include="Domain\WorkLogDataMapper.cs" />
+    <Compile Include="Entity\AdministrationDataObject.cs" />
+    <Compile Include="Entity\AFEDataObject.cs" />
+    <Compile Include="Entity\AFEStatusDataObject.cs" />
+    <Compile Include="Entity\AssetAssignmentDataObject.cs" />
+    <Compile Include="Entity\AssetDataObject.cs" />
+    <Compile Include="Entity\AssetTypeDataObject.cs" />
+    <Compile Include="Entity\BillAttachmentsDataObject.cs" />
+    <Compile Include="Entity\BillItemCompositionDataObject.cs" />
+    <Compile Include="Entity\BillItemDataObject.cs" />
+    <Compile Include="Entity\BillDataObject.cs" />
+    <Compile Include="Entity\BillItemAttachmentDataObject.cs" />
+    <Compile Include="Entity\BillItemStatusDataObject.cs" />
+    <Compile Include="Entity\BillItemTypeDataObject.cs" />
+    <Compile Include="Entity\BillStatusDataObject.cs" />
+    <Compile Include="Entity\BillSubmitDataObject.cs" />
+    <Compile Include="Entity\ClientDataObject.cs" />
+    <Compile Include="Entity\CrewChiefDataObject.cs" />
+    <Compile Include="Entity\DefaultBillRateDataObject.cs" />
+    <Compile Include="Entity\DefaultInvoiceRateDataObject.cs" />
+    <Compile Include="Entity\DefaultRatesDataObject.cs" />
+    <Compile Include="Entity\DictionariesDataObject.cs" />
+    <Compile Include="Entity\InvoiceItemStatusDataObject.cs" />
+    <Compile Include="Entity\InvoiceItemTypeDataObject.cs" />
+    <Compile Include="Entity\InvoiceStatusDataObject.cs" />
+    <Compile Include="Entity\LandmanDataObject.cs" />
+    <Compile Include="Entity\LoginDataObject.cs" />
+    <Compile Include="Entity\ManagerDataObject.cs" />
+    <Compile Include="Entity\MessageDataObject.cs" />
+    <Compile Include="Entity\MessagesDataObject.cs" />
+    <Compile Include="Entity\ProjectDataObject.cs" />
+    <Compile Include="Entity\ProjectStatusDataObject.cs" />
+    <Compile Include="Entity\RateByAssignmentDataObject.cs" />
+    <Compile Include="Entity\ReportAttachmentDataObject.cs" />
+    <Compile Include="Entity\UserAssetDataObject.cs" />
+    <Compile Include="Entity\UserDataObject.cs" />
+    <Compile Include="Entity\UserRoleDataObject.cs" />
+    <Compile Include="Entity\WorkLogDataObject.cs" />
+    <Compile Include="Entity\InvoiceDataObject.cs" />
+    <Compile Include="Entity\InvoiceItemDataObject.cs" />
+    <Compile Include="Entity\NoteDataObject.cs" />
+    <Compile Include="InvoiceProcessor.cs" />
+    <Compile Include="Uploader.cs" />
+    <Compile Include="Domain\Afe.cs" />
+    <Compile Include="Domain\AfeDataMapper.cs" />
+    <Compile Include="Domain\Afestatus.cs" />
+    <Compile Include="Domain\AfestatusDataMapper.cs" />
+    <Compile Include="Domain\Asset.cs" />
+    <Compile Include="Domain\Assetassignment.cs" />
+    <Compile Include="Domain\AssetassignmentDataMapper.cs" />
+    <Compile Include="Domain\AssetDataMapper.cs" />
+    <Compile Include="Domain\Assettype.cs" />
+    <Compile Include="Domain\AssettypeDataMapper.cs" />
+    <Compile Include="Domain\Bill.cs" />
+    <Compile Include="Domain\BillDataMapper.cs" />
+    <Compile Include="Domain\Billitem.cs" />
+    <Compile Include="Domain\BillitemDataMapper.cs" />
+    <Compile Include="Domain\Billitemstatus.cs" />
+    <Compile Include="Domain\BillitemstatusDataMapper.cs" />
+    <Compile Include="Domain\BillItemType.cs" />
+    <Compile Include="Domain\BillItemTypeDataMapper.cs" />
+    <Compile Include="Domain\BillStatus.cs" />
+    <Compile Include="Domain\BillStatusDataMapper.cs" />
+    <Compile Include="Domain\Client.cs" />
+    <Compile Include="Domain\ClientDataMapper.cs" />
+    <Compile Include="Domain\codegen.cs" />
+    <Compile Include="Domain\Module.cs" />
+    <Compile Include="Domain\ModuleDataMapper.cs" />
+    <Compile Include="Domain\Permission.cs" />
+    <Compile Include="Domain\PermissionAssignment.cs" />
+    <Compile Include="Domain\PermissionAssignmentDataMapper.cs" />
+    <Compile Include="Domain\PermissionDataMapper.cs" />
+    <Compile Include="Domain\RateByAssignment.cs" />
+    <Compile Include="Domain\RateByAssignmentDataMapper.cs" />
+    <Compile Include="Domain\Role.cs" />
+    <Compile Include="Domain\RoleDataMapper.cs" />
+    <Compile Include="Domain\Subafe.cs" />
+    <Compile Include="Domain\SubafeDataMapper.cs" />
+    <Compile Include="Domain\Subafestatus.cs" />
+    <Compile Include="Domain\SubafestatusDataMapper.cs" />
+    <Compile Include="Domain\Synclog.cs" />
+    <Compile Include="Domain\SynclogDataMapper.cs" />
+    <Compile Include="Domain\User.cs" />
+    <Compile Include="Domain\UserAsset.cs" />
+    <Compile Include="Domain\UserAssetDataMapper.cs" />
+    <Compile Include="Domain\UserDataMapper.cs" />
+    <Compile Include="Domain\UserRole.cs" />
+    <Compile Include="Domain\UserRoleDataMapper.cs" />
+    <Compile Include="HttpUrlHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\ExpenseService.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="UserService.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)\Domain\App.config $(TargetDir)\TractInc.Expense.dll.Config
+copy $(ProjectDir)\styles\invoice.xsl $(TargetDir)\invoice.xsl
+copy $(ProjectDir)\styles\cover.xsl $(TargetDir)\cover.xsl
+copy $(ProjectDir)\styles\worklog.xsl $(TargetDir)\worklog.xsl
+copy $(ProjectDir)\styles\logo.jpg $(TargetDir)\logo.jpg</PostBuildEvent>
+  </PropertyGroup>
+</Project>

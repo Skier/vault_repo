@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	verticalAlign="middle"
+	click="onClickNotes()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import App.Domain.BillItem;
+			
+        	[Embed(source="/common/notes/note.png")]
+        	[Bindable]
+        	private var imgNotes:Class;
+        	
+			private function onClickNotes():void {
+				if (!canEditNotes()) {
+					return;
+				}
+				NotesView.Open(data, Application.application as DisplayObject);
+			}
+			
+			public function canEditNotes():Boolean {
+				return !(data is BillItem && 0 == data.BillItemId);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox 
+	   	visible="{!(data is BillItem &amp;&amp; 0 == data.BillItemId)}"
+	   	includeInLayout="{!(data is BillItem &amp;&amp; 0 == data.BillItemId)}"
+		>
+		
+		<mx:Image
+			source="{imgNotes}"/>
+	
+	    <mx:Label
+	    	text="({data.relatedNotes.length})" fontWeight="bold"
+	    	visible="{data.relatedNotes.length > 0}"
+	    	includeInLayout="{data.relatedNotes.length > 0}"
+	    	/>
+	
+		<mx:Label
+			text="notes"/>
+	
+	</mx:HBox>
+
+</mx:HBox>

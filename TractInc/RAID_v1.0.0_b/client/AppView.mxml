@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+    creationComplete="Controller.CreationComplete()"
+    xmlns:Login="App.Login.*" xmlns:Expense="UI.landman.*"
+    xmlns:local="*"
+    enabled="false"
+    xmlns:manager="UI.manager.*" xmlns:invoice="UI.invoice.*">
+
+    <mx:Script>
+        <![CDATA[
+
+            [Bindable]
+            private var Controller: AppController = new AppController(AppView(this));
+
+        ]]>
+    </mx:Script>
+    
+    <mx:ViewStack id="mainViewStack" width="100%" height="100%" creationPolicy="all">
+        <Login:LoginView id="loginView" AppController="{Controller}" />
+        <local:ExpenseView id="expenseView" Parent="{Controller}" />
+        <local:InvoiceView id="invoiceView" Parent="{Controller}" />
+        <manager:ManagerView id="managerView" parentController="{Controller}" />
+    </mx:ViewStack>
+
+</mx:Canvas>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreate()">
+	<mx:VBox label="Video Tutorial" verticalAlign="middle" horizontalAlign="center" width="100%" height="100%">
+        <mx:SWFLoader id="swfYouTube" width="480" height="385" scaleContent="false"/>
+	</mx:VBox>
+
+	<mx:Script>
+		<![CDATA[
+			private function onCreate():void 
+			{
+				var url:String = "http://www.youtube.com/v/4rb8aOzy9t4?fs=1&amp;hl=en_US";
+                Security.allowDomain(url);
+				swfYouTube.load(url);
+				swfYouTube.addEventListener(Event.COMPLETE, 
+					function (e:*):void 
+					{
+						trace();
+					});
+			}
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

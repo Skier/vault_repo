@@ -1,0 +1,1419 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{C03B6E2A-9872-45C5-92DE-7A2F3638081A}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "Dpi.Central.Web.Common"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = '"$(SolutionDir)\Utilities\copy_resources.cmd" "$(ProjectDir)"'
+                RootNamespace = "Dpi.Central.Web"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
+                <Reference
+                    Name = "BusComp"
+                    Project = "{39E1C1EA-9DC4-467B-BE60-BF9B9DD36AA1}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "ClientComp"
+                    Project = "{DE82C6F7-A112-448D-8A26-3CECE5C75E95}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "DPIComp"
+                    Project = "{AAE61D0E-3697-4BB6-B5C9-2E117FB7E6F2}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Interfaces"
+                    Project = "{21A6A10E-ACE2-4570-ADE9-E389DA94587C}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Services"
+                    Project = "{690BD868-E152-4B04-8B48-24F85398C45B}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Windows.Forms"
+                    AssemblyName = "System.Windows.Forms"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "System.Design"
+                    AssemblyName = "System.Design"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Design.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AuthenticationHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BaseModel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "EmailSender.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ModelFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SiteMap.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\BasePage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\ControlHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\DateBox.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\DefaultVagPanel.cxt"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Controls\Footer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\Menu.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\MenuFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\Panel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\PhoneNumberBox.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\ProcessMap.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\SidePanel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "images\10_things_box.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_benefits_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_benefits_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_contact_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_overview_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_overview_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_side_1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_side_2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_signup_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\a_signup_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_bottom_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_bottom_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_side_background.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_side_bottom.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_side_top.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\about_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\account_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\account_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\account_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\account_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\agent_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\agent_contact_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\agent_contact_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ainfo_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ainfo_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ainfo_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ainfo_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\asterisk.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\blank.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bp_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bp_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bp_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bp_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bp_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_agree.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_back.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_cancel.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_change.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_disagree.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_no.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_order_now.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_pay_by_check.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_pay_by_credit_card.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_print_version.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_proceed.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_proceed_disabled.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_proceed_to_login.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_process_transaction.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_recharge_different_plan.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_recharge_same_plan.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_return_to_agreement.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_return_to_provider_selection.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_returntonewaccountsignu.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_update.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_view_customer_bill.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_view_payment_forecast.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_view_tax_details.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\btn_yes.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\bullet.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\call_us.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\call_us.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cancel.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cc_amex.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cc_diners.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cc_disc.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cc_mast.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cc_visa.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\checkdesc.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_address.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_form.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\contact_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\counter_image.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cphone_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\cvv2a.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\dave.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\download.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\easy_way.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\footer.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\header.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\home_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\home_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\home_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\home_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\hphone_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\icon_cash.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\icon_cheque.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\icon_credit_card.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ind_products_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\intro_box.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\jobs_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\jobs_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\jobs_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ld_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\link_onw.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\locations_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\locations_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\locations_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\logo.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\Logout.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\member_of_graphic.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\orders.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_billpay_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_cell_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_coming_soon.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_debit_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_internetl_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_ld_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\p_phone_circle.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bi.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bj.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bk.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bm.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bn.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_bu.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\package_ci.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_lg125.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_lg225.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid_02.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid_04.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid2.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid2_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_mid2_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_phonesl.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_phonesr.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_readytosign.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_sanyo_katana.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_sanyo2400.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_side_bg.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_01.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_02.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_03.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_04.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppc_top2.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_bottom_1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_bottom_2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_bottom_3.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_bottom_4.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l10.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l3.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l4.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l5.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l6.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l7.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l8.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_l9.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r10.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r3.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r4.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r5.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r6.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r7.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r8.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_r9.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_m_spacer.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\pphp_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppi_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppi_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppi_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppi_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppi_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_mid2_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_mid2_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppld_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_card_in_hand.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_mid.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_mid_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_mid_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_mid2_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_mid2_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ppmc_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_box.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\products_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\promisetopay.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\purpose_box.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b1_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b2_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b3.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b3_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b4.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_b4_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_spacer.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_spacer2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_t1.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_t2.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_t3.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\ready_to_t4.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\report_header.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller_button.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller_button.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller_button_on.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller_button_on.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller1_boxes.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller1_seperator.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller1_side.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller1_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller1_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller2_become_an_agent.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller2_top_l.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\reseller2_top_r.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\seperator.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\Signature.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\Slingshot_logo.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\SlingShot_Promo.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\submit.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\subtable_header_custaddress.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab01_off.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab01_off_02.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab01_off_02_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab01_off_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab01_on.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off_01.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off_01_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off_03.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off_03_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_off_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab02_on.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off_02.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off_02_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off_04.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off_04_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_off_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab03_on.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off_03.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off_03_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off_05.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off_05_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_off_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab04_on.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab05_off.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab05_off_04.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab05_off_04_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab05_off_disabled.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\tab05_on.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\verisign_logo.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "images\webcentral_ss.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\builder.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\controls.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\dhtmlutils.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\dragdrop.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\dwcutils.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\effects.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\main.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\mainpageflashloader.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\mm_menu.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\p7_eqCols2_10.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\prototype.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\scriptaculous.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\slider.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "script\style.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "styles\DPI.css"
+                    BuildAction = "Content"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

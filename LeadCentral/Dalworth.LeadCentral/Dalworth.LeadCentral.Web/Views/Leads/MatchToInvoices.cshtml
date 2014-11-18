@@ -1,0 +1,93 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Lead.MatchInvoice
+
+@{
+    ViewBag.Title = "MatchToInvoices";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-start").datepicker();
+    });
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Back to Lead", "LeadDetails", new { Id = Model.LeadId }, new { @class = "button" })
+      </div>
+      <h1>Match Lead to Quickbooks Invoices</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+            @using (Html.BeginForm("GetQbInvoices", "Leads", FormMethod.Post))
+            {
+            @Html.HiddenFor(model => model.LeadId)    
+            <table class="form">
+                <tr>
+                @if (Model.CurrentLead != null
+                    && Model.CurrentLead.RelatedSource != null
+                    && Model.CurrentLead.RelatedSource.RelatedPhoneCall != null
+                    && Model.CurrentLead.RelatedSource.RelatedPhoneCall.RecordingUrl != null)
+                {
+                    <script type="text/javascript">
+                        $(function () {
+                            $("#date-start").datepicker();
+                        });
+
+                        var call_url = "@Model.CurrentLead.RelatedSource.RelatedPhoneCall.RecordingUrl";
+
+                        $(document).ready(function () {
+                            $("#jquery_jplayer").jPlayer({
+                                ready: function () {
+                                    //$("#jquery_jplayer").jPlayer( { swfPath: "/Scripts/jPlayer" });
+                                    $("#jquery_jplayer").jPlayer("setMedia", { mp3: call_url });
+                                }
+                            });
+                        });
+                    </script>
+                    
+                    <td rowspan="2">
+                        <div id="jquery_jplayer" class="jp-jplayer"></div>                        <div class="jp-audio">                            <div class="jp-type-single">                            <div id="jp_interface_1" class="jp-interface">                                <ul class="jp-controls">                                <li><a href="#" class="jp-play" tabindex="1">play</a></li>                                <li><a href="#" class="jp-pause" tabindex="1">pause</a></li>                                <li><a href="#" class="jp-stop" tabindex="1">stop</a></li>                                <li><a href="#" class="jp-mute" tabindex="1">mute</a></li>                                <li><a href="#" class="jp-unmute" tabindex="1">unmute</a></li>                                </ul>                                <div class="jp-progress">                                <div class="jp-seek-bar">                                    <div class="jp-play-bar"></div>                                </div>                                </div>                                <div class="jp-volume-bar">                                <div class="jp-volume-bar-value"></div>                                </div>                                <div class="jp-current-time"></div>                                <div class="jp-duration"></div>                            </div>                            </div>                        </div>                    </td>
+                }
+                    <td style="text-align:right;">First Name</td>
+                    <td>@Html.TextBoxFor(model => model.FirstName)</td>
+                    <td style="text-align:right;">Last Name</td>
+                    <td>@Html.TextBoxFor(model => model.LastName)</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">Phone:</td>
+                    <td>@Html.TextBoxFor(model => model.Phone)</td>
+                    <td style="text-align:right;">Created later:</td>
+                    <td>@Html.TextBoxFor(model => model.DateStart, new { @class = "date-input", @id = "date-start" })</td>
+                    <td style="text-align:right;"><button type="submit">Get Invoices</button></td>
+                </tr>
+            </table>
+            }
+        </div>
+
+        <br/>
+
+        @if (Model.Invoices != null && Model.Invoices.Count > 0)
+        {
+            using (Html.BeginForm("MatchInvoices", "Leads"))
+            {
+                @Html.HiddenFor(model => model.LeadId)    
+                <div>
+                    <div style="text-align:right;"><button type="submit">Match selected invoices to current Lead</button></div>
+                    @foreach (var invoice in Model.Invoices)
+                    {
+                        Html.RenderPartial("QbInvoice", invoice);
+                    }
+               </div>
+            }
+        }
+        else
+        {
+        <div>No Invoices loaded</div>
+        }
+  </div>
+</div>
+

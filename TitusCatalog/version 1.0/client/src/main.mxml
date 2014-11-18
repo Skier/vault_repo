@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" horizontalAlign="center"
+	initialize="initializeHandler(event)" xmlns:view="com.titus.catalog.view.*" xmlns:local="*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.storage.DBStorage;
+			import com.flexspy.FlexSpy;
+			import com.titus.catalog.storage.TestStorage;
+			import com.titus.catalog.storage.IStorage;
+			
+			public static const STYLE_FILENAME:String = "styles.swf";
+			
+			public static const HEADER_HEIGHT:int = 0; //90;
+			public static const FOOTER_HEIGHT:int = 0; //40;
+			
+			public static function getStorage():IStorage 
+			{
+				return DBStorage.getInstance(); 
+			}
+			
+			private function initializeHandler(event:*):void 
+			{
+//				StyleManager.loadStyleDeclarations(STYLE_FILENAME);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style source="styles.css"/>
+	
+	<mx:VBox width="980" height="100%" styleName="mainContent">
+		<!-- local:AppHeader width="100%"/ -->
+		
+		<view:Dashboard width="100%" height="{this.height - (HEADER_HEIGHT + FOOTER_HEIGHT)}"/>
+		
+		<!-- local:AppFooter id="footer" width="100%" height="30"/ -->
+	</mx:VBox>
+	
+  	<!-- mx:Button id="btnSpy" label="Spy" click="FlexSpy.show()" / -->
+
+</mx:Application>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    toolTip="{Document(data.ReferencedDoc) == null ? 'Referensed document is not specified' : Document(data.ReferencedDoc).IsActive ? null : 'Found new version of this document in the system' }"
+    verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Document;
+			import truetract.domain.DocumentReference;
+
+        	[Embed(source="/assets/checked.png")]
+        	[Bindable]
+        	private var imgChecked:Class;
+        	
+        	[Embed(source="/assets/warning.png")]
+        	[Bindable]
+        	private var imgWarning:Class;
+        	
+        	[Embed(source="/assets/attention.png")]
+        	[Bindable]
+        	private var imgAttention:Class;
+        	
+        	private function onClickHandler():void 
+        	{
+        		var ref:DocumentReference = data as DocumentReference;
+        		
+        		if (ref.ReferencedDoc != null && !ref.ReferencedDoc.IsActive) 
+        		{
+	        		DocumentDetailView(parentDocument).getLatestDocumentRequestHandler(ref);
+        		}
+        	}
+        	
+		]]>
+	</mx:Script>
+ 	
+ 	<mx:Image source="{Document(data.ReferencedDoc) == null ? imgAttention : Document(data.ReferencedDoc).IsActive ? imgChecked : imgWarning}" click="onClickHandler()"/>
+	
+</mx:Box>
+

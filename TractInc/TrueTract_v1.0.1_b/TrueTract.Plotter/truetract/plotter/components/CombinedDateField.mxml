@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    verticalAlign="middle" horizontalGap="0">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        
+        	[Bindable] private var _monthes:ArrayCollection = 
+        		new ArrayCollection([" ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
+            
+            private var _value:Date;
+            public function get value():Date
+            {
+                if (isFormValid())
+                {
+                    var day:Number = Number(dayTxt.text);
+                    var month:Number = Number(monthCB.selectedIndex - 1);
+                    var year:Number = Number(yearTxt.text);
+                    
+                    return new Date(year, month, day);
+                }
+                else 
+                {
+                    return null;
+                }
+                    
+            }
+           
+            public function set value(val:Date):void
+            {
+                if (null != val) {
+                    dayTxt.text = val.date.toString();
+                    monthCB.selectedIndex = val.month + 1;
+                    yearTxt.text = val.fullYear.toString();
+                } else {
+                    dayTxt.text = yearTxt.text = "";
+                    monthCB.selectedIndex = 0;
+                }
+           }
+           
+           private function isFormValid():Boolean
+           {
+               return true; //(dateV.validate().type == ValidationResultEvent.VALID);
+           }
+           
+        ]]>
+    </mx:Script>
+
+    <mx:DateValidator id="dateV"
+        daySource="{dayTxt}" dayProperty="text" 
+        yearSource="{yearTxt}" yearProperty="text"/>
+
+    <mx:TextInput id="dayTxt" maxChars="2" minWidth="20" width="80%" toolTip="Day"/>
+
+    <mx:Label text="/" width="8"/>
+
+ 	<mx:ComboBox id="monthCB" width="60" dataProvider="{_monthes}"/>
+ 	
+    <mx:Label text="/" width="8"/>
+
+    <mx:TextInput id="yearTxt" maxChars="4" width="100%" minWidth="35" toolTip="Year"/>
+
+</mx:HBox>

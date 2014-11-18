@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600" title="Setup New Company" fontSize="12" layout="absolute" xmlns:testLayouts="testLayouts.*" xmlns:steps="testLayouts.steps.*">
+	<mx:VBox height="516" width="150" x="0" y="0" verticalGap="-1">
+		<mx:HBox width="100%" height="100%" horizontalAlign="left" verticalAlign="middle"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5"
+			backgroundColor="#C3D9E8" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:CheckBox selected="true" enabled="false"/>
+			<mx:Text width="100%" minWidth="50" minHeight="30" text="Description of current step and, may be, some links to help/video" fontSize="11"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%" horizontalAlign="left" verticalAlign="middle"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5"
+			backgroundColor="#C3D9E8" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:CheckBox selected="true" enabled="false"/>
+			<mx:Text width="100%" minWidth="50" minHeight="30" text="Description of second step" fontSize="11"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%" horizontalAlign="left" verticalAlign="middle"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5"
+			backgroundColor="#81A7CE" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:CheckBox enabled="false"/>
+			<mx:Text width="100%" minWidth="50" minHeight="30" text="Some description of current step" fontSize="11"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%" horizontalAlign="left" verticalAlign="middle"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5"
+			backgroundColor="#EEEEEE" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:CheckBox enabled="false"/>
+			<mx:Text width="100%" minWidth="50" minHeight="30" text="Some description of current step" fontSize="11"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%" horizontalAlign="left" verticalAlign="middle"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5"
+			backgroundColor="#EEEEEE" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:CheckBox enabled="false"/>
+			<mx:Text width="100%" minWidth="50" minHeight="30" text="Some description of current step" fontSize="11"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:Canvas height="100%" x="158" y="0" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:ViewStack id="vsSteps" width="622" height="516">
+			<steps:Welcome/>
+			<steps:CompanyInfo/>
+			<steps:LeadTypes/>
+			<steps:LeadSourceSetup0/>
+			<steps:LeadSourceSetup2/>
+			<steps:UserSetup2/>
+			<steps:PhoneReview/>
+		</mx:ViewStack>
+		
+		<mx:HBox id="boxTip" width="100%" backgroundColor="#FFFFCC" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="4"
+			left="1" right="1" top="1" visible="false"
+			dropShadowEnabled="true" shadowDirection="center" shadowDistance="0"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:Text fontSize="11" width="100%" minWidth="100" text="Help tip for current wizard step. Help tip for current wizard step. Help tip for current wizard step. Help tip for current wizard step. Help tip for current wizard step. Help tip for current wizard step. Help tip for current wizard step. "/>
+		</mx:HBox>
+	</mx:Canvas>
+<!--	
+	<mx:Button toggle="true" width="20" height="20" top="2" right="2" label="?" click="boxTip.visible = !boxTip.visible" cornerRadius="2" fontSize="11"
+		paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"/>
+-->
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle" x="0" y="350">
+		<mx:Button label="Help" width="100" height="28"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="&lt; Back" width="100" height="28" click="vsSteps.selectedIndex--" enabled="{vsSteps.selectedIndex != 0}"/>
+		<mx:Button label="Next &gt;" width="100" height="28" click="vsSteps.selectedIndex++" enabled="{vsSteps.selectedIndex &lt; 6}"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

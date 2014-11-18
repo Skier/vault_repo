@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config name="main">
+    <waspClassSpace>root.wasp-impl</waspClassSpace>
+    <preferences name="main">
+        <!-- application directory -->
+        <applicationDirectory>app</applicationDirectory>
+        <!-- working directory -->
+        <workDirectory>work</workDirectory>
+        <!-- system context -->
+        <systemContext>system</systemContext>
+
+        <!-- Default XML protocol, possible values are
+             "soap11" (default), "soap12" and "httpget",
+             can be space-separated list of values
+             e.g. "soap11 httpget" -->
+        <defaultXMLProtocol>soap11</defaultXMLProtocol>
+        <!-- Default SOAP binding style, possible  values:
+            "document", "wrapped" ("wrapped" document style) or "rpc"
+        -->
+        <defaultBindingStyle>wrapped</defaultBindingStyle>
+        <!-- Default encoding style, possible values:
+                      "literal" (default) or "encoded" -->
+        <defaultEncodingStyle>literal</defaultEncodingStyle>
+
+        <!-- Default attachments type, possible values:
+                     "mime" (default) for MIME, "dime" for DIME -->
+        <defaultAttachmentType>mime</defaultAttachmentType>
+        <!-- See WS-I Attachments Profile 1.0 section 3.8:
+             "A valid domain name under the authority of the entity constructing the message." -->
+        <defaultAttachmentContentIdDomain>systinet.com</defaultAttachmentContentIdDomain>
+        <!-- Setting for MIME attachments that have corresponding part in WSDL.
+             Value "always" chooses backward compatible mode that always references the attachment
+             with value of href attibute in a body. Value "never" will always use WS-I Attachments
+             Profile 1.0 compliant way, a part can be recognized based on MIME Content-Id header.
+             Default value is "auto" - one of previous modes is choosen per operation based on WSDL.
+        -->
+        <useHrefInBodyForMime>auto</useHrefInBodyForMime>
+        <!-- Setting for base64Binary schema types -->
+        <useMtomXop>auto</useMtomXop>
+        <!--Used to distinguish Systinet Server instances-->
+        <defaultInstanceName>server</defaultInstanceName>
+        <!-- Default WS-I compliancy mode -->
+        <wsiCompliant>true</wsiCompliant>
+        <!--
+          Preferred way how to map the Java members with reference (non-primitive) data type into XML schema -
+          either using 'nillable' or 'optional' elements. If 'true', 'nillable' is preferred.
+        -->
+        <defaultUseNillable>true</defaultUseNillable>
+
+        <!-- Default deployment descriptor namespaces and locations -->
+        <schema namespaceURI="http://systinet.com/wasp/package/1.2" schemaLocation="conf/package12.xsd"/>
+        <schema namespaceURI="http://systinet.com/wasp/package/1.3" schemaLocation="conf/package13.xsd"/>
+    </preferences>
+
+    <serviceDefaultParentClassSpace>root.services</serviceDefaultParentClassSpace>
+    <ignoredSection>type</ignoredSection>
+    <ignoredSection>messageHeader</ignoredSection>
+    <ignoredSection>encodingInstance</ignoredSection>
+    <ignoredSection>class</ignoredSection>
+    <ignoredSection>field</ignoredSection>
+    <ignoredSection>method</ignoredSection>
+    <classSpace name="root">
+        <classSpace name="wasp-impl"/>
+        <classSpace name="services"/>
+    </classSpace>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.wsdl.WSDLRepositoryImpl" name="WSDLRepository"/>
+
+    <!-- event monitoring module -->
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.monitoring.LogEventModule" name="LogEventModule">
+        <logEvents>
+            <eventListener>Log4JAdapter</eventListener>
+            <event type="WSP4001">
+                <message>Server {0} started.</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP4002">
+                <message>Server {0} stopped.</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP4003">
+                <message>Service {0} started.</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP4004">
+                <message>Service {0} stopped.</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP4005">
+                <message>{0} - {1}</message>
+                <severity>INFO</severity>
+            </event>
+            <!-- security audit events -->
+            <event type="WSP5001">
+
+                <message>Authentication failed: Client IP: {2}; User {0}; provider: {1}; Service: {3}</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP5002">
+
+                <message>Authentication successful: Client IP: {2}; User {0}; provider: {1}; Service: {3}</message>
+                <severity>OFF</severity>
+            </event>
+            <event type="WSP5003">
+                <message>Authorization failed: User: {0}; Action: {1}</message>
+                <severity>INFO</severity>
+            </event>
+            <event type="WSP5004">
+
+                <message>Authorization successful: User: {0}; Action: {1}</message>
+                <severity>OFF</severity>
+            </event>
+            <event type="USR4005">
+                <message>{0} - {1}</message>
+                <severity>INFO</severity>
+            </event>
+
+        </logEvents>
+        <eventListeners>
+            <eventListener className="com.systinet.wasp.monitoring.log4j.Log4JAdapter" defaultCategoryName="com.systinet.wasp.events" defaultErrorCategoryName="com.systinet.wasp.errors" initLog4jFromFile="conf/log4j.config" name="Log4JAdapter" writeStackTraces="false"/>
+        </eventListeners>
+    </module>
+    <!-- this is com.* module, it should'nt be used by users -->
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.WASPConfigurationImpl" name="WASPConfigurationImpl"/>
+    <!-- this is deprecated module, will be moved to core_bc -->
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.WASPConfigurationImpl" name="WASPConfiguration"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.tools.ToolsModule" name="ToolsModule"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xml.ReaderWriterFactory" name="XmlToolsFactory"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.config.xml.ConfigStore" name="ConfigStore" savingPeriod="2000"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.server.Connector" name="Connector" port="6061"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.transport.TransportRepositoryImpl" name="TransportRepository">
+        <transport class="com.idoox.transport.jdk.client.JdkClient" classSpace="root.wasp-impl" name="default_client" preload="false" scheme="default"/>
+        <transport class="com.idoox.transport.file.client.FileClient" classSpace="root.wasp-impl" name="file_client" preload="false" scheme="file"/>
+        <transport class="com.idoox.transport.jar.client.JarClient" classSpace="root.wasp-impl" name="jar_client" preload="false" scheme="jar"/>
+        <transport class="com.idoox.transport.http.client.HttpClient" classSpace="root.wasp-impl" defaultTimeout="40000" name="http_client" preload="false" scheme="http"/>
+        <transport class="com.idoox.transport.smtp.client.SmtpClient" classSpace="root.wasp-impl" defaultTimeout="40000" name="smtp_client" preload="false" scheme="smtp"/>
+        <transport class="com.idoox.transport.pop.client.PopClient" classSpace="root.wasp-impl" defaultTimeout="60000" name="pop_client" preload="false" scheme="pop" updateInterval="60000"/>
+        <transport class="com.idoox.transport.http.server.Jetty" classSpace="root.wasp-impl" defaultServer="true" maxIdleTime="2000" maxReadTime="40000" maxThreads="255" minThreads="5" name="http_server" port="6060" preload="true" scheme="http">
+         </transport>
+
+        <transport class="com.idoox.transport.mail.Mail" classSpace="root.wasp-impl" defaultServer="true" name="mail" preload="false" scheme="mailto">
+            <output>
+                <server/>
+                <from/>
+            </output>
+            <input>
+                <server/>
+                <password/>
+                <sleepInterval>10000</sleepInterval>
+            </input>
+        </transport>
+
+        <transport class="com.idoox.transport.resource.client.ResourceTransport" classSpace="root.wasp-impl" name="resource" preload="false" scheme="resource"/>
+    </module>
+
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.interceptor.InterceptorRepositoryImpl" name="InterceptorRepository">
+        <interceptor class="com.idoox.wasp.interceptor.DIMEInterceptor" classSpace="root.wasp-impl" name="dimeInterceptor"/>
+        <interceptor class="com.idoox.wasp.interceptor.MultipartInterceptor" classSpace="root.wasp-impl" name="multipartInterceptor">
+			<transport schemes="http https">
+				<includeMimeVersion>false</includeMimeVersion>
+			</transport>
+			<transport schemes="mailto smtp">
+				<contentTransferEncoding default="base64">
+					<exception contentType="text/plain" encoding="quoted-printable"/>
+					<exception contentType="text/xml" encoding="quoted-printable"/>
+				</contentTransferEncoding>
+			</transport>
+		</interceptor>
+        <interceptor class="com.idoox.wasp.interceptor.DebugInterceptor" classSpace="root.wasp-impl" name="debugInterceptor"/>
+        <InterceptorChain class="com.idoox.wasp.interceptor.TransportInterceptorChainImpl" classSpace="root.wasp-impl" name="serverTransportInterceptors">
+            <interceptor in="true" out="true">
+                <instance>dimeInterceptor</instance>
+            </interceptor>
+            <interceptor in="true" out="true">
+                <instance>multipartInterceptor</instance>
+            </interceptor>
+        </InterceptorChain>
+        <InterceptorChain class="com.idoox.wasp.interceptor.TransportInterceptorChainImpl" classSpace="root.wasp-impl" name="clientTransportInterceptors">
+            <interceptor in="true" out="true">
+                <instance>dimeInterceptor</instance>
+            </interceptor>
+            <interceptor in="true" out="true">
+                <instance>multipartInterceptor</instance>
+            </interceptor>
+        </InterceptorChain>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.serialization.SerializationRepositoryImpl" name="SerializationRepository" serializePrivateFields="false">
+        <defaultFaultSerializer class="com.idoox.wasp.serialization.DefaultFaultSerializer" classSpace="root.wasp-impl"/>
+        <defaultFaultDeserializer class="com.idoox.wasp.serialization.DefaultFaultDeserializer" classSpace="root.wasp-impl"/>
+        <defaultSerialization encodingURI="http://schemas.xmlsoap.org/soap/encoding/" serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][EncodedSerialization]"/>
+        <defaultSerialization encodingURI="http://www.w3.org/2003/05/soap-encoding" serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][EncodedSerialization]"/>
+        <defaultSerialization serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][XmlSerialization]"/>
+
+        <defaultFaultSerialization>defaultFaultSerialization</defaultFaultSerialization>
+    </module>
+    <faultSerialization name="defaultFaultSerialization">
+        <faultSerializationInstance>
+            <serializer class="com.idoox.wasp.serialization.GenericSOAPSpecFaultSerializer">
+                <exception class="com.idoox.soap.MustUnderstandException"/>
+                <exception class="com.idoox.soap.VersionMismatchException"/>
+                <exception class="org.idoox.xmlrpc.encoding.NoSuchEncodingException"/>
+                <exception class="com.idoox.soap.BadArgumentsException"/>
+                <exception class="com.idoox.soap.ProcedureNotPresentException"/>
+                <exception class="com.idoox.wasp.serialization.DeserializationException"/>
+                <exception class="com.idoox.soap.RootNotEnvelopeException"/>
+            </serializer>
+        </faultSerializationInstance>
+        <faultSerializationInstance>
+            <serializer class="com.idoox.wasp.serialization.SoapFaultSerializer">
+                <exception class="org.idoox.wasp.SoapFaultException"/>
+            </serializer>
+        </faultSerializationInstance>
+    </faultSerialization>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.ProtocolRepositoryImpl" name="ProtocolRepository">
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.EncodingRepository" name="EncodingRepository">
+
+        <defaultEncoding>http://schemas.xmlsoap.org/soap/encoding/</defaultEncoding>
+        <defaultEncodingId>defaultEnc</defaultEncodingId>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xmlrpc.header.HeaderProcessorRepositoryImpl" name="HeaderProcessorRepository"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.rpc.handler.HandlerRepositoryImpl" name="HandlerRepository"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.ListenerRepositoryImpl" name="ListenerRepository"/>
+    <module xmlns:wasp="http://systinet.com/wasp/policy/1.0" xmlns:wsa200303="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:wsa200403="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsa200408="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" name="PolicyManager" classSpace="root.wasp-impl" loader="com.systinet.wasp.policy.PolicyManagerImpl" defaultPolicy="policy.xml">
+        <domainExpression name="wasp:DefaultDomainExpression" classSpace="root.wasp-impl" class="org.systinet.wasp.policy.DefaultDomainExpression"/>
+        <domainExpression name="wsa200303:EndpointReference" classSpace="root.wasp-impl" class="org.systinet.wasp.addressing.EndpointReference"/>
+        <domainExpression name="wsa200403:EndpointReference" classSpace="root.wasp-impl" class="org.systinet.wasp.addressing.EndpointReference"/>
+        <domainExpression name="wsa200408:EndpointReference" classSpace="root.wasp-impl" class="org.systinet.wasp.addressing.EndpointReference"/>
+        <domainExpression name="wasp:ServiceEndpointReference" classSpace="root.wasp-impl" class="org.systinet.wasp.webservice.ServiceEndpointReference"/>
+        <policyAssertion name="wsu:Expires" classSpace="root.wasp-impl" class="org.systinet.wasp.policy.assertion.ExpirationAssertion"/>
+        <policyAssertion name="wsu:SpecVersion" classSpace="root.wasp-impl" class="org.systinet.wasp.policy.assertion.SpecVersionAssertion"/>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.admin.PackageRepositoryImpl" name="PackageRepository">
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.WsdlFromUrlListener" name="WsdlFromUrl"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.RegistryImpl" name="Registry">
+        <defaultServiceTTL>600</defaultServiceTTL>
+        <cleanerSweepInterval>60</cleanerSweepInterval>
+        <referenceQueueCleanerInterval>60</referenceQueueCleanerInterval>
+        <parameterHandler>
+            <selectValue>session_manager</selectValue>
+
+            <serviceBindingName>/internal/security/SessionManager</serviceBindingName>
+        </parameterHandler>
+        <AdaptorTemplate name="RawAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate name="XmlAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate encodingAdaptorClass="com.idoox.wasp.server.adaptor.EncodingAdaptorImpl" encodingAdaptorClassSpace="root.wasp-impl" name="EncodingAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate encodingAdaptorClass="com.idoox.wasp.server.adaptor.EncodingAdaptorImpl" encodingAdaptorClassSpace="root.wasp-impl" javaAdaptorClass="com.idoox.wasp.server.adaptor.JavaAdaptorImpl" javaAdaptorClassSpace="root.wasp-impl" name="JavaAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.server.ServiceManager" name="ServiceManager"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.client.WebServiceLookupImpl" name="ServiceLookup"/>
+    <classSpace name="SOAP">
+        <parentClassSpace>root.wasp-impl</parentClassSpace>
+    </classSpace>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap.SOAP11ProtocolHandler" name="soap"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap.SOAP11ProtocolHandler" name="soap11"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap12.SOAP12ProtocolHandler" name="soap12"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.get.GETProtocolHandler" name="httpget"/>
+    <encoding name="defaultEnc">
+        <encodingInstance name="http://schemas.xmlsoap.org/soap/encoding/">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAPEncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAPEncodingTokenWriter"/>
+        </encodingInstance>
+        <encodingInstance name="http://www.w3.org/2003/05/soap-encoding">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAP12EncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAP12EncodingTokenWriter"/>
+        </encodingInstance>
+    </encoding>
+    <encoding name="1999Enc">
+        <encodingInstance name="http://schemas.xmlsoap.org/soap/encoding/">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAPEncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAPEncoding1999TokenWriter"/>
+        </encodingInstance>
+    </encoding>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xml.schema.SchemaFactoryImpl" name="SchemaFactory"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.interrefs.PortTypeMappingRegistryImpl" name="PortTypeMappingRegistry"/>
+    <HeaderInstance name="InstanceID_HP">
+        <class>com.idoox.wasp.InstanceIDHandler</class>
+        <header xmlns:ns="http://idoox.com/interface" direction="inout" qname="ns:instance" use="literal"/>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HeaderInstance name="VersionMismatchFault_HP" needsBody="false">
+        <class>com.idoox.soap.VersionMismatchFaultHeaderProcessor</class>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HeaderInstance name="MustUnderstandFault_HP" needsBody="false">
+        <class>com.idoox.soap.MustUnderstandFaultHeaderProcessor</class>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HandlerInstance name="WSAddressingHandler" class="com.systinet.wsaddressing.WSAddressingHandler" classSpace="root.wasp-impl" direction="in out fault">
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:Recipient" type="ns:EndpointReferenceType" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2003/03/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200303.xsd"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2004/03/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200403.xsd"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200408.xsd"/>
+    </HandlerInstance>
+    <HeaderInstance name="WSRouting_HP">
+        <class>com.idoox.wasp.routing.WSRoutingHandler</class>
+        <header xmlns:ns="http://schemas.xmlsoap.org/rp" direction="" qname="ns:path" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/rp" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-routing.xsd"/>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <Handlers name="DefaultClientHandlers">
+        <in>
+            <instance>InstanceID_HP</instance>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </in>
+        <out>
+            <instance>InstanceID_HP</instance>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </out>
+        <fault>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </fault>
+    </Handlers>
+    <Handlers name="DefaultServerHandlers">
+        <in>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>InstanceID_HP</instance>
+        </in>
+        <out>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>InstanceID_HP</instance>
+        </out>
+        <fault>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>VersionMismatchFault_HP</instance>
+            <instance>MustUnderstandFault_HP</instance>
+        </fault>
+    </Handlers>
+
+    <java2Type name="main">
+        <excludedClass>java.io.*</excludedClass>
+        <excludedClass>java.lang.ClassLoader</excludedClass>
+        <excludedClass>java.lang.Compiler</excludedClass>
+        <excludedClass>java.lang.ThreadLocal</excludedClass>
+        <excludedClass>java.lang.Process</excludedClass>
+        <excludedClass>java.lang.Runtime</excludedClass>
+        <excludedClass>java.lang.RuntimePermission</excludedClass>
+        <excludedClass>java.lang.SecurityManager</excludedClass>
+        <excludedClass>java.lang.System</excludedClass>
+        <excludedClass>java.lang.Thread</excludedClass>
+        <excludedClass>java.lang.ThreadGroup</excludedClass>
+        <excludedClass>java.lang.Throwable</excludedClass>
+        <excludedClass>java.lang.Exception</excludedClass>
+        <excludedClass>java.net.*</excludedClass>
+        <excludedClass>java.text.*</excludedClass>
+        <excludedClass>org.idoox.webservice.server.Initializable</excludedClass>
+        <excludedClass>org.idoox.webservice.server.Startable</excludedClass>
+
+        <excludedClass>org.idoox.webservice.server.LifeCycleService</excludedClass>
+
+        <excludedClass>org.idoox.webservice.server.WebServiceContext</excludedClass>
+        <excludedClass>org.systinet.wasp.webservice.*</excludedClass>
+        <!-- Remote references -->
+        <internalSchema fileName="com/idoox/wasp/interrefs/interrefsEncoded.xsd" targetNamespace="http://idoox.com/interface" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/interrefs/interrefsLiteral.xsd" targetNamespace="http://idoox.com/interface" use="literal"/>
+        <!-- Security -->
+        <internalSchema fileName="com/idoox/wasp/security/securityEncoded.xsd" targetNamespace="http://idoox.com/security" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/security/securityLiteral.xsd" targetNamespace="http://idoox.com/security" use="literal"/>
+        <!-- IDOOX containers -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/idooxContainers.xsd" targetNamespace="http://idoox.com/containers" use="encoded"/>
+        <!-- Apache compatible containers -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/apacheContainers.xsd" targetNamespace="http://idoox.com/containers" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/apacheContainers.xsd" targetNamespace="http://xml.apache.org/xml-soap" use="encoded"/>
+        <!-- MS .NET compatible containers for RPC/ENC -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/msnet/msnetEncodedContainers.xsd" targetNamespace="http://systinet.com/containers/encoded/ms.net" use="encoded"/>
+        <!-- MS .NET compatible containers for DOC/LIT -->
+        <internalSchema fileName="com/idoox/wasp/serialization/xml/msnet/msnetLiteralContainers.xsd" targetNamespace="http://systinet.com/containers/literal/ms.net" use="literal"/>
+        <!-- Sparse Arrays -->
+        <internalSchema fileName="com/idoox/wasp/serialization/idooxbuiltin/array.xsd" targetNamespace="http://idoox.com/sparse-array" use="encoded"/>
+        <!-- reference schema is used in DIME ReferencedBinary types -->
+        <internalSchema fileName="com/idoox/xml/schema/known_schemas/reference.xsd" targetNamespace="http://schemas.xmlsoap.org/ws/2002/04/reference/" use="literal"/>
+        <!-- reference schema is used in DIME ReferencedBinary types -->
+        <internalSchema fileName="com/idoox/xml/schema/known_schemas/reference.xsd" targetNamespace="http://schemas.xmlsoap.org/ws/2002/04/reference/" use="encoded"/>
+    </java2Type>
+
+    <securityPreferences name="main">
+        <pstoreInitParams/>
+        <accessController providerClass="com.systinet.security.policy.PolicyAccessController"/>
+        <!--property name="DynamicSecurityProviders" value=""/-->
+        <property name="pstore.source.config.file" value="${.}/conf/pstore.xml"/>
+        <securityProvider providerClass="com.idoox.wasp.security.ssl.SSLServerProvider" providerName="SSL"/>
+        <securityProvider providerClass="com.idoox.wasp.security.http.basic.HttpBasicServerProvider" providerName="HttpBasic"/>
+        <securityProvider providerClass="com.idoox.wasp.security.http.digest.HttpDigestServerProvider" providerName="HttpDigest"/>
+        <securityProvider providerClass="com.idoox.wasp.security.kerberos.KrbServerProvider" providerName="Kerberos"/>
+        <securityProvider providerClass="com.systinet.wasp.security.ws.provider.WSSecurityServerProvider" providerName="WS-Security"/>
+        <securityProvider providerClass="com.idoox.wasp.security.siteminder.SmServerProvider" providerName="Siteminder"/>
+        <updateablePolicy providerClass="com.systinet.security.policy.xml.XMLUpdateablePolicy">
+            <property name="wasp.policy.xml.file" value="${.}/conf/wasp.policy"/>
+        </updateablePolicy>
+    </securityPreferences>
+
+    <httpsPreferences name="https">
+        <alias>sslalias</alias>
+        <defaultTimeout>40000</defaultTimeout>
+        <maxIdleTime>500</maxIdleTime>
+        <maxReadTime>40000</maxReadTime>
+        <maxThreads>255</maxThreads>
+        <minThreads>5</minThreads>
+        <needsClientAuth>false</needsClientAuth>
+        <nonProxyHosts>localhost</nonProxyHosts>
+        <password>changeit</password>
+        <port>6443</port>
+    </httpsPreferences>
+
+    <module loader="com.idoox.wasp.InterfaceIntrospector" name="Interface Introspector"/>
+
+    <xmlmime name="resolved_xmlmime_specifications">
+        <resolve namespace="http://www.w3.org/2004/11/xmlmime">
+	    <descriptionAttribute>contentType</descriptionAttribute>
+	    <annotationAttribute>expectedMediaType</annotationAttribute>
+	</resolve>
+        <resolve namespace="http://www.w3.org/2005/05/xmlmime">
+	    <descriptionAttribute>contentType</descriptionAttribute>
+	    <annotationAttribute>expectedContentTypes</annotationAttribute>
+	</resolve>
+    </xmlmime>
+
+</config>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:leadSource="com.dalworth.leadCentral.setting.leadSource.*" xmlns:controls="com.affilia.controls.*" width="834" height="574" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.SalesRep;
+			import Intuit.Sb.Cdm.vo.CustomerType;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import mx.events.ValidationResultEvent;
+			
+			public function setLeadSource(leadSource:LeadSource):void 
+			{ 
+				controller.initModel(leadSource); 
+				
+				if (txtName != null)
+					txtName.setFocus();
+			}
+			
+			[Bindable]
+			private var model:LeadSourceEditModel;
+			private var controller:LeadSourceEditController;
+			
+			private function onInit():void 
+			{
+				model = LeadSourceEditModel.getInstance();
+				controller = new LeadSourceEditController(this);
+			}
+			
+			private function onCancelClick():void 
+			{
+				dispatchEvent(new Event("closeLeadSourceEditor"));
+			}
+			
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				if (cbHasRelatedUser.selected && comboBusinessPartners.selectedIndex == 0)
+				{
+					if (!viewUserInfo.isValid())
+						result = false;
+				}
+
+				return result;
+			}
+			
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var newLeadSource:LeadSource =  model.leadSource.prepareToSend();
+				newLeadSource.Name = txtName.text;
+				newLeadSource.IsActive = cbIsActive.selected;
+				
+				if (comboSalesReps.selectedIndex > 0)
+				{
+					newLeadSource.OwnedByUserId = comboSalesReps.value as int;
+					newLeadSource.relatedSalesRep = comboSalesReps.selectedItem as User;
+				} else 
+				{
+					newLeadSource.OwnedByUserId = 0;
+					newLeadSource.relatedSalesRep = null;
+				}
+				
+				if (cbHasRelatedUser.selected)
+				{
+					if (comboBusinessPartners.selectedIndex > 0)
+					{
+						newLeadSource.RelatedUser = null;
+						newLeadSource.UserId = comboBusinessPartners.value as int;
+					} else 
+					{
+						newLeadSource.RelatedUser = viewUserInfo.getUser();
+						newLeadSource.RelatedUser.Name = txtName.text;
+					}
+				} else 
+				{
+					newLeadSource.RelatedUser = null;
+					newLeadSource.UserId = 0;
+				}
+				
+				controller.saveLeadSource(newLeadSource, viewPhones.getOwnPhones(), viewTrackingPhones.getTrackingPhones());
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=134";
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{model.leadSource.Id == 0}" enabled="false"/>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#FFFFFF" borderColor="#EEEEEE" borderStyle="solid" verticalGap="0"
+		enabled="{!model.isBusy}">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label
+				text="{(model.leadSource.Name != null ? ('Lead Source [' + model.leadSource.Name + ']') : 'New Lead Source')}" 
+				fontSize="24" color="#666666" width="100%" minWidth="100"/>
+			<mx:Button label="Save" click="onSaveClick()" fontSize="14" height="35" width="120"/>
+	        <mx:LinkButton label="Cancel" click="onCancelClick()" fontSize="14" height="35" width="120" textAlign="center"/>
+		</mx:HBox> 
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<mx:VBox width="100%" height="100%" 
+			paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalGap="5">
+
+			<mx:Canvas width="100%">
+				<mx:TextInput id="txtName" width="100%" text="{model.leadSource.Name}" fontSize="16" minWidth="200" maxChars="250"/>
+				<mx:HBox paddingLeft="4" paddingRight="4" verticalAlign="middle" height="100%" right="0"
+					backgroundColor="{model.leadSource.IsActive ? 0x99FF99 : 0xFF9999}" borderColor="#CCCCCC" borderStyle="solid">
+					<mx:CheckBox id="cbIsActive" label="Is Active" selected="{model.leadSource.IsActive}"/>
+				</mx:HBox>
+			</mx:Canvas>			
+	
+			<mx:HBox width="100%">
+				<mx:VBox width="100%">
+					<mx:Form width="100%" minWidth="250" 
+						paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+						<mx:FormItem label="Sales Rep:" width="100%">
+							<controls:ComboBox id="comboSalesReps" dataProvider="{model.salesReps}" width="100%"
+								fontSize="12"
+								labelField="Name" valueField="Id" value="{model.leadSource.OwnedByUserId}"/>
+						</mx:FormItem>
+
+						<mx:FormItem label="Grant Login:" width="100%">
+							<mx:HBox width="100%" verticalAlign="middle">
+								<mx:CheckBox id="cbHasRelatedUser" label="" selected="{model.leadSource.RelatedUser != null}"/>
+								<controls:ComboBox id="comboBusinessPartners" dataProvider="{model.businessPartners}" valueField="Id" value="{model.leadSource.UserId}"
+									itemRenderer="com.dalworth.leadCentral.setting.leadSource.LeadSourceUserIR"
+									visible="{cbHasRelatedUser.selected}" labelField="Name" width="100%" fontSize="12"/>
+							</mx:HBox>
+						</mx:FormItem>
+					</mx:Form>
+		
+					<user:UserEditPanel id="viewUserInfo" width="100%" 
+						user="{comboBusinessPartners.selectedIndex == 0 ? new User() : comboBusinessPartners.selectedItem as User}"
+						isReadOnly="{cbHasRelatedUser.selected &amp;&amp; comboBusinessPartners.selectedIndex != 0}" 
+						visible="{cbHasRelatedUser.selected}"/>
+				</mx:VBox>
+				
+				<mx:VRule height="100%" strokeColor="#CCCCCC" width="1"/>
+
+				<leadSource:LeadSourcePhonesView id="viewPhones" width="400" height="100%" leadSource="{model.leadSource}"
+					label="Related Phone Numbers"/>
+			</mx:HBox>
+			
+			<mx:HRule width="100%" height="1" strokeColor="#CCCCCC"/>
+			
+			<leadSource:LeadSourceTrackingPhonesView id="viewTrackingPhones" width="100%" height="100%" leadSource="{model.leadSource}"
+				leadSourceName="{txtName.text}" customPhonesFrom="{viewPhones.ownPhones}"
+				label="Tracking Phones"/>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

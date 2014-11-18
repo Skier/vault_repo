@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:view="com.tmnc.mail.view.*"
+    xmlns:controls="com.tmnc.mail.view.controls.*"
+    width="100%" height="100%" verticalGap="0" 
+    initialize="onInit()"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            import flash.net.navigateToURL;
+            import mx.core.Application;
+            import com.tmnc.mail.view.dialogs.FileDownloadDialog;
+            import com.tmnc.mail.business.messages.*;
+            import com.tmnc.mail.model.MailBoxModel;
+
+            import mx.managers.PopUpManager;
+            import mx.events.ItemClickEvent;
+            import mx.events.PropertyChangeEvent;
+            import mx.binding.utils.ChangeWatcher;
+
+
+            [Bindable]
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+
+			[Embed(source="/assets/attachment_icon.gif")]
+            [Bindable]			
+			public var attachmentIcon:Class;
+     
+            private function onInit():void {
+                ChangeWatcher.watch(model, ["currentMessage"], showBodyParts);
+                ChangeWatcher.watch(model, ["workflowState"], hideIFrame);                
+            }
+
+             private function showBodyParts(event:PropertyChangeEvent):void {
+                var msg:MessageInfo = model.currentMessage;
+                if (msg != null){
+                    var htmlBodyPart:BodyPartInfo = msg.htmlBodyPart;
+                                        
+                    if (msg.BodyPlainText != "" && htmlBodyPart != null){
+                        bodyPartsSwither.visible = true;
+                        bodyPartsSwither.includeInLayout = true;                        
+                    } else {
+                        bodyPartsSwither.visible = false;
+                        bodyPartsSwither.includeInLayout = false;
+                    }
+                    
+                    if (htmlBodyPart != null){
+                        htmlBody.source = htmlBodyPart.FileUrl;
+                        bodyParts.selectedChild = htmlBody;                        
+                    } else {
+                        bodyParts.selectedChild = plain;
+                    }
+                    
+                }
+            }
+     
+            //We need to hide Html Message Body Frame when we hide MainView
+            private function hideIFrame(event:PropertyChangeEvent):void{
+                if (event.newValue == MailBoxModel.VIEWING_INBOX_MAIL_SCREEN &&
+                    bodyPartsSwither.selectedIndex == 1 ){
+                    this.htmlBody.visible = true;
+                } else {
+                    this.htmlBody.visible = false;
+                }
+            }
+            
+            private function linkItemClick(event:ItemClickEvent):void {
+                var popup:FileDownloadDialog = 
+                    FileDownloadDialog(PopUpManager.createPopUp(this, FileDownloadDialog, false));
+                popup.setStyle("borderAlpha", 0.9);
+                popup.downloadFile(BodyPartInfo(event.item));
+            }
+            
+         ]]>
+    </mx:Script>
+    
+    <mx:Form width="100%" verticalGap="0" fontWeight="bold" 
+        paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5" backgroundColor="#e5e5e5">
+        <mx:FormItem label="From :" width="100%">
+            <mx:Text text="{model.currentMessage.From}" fontWeight="normal"/>
+        </mx:FormItem>
+        <mx:FormItem label="To :" width="100%">
+            <mx:Text text="{model.currentMessage.To}" fontWeight="normal"/>
+        </mx:FormItem>
+        <mx:FormItem label="Subject :" width="100%">
+            <mx:Text text="{model.currentMessage.Subject}" fontWeight="normal"/>
+        </mx:FormItem>
+        <mx:HBox id="attachmentsBox" width="100%" verticalAlign="middle" 
+            horizontalGap="1" paddingLeft="5"
+            visible="{model.currentMessage.BodyPartList.length > 0}"
+            includeInLayout="{model.currentMessage.BodyPartList.length > 0}"
+        >
+            <mx:Image source="{attachmentIcon}"/>
+            
+            <mx:LinkBar id="attachmentBar" width="100%" itemClick="linkItemClick(event)"
+                dataProvider="{model.currentMessage.BodyPartList}"/> 
+        </mx:HBox>
+	</mx:Form>
+	
+	<mx:VBox backgroundColor="#e5e5e5" width="100%" height="100%"  verticalGap="0" paddingLeft="5" paddingRight="5" paddingBottom="5" paddingTop="5">
+        <mx:TabBar id="bodyPartsSwither" direction="horizontal" dataProvider="{bodyParts}"/>
+        <mx:ViewStack id="bodyParts" borderStyle="solid" width="100%" height="100%">
+        
+            <mx:Box id="plain" label="Plain Text" width="100%" height="100%">
+                <mx:TextArea id="plainBody" width="100%" height="100%" borderStyle="none"
+                    text="{model.currentMessage.BodyPlainText}" editable="false" 
+                    horizontalScrollPolicy="auto" verticalScrollPolicy="auto"/>
+            </mx:Box>
+            
+           <controls:IFrame label="Html Text" id="htmlBody" width="100%" height="100%"
+               visible="{bodyParts.selectedChild == htmlBody}"/>
+                
+        </mx:ViewStack>
+
+    </mx:VBox>
+
+</mx:Box>
+

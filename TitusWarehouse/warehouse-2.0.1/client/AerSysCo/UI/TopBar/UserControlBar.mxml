@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    horizontalGap="4" 
+    xmlns:TopBar="AerSysCo.UI.TopBar.*">
+    
+    <mx:Metadata>
+        [Event(name="currentCustomerChangeRequest", type="AerSysCo.Events.CustomerEvent")]
+        [Event(name="homeRequest", type="flash.events.Event")]
+        [Event(name="catalogRequest", type="flash.events.Event")]
+        [Event(name="termsRequest", type="flash.events.Event")]
+        [Event(name="faqRequest", type="flash.events.Event")]
+        [Event(name="orderHistoryRequest", type="flash.events.Event")]
+        [Event(name="accountRequest", type="flash.events.Event")]
+        [Event(name="openShoppingCart", type="flash.events.Event")]
+        [Event(name="checkoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import AerSysCo.Events.CustomerEvent;
+            import mx.collections.ArrayCollection;
+            import AerSysCo.UI.Models.UserUI;
+            import mx.events.DynamicEvent;
+            import AerSysCo.UI.Models.CustomerUI;
+            
+            public static const STATE_NOTHING:int = -1;
+            public static const STATE_HOME:int = 0;
+            public static const STATE_PRODUCTS:int = 1;
+            public static const STATE_ORDER_HISTORY:int = 2;
+            public static const STATE_TERMS:int = 3;
+            public static const STATE_FAQ:int = 4;
+
+            [Bindable] public var user:UserUI;
+            [Bindable] public var currentCustomer:CustomerUI;
+            [Bindable] public var selectedState:int;
+            
+            public function setState(state:int):void 
+            {
+                selectedState = state;
+            }
+            
+            private function customerChangeHandler(event:CustomerEvent):void 
+            {
+                dispatchEvent(event);
+            }
+            
+            private function btnAccountClickHandler():void 
+            {
+                dispatchEvent(new Event("accountRequest"));
+            }
+            
+            private function btnCatalogClickHandler():void 
+            {
+                dispatchEvent(new Event("catalogRequest"));
+            }
+            
+            private function btnHomeClickHandler():void 
+            {
+                dispatchEvent(new Event("homeRequest"));
+            }
+            
+            private function btnTermsClickHandler():void 
+            {
+                dispatchEvent(new Event("termsRequest"));
+            }
+            
+            private function btnFAQClickHandler():void 
+            {
+                dispatchEvent(new Event("faqRequest"));
+            }
+            
+            private function btnOrderHistoryClickHandler():void 
+            {
+                dispatchEvent(new Event("orderHistoryRequest"));
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:VBox width="100%" verticalGap="2">
+        <mx:HBox width="100%" horizontalGap="4" styleName="welcomeTopBar" verticalAlign="middle">
+            <mx:Label text="Welcome"/>
+            <mx:Label text="{user.firstName + ' ' + user.lastName}" styleName="welcomeTopBarName"/>
+            <TopBar:CustomerInfoPanel id="customerPanel"
+                width="100%"
+                currentCustomer="{currentCustomer}" 
+                customerList="{user.customerList}"
+                currentCustomerChangeRequest="customerChangeHandler(event)"/>
+        </mx:HBox>
+
+        <mx:ApplicationControlBar width="100%"
+                enabled="{currentCustomer != null}">
+            <mx:HBox width="100%" horizontalGap="4"
+                verticalAlign="middle">
+                <mx:LinkButton label="Home" click="btnHomeClickHandler()" 
+                    selected="{selectedState == STATE_HOME}"/>
+                <mx:LinkButton label="Products" click="btnCatalogClickHandler()" 
+                    enabled="{selectedState != STATE_PRODUCTS}"
+                    selected="{selectedState == STATE_PRODUCTS}"/>
+                <mx:LinkButton label="Order History" click="btnOrderHistoryClickHandler()"
+                    enabled="{selectedState != STATE_ORDER_HISTORY}"
+                    selected="{selectedState == STATE_ORDER_HISTORY}"/>
+                <mx:LinkButton label="Terms" click="btnTermsClickHandler()" 
+                    enabled="{selectedState != STATE_TERMS}"
+                    selected="{selectedState == STATE_TERMS}"/>
+                <mx:LinkButton label="FAQs" click="btnFAQClickHandler()" 
+                    enabled="{selectedState != STATE_FAQ}"
+                    selected="{selectedState == STATE_FAQ}"/>
+            </mx:HBox>
+        </mx:ApplicationControlBar>
+    </mx:VBox>
+
+    <TopBar:QuickHorisontalShoppingCart id="sc" 
+        height="100%"
+        currentCustomer="{currentCustomer}"
+        openShoppingCart="dispatchEvent(event)"
+        checkoutRequest="dispatchEvent(event)"/>
+</mx:HBox>

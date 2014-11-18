@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	creationComplete="Controller.OnCreationComplete()">
+
+	<mx:Script>
+		<![CDATA[
+			import UI.AppController;
+
+			public function set ParentController(parent:AppController):void {
+				Controller = new ConnectionManagerController( ConnectionManagerView(this), parent );
+			}
+			
+			[Bindable]
+			public var Controller:ConnectionManagerController;
+				
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator 
+		id="tnConnections" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	    width="100%" height="100%"
+     	historyManagementEnabled="false"
+     	change="Controller.SetCurrentFtpConnection()"
+		/>
+	
+</mx:Canvas>

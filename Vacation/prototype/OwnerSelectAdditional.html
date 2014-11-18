@@ -1,0 +1,25 @@
+<?
+    if (isset($_SESSION["location"])) {
+        echo(LocationInfo::getPath($_SESSION["location"], $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SPECIFY_ADDITIONAL) ?>:</b>
+
+<form action="OwnerSelectAdditional.php" method="get">
+    <table>
+        <tr>
+            <td><b><? echo(MSG_RENTAL_DESCRIPTION) ?>: </b></td>
+            <td><textarea name="rentalDescription" cols="50" rows="4"><? echo($this->rentalDescription) ?></textarea><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_RATES_DESCRIPTION) ?>: </b></td>
+            <td><textarea name="ratesDescription" cols="50" rows="4"><? echo($this->ratesDescription) ?></textarea><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td colspan=2 align=right><input type="submit" name="submit" value="<? echo(MSG_NEXT)?>"></td>
+        </tr>
+    </table>
+    <span class="required">*</span><? echo(MSG_FIELDS_MARKED_WITH_ASTERISK) ?>
+</form>

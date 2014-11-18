@@ -1,0 +1,37 @@
+<?
+    if (!is_null($this->parentId) && ("" != $this->parentId)) {
+        echo(LocationInfo::getPath($this->parentId, $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SPECIFY_LOCATION) ?></b>:
+
+<form action="OwnerSelectLocation.php" method="get">
+    <table>
+        <tr>
+            <td>
+                <?
+                for ($index = 0; $index < count($this->locations); $index ++) {
+                    ?>
+                    <a href="<? echo($this->m_url) ?>?parentId=<? echo($this->locations[$index]->getLocationId()) ?>">
+                        <? echo($this->locations[$index]->getLocationName()) ?>
+                    </a><br />
+                    <?
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td><input type="submit" name="back" value="<? echo(MSG_BACK) ?>" /></td>
+        </tr>
+    </table>
+    <hr />
+    <? echo(MSG_ANOTHER_LOCATION) ?>
+    <table>
+        <tr><td><textarea name="locationDescription" rows="3" cols="60"><? echo($this->locationDescription) ?></textarea><span class="required">*</span></td></tr>
+        <tr><td align="right"><input type="submit" name="submit" value="<? echo(MSG_NEXT) ?>" /></td></tr>
+    </table>
+    <input type="hidden" name="parentId" value="<? echo($this->parentId) ?>" />
+    <span class="required">*</span><? echo(MSG_FIELDS_MARKED_WITH_ASTERISK) ?>
+</form>

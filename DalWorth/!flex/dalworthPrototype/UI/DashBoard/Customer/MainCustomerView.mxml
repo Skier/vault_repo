@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+	<mx:ViewStack  borderStyle="solid" width="100%" height="100%" 
+		xmlns:mx="http://www.adobe.com/2006/mxml" selectedChild="{_controller.selectedChild}" 
+		xmlns:Customer="UI.DashBoard.Customer.*">
+      
+       <mx:Script>
+ 		<![CDATA[
+ 			import UI.DashBoard.MainController;
+ 		
+ 			[Bindable]
+ 			private  var _controller:CustomerController;
+ 			
+ 			
+ 			
+ 			public function set mainController(controller:MainController):void {
+ 			
+			
+ 				this._controller = new CustomerController(this, 
+ 				customerDashView, 
+ 				findCustomerView,
+ 				editCustomerView,
+ 				controller) ;
+ 				
+ 				customerDashView.customerController = _controller;
+ 				findCustomerView.customerController = _controller;
+ 				editCustomerView.customerController = _controller;
+ 			}
+ 			
+ 		]]>
+ 	</mx:Script>
+ 	
+     <Customer:CustomerDashView id="customerDashView"/>
+     <Customer:FindCustomerView id ="findCustomerView"/>
+     <Customer:CustomerInfoView id="editCustomerView"/>
+			
+	</mx:ViewStack>
+

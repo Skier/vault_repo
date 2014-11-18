@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:expenses="com.llsvc.expense.view.expenses.*" xmlns:invoice="com.llsvc.expense.view.invoice.*" xmlns:dashboard="com.llsvc.expense.view.dashboard.*">
+
+    <mx:Metadata>
+        [Event(name="logoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.expense.view.login.UserEditView;
+			import com.llsvc.domain.User;
+			import mx.controls.Alert;
+			import com.llsvc.registry.MainModel;
+			
+			[Bindable] private var model:MainModel;
+			
+			private var _userId:int;
+			[Bindable] 
+			public function get userId():int { return _userId; }
+			public function set userId(value:int):void 
+			{
+				_userId = value;
+				init(userId);
+			}
+			
+			public function init(userId:int):void 
+			{
+				model = MainModel.instance;
+				
+				boxRestart.visible = false;
+
+				startRemoting();
+				model.init(userId);
+				model.addEventListener("currentUserLoaded", modelInited);
+				model.addEventListener("initFailed", modelInitFailed);
+			}
+			
+			private function startRemoting():void 
+			{
+				boxContent.enabled = false;
+				boxProgress.visible = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				boxContent.enabled = true;
+				boxProgress.visible = false;
+			}
+			
+			private function modelInited(event:Event):void 
+			{
+				stopRemoting();
+				
+				var user:User = model.currentUser;
+				viewAccount.user = user;
+				viewExpenses.user = user;
+				
+				if (user.companies.length == 0 || user.clients.length == 0 || user.projects.length == 0 || user.expenceTypes.length == 0) 
+				{
+					vsDashboard.selectedChild = viewAccount;
+				}
+			}
+			
+			private function modelInitFailed(event:*):void 
+			{
+				stopRemoting();
+				
+				boxContent.enabled = false;
+				boxProgress.visible = false;
+				boxRestart.visible = true;
+			}
+			
+			private function btnRestartClickHandler():void 
+			{
+				init(userId);
+			}
+			
+			private function btnLogoutClickHandler():void 
+			{
+				dispatchEvent(new Event("logoutRequest"));
+			}
+			
+			private function loadExpensesHandler(event:Event):void 
+			{
+				viewInvoices.init(model.currentUser);
+			}
+			
+			private function openUser(user:User):void 
+			{
+				if (user == null)
+					return;
+				
+				var userView:UserEditView = UserEditView.open(this, user);
+				userView.addEventListener(UserEvent.REGISTRATION_SUCCESSFULL, 
+					function (event:UserEvent):void 
+					{
+						userView.close();
+					}); 
+				userView.addEventListener("cancelRequest", 
+					function (event:Event):void 
+					{
+						userView.close();
+					}); 
+			}
+			
+			private function btnUserClickHandler():void 
+			{
+				openUser(model.currentUser);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="boxContent" width="100%" height="100%">
+		<mx:ApplicationControlBar id="controlBar" width="100%">
+			<mx:ToggleButtonBar dataProvider="{vsDashboard}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="Welcome"/>
+			<mx:LinkButton label="{model.currentUser.login.person.firstname + ' ' + model.currentUser.login.person.lastname}"
+				click="btnUserClickHandler()"/>
+			<mx:Button height="24" label="Logout" click="btnLogoutClickHandler()"/>
+		</mx:ApplicationControlBar>
+	
+		<mx:ViewStack id="vsDashboard" width="100%" height="100%" creationPolicy="all">
+			<expenses:ExpensesPanel id="viewExpenses" label="Expenses" width="100%" height="100%" expensesLoaded="loadExpensesHandler(event)"/>
+			<invoice:InvoicesPanel id="viewInvoices" label="Invoices" width="100%" height="100%" expenses="{viewExpenses.allExpenses}"/>
+			<dashboard:AccountPanel id="viewAccount" label="My Account" width="100%" height="100%"/>
+		</mx:ViewStack>
+	</mx:VBox>
+	
+	<mx:VBox id="boxProgress" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" visible="false">
+		<mx:Panel width="250" headerHeight="10">
+			<mx:ProgressBar indeterminate="true" labelPlacement="top" label="Loading user information..." width="100%"/>
+		</mx:Panel>
+	</mx:VBox>
+
+	<mx:VBox id="boxRestart" width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" visible="false">
+		<mx:Panel width="250" headerHeight="10" horizontalAlign="center">
+			<mx:Label text="Press button to restart application." fontWeight="bold"/>
+			<mx:Button label="Restart application" click="btnRestartClickHandler()"/>
+		</mx:Panel>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.Transaction;
+			import com.dalworth.leadCentral.domain.TransactionType;
+			
+            [Embed(source="/assets/icons16/telephone.png")]
+            [Bindable]
+            private var imgInboundCall:Class;
+
+            [Embed(source="/assets/icons16/money.png")]
+            [Bindable]
+            private var imgMoney:Class;
+
+            [Embed(source="/assets/icons16/telephone_go.png")]
+            [Bindable]
+            private var imgOutboundCall:Class;
+
+            [Embed(source="/assets/icons16/balloon.png")]
+            [Bindable]
+            private var imgInboundSms:Class;
+
+            [Embed(source="/assets/icons16/balloon--arrow.png")]
+            [Bindable]
+            private var imgOutboundSms:Class;
+
+            [Embed(source="/assets/icons16/user-silhouette-question.png")]
+            [Bindable]
+            private var imgCallerIdLookup:Class;
+
+            [Embed(source="/assets/icons16/document-import.png")]
+            [Bindable]
+            private var imgTranscribe:Class;
+
+			private function getTypeSource(obj:Object):Class
+			{
+				if (obj is Transaction)
+				{
+					var transaction:Transaction = obj as Transaction;
+					
+					switch(transaction.TransactionTypeId)
+					{
+						case TransactionType.INCOME_CALL :
+							return imgInboundCall;
+							
+						case TransactionType.INCOME_TOLL_FREE_CALL :
+							return imgInboundCall;
+							
+						case TransactionType.OUTCOME_CALL :
+							return imgOutboundCall;
+							
+						case TransactionType.INCOME_SMS :
+							return imgInboundSms;
+							
+						case TransactionType.OUTCOME_SMS :
+							return imgOutboundSms;
+							
+						case TransactionType.CALLER_ID_LOOKUP :
+							return imgCallerIdLookup;
+							
+						case TransactionType.VOICE_TRANSCRIBE :
+							return imgTranscribe;
+						
+						case TransactionType.RECURRING_PAYMENT :
+							return imgMoney;
+						
+						case TransactionType.EXTRA_PAYMENT :
+							return imgMoney;
+						
+						default:
+							return null;
+					}
+				}
+				
+				return null;
+			}
+			
+			private function getTypeName(obj:Object):String
+			{
+				if (obj is Transaction)
+					return TransactionType.getTypeNameById(Transaction(obj).TransactionTypeId);
+				
+				return "";
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" horizontalGap="2" width="100%" height="100%">
+		<mx:Image source="{getTypeSource(data)}" width="16" height="16"/>
+		<mx:Label width="100%" text="{getTypeName(data)}"/>
+	</mx:HBox>
+</mx:Canvas>

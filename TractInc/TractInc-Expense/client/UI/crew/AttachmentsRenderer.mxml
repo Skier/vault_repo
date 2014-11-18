@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalAlign="center"
+	verticalAlign="middle">
+	
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.BillDataObject;
+        
+        	private function callAttachmentsView():void {
+        		var bill:BillDataObject = BillDataObject(data);
+        		AttachmentsView.Open(bill, DisplayObject(parentDocument));
+        	}
+        
+        ]]>
+    </mx:Script>
+    
+	<mx:Button
+		label="view"
+		click="callAttachmentsView()"
+		maxHeight="24"
+		maxWidth="50" />
+	
+</mx:HBox>

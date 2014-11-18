@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	paddingLeft="10"
+	paddingRight="10"
+	paddingBottom="2"
+	paddingTop="2"
+	height="24"
+	width="100%"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import common.notes.NotesView;
+			import App.Entity.BillItemDataObject;
+			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import common.StatusesRegistry;
+			
+			private function Approve():void {
+    			var grid:DataGrid = owner as DataGrid;
+				var pos:int = grid.verticalScrollPosition;
+    			var index:int = ArrayCollection(grid.dataProvider).getItemIndex(data);
+    			
+		    	data.StatusTemp = BillItemDataObject.BILL_ITEM_STATUS_APPROVED;
+    			
+    			callLater(setSelectedItem, [data, grid, false, pos, index]);
+			}
+			
+			private function Reject():void {
+    			var grid:DataGrid = owner as DataGrid;
+				var pos:int = grid.verticalScrollPosition;
+    			var index:int = ArrayCollection(grid.dataProvider).getItemIndex(data);
+    			
+		    	data.StatusTemp = BillItemDataObject.BILL_ITEM_STATUS_REJECTED;
+    			
+    			callLater(setSelectedItem, [data, grid, true, pos, index]);
+			}
+			
+			private function setSelectedItem(data:Object, grid:DataGrid, isReject:Boolean, pos:int, index:int):void {
+    			grid.verticalScrollPosition = pos;
+    			grid.selectedIndex = index;
+    			if (isReject) {
+    				NotesView.Open(data, parentDocument.parentDocument as DetailView, false);
+    			}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Button width="70" height="20" label="approve" click="Approve()" 
+		enabled="{data.StatusTemp != BillItemDataObject.BILL_ITEM_STATUS_APPROVED &amp;&amp; data.StatusTemp != BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED}"/>
+
+	<mx:Button width="70" height="20" label="reject" click="Reject()" 
+		enabled="{data.StatusTemp != BillItemDataObject.BILL_ITEM_STATUS_REJECTED &amp;&amp; data.StatusTemp != BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED}"/>
+	
+</mx:HBox>

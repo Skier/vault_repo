@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    title="Create Project Type" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:controls="com.affilia.controls.*"
+    xmlns:containers="com.arc90.flexlib.containers.*" xmlns:voice="com.affilia.voice.*" width="400">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.servman.events.LeadTypeEvent;
+        	import com.dalworth.servman.service.LeadTypeService;
+        	import com.dalworth.servman.domain.LeadType;
+        	import mx.controls.Alert;
+        	import mx.managers.PopUpManager;
+        	import mx.core.UIComponent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.events.CloseEvent;
+        	import com.dalworth.servman.events.ProjectTypeEvent;
+        	import com.dalworth.servman.service.ProjectTypeService;
+        	import mx.events.ValidationResultEvent;
+        	import com.dalworth.servman.domain.ProjectType;
+        	import mx.rpc.Responder;
+            
+            [Bindable] private var isBusy:Boolean = false;
+            [Bindable] private var isReadOnly:Boolean = false;
+            
+            [Bindable]
+            private var leadType:LeadType;
+            
+            public static function open(parent:DisplayObject, leadType:LeadType, isReadOnly:Boolean = false, modal:Boolean = true):LeadTypeEditPopup
+            {
+                var popup:ProjectTypeCreatePopup = new ProjectTypeCreatePopup();
+                
+                popup.leadType = leadType;
+                popup.isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                if (!isBusy)
+                    close();
+            }
+            
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var newType:LeadType =  leadType.prepareToSend();
+				
+				newType.Name = txtName.text;
+				newType.IsActive = true;
+				
+				var view:UIComponent = this;
+				view.enabled = false;
+				LeadTypeService.getInstance().saveLeadType(newType, new Array()).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							view.enabled = true;
+							leadType.applyFields(event.result as LeadType);
+							
+							dispatchEvent(new LeadTypeEvent(LeadTypeEvent.LEAD_TYPE_SAVED, leadType));
+							close();
+						},
+						function (event:FaultEvent):void 
+						{
+							view.enabled = true;
+							Alert.show(event.fault.message);
+						}));
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="true" enabled="false"/>
+	
+	<mx:Form width="100%" 
+		paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20">
+		<mx:FormItem label="Project Type" width="100%" required="true" fontSize="12">
+			<mx:TextInput id="txtName" width="100%" text="{projectType.Name}"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%"  enabled="{!isBusy}">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" click="onSaveClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

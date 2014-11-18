@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Project Edit" width="370" xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import com.llsvc.services.ProjectService;
+			import mx.managers.PopUpManager;
+			import com.llsvc.registry.MainModel;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.Project;
+			import mx.rpc.Responder;
+			
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var usStates:ArrayCollection;
+			[Bindable] private var statuses:ArrayCollection = new ArrayCollection([{data:"OPEN"},{data:"CLOSE"},{data:"SUSPEND"}]);
+			
+			[Bindable] public var project:Project;
+			
+            public static function open(parent:DisplayObject, project:Project, modal:Boolean = true):ProjectEditView
+            {
+                var popup:ProjectEditView = new ProjectEditView();
+                
+                popup.usStates = MainModel.instance.getStates();
+                popup.project = project;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vProjectName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vAfe.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vDescription.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (cbStatus.selectedIndex == -1)
+					result = false;
+
+				return result;
+			}
+			
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			private function getProject():Project 
+			{
+				project.projectname = txtProjectName.text;
+				project.afe = txtAfe.text;
+				project.description = txtDescription.text;
+				project.status = cbStatus.selectedLabel;
+				project.clientid = project.client.clientid;
+
+				return project;
+			}
+			
+			public function save(project:Project):void 
+			{
+				if (project == null
+					|| project.client == null)
+				{
+					trace("Project is incomplete!");
+					return;
+				}
+
+				startRemoting();				
+
+				project.clientid = project.client.clientid;
+				
+				ProjectService.instance.saveProject(project).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							dispatchEvent(new Event("projectSavingComplete"));
+						}, faultHandler));
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Project saving failed !\n" + event.fault.message); 
+			}
+				
+			private function btnCancelClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				if (!isFormValid())
+					return;
+					
+				save(getProject());
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="vProjectName" source="{txtProjectName}" property="text" maxLength="50" required="true"/>
+	<mx:StringValidator id="vAfe" source="{txtAfe}" property="text" maxLength="50" required="false"/>
+	<mx:StringValidator id="vDescription" source="{txtDescription}" property="text" maxLength="5000" required="true"/>
+
+	<mx:Form width="100%">
+		<mx:FormItem label="Project Name" width="100%" required="true">
+			<mx:TextInput id="txtProjectName" width="100%" text="{project.projectname}"/>
+		</mx:FormItem>
+		<mx:FormItem label="AFE" width="100%">
+			<mx:TextInput id="txtAfe" width="100%" text="{project.afe}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Description" width="100%" required="false">
+			<mx:TextArea id="txtDescription" width="100%" text="{project.description}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Status">
+			<controls:ComboBox id="cbStatus" dataProvider="{statuses}" labelField="data" 
+				value="{project.status}"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+		visible="{isBusy}" includeInLayout="{isBusy}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!isBusy}" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" enabled="{!isBusy}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,70 @@
+
+/*
+//----------------------------
+//  Global styles
+//----------------------------
+*/
+.global {
+    color:                  #170505;
+    fillAlphas:             1.00, 1.00; /* last pair are for OVER state */
+    fillColors:             #FFFFFF, #DDDDDD, #FFFFFF, #EEEEEE;
+}
+
+/*
+//----------------------------
+// Named styles
+//----------------------------
+*/
+
+.listItem
+{
+    paddingLeft:            4;
+    paddingRight:           4;
+    horizontalGap:          5;
+    verticalAlign:          "middle";
+    backgroundColor:        #FFFFFF;
+    backgroundAlpha:        .5;
+    borderStyle:            "outset";
+}
+
+.messagePanel {
+    borderStyle: solid;
+    backgroundColor: #ffffff;
+    backgroundAlpha: .2;
+    borderThickness: 0;
+    dropShadowEnabled: true;
+    cornerRadius: 8;
+    paddingRight: 10;
+    paddingLeft: 10;
+    paddingTop: 10;
+    paddingBottom: 10;   
+}
+
+.fileDownloadingPanel { 
+   borderThickness: 0;
+   backgroundAlpha: 1;
+   borderAlpha: 0.01;
+   highlightAlphas: 0.29, 0;
+   borderStyle: solid;
+   headerColors: #869ca7, #869ca7;
+   backgroundColor: #869ca7;
+   borderColor: #869ca7;
+} 
+
+.colorPanel
+{
+    borderStyle:            "solid";
+    borderThickness:        0;
+    backgroundColor:        #BDD6E2;
+    backgroundAlpha:        0.4;
+    color:                  #170505;
+    cornerRadius:           4;
+    dropShadowEnabled:      true;
+}
+
+.composeSection
+{
+    cornerRadius:           4;
+    borderStyle:            "solid";
+    border-color:           #505b70;
+}

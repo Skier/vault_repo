@@ -1,0 +1,149 @@
+<form action='OwnerRegister.php' method='get'>
+    <table>
+        <tr>
+            <td>
+                <b><?echo(MSG_LOGIN.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='login' value='<?echo($this->login);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_PASSWORD.":")?></b>
+            </td>
+            <td>
+                <input type='password' name='password' value='<?echo($this->password);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_PASSWORD.MSG_AGAIN.":")?></b>
+            </td>
+            <td>
+                <input type='password' name='passwordAgain' value='<?echo($this->passwordAgain);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_EMAIL.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='email' value='<?echo($this->email);?>'>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_FIRST_NAME.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='firstName' value='<?echo($this->firstName);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_LAST_NAME.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='lastName' value='<?echo($this->lastName);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_PHONE_NUMBER.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='phoneNumber' value='<?echo($this->phoneNumber);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_MOBILE_PHONE_NUMBER.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='mobilePhoneNumber' value='<?echo($this->mobilePhoneNumber);?>'>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_ADDRESS1.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='address1' value='<?echo($this->address1);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_ADDRESS2.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='address2' value='<?echo($this->address2);?>'>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_CITY.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='city' value='<?echo($this->city);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_STATE_PROVINCE.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='stateProvince' value='<?echo($this->stateProvince);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_REGION.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='region' value='<?echo($this->region);?>'>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_COUNTRY.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='country' value='<?echo($this->country);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_POSTAL_CODE.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='postalCode' value='<?echo($this->postalCode);?>'>
+                <span class='required'>*</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_COMMENTS.":")?></b>
+            </td>
+            <td>
+                <input type='text' name='comments' value='<?echo($this->comments);?>'>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <input type='submit' name='submit' value='<?echo(MSG_ENTER)?>'>
+            </td>
+        </tr>
+    </table>
+    <? echo("<span class='required'>*</span>".MSG_FIELDS_MARKED_WITH_ASTERISK); ?>
+</form>

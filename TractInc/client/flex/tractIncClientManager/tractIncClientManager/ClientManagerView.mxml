@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center" verticalAlign="top"
+	width="100%" height="100%"
+	xmlns:clientManager="tractIncClientManager.*"
+	xmlns:cmClient="tractIncClientManager.client.*"
+	xmlns:cmCompany="tractIncClientManager.company.*"
+	xmlns:cmContract="tractIncClientManager.contract.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.User;
+			import TractInc.Domain.Role;
+			
+			public function init(user:User):void 
+			{
+				controller.init(user);
+			}
+			
+			public function logout():Boolean 
+			{
+				return controller.logout();
+			}
+		]]>
+	</mx:Script>
+
+	<clientManager:ClientManagerController id="controller" view="{this}"/>
+ 
+    <mx:VBox width="100%" height="100%">
+    	<mx:TabBar id="tabBar" 
+    	    dataProvider="{controller.tabData}"
+    	    itemClick="{controller.tabChanged(event);}"/>
+		
+		<mx:ViewStack id="tabStack" creationPolicy="all" minHeight="200" minWidth="400" width="100%" height="100%">
+		    <cmClient:ClientView id="clientTabView"/>
+		    <cmCompany:CompanyView id="companyTabView"/>
+		</mx:ViewStack>
+    </mx:VBox>
+</mx:VBox>

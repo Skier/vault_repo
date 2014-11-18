@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.intuit.sb.cdm.xmlrequest.IntuitRequest;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import Intuit.Sb.Cdm.vo.TelephoneNumber;
+			import com.dalworth.servman.events.JobEvent;
+			import com.dalworth.servman.domain.Job;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.collections.ArrayCollection;
+			import Intuit.Sb.Cdm.vo.Job;
+			
+			[Bindable]
+			private var job:com.dalworth.servman.domain.Job;
+			
+			[Bindable] private var intuitJob:Intuit.Sb.Cdm.vo.Job;
+
+			[Bindable] private var phones:ArrayCollection = new ArrayCollection();
+			[Bindable] private var addresses:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] private var customerPhones:ArrayCollection = new ArrayCollection();
+			[Bindable] private var customerAddresses:ArrayCollection = new ArrayCollection();
+
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				
+				if (value is com.dalworth.servman.domain.Job)
+					job = value as com.dalworth.servman.domain.Job;
+				else 
+					job = null;
+				
+				updateJobProperties();
+			}
+			
+			private function updateJobProperties():void 
+			{
+				if (job != null)
+				{
+					intuitJob = job.RelatedIdsJob as Intuit.Sb.Cdm.vo.Job;
+					if (intuitJob) 
+					{
+						phones.source = intuitJob.Phone;
+						addresses.source = intuitJob.Address;
+					}
+				}
+				
+				setBackground();
+			}
+			
+			private function setBackground():void 
+			{
+				if (job != null)
+				{
+					if (job.MatchLevel == 4)
+						boxContent.setStyle("backgroundColor", 0xDDFFDD);
+					else if (job.MatchLevel == 3)
+						boxContent.setStyle("backgroundColor", 0xDDDDFF);
+					else if (job.MatchLevel == 2)
+						boxContent.setStyle("backgroundColor", 0xFFFFDD);
+					else if (job.MatchLevel == 1)
+						boxContent.setStyle("backgroundColor", 0xFFDDDD);
+					else 
+						boxContent.setStyle("backgroundColor", 0xFFFFFF);
+				}
+			}
+			
+			private function onConnect():void 
+			{
+				dispatchEvent(new JobEvent(JobEvent.JOB_CONNECT, job, true));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox id="boxContent" cornerRadius="2" horizontalGap="-1"
+		top="1" bottom="0" right="1" left="1">
+		<mx:VBox width="100%" verticalGap="0" borderColor="#CCCCCC" borderStyle="solid">
+			<mx:HBox width="100%" backgroundColor="#FFFFFF" backgroundAlpha="0.3">
+				<mx:Label text="{intuitJob.ShowAs}" fontWeight="bold"/>
+
+				<mx:Label text="Type:"/>
+				<mx:Text text="{intuitJob.JobInfo.JobTypeName}" fontWeight="bold"/>
+
+				<mx:Label text="Details:"/>
+				<mx:Text width="100%" text="{intuitJob.JobInfo.Description}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%">
+				<mx:Label text="Phones:"/>
+				<mx:Repeater id="rptCustomerPhones" dataProvider="{customerPhones}">
+					<mx:Label text="{Intuit.Sb.Cdm.vo.TelephoneNumber(rptCustomerPhones.currentItem).FreeFormNumber}" fontWeight="bold"/>
+				</mx:Repeater>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:Button height="100%" label="Match" click="onConnect()" cornerRadius="2" visible="{!job.IsMatched}" includeInLayout="{!job.IsMatched}"/>
+	</mx:HBox>
+</mx:Canvas>

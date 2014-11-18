@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	paddingLeft="10" paddingRight="10" paddingBottom="2" paddingTop="2" height="24"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import weborb.data.ActiveCollection;
+			import App.Domain.BillDataMapper;
+			import common.notes.NotesView;
+			import mx.collections.ArrayCollection;
+			import weborb.data.DynamicLoadEvent;
+			import App.Domain.BillItemStatus;
+			import App.Domain.BillItem;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import App.Domain.BillStatus;
+			import common.StatusesRegistry;
+			
+			private function Confirm():void 
+			{
+				if (data.RelatedBillItem.IsLoaded) {
+					updateItems(StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_CONFIRMED));
+				} else {
+					this.enabled = false;
+					data.RelatedBillItem.addEventListener("loaded", onItemsLoadedToConfirm);
+				}
+			}
+			
+			private function onItemsLoadedToConfirm(event:DynamicLoadEvent):void 
+			{
+				this.enabled = true;
+				data.RelatedBillItem.removeEventListener("loaded", onItemsLoadedToConfirm);
+				updateItems(StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_CONFIRMED));
+			}
+			
+			private function Decline():void 
+			{
+				if (data.RelatedBillItem.IsLoaded) {
+					updateItems(StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_DECLINED));
+				} else {
+					this.enabled = false;
+					data.RelatedBillItem.addEventListener("loaded", onItemsLoadedToDecline);
+				}
+
+				NotesView.Open(data, parentDocument as SummaryView, true);
+			}
+			
+			private function onItemsLoadedToDecline(event:DynamicLoadEvent):void 
+			{
+				this.enabled = true;
+				data.RelatedBillItem.removeEventListener("loaded", onItemsLoadedToDecline);
+				updateItems(StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_DECLINED));
+			}
+			
+			private function updateItems(status:BillItemStatus, notes:String = null):void 
+			{
+				data.statusTemp = StatusesRegistry.getInstance().getBillStatusByName(status.Status);
+
+				if (notes != null) {
+					data.notesTemp = notes;
+				}
+				
+				for each (var item:BillItem in data.RelatedBillItem) {
+					item.RelatedBillItemStatus = status;
+					item.toTempFields();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Button width="70" height="20" label="confirm" click="Confirm()" enabled="{data.statusTemp.Status != BillStatus.BILL_STATUS_CONFIRMED}"/>
+
+	<mx:Button width="70" height="20" label="decline" click="Decline()" enabled="{data.statusTemp.Status != BillStatus.BILL_STATUS_DECLINED}"/>
+	
+</mx:HBox>

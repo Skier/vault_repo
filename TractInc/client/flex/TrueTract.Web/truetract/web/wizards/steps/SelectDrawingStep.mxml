@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceStep 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="newDrawingRequest", type="flash.events.Event")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.Tract;
+            import mx.controls.Alert;
+            import mx.collections.ArrayCollection;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+
+            [Bindable] public var tractInfo:Tract;
+            [Bindable] public var createNewAllowed:Boolean = true;
+            [Bindable] private var drawings:ArrayCollection;
+            
+            private var isRefreshRequired:Boolean = true;
+
+            override public function validateForm():Boolean 
+            {
+                tractInfo = Tract(drawingList.selectedItem);
+
+                return (null != tractInfo);
+            }
+
+            private function creationCompleteHandler():void
+            {
+                if (service)
+                {
+                    service.GetDrawingList.addEventListener(
+                        ResultEvent.RESULT, GetDrawingList_resultHandler);
+    
+                    service.GetDrawingList.addEventListener(
+                        FaultEvent.FAULT, GetDrawingList_faultHandler);
+                }
+            }
+
+            override public function activate():void
+            {
+                loadDrawingList();
+            }
+            
+            private function loadDrawingList():void
+            {
+                if (isRefreshRequired) {
+                    formValid = false;
+                    service.GetDrawingList();
+                }
+            }
+
+            private function GetDrawingList_resultHandler(event:ResultEvent):void
+            {
+                drawings = new ArrayCollection(event.result as Array);
+                isRefreshRequired = false;
+
+                formValid = drawings.length > 0;
+                drawingList.selectedIndex = 0;
+            }
+
+            private function GetDrawingList_faultHandler(event:FaultEvent):void
+            {
+                Alert.show(event.fault.faultString);
+            }
+            
+            private function createNewButton_clickHandler():void
+            {
+                dispatchEvent(new Event("newDrawingRequest"));
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:List id="drawingList"
+        selectedIndex="0"
+        dataProvider="{drawings}" labelField="referenceName"
+        width="100%" height="100%"/>
+
+    <mx:HBox width="100%" includeInLayout="{createNewAllowed}" visible="{createNewAllowed}">
+        <mx:Button id="createNewButton"
+            label="Create New" click="createNewButton_clickHandler()"/>
+    </mx:HBox>
+
+</ServiceStep>

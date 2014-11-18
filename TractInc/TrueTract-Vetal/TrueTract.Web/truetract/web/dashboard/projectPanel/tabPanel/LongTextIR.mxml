@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    implements="mx.controls.listClasses.IDropInListItemRenderer" 
+    toolTip="{listData.label}"
+    verticalAlign="middle">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.core.UIComponentGlobals;
+            import mx.controls.listClasses.BaseListData;
+            import mx.controls.dataGridClasses.DataGridListData;
+
+            private var _listData:BaseListData;
+            [Bindable] 	public function get listData():BaseListData { return _listData; }
+        	public function set listData(value:BaseListData):void
+        	{
+        		_listData = DataGridListData(value);
+        	}
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="{listData.label}"/>
+
+    <mx:Spacer width="100%"/>
+
+    <mx:Label text=".." visible="{listData.label.indexOf('\r') > 0}"/>
+</mx:HBox>

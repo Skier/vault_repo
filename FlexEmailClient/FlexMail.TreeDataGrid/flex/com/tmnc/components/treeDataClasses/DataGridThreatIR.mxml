@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" color="0x000000" 
+    horizontalAlign="left" verticalAlign="middle" horizontalGap="0"
+    paddingLeft="5"
+    horizontalScrollPolicy="off">
+
+    <mx:Spacer id="indentSpacer"/>
+    <mx:Image id="imageIcon" width="12" visible="false" click="onIconClick()"/>
+    <mx:Label id="labelValue" width="100%"/>
+
+    <mx:Script>
+    <![CDATA[
+        import com.tmnc.components.treeDataClasses.event.ClosureIconClickEvent;
+        import mx.core.Application;
+        
+        private const DEPTH_INDENT:int = 10;
+        
+        [Embed(source="/assets/plus.gif")]
+        private var openIcon:Class;
+
+        [Embed(source="/assets/minus.gif")]
+        private var closeIcon:Class;
+
+        private function onIconClick():void{
+            var event:Event = new ClosureIconClickEvent(ITreeItem(data));
+            Application.application.dispatchEvent(event);
+        }
+        
+        override public function set data(data:Object):void{
+            super.data = data;
+            
+            if(data != null){
+                var item:ITreeItem = ITreeItem(data);
+                
+                indentSpacer.width = (DEPTH_INDENT * item.depthLevel);
+
+                var label:String = item[this.styleName.dataField]; //FIXME: wrong way
+                labelValue.text = label;
+
+                if (item.hasChildren){
+                    imageIcon.visible = true;
+                    imageIcon.source = (item.isOpened) ? closeIcon : openIcon;
+                } else {
+                    imageIcon.visible = false;
+                }
+            }
+        }
+        
+    ]]>
+    </mx:Script>
+
+</mx:HBox>

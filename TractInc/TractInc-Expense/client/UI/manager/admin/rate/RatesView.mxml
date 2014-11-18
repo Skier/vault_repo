@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	verticalGap="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.InvoiceItemTypeDataObject;
+			import App.Entity.BillItemTypeDataObject;
+			import App.Entity.ClientDataObject;
+			import App.Entity.AssetDataObject;
+			import App.Entity.DefaultInvoiceRateDataObject;
+			import App.Entity.DefaultBillRateDataObject;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import common.TypesRegistry;
+			import UI.manager.admin.AdminController;
+
+			[Bindable]
+			public var controller:RatesController;
+			
+			public function set parentController(parent:AdminController):void 
+			{
+				controller = new RatesController(this as RatesView, parent);
+			}
+			
+			public function open():void {
+				
+			}
+			
+            private function setBillRateLabels(item:DefaultBillRateDataObject, column:DataGridColumn):String 
+            {
+            	if (column.dataField == "name") {
+            		return item.BillItemTypeName;
+            	} else if (column.dataField == "billRate") {
+            		if (0 == item.BillRate) {
+            			return "---";
+            		}
+            		return (1 == item.BillItemTypeId)? (item.BillRate * 8).toFixed(3) : item.BillRate.toFixed(3);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function setInvoiceRateLabels(item:DefaultInvoiceRateDataObject, column:DataGridColumn):String 
+            {
+            	if (column.dataField == "name") {
+            		return item.InvoiceItemTypeName;
+            	} else if (column.dataField == "invoiceRate") {
+            		if (0 == item.InvoiceRate) {
+            			return "---";
+            		}
+            		return (1 == item.InvoiceItemTypeId)? (item.InvoiceRate * 8).toFixed(3) : item.InvoiceRate.toFixed(3);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function onAssetChanged():void {
+            	var asset:AssetDataObject = AssetDataObject(dgAssets.selectedItem);
+            	
+            	var rates:ArrayCollection = new ArrayCollection(asset.DefaultRates);
+            	var allRateTypes:ArrayCollection = new ArrayCollection(TypesRegistry.instance.getAllBillItemTypes.toArray());
+            	
+            	for each (var rate:DefaultBillRateDataObject in rates) {
+            		allRateTypes.removeItemAt(allRateTypes.getItemIndex(TypesRegistry.instance.getBillItemTypeById(rate.BillItemTypeId)));
+            	}
+            	
+            	for each (var itemType:BillItemTypeDataObject in allRateTypes) {
+            		var defaultRate:DefaultBillRateDataObject = new DefaultBillRateDataObject();
+            		defaultRate.AssetId = asset.AssetId;
+            		defaultRate.BillItemTypeId = itemType.BillItemTypeId;
+            		defaultRate.BillRate = 0;
+            		
+            		rates.addItem(defaultRate);
+            	}
+            	
+            	dgDefaultBillRates.dataProvider = rates;
+            }
+            
+            private function onClientChanged():void {
+            	var client:ClientDataObject = ClientDataObject(dgClients.selectedItem);
+            	
+            	var rates:ArrayCollection = new ArrayCollection(client.DefaultRates);
+            	var allRateTypes:ArrayCollection = new ArrayCollection(TypesRegistry.instance.getAllInvoiceItemTypes.toArray());
+            	
+            	for each (var rate:DefaultInvoiceRateDataObject in rates) {
+            		allRateTypes.removeItemAt(allRateTypes.getItemIndex(TypesRegistry.instance.getInvoiceItemTypeById(rate.InvoiceItemTypeId)));
+            	}
+            	
+            	for each (var itemType:InvoiceItemTypeDataObject in allRateTypes) {
+            		var defaultRate:DefaultInvoiceRateDataObject = new DefaultInvoiceRateDataObject();
+            		defaultRate.ClientId = client.ClientId;
+            		defaultRate.InvoiceItemTypeId = itemType.InvoiceItemTypeId;
+            		defaultRate.InvoiceRate = 0;
+            		
+            		rates.addItem(defaultRate);
+            	}
+            	
+            	dgDefaultInvoiceRates.dataProvider = rates;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:Panel title="Default Bill Item Rates" width="100%" height="100%">
+		<mx:HDividedBox width="100%" height="100%">
+		    <mx:VBox
+		    	width="100%"
+		    	height="100%"
+		    	backgroundColor="#eeeeee"
+    		    borderColor="#999999"
+    		    borderStyle="solid"
+        		paddingLeft="5"
+        		paddingRight="5"
+        		paddingTop="5"
+        		paddingBottom="5">
+		        <mx:HBox width="100%">
+    		        <mx:Label text="Asset:" fontWeight="bold"/>
+        		    <mx:Spacer width="100%"/>
+	    	    </mx:HBox>
+    	    	<mx:DataGrid
+    	    		id="dgAssets"
+        	    	width="100%"
+        	    	height="100%"
+        	    	minWidth="300"
+	        	    dataProvider="{controller.model.assets}"
+	        	    change="onAssetChanged()"
+	        	    >
+    	        	<mx:columns>
+        	        	<mx:DataGridColumn headerText="Asset" dataField="BusinessName" width="150" />
+	        	    </mx:columns>
+	    	    </mx:DataGrid>
+		    </mx:VBox>
+    
+	    	<mx:VBox width="100%" height="100%" backgroundColor="#eeeeee"
+		   	    borderColor="#999999" borderStyle="solid"
+    		   	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        		>
+		   	    <mx:HBox width="100%">
+    		   	    <mx:Label text="Rate / Not Exceed Rate Defaults:" fontWeight="bold"/>
+        		   	<mx:Spacer width="100%"/>
+		       	</mx:HBox>
+    		    <mx:DataGrid
+    		    	id="dgDefaultBillRates"
+   	    		    width="100%"
+   	    		    height="100%"
+   	    		    minWidth="300"
+	            	doubleClickEnabled="true"
+	            	itemDoubleClick="controller.onClickEditDefaultBillRate()"
+	            	sortableColumns="false"
+	    	       	>
+    	    	    <mx:columns>
+   	    	    	    <mx:DataGridColumn headerText="Bill Item Type" labelFunction="setBillRateLabels" dataField="name" width="150">
+   	    	    	    	<mx:itemRenderer>
+   	    	    	    		<mx:Component>
+   	    	    	    			<mx:Label fontWeight="{data.IsPresetRate? 'bold': 'normal'}" text="{data.BillItemTypeName}"/>
+   	    	    	    		</mx:Component>
+   	    	    	    	</mx:itemRenderer>
+   	    	    	    </mx:DataGridColumn>
+       	    	    	<mx:DataGridColumn headerText="Bill Rate" labelFunction="setBillRateLabels" dataField="billRate" width="150" textAlign="right" />
+	            	</mx:columns>
+	   		    </mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="Edit" click="controller.onClickEditDefaultBillRate()" enabled="{dgDefaultBillRates.selectedItem != null}"/>
+				</mx:HBox>
+		    </mx:VBox>
+	    </mx:HDividedBox>
+	</mx:Panel>
+		
+	<mx:Panel title="Default Invoice Item Rates" width="100%" height="100%">
+		<mx:HDividedBox width="100%" height="100%">
+		    <mx:VBox width="100%" height="100%" backgroundColor="#eeeeee"
+    		    borderColor="#999999" borderStyle="solid"
+        		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		        <mx:HBox width="100%">
+    		        <mx:Label text="Client:" fontWeight="bold"/>
+        		    <mx:Spacer width="100%"/>
+	    	    </mx:HBox>
+    	    	<mx:DataGrid
+    	    		id="dgClients"
+        	    	width="100%"
+        	    	height="100%"
+        	    	minWidth="300"
+	        	    dataProvider="{controller.model.clients}"
+	        	    change="onClientChanged()"
+	        	    >
+    	        	<mx:columns>
+        	        	<mx:DataGridColumn headerText="Client" dataField="ClientName" width="150" />
+	        	    </mx:columns>
+	    	    </mx:DataGrid>
+		    </mx:VBox>
+    
+	    	<mx:VBox width="100%" height="100%" backgroundColor="#eeeeee"
+		   	    borderColor="#999999" borderStyle="solid"
+    		   	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        		>
+		   	    <mx:HBox width="100%">
+    		   	    <mx:Label text="Invoice Rate Defaults:" fontWeight="bold"/>
+        		   	<mx:Spacer width="100%"/>
+		       	</mx:HBox>
+    		    <mx:DataGrid
+    		    	id="dgDefaultInvoiceRates"
+   	    		    width="100%"
+   	    		    height="100%"
+   	    		    minWidth="300"
+	            	doubleClickEnabled="true"
+	            	itemDoubleClick="controller.onClickEditDefaultInvoiceRate()"
+	            	sortableColumns="false"
+	    	       	>
+    	    	    <mx:columns>
+   	    	    	    <mx:DataGridColumn headerText="Invoice Item Type" labelFunction="setInvoiceRateLabels" dataField="name" width="150">
+   	    	    	    	<mx:itemRenderer>
+   	    	    	    		<mx:Component>
+   	    	    	    			<mx:Label fontWeight="{data.IsPresetRate? 'bold': 'normal'}" text="{data.InvoiceItemTypeName}"/>
+   	    	    	    		</mx:Component>
+   	    	    	    	</mx:itemRenderer>
+   	    	    	    </mx:DataGridColumn>
+       	    	    	<mx:DataGridColumn headerText="Invoice Rate" labelFunction="setInvoiceRateLabels" dataField="invoiceRate" width="150" textAlign="right" />
+	            	</mx:columns>
+	   		    </mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="Edit" click="controller.onClickEditDefaultInvoiceRate()" enabled="{dgDefaultInvoiceRates.selectedItem != null}"/>
+				</mx:HBox>
+		    </mx:VBox>
+		</mx:HDividedBox>
+	</mx:Panel>
+    
+</mx:VDividedBox>

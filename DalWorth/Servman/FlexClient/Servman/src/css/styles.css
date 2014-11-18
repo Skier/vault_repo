@@ -1,0 +1,279 @@
+/* CSS file */
+
+Application {
+        paddingTop:0;
+        paddingBottom:0;
+        paddingLeft:0;
+        paddingRight:0;
+        vertical-gap:0;
+        theme-color: #919191;
+        font-family: main;
+        color: #333333;
+        font-size: 11;
+}
+
+ApplicationControlBar {
+	padding-top: 2;
+	padding-bottom: 2;
+    paddingLeft:2;
+    paddingRight:2;
+	background-image: Embed("../assets/ll_application_bar.png");
+	background-repeat: repeat;
+	corner-radius: 0;
+	border-color: #333333;
+	border-thickness: 1;
+	border-style: solid;
+	shadow-distance: 0;
+}
+
+TitleWindow {
+   borderStyle: solid;
+   borderAlpha: 1;
+   roundedBottomCorners: false;
+   backgroundAlpha: 0.9;
+   headerColors: #999999, #CCCCCC;
+   footerColors: #999999, #CCCCCC;
+   backgroundColor: #EEEEEE;
+   shadowDistance: 1;
+   borderThicknessLeft: 3;
+   borderThicknessRight: 3;
+}
+
+Button {
+        skin: Embed("../assets/button_skin.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="23",
+                        scaleGridTop="8",
+                        scaleGridBottom="14");
+        over-skin: Embed("../assets/button_over_skin.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="23",
+                        scaleGridTop="8",
+                        scaleGridBottom="14");
+        selected-skin: Embed("../assets/button_over_skin.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="23",
+                        scaleGridTop="8",
+                        scaleGridBottom="14");
+        disabled-skin: Embed("../assets/button_over_skin.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="23",
+                        scaleGridTop="8",
+                        scaleGridBottom="14");
+        open-duration: 0;
+        close-duration: 0;
+        corner-radius: 2;
+}
+
+.greenButton {
+        skin: Embed("../assets/ll_green_button.png", 
+                        scaleGridLeft="5", 
+                        scaleGridRight="19", 
+                        scaleGridTop="5", 
+                        scaleGridBottom="19");
+        over-skin: Embed("../assets/ll_green_button_over.png",
+                        scaleGridLeft="5",
+                        scaleGridRight="19",
+                        scaleGridTop="5",
+                        scaleGridBottom="19");
+        selected-skin: Embed("../assets/ll_green_button_selected.png",
+                        scaleGridLeft="5",
+                        scaleGridRight="19",
+                        scaleGridTop="5",
+                        scaleGridBottom="19");
+        disabled-skin: Embed("../assets/ll_green_button_selected.png",
+                        scaleGridLeft="5",
+                        scaleGridRight="19",
+                        scaleGridTop="5",
+                        scaleGridBottom="19");
+        color: #ffffff;
+        disabled-color: #999999;
+        text-roll-over-color: #ffffff;
+        open-duration: 0;
+        close-duration: 0;
+        corner-radius: 2;
+}
+
+IconButton {
+        skin: Embed("../assets/icon_button_skin.png", 
+                        scaleGridLeft="7", 
+                        scaleGridRight="22", 
+                        scaleGridTop="7", 
+                        scaleGridBottom="13");
+        over-skin: Embed("../assets/icon_button_over_skin.png",
+                        scaleGridLeft="7",
+                        scaleGridRight="22",
+                        scaleGridTop="7",
+                        scaleGridBottom="13");
+        open-duration: 0;
+        close-duration: 0;
+        corner-radius: 2;
+}
+
+ButtonBar {
+        firstButtonStyleName: firstButton;
+        buttonStyleName: middleButton;
+        lastButtonStyleName: lastButton;
+        button-height: 24;
+}
+  
+.firstButton {
+        skin: Embed("/assets/button_bar_first.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        over-skin: Embed("/assets/button_bar_first_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        selected-up-skin: Embed("/assets/button_bar_first_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        color: #FFFFFF;
+        text-roll-over-color: #ffff00;
+}
+
+.middleButton {
+        skin: Embed("/assets/button_bar_middle.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        over-skin: Embed("/assets/button_bar_middle_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        selected-up-skin: Embed("/assets/button_bar_middle_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        color: #FFFFFF;
+        text-roll-over-color: #ffff00;
+}
+
+.lastButton {
+        skin: Embed("/assets/button_bar_last.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        over-skin: Embed("/assets/button_bar_last_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        selected-up-skin: Embed("/assets/button_bar_last_over.png",
+                        scaleGridLeft="8",
+                        scaleGridRight="27",
+                        scaleGridTop="8",
+                        scaleGridBottom="21");
+        color: #FFFFFF;
+        text-roll-over-color: #ffff00;
+}
+
+ComboBox {
+        skin: Embed("/assets/combobox_skin.png",
+                        scaleGridLeft="4",
+                        scaleGridRight="130",
+                        scaleGridTop="4",
+                        scaleGridBottom="25");
+        over-skin: Embed("/assets/combobox_over_skin.png",
+                        scaleGridLeft="4",
+                        scaleGridRight="130",
+                        scaleGridTop="4",
+                        scaleGridBottom="25");
+        down-skin: Embed("/assets/combobox_down_skin.png",
+                        scaleGridLeft="4",
+                        scaleGridRight="130",
+                        scaleGridTop="4",
+                        scaleGridBottom="25");
+        disabled-skin: Embed("/assets/combobox_skin.png",
+                        scaleGridLeft="5",
+                        scaleGridRight="19",
+                        scaleGridTop="5",
+                        scaleGridBottom="19");
+        corner-radius: 2;
+        open-duration: 0;
+        close-duration: 0;
+        font-weight: normal;
+}
+
+ControlBar {
+    padding-bottom: 3;
+    padding-left: 3;
+    padding-right: 3;
+    padding-top: 3;
+    horizontal-gap: 3;
+}
+
+Panel {
+   borderColor: #D9D9D9;
+   borderAlpha: 1;
+}
+TextInput {
+    background-alpha: 0.52;
+}
+
+LinkButton {
+    color: #0000aa;
+    text-decoration: underline;
+    disabled-color: #999999;
+}
+
+LinkBar {
+	link-button-style-name: linkBarItemStyle;
+	font-size: 14px;
+}
+
+.linkBarItemStyle
+{
+    color: #FFFFFF;
+    selected-color: FFFF66;
+    disabled-color: #999999;
+	font-weight: normal;
+}
+
+.linkBarSelectedItemStyle
+{
+    text-decoration: underline;
+    color: #FFFF66;
+}
+
+@font-face
+{
+    src: url("../assets/fonts/MyriadWebPro.ttf");
+    font-family: main;
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face
+{
+    src: url("../assets/fonts/MyriadWebPro-Bold.ttf");
+    font-family: main;
+    font-style: normal;
+    font-weight: bold;
+}
+
+@font-face {
+    src:url("../assets/fonts/MyriadWebPro.ttf");
+    font-family: Myriad;
+}
+
+@font-face {
+    src: url("../assets/fonts/MyriadWebPro-Bold.ttf") ;
+    fontFamily: Myriad;
+    fontWeight: bold;
+}
+
+@font-face {
+    src: url("../assets/fonts/MyriadWebPro-italic.ttf") ;
+    fontFamily: Myriad;
+    font-style: italic;
+}

@@ -1,0 +1,161 @@
+﻿@using System.Web.Mvc.Html
+@using Dalworth.LeadCentral.Domain
+@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Web.Models.Lead.LeadList
+
+@{
+    ViewBag.Title = "Leads List";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1 style="background-image: url('image/home.png');">Leads List</h1>
+    @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+    {
+    <div style="float:right;padding: 8px 0px 8px 0px;">
+    @Html.ActionLink("Create New", "Create", new {controller="Leads"}, new { @class = "button primary" })
+    </div>
+    }
+  </div>
+  <div class="content">
+
+      <div class="details" style="margin-bottom:5px;text-align:right; padding:5px;">
+        Total Leads: <b>@String.Format("{0}", Model.TotalCount)</b>. Closed Amount: <b>@String.Format("{0:C}", Model.TotalAmount)</b>
+      </div>
+
+@using (Html.BeginForm("Index", "Leads", FormMethod.Get))
+{
+      <div class="filter" style="margin-top:5px; border-bottom:none;">
+        <table style="width:100%;">
+          <tr>
+            <td class="left" style="vertical-align:bottom;">Status</td>
+            <td class="left" style="vertical-align:bottom;">Sales Rep</td>
+            <td class="left" style="vertical-align:bottom;">Business Partner</td>
+            <td class="left" style="vertical-align:bottom;">Campaign</td>
+            <td class="left" style="white-space:nowrap;vertical-align:bottom;">Date period</td>
+            <td class="left" style="width:100%;vertical-align:bottom;" rowspan="2">
+              <div style="float:right;">
+                <button type="submit">Refresh</button>
+                @Html.ActionLink("Clear", "Index", new { controller = "Leads" }, new { @class = "button" })
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="left">@Html.DropDownList("LeadStatuses", new SelectList(Model.PredefinedLeadStatuses.Keys))</td>
+            <td class="left">@Html.DropDownList("SalesRepId", new SelectList(Model.SalesRepList, "Id", "ScreenName", Model.SalesRepId))</td>
+            <td class="left">@Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.PartnerId))</td>
+            <td class="left">@Html.DropDownList("CampaignId", new SelectList(Model.CampaignList, "Id", "CampaignName", Model.CampaignId))</td>
+            <td class="left" style="white-space:nowrap;">
+              from:@Html.TextBoxFor(model => model.DateCreatedFrom, new { @class = "date-input", @id = "date-from" })
+              to:@Html.TextBoxFor(model => model.DateCreatedTo, new { @class = "date-input", @id = "date-to" })
+            </td>
+
+@*
+            <td class="left" style="white-space:nowrap;">@Html.TextBoxFor(model => model.CallerNumber, new { @class = "field-input" })</td>
+*@
+
+          </tr>
+        </table>
+      </div>
+}
+@if (Model.Leads != null && Model.Leads.Count > 0)
+{
+                var grid = new WebGrid(source: Model.Leads, rowsPerPage: 12);
+                var columns = new List<WebGridColumn>
+                      {
+                          grid.Column("Created", format: (item) => Html.ActionLink((string)item.DateCreatedStr, "LeadDetails", new { id = item.Id }), canSort:false),
+                          grid.Column("Name", "Name", canSort : false),
+                          grid.Column("Campaign", format:@<text><span> 
+                                    @if(item.RelatedCampaign != null)
+                                    {
+                                        <span>@Html.ActionLink((string)item.CampaignStr, "Details", new {controller="Campaigns", id = item.CampaignId })</span>
+                                    } else
+                                    {
+                                        <span>&nbsp;</span>
+                                    }
+                                </span></text> , canSort : false),
+                          grid.Column("BusinessPartner", format:@<text><span> 
+                                    @if(item.RelatedBusinessPartner != null)
+                                    {
+                                        <span>@Html.ActionLink((string)item.BusinessPartnerStr, "Details", new {controller="Partners", id = item.BusinessPartnerId })</span>
+                                    } else
+                                    {
+                                        <span>&nbsp;</span>
+                                    }
+                                </span></text> , canSort : false),
+                          grid.Column("PhoneStr", "Phone", canSort : false),
+                          grid.Column("StatusStr", "Status", canSort : false),
+                          grid.Column("Amount", "Amount", canSort : false,
+                                format: @<text> <span style="float:right;"> 
+                                    @(string.Format("{0:C}", item.Amount))</span></text> ),
+                          grid.Column("", "Call", canSort : false, 
+                                format:@<text> <span style="float:right;"> 
+                                    @if (item.RelatedSource.Type == SourceEnum.PhoneCall) {
+                                        if(item.RelatedSource.RelatedPhoneCall.IsProcessed)
+                                        {
+                                            <span>(@item.RelatedSource.RelatedPhoneCall.CallDurationStr)</span>
+                                            <a onclick="javascript:playVoice('@{WriteTo(__razor_template_writer, item.RelatedSource.RelatedPhoneCall.FullRecordingUrl);}')" class="button">Listen</a>
+                                        } else
+                                        {
+                                            <i>Pending</i>
+                                        }
+                                    }
+                                </span></text> )
+                      };
+ 
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 10,
+            tableStyle: "list"
+    )
+}
+else
+{
+      <div class="details" style="margin-top:5px; margin-bottom:5px;text-align:right; padding:5px;">
+        No Leads Created
+      </div>
+}
+  </div>
+<script type="text/javascript">
+//<![CDATA[
+    var jpIsReady = false;
+    var jpIsVisible = false;
+
+    $(document).ready(function () {
+        $("#jquery_jplayer").jPlayer({
+            ready: function () {
+                jpIsReady = true;
+            },
+            swfPath: "/Scripts"
+        });
+    });
+
+    function playVoice(url) {
+        if (!jpIsVisible) {
+            $("#player").toggle();
+            jpIsVisible = true;
+        } else {
+            $("#jquery_jplayer_1").jPlayer("stop");
+        }
+        $("#jquery_jplayer").jPlayer("setMedia", { mp3: url });
+        $("#jquery_jplayer").jPlayer("play");
+    }
+//]]>
+</script>
+  <div id="player" style="position:fixed; left:10px; bottom:10px; display: none;">
+    <div id="jquery_jplayer" class="jp-jplayer"></div>    <div class="jp-audio">      <div class="jp-type-single">        <div id="jp_interface_1" class="jp-interface">          <ul class="jp-controls">            <li><a href="#" class="jp-play" tabindex="1">play</a></li>            <li><a href="#" class="jp-pause" tabindex="1">pause</a></li>            <li><a href="#" class="jp-stop" tabindex="1">stop</a></li>            <li><a href="#" class="jp-mute" tabindex="1">mute</a></li>            <li><a href="#" class="jp-unmute" tabindex="1">unmute</a></li>          </ul>          <div class="jp-progress">            <div class="jp-seek-bar">              <div class="jp-play-bar"></div>            </div>          </div>          <div class="jp-volume-bar">            <div class="jp-volume-bar-value"></div>          </div>          <div class="jp-current-time"></div>          <div class="jp-duration"></div>        </div>      </div>    </div>  </div>
+</div>

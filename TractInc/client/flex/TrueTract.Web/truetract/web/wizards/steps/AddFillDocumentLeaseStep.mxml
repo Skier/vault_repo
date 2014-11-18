@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractStep 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:steps="truetract.web.wizards.steps.*"
+    verticalScrollPolicy="off" verticalGap="5" 
+    xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.controls.DateField;
+            import truetract.domain.DictionaryRegistry;
+            import truetract.domain.Participant;
+            import truetract.domain.Document;
+            import truetract.domain.DocumentLease;
+
+            [Bindable] public var docLease:DocumentLease = new DocumentLease();
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            public function setDefaults(doc:Document):void {
+                docLease.EffectiveDate = doc.DateSigned;
+                docLease.ExpirationDate = doc.DateSigned;
+                docLease.AliasGrantee = doc.SellerName;
+            }   
+                     
+            override public function validateForm():Boolean 
+            {
+                var result:Boolean = super.validateForm();
+//                Alert.show("AddDocumentLeaseStep.validateForm: docLease=" + docLease + ", result=" + result);
+                if (result) {
+                    this.leasePanel.completeEdit();
+                    docLease = this.leasePanel.docLease;
+//                    Alert.show("AddDocumentLeaseStep.validateForm: docLease=" + docLease);
+                }
+                return result;
+                
+            }
+            
+            override public function clean():void
+            {
+/*              
+                signedDateField.value = null;
+                filledDateField.value = null;
+                sellerName.text = "";
+                buyerName.text = "";
+*/                
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+<!--
+      <mx:DateValidator
+            daySource="{filledDateField.dayTxt}" dayProperty="text" 
+            monthSource="{filledDateField.monthTxt}" monthProperty="text" 
+            yearSource="{filledDateField.yearTxt}" yearProperty="text" required="true"/>
+        
+      <mx:DateValidator
+            daySource="{signedDateField.dayTxt}" dayProperty="text" 
+            monthSource="{signedDateField.monthTxt}" monthProperty="text" 
+            yearSource="{signedDateField.yearTxt}" yearProperty="text" required="true"/>
+
+        <mx:StringValidator source="{sellerName}" property="text" required="true"/>
+
+        <mx:StringValidator source="{buyerName}" property="text" required="true"/>
+-->
+    </validators:ValidatorsGroup>
+    
+    <steps:DocumentLeaseView id="leasePanel" docLease="{docLease}" editable="true" width="100%"/>
+
+<!--
+    <mx:HRule width="100%" strokeColor="#000000"/>
+
+    <mx:Form width="100%" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="3">
+
+        <mx:FormItem label="Date Signed (mm/dd/yyyy):">
+            <components:CombinedDateField id="signedDateField"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Date Filled (mm/dd/yyyy):">
+            <components:CombinedDateField id="filledDateField"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="{docum.SellerRoleName}:" width="100%">
+            <mx:TextInput id="sellerName" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="{docum.BuyerRoleName}:" width="100%">
+            <mx:TextInput id="buyerName" width="100%"/>
+        </mx:FormItem>
+        
+    </mx:Form>
+-->
+</AbstractStep>

@@ -1,0 +1,1065 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{8444A6BD-6C06-4425-AC2F-2FF1623844ED}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "Reports"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "DPI.Reports"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "OrderingDebug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\OrderingDebug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "BusComp"
+                    Project = "{39E1C1EA-9DC4-467B-BE60-BF9B9DD36AA1}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "DPIComp"
+                    Project = "{AAE61D0E-3697-4BB6-B5C9-2E117FB7E6F2}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Interfaces"
+                    Project = "{21A6A10E-ACE2-4570-ADE9-E389DA94587C}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "WorkFlow"
+                    Project = "{0869AA48-735C-419E-B66A-5E84979FBCCD}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Services"
+                    Project = "{690BD868-E152-4B04-8B48-24F85398C45B}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "ClientComp"
+                    Project = "{DE82C6F7-A112-448D-8A26-3CECE5C75E95}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "CrystalDecisions.Shared"
+                    AssemblyName = "CrystalDecisions.Shared"
+                    HintPath = "..\..\..\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.Shared.dll"
+                />
+                <Reference
+                    Name = "CrystalDecisions.ReportSource"
+                    AssemblyName = "CrystalDecisions.ReportSource"
+                    HintPath = "..\..\..\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.ReportSource.dll"
+                />
+                <Reference
+                    Name = "CrystalDecisions.CrystalReports.Engine"
+                    AssemblyName = "CrystalDecisions.CrystalReports.Engine"
+                    HintPath = "..\..\..\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.CrystalReports.Engine.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "CertResult.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "CertResult.cs"
+                />
+                <File
+                    RelPath = "CertResult.cs"
+                    DependentUpon = "CertResult.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "CertResultsReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DCNew_Receipt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCNew_Receipt.cs"
+                />
+                <File
+                    RelPath = "DCNew_Receipt.cs"
+                    DependentUpon = "DCNew_Receipt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCNew_Receipt.resx"
+                    DependentUpon = "DCNew_Receipt.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Deny.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCNew_Receipt_Deny.cs"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Deny.cs"
+                    DependentUpon = "DCNew_Receipt_Deny.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Deny_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCNew_Receipt_Deny_Narrow.cs"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Deny_Narrow.cs"
+                    DependentUpon = "DCNew_Receipt_Deny_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCNew_Receipt_Narrow.cs"
+                />
+                <File
+                    RelPath = "DCNew_Receipt_Narrow.cs"
+                    DependentUpon = "DCNew_Receipt_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCReload_Receipt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCReload_Receipt.cs"
+                />
+                <File
+                    RelPath = "DCReload_Receipt.cs"
+                    DependentUpon = "DCReload_Receipt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Deny.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCReload_Receipt_Deny.cs"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Deny.cs"
+                    DependentUpon = "DCReload_Receipt_Deny.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Deny_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCReload_Receipt_Deny_Narrow.cs"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Deny_Narrow.cs"
+                    DependentUpon = "DCReload_Receipt_Deny_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "DCReload_Receipt_Narrow.cs"
+                />
+                <File
+                    RelPath = "DCReload_Receipt_Narrow.cs"
+                    DependentUpon = "DCReload_Receipt_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsCertResult.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsCertResult.cs"
+                />
+                <File
+                    RelPath = "dsCertResult.cs"
+                    DependentUpon = "dsCertResult.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsCertResult.xsx"
+                    DependentUpon = "dsCertResult.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsDCNew_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsDCNew_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsDCNew_Receipt.cs"
+                    DependentUpon = "dsDCNew_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsDCNew_Receipt.xsx"
+                    DependentUpon = "dsDCNew_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsEndOfDayReport.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsEndOfDayReport.cs"
+                />
+                <File
+                    RelPath = "dsEndOfDayReport.cs"
+                    DependentUpon = "dsEndOfDayReport.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsEndOfDayReport.xsx"
+                    DependentUpon = "dsEndOfDayReport.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsHI_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsHI_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsHI_Receipt.cs"
+                    DependentUpon = "dsHI_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsHI_Receipt.xsx"
+                    DependentUpon = "dsHI_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsHIMP_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsHIMP_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsHIMP_Receipt.cs"
+                    DependentUpon = "dsHIMP_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsHIMP_Receipt.xsx"
+                    DependentUpon = "dsHIMP_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsInfinity_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsInfinity_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsInfinity_Receipt.cs"
+                    DependentUpon = "dsInfinity_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsInfinity_Receipt.xsx"
+                    DependentUpon = "dsInfinity_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsMP_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsMP_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsMP_Receipt.cs"
+                    DependentUpon = "dsMP_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsMP_Receipt.xsx"
+                    DependentUpon = "dsMP_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsNO_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsNO_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsNO_Receipt.cs"
+                    DependentUpon = "dsNO_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsNO_Receipt.xsx"
+                    DependentUpon = "dsNO_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsPendingOrderPaymentInfoByCorp.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsPendingOrderPaymentInfoByCorp.cs"
+                />
+                <File
+                    RelPath = "dsPendingOrderPaymentInfoByCorp.cs"
+                    DependentUpon = "dsPendingOrderPaymentInfoByCorp.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsPendingOrderPaymentInfoByCorp.xsx"
+                    DependentUpon = "dsPendingOrderPaymentInfoByCorp.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsPendingTransactionsByStore.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsPendingTransactionsByStore.cs"
+                />
+                <File
+                    RelPath = "dsPendingTransactionsByStore.cs"
+                    DependentUpon = "dsPendingTransactionsByStore.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsPendingTransactionsByStore.xsx"
+                    DependentUpon = "dsPendingTransactionsByStore.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsPin_Receipt.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsPin_Receipt.cs"
+                />
+                <File
+                    RelPath = "dsPin_Receipt.cs"
+                    DependentUpon = "dsPin_Receipt.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsPin_Receipt.xsx"
+                    DependentUpon = "dsPin_Receipt.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsSalesRptByState.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsSalesRptByState.cs"
+                />
+                <File
+                    RelPath = "dsSalesRptByState.cs"
+                    DependentUpon = "dsSalesRptByState.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsSalesRptByState.xsx"
+                    DependentUpon = "dsSalesRptByState.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsSalesRptByStore.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsSalesRptByStore.cs"
+                />
+                <File
+                    RelPath = "dsSalesRptByStore.cs"
+                    DependentUpon = "dsSalesRptByStore.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsSalesRptByStore.xsx"
+                    DependentUpon = "dsSalesRptByStore.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_ActCustListByDueDate.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_ActCustListByDueDate.cs"
+                />
+                <File
+                    RelPath = "dsStore_ActCustListByDueDate.cs"
+                    DependentUpon = "dsStore_ActCustListByDueDate.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_ActCustListByDueDate.xsx"
+                    DependentUpon = "dsStore_ActCustListByDueDate.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_Commission.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_Commission.cs"
+                />
+                <File
+                    RelPath = "dsStore_Commission.cs"
+                    DependentUpon = "dsStore_Commission.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_Commission.xsx"
+                    DependentUpon = "dsStore_Commission.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_CustomerList.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_CustomerList.cs"
+                />
+                <File
+                    RelPath = "dsStore_CustomerList.cs"
+                    DependentUpon = "dsStore_CustomerList.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_CustomerList.xsx"
+                    DependentUpon = "dsStore_CustomerList.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_DayTotals.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_DayTotals.cs"
+                />
+                <File
+                    RelPath = "dsStore_DayTotals.cs"
+                    DependentUpon = "dsStore_DayTotals.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_DayTotals.xsx"
+                    DependentUpon = "dsStore_DayTotals.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_OrderStatus.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_OrderStatus.cs"
+                />
+                <File
+                    RelPath = "dsStore_OrderStatus.cs"
+                    DependentUpon = "dsStore_OrderStatus.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_OrderStatus.xsx"
+                    DependentUpon = "dsStore_OrderStatus.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "dsStore_WirelessCommission.xsd"
+                    BuildAction = "Content"
+                    Generator = "MSDataSetGenerator"
+                    LastGenOutput = "dsStore_WirelessCommission.cs"
+                />
+                <File
+                    RelPath = "dsStore_WirelessCommission.cs"
+                    DependentUpon = "dsStore_WirelessCommission.xsd"
+                    SubType = "code"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "dsStore_WirelessCommission.xsx"
+                    DependentUpon = "dsStore_WirelessCommission.xsd"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "HI_ConvRecpt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "HI_ConvRecpt.cs"
+                />
+                <File
+                    RelPath = "HI_ConvRecpt.cs"
+                    DependentUpon = "HI_ConvRecpt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "HI_Reciept.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "HI_Reciept.cs"
+                />
+                <File
+                    RelPath = "HI_Reciept.cs"
+                    DependentUpon = "HI_Reciept.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "HIMP_Receipt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "HIMP_Receipt.cs"
+                />
+                <File
+                    RelPath = "HIMP_Receipt.cs"
+                    DependentUpon = "HIMP_Receipt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "InfActReceipt.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InfCashCard_Rcpt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "InfCashCard_Rcpt.cs"
+                />
+                <File
+                    RelPath = "InfCashCard_Rcpt.cs"
+                    DependentUpon = "InfCashCard_Rcpt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "InfMonthly_Rcpt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "InfMonthly_Rcpt.cs"
+                />
+                <File
+                    RelPath = "InfMonthly_Rcpt.cs"
+                    DependentUpon = "InfMonthly_Rcpt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "InfNewCell_Rcpt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "InfNewCell_Rcpt.cs"
+                />
+                <File
+                    RelPath = "InfNewCell_Rcpt.cs"
+                    DependentUpon = "InfNewCell_Rcpt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "InfNewCell_Rcpt_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "InfNewCell_Rcpt_Narrow.cs"
+                />
+                <File
+                    RelPath = "InfNewCell_Rcpt_Narrow.cs"
+                    DependentUpon = "InfNewCell_Rcpt_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "MP_Receipt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "MP_Receipt.cs"
+                />
+                <File
+                    RelPath = "MP_Receipt.cs"
+                    DependentUpon = "MP_Receipt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "MP_Receipt_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "MP_Receipt_Narrow.cs"
+                />
+                <File
+                    RelPath = "MP_Receipt_Narrow.cs"
+                    DependentUpon = "MP_Receipt_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "NO_Reciept.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "NO_Reciept.cs"
+                />
+                <File
+                    RelPath = "NO_Reciept.cs"
+                    DependentUpon = "NO_Reciept.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "NO_Reciept_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "NO_Reciept_Narrow.cs"
+                />
+                <File
+                    RelPath = "NO_Reciept_Narrow.cs"
+                    DependentUpon = "NO_Reciept_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "PendingOrderPaymentInfo.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "PendingOrderPaymentInfo.cs"
+                />
+                <File
+                    RelPath = "PendingOrderPaymentInfo.cs"
+                    DependentUpon = "PendingOrderPaymentInfo.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "PendingOrderPaymentInfoRF.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PendingTransactionsByStore.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "PendingTransactionsByStore.cs"
+                />
+                <File
+                    RelPath = "PendingTransactionsByStore.cs"
+                    DependentUpon = "PendingTransactionsByStore.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "PendingTransactionsByStoreRF.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Pin_Receipt.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Pin_Receipt.cs"
+                />
+                <File
+                    RelPath = "Pin_Receipt.cs"
+                    DependentUpon = "Pin_Receipt.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Pin_Receipt_Narrow.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Pin_Receipt_Narrow.cs"
+                />
+                <File
+                    RelPath = "Pin_Receipt_Narrow.cs"
+                    DependentUpon = "Pin_Receipt_Narrow.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "ReceiptDSFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReceiptFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReceiptReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReportSvc.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SalesRptByState.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "SalesRptByState.cs"
+                />
+                <File
+                    RelPath = "SalesRptByState.cs"
+                    DependentUpon = "SalesRptByState.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "SalesRptByStore.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "SalesRptByStore.cs"
+                />
+                <File
+                    RelPath = "SalesRptByStore.cs"
+                    DependentUpon = "SalesRptByStore.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_ActCustListByDueDate.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_ActCustListByDueDate.cs"
+                />
+                <File
+                    RelPath = "Store_ActCustListByDueDate.cs"
+                    DependentUpon = "Store_ActCustListByDueDate.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_CommissionReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Store_CustomerList.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_CustomerList.cs"
+                />
+                <File
+                    RelPath = "Store_CustomerList.cs"
+                    DependentUpon = "Store_CustomerList.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_CustomerListReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Store_DayTotalsDetail.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_DayTotalsDetail.cs"
+                />
+                <File
+                    RelPath = "Store_DayTotalsDetail.cs"
+                    DependentUpon = "Store_DayTotalsDetail.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_DayTotalsReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Store_DayTotalsSummary.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_DayTotalsSummary.cs"
+                />
+                <File
+                    RelPath = "Store_DayTotalsSummary.cs"
+                    DependentUpon = "Store_DayTotalsSummary.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_EndOfDayReport.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_EndOfDayReport.cs"
+                />
+                <File
+                    RelPath = "Store_EndOfDayReport.cs"
+                    DependentUpon = "Store_EndOfDayReport.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_OrderStatus.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_OrderStatus.cs"
+                />
+                <File
+                    RelPath = "Store_OrderStatus.cs"
+                    DependentUpon = "Store_OrderStatus.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_OrderStatusReportFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Store_VerifoneCommission.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_VerifoneCommission.cs"
+                />
+                <File
+                    RelPath = "Store_VerifoneCommission.cs"
+                    DependentUpon = "Store_VerifoneCommission.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+                <File
+                    RelPath = "Store_WireLessCommission.rpt"
+                    BuildAction = "EmbeddedResource"
+                    Generator = "CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator"
+                    LastGenOutput = "Store_WireLessCommission.cs"
+                />
+                <File
+                    RelPath = "Store_WireLessCommission.cs"
+                    DependentUpon = "Store_WireLessCommission.rpt"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                    DesignTime = "True"
+                    AutoGen = "True"
+                />
+            </Include>
+        </Files>
+        <StartupServices>
+            <Service ID = "{CF845C55-C321-4742-B673-E6212D061ED9}" />
+        </StartupServices>
+    </CSHARP>
+</VisualStudioProject>
+

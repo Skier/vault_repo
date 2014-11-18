@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:domain="truetract.domain.*" 
+	xmlns:project="tractIncClientApp.project.*" 
+	xmlns:containers="truetract.web.containers.*" 
+	xmlns:tab="tractIncClientApp.project.tab.*">
+	
+    <mx:Metadata>
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+    </mx:Metadata>
+
+	<domain:Project id="project"/>
+	
+	<mx:HBox width="100%" verticalAlign="middle" 
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		backgroundColor="#dddddd" borderColor="#bbbbbb" borderStyle="solid">
+        <mx:Label text="{project.Name}" fontWeight="bold"/>
+        <mx:Label text="(Project)"/>
+        
+        <mx:Spacer width="100%"/>
+<!--        
+        <mx:Label text="Current status: {project.Status}" color="#666666"/>
+-->        
+	</mx:HBox>
+
+	<containers:CollapsiblePanel backgroundColor="#99ff99"
+		width="100%" title="Attachments"
+		titleIcon="@Embed(source='/assets/attach.png')"
+	    collapsed="true" styleName="CollapsiblePanel">
+	    <mx:TabNavigator id="tnAttachments" 
+	    	creationPolicy="all" width="100%" height="200"
+	    	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		    <project:WellPlansSection 
+		        project="{project}" width="100%" 
+		        readOnly="true"
+		        styleName="CollapsiblePanel"/>
+		    
+		    <project:ProjectMapsSection
+		        project="{project}" width="100%"
+		        readOnly="true"
+		        styleName="CollapsiblePanel"/>
+		        
+		    <project:ContactMapSection
+		        project="{project}" width="100%"
+		        readOnly="true"
+		        styleName="CollapsiblePanel"/>
+	    </mx:TabNavigator>
+	</containers:CollapsiblePanel>
+
+
+	<tab:ProjectTabsLayout id="tabsPanel" 
+		width="100%" height="100%" 
+		project="{project}"
+        readOnly="true"
+        openDocument="dispatchEvent(event)"/>
+</mx:VBox>

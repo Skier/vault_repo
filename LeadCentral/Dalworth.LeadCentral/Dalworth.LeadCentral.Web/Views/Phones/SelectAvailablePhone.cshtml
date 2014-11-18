@@ -1,0 +1,59 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Phone.AvailableNumbers
+
+@{
+    ViewBag.Title = "Select Available Phone";
+}
+
+<script type="text/javascript">
+    function confirmSubmit() {
+        var agree = confirm("Are you sure you want to purchase phone number?\nPayment fee will be spent from you balance.");
+        if (agree)
+            return true;
+        else
+            return false;
+    }
+</script>
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Select Phone Number with prefix: @Model.SelectedArea</h1>
+    <div style="float:right;padding: 8px 0px 8px 0px;">@Html.ActionLink("Change Selected Area", "SelectArea", new {controller = "Phones"}, new {@class="button"})</div>
+  </div>
+  <div class="content">
+@if (Model != null && Model.AvailablePhoneNumbers != null && Model.AvailablePhoneNumbers.Count > 0)
+{
+    <table class="list">
+    <thead>
+        <tr>
+        <td class="left">Number</td>
+        <td class="left">Friendly Number</td>
+        <td class="left">Redirect Number</td>
+        <td class="left">Description</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var phone in Model.AvailablePhoneNumbers)
+    {
+        <tr>
+        <td class="left">@phone.PhoneNumber</td>
+        <td class="left">@phone.FriendlyNumber</td>
+        <td class="left">@phone.RedirectPhoneNumber</td>
+        <td class="left">@Html.ActionLink("Purchase", "Purchase", 
+            new { controller = "Phones", 
+                phoneNo = phone.PhoneNumber, 
+                friendlyNo = phone.FriendlyNumber, 
+                redirectNo = phone.RedirectPhoneNumber, 
+                isTollfree = phone.IsTollFree }, 
+            new { @class = "button", @onclick = "return confirmSubmit()" })</td>
+        </tr>
+    }
+    </tbody>
+    </table>
+} else
+{
+    <div>No available Phone Numbers in selected Area. Please select another area.</div>
+}
+  </div>
+</div>

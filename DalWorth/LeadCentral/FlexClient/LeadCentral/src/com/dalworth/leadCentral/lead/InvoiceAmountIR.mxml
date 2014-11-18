@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.events.LeadEvent;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.domain.Lead;
+			
+            [Embed(source="/assets/icons16/table--arrow.png")]
+            [Bindable]
+            private var imgTable:Class;
+
+			[Bindable]
+			private var lead:Lead;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+
+				if (value is Lead)
+				{
+					lead = value as Lead;
+				}
+			} 
+			
+			private function getStatusName(statusId:int):String 
+			{
+				return LeadStatus.getStatusName(statusId);
+			}
+			
+			private function onMatch():void 
+			{
+				dispatchEvent(new LeadEvent(LeadEvent.LEAD_MATCH, lead, true));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="fAmount" precision="2"/>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="middle" 
+		visible="{lead.RelatedQbInvoices != null &amp;&amp; lead.RelatedQbInvoices.length &gt; 0}">
+		<mx:Label width="100%" textAlign="right" fontWeight="bold" 
+			text="{lead.AmountSummary != null ? lead.AmountSummary.IsInvoiced ? fAmount.format(lead.AmountSummary.SubTotalAmt) : 'not invoiced' : '[loading]'}" 
+			color="{lead.AmountSummary != null ? 0x000099 : 0xCCCCCC}"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="right" 
+		visible="{lead.RelatedQbInvoices == null || lead.RelatedQbInvoices.length == 0}">
+		<mx:Label width="100%" textAlign="center" fontWeight="bold" 
+			text="not matched" 
+			color="{0xCCCCCC}"/>
+	</mx:HBox>
+</mx:Canvas>

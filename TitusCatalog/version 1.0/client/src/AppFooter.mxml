@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="30">
+
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+		
+			private function onTermsOfUseClick():void {
+				navigateToURL(new URLRequest("/legal/terms.asp"));
+			}
+
+			private function onSiteMapClick():void {
+				navigateToURL(new URLRequest("/sitemap.asp"));
+			}
+
+			private function onPrivacyPolicyClick():void {
+				navigateToURL(new URLRequest("/legal/privacy.asp"));
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox styleName="footerBox" width="100%" height="30">
+		<mx:LinkButton styleName="footerMenu" label="terms of use" click="onTermsOfUseClick()" />
+		<mx:LinkButton styleName="footerMenu" label="site map" click="onSiteMapClick()" />
+		<mx:LinkButton styleName="footerMenu" label="privacy policy" click="onPrivacyPolicyClick()" />
+		<mx:Label styleName="footerMenu" text="| copyright Titus 2007" />
+	</mx:HBox>
+</mx:Canvas>

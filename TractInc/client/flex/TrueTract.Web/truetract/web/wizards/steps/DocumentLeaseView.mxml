@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+        xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import truetract.domain.*;
+            
+            [Bindable] 
+            public var editable:Boolean = false;
+            
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            private var _docLease:DocumentLease;
+            [Bindable] public function get docLease():DocumentLease { return _docLease; }
+            public function set docLease(value:DocumentLease):void { _docLease = value; }
+           
+            public function completeEdit():void {
+                if ( null == docLease ) {
+                    docLease = new DocumentLease();
+                }
+                docLease.LCN = this.lcnTxt.text;
+                docLease.Term = calculateTerm();
+                docLease.Royalty = new Number(this.royaltyTxt.text);
+                docLease.EffectiveDate = this.effectiveDateField.value;
+                docLease.Acreage = new Number(this.acreageTxt.text);
+                docLease.AliasGrantee = this.aliasGranteeTxt.text;
+                docLease.ExpirationDate = this.expirationDateField.value;
+                docLease.HBP = (1 == this.hbpCombo.selectedIndex);
+            }
+
+            private function calculateTerm():int {
+                var multiplier:int = (0 == termUnit.selectedIndex ? 1 : 12);
+                return new int(this.termTxt.text) * multiplier;
+            }               
+            
+            private function onTermChange(event:Event):void {
+                var term:int = calculateTerm();
+                var ed:Date = this.effectiveDateField.value;
+                if ( null != ed ) {
+                    var expd:Date = new Date();
+                    expd.setTime(ed.setMonth(ed.getMonth() + term));
+                
+                    this.expirationDateField.value = expd;
+                }
+            }
+            
+            private function onRoyaltyFractionChange(event:Event):void {
+//                  Alert.show("DocumentLeaseView.onRoyaltyFractionChange: " + this.royaltyFractionTxt.text);
+                var expr:String = royaltyFractionTxt.text;
+                var slashIndex:int = expr.indexOf("/");
+                if ( -1 != slashIndex ) {
+                    var a1:int = new int(expr.substr(0, slashIndex));
+                    var a2:int = new int(expr.substr(slashIndex+1));
+                    if ( 0 != a2 ) {
+                        royaltyTxt.text = nf16.format(a1/a2);
+                    }
+                }
+            }
+
+            private function onRoyaltyChange(event:Event):void {
+                royaltyFractionTxt.text = "";
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+    <mx:NumberFormatter id="nf16" precision="16"/>
+    <mx:NumberFormatter id="nf3" precision="3"/>
+    
+    <mx:HBox>
+    <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="3">
+    
+        <mx:FormItem label="LCN">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.LCN}"/>
+                <mx:TextInput 
+                        visible="{editable}" includeInLayout="{editable}"
+                        id="lcnTxt" text="{docLease.LCN}" width="130" />
+            </mx:Box>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Term">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.Term} months"/>
+                <mx:HBox visible="{editable}" includeInLayout="{editable}">
+                    <mx:TextInput id="termTxt" change="onTermChange(event)" text="{docLease.Term}" width="40" />
+                    <mx:ComboBox id="termUnit" change="onTermChange(event)" width="80">
+                        <mx:Array>
+                            <mx:String>Month</mx:String>
+                            <mx:String>Year</mx:String>
+                        </mx:Array>
+                    </mx:ComboBox>
+                </mx:HBox>
+            </mx:Box>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Royalty">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.Royalty}"/>
+                <mx:VBox visible="{editable}" includeInLayout="{editable}">
+                    <mx:HBox>
+                    <mx:Label text="Frac"/><mx:TextInput id="royaltyFractionTxt" change="onRoyaltyFractionChange(event)" width="60"/>
+                    </mx:HBox>
+                    <mx:HBox>
+                    <mx:Label text="Dec."/><mx:TextInput id="royaltyTxt" change="onRoyaltyChange(event)" text="{nf16.format(docLease.Royalty)}" width="130"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:Box>
+        </mx:FormItem>
+        
+    </mx:Form>
+
+    <mx:Spacer width="100%" />
+
+    <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3">
+
+        <mx:FormItem label="Acreage">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.Acreage}"/>
+                <mx:TextInput id="acreageTxt"  
+                    visible="{editable}" includeInLayout="{editable}"
+                    text="{nf3.format(docLease.Acreage)}" width="60" />
+            </mx:Box>
+        </mx:FormItem>
+
+        <mx:FormItem label="Alias Grantee">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.AliasGrantee}"/>
+                <mx:TextInput id="aliasGranteeTxt"  
+                    visible="{editable}" includeInLayout="{editable}"
+                    text="{docLease.AliasGrantee}" width="80" />
+            </mx:Box>
+        </mx:FormItem>
+
+        <mx:FormItem label="HBP">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{docLease.HBP ? 'Yes' : 'No'}"/>
+                <mx:ComboBox id="hbpCombo" 
+                    selectedIndex="{docLease.HBP ? 1 : 0}"
+                    visible="{editable}" includeInLayout="{editable}"
+                    width="60">
+                    <mx:Array>
+                        <mx:String>No</mx:String>
+                        <mx:String>Yes</mx:String>
+                    </mx:Array>
+                </mx:ComboBox>
+            </mx:Box>
+        </mx:FormItem>
+
+    </mx:Form>
+    </mx:HBox>
+    
+    <mx:HRule 
+        visible="{editable}" includeInLayout="{editable}"
+        width="100%" strokeColor="#000000"/>
+        
+    <mx:Form width="100%" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="3">
+        <mx:FormItem label="Effective Date (mm/dd/yyyy):">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{df.format(docLease.EffectiveDate)}"/>
+                <components:CombinedDateField updateComplete="onTermChange(event)" id="effectiveDateField" 
+                    visible="{editable}" includeInLayout="{editable}"
+                    value="{docLease.EffectiveDate}"/>
+            </mx:Box>
+        </mx:FormItem>
+        <mx:FormItem label="Expiration Date (mm/dd/yyyy):">
+            <mx:Box width="100%">
+                <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        text="{df.format(docLease.ExpirationDate)}"/>
+                <components:CombinedDateField id="expirationDateField"
+                    enabled="false" 
+                    visible="{editable}" includeInLayout="{editable}"
+                    value="{docLease.ExpirationDate}"/>
+            </mx:Box>
+        </mx:FormItem>
+    </mx:Form>
+
+</mx:VBox>

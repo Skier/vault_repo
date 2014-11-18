@@ -1,0 +1,52 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Phone.PhoneEdit
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+@using (Html.BeginForm())
+{
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Details", "Phones", new {Model.Id}, new { @class = "button" } )</div>
+      <h1>Tracking Phone [@Model.FriendlyNumber]</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          @Html.HiddenFor(model => model.Id)
+          @Html.HiddenFor(model => model.PhoneNumber)
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Phone Number</td>
+              <td><b>@Model.PhoneNumber</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Friendly Number</td>
+              <td>@Html.TextBoxFor(model => model.FriendlyNumber, new { @class = "field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Redirect Number</td>
+              <td><b>+1</b>@Html.TextBoxFor(model => model.RedirectPhoneNumber, new { @class = "field-input" })
+                &nbsp;@Html.ValidationMessageFor(model => model.RedirectPhoneNumber)</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Description</td>
+              <td>@Html.TextAreaFor(model => model.Description, new { @cols=40, @rows=4 })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Allow Caller ID Lookup</td>
+              <td>@Html.CheckBoxFor(model => model.CallerIdLookup) <i>Extra $0.02 per call</i></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Transcribe Voice to Text</td>
+              <td>@Html.CheckBoxFor(model => model.TranscribeCalls) <i>Extra $0.10 per minute</i></td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+}

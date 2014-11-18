@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="contentBox"
+	xmlns:book="com.rubenswieringa.book.*" 
+	xmlns:pdf="com.titus.catalog.view.pdf.*"
+	xmlns:controls="qs.controls.*"
+	creationComplete="onCreationComplete()"
+	xmlns:controls1="com.titus.catalog.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.controls.PdfBook;
+			import mx.collections.ArrayCollection;
+			import com.titus.catalog.storage.DBStorage;
+			import mx.controls.Alert;
+			import com.titus.catalog.model.CatalogItemPackage;
+			import com.titus.catalog.model.PdfPage;
+			import mx.controls.Label;
+			import com.rubenswieringa.book.Page;
+			import mx.binding.utils.ChangeWatcher;
+			import com.titus.catalog.model.PdfDocument;
+			import com.rubenswieringa.book.Book;
+			import com.rubenswieringa.book.PageManager;
+			
+			public static const DEFAULT_BOOK_WIDTH:int = 662;
+			public static const DEFAULT_BOOK_HEIGHT:int = 430;
+			public static const EXPANDED_BOOK_WIDTH:int = 896;
+			public static const EXPANDED_BOOK_HEIGHT:int = 582;
+			
+			public static var currentWidth:int = DEFAULT_BOOK_WIDTH;
+			public static var currentHeight:int = DEFAULT_BOOK_HEIGHT;
+		
+			public var currentPage:int;
+			
+			[Bindable]
+			public var pdfBook:PdfBook;
+			
+			private function onCreationComplete(): void {
+				DBStorage.getInstance().addEventListener(Event.COMPLETE, onCompleteLoad);
+				// rebuildBook();
+			}
+			
+			private function scaleUp():void 
+			{
+				currentScale += 0.5;
+				if (currentScale > 4) currentScale = 4;
+				rescaleBook();
+			}
+			
+			private function scaleDown():void 
+			{
+				currentScale -= 0.5;
+				if (currentScale < 1) currentScale = 1;
+				rescaleBook();
+			}
+			
+			private var currentScale:Number = 1;
+			private function rescaleBook():void 
+			{
+				pdfBook.scaleX = currentScale;
+				pdfBook.scaleY = currentScale;
+				
+				if (currentScale == 1) {
+					pdfBook.flippingEnabled = true;
+				} else {
+					pdfBook.flippingEnabled = false;
+				}
+			}
+			
+			private function btnPrevClickHandler():void {
+				if (currentScale != 1) {
+					currentScale = 1;
+					rescaleBook();
+				}
+				callLater(pdfBook.prevPage);
+			}
+
+			private function btnNextClickHandler():void {
+				if (currentScale != 1) {
+					currentScale = 1;
+					rescaleBook();
+				}
+
+				callLater(pdfBook.nextPage);
+			}
+			
+			[Bindable]
+			public var numPages:int;
+			
+			public function expand():void 
+			{
+				currentWidth = EXPANDED_BOOK_WIDTH;
+				currentHeight = EXPANDED_BOOK_HEIGHT;
+				
+				rebuildBook();
+			}
+			
+			public function collapse():void 
+			{
+				currentWidth = CatalogPanel.DEFAULT_BOOK_WIDTH;
+				currentHeight = CatalogPanel.DEFAULT_BOOK_HEIGHT;
+				
+				rebuildBook();
+			}
+ 			
+			public function onCompleteLoad(event:Event):void {
+				rebuildBook();
+			}
+			
+			private function rebuildBook():void 
+			{
+				var currentPage:int = -1;
+				
+				if (this.pdfBook) {
+					currentPage = pdfBook.pageNumber;
+					var index:int = this.getChildIndex(pdfBook);
+					if (index > -1) {
+						this.removeChildAt(index);
+					}
+				}
+				
+				pdfBook = new PdfBook();
+				pdfBook.width = currentWidth;
+				pdfBook.height = currentHeight;
+				
+				pdfBook.dataProvider = DBStorage.getInstance().getCatalogPages();
+				pdfBook.pageNumber = currentPage;
+				
+				numPages = pdfBook.dataProvider.length;
+				
+				this.addChild(pdfBook);
+			}
+			
+/*			private function rebuildBook():void 
+			{
+				var currentPage:int = -1;
+				
+				if (this.pdfBook) {
+					currentPage = pdfBook.pageNumber;
+				} else {
+					pdfBook = new PdfBook();
+					pdfBook.dataProvider = DBStorage.getInstance().getCatalogPages();
+					numPages = pdfBook.dataProvider.length;
+					this.addChild(pdfBook);
+				}
+				
+				pdfBook.width = currentWidth;
+				pdfBook.height = currentHeight;
+				pdfBook.updatePaging();
+			}
+*/			
+			private function txtSectionPageChangeHandler():void {
+				txtSectionPage.text.toUpperCase();
+				
+				var result:int = DBStorage.getInstance().findPageByCode(txtSectionPage.text);
+				if (0 == result) {
+					return;
+				}
+				pdfBook.pageNumber = result;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox
+		id="boxBookControl"
+		width="662"
+		enabled="{null != pdfBook}">
+		<mx:Button
+			label="+"
+			click="scaleUp()"/>
+		<mx:Button
+			label="-"
+			click="scaleDown()"/>
+		<mx:Button
+			label="Prev"
+			click="btnPrevClickHandler()"/>
+        <mx:HSlider
+        	id="sliderCurrentPage"
+        	width="100%"
+        	snapInterval="2"
+        	value="{pdfBook.pageNumber}" 
+        	minimum="-1"
+        	maximum="{numPages - 1}" 
+        	horizontalCenter="0"
+        	change="{pdfBook.pageNumber = sliderCurrentPage.value}"/>
+		<mx:Button
+			label="Next"
+			click="btnNextClickHandler()"/>
+		<mx:TextInput
+			id="txtSectionPage"
+			width="45"
+			maxChars="4"
+			enter="txtSectionPageChangeHandler()"
+			visible="false"
+			includeInLayout="false"/>
+	</mx:HBox>
+
+</mx:VBox>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="700" height="500" title="Assign Tracking Phone to Lead Source" 
+    showCloseButton="true" close="btnCloseClickHandler(event)" 
+    xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:controls="com.affilia.controls.*" xmlns:trackingPhone="com.dalworth.leadCentral.phone.trackingPhone.*">
+    
+    <mx:Metadata>
+        [Event(name="leadSave", type="com.dalworth.servman.events.LeadEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.core.Application;
+        	import com.dalworth.leadCentral.phone.trackingPhone.PurchasePhonePopup;
+        	import mx.managers.PopUpManager;
+        	import mx.events.CloseEvent;
+        	import com.dalworth.leadCentral.events.TrackingPhoneEvent;
+        	import com.dalworth.leadCentral.domain.TrackingPhone;
+        	import com.dalworth.leadCentral.service.registry.TrackingPhoneRegistry;
+        	import mx.collections.ArrayCollection;
+        	import com.dalworth.leadCentral.domain.LeadSource;
+
+            [Embed(source="/assets/icons16/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+			[Bindable]
+			private var leadSourceName:String;
+
+			[Bindable]
+			private var currentTrackingPhone:TrackingPhone;
+
+			[Bindable]
+			private var existingPhones:ArrayCollection;
+
+			[Bindable]
+			private var phones:ArrayCollection;
+			
+			[Bindable]
+			private var customPhonesFrom:ArrayCollection;
+
+            public static function open(parent:DisplayObject, leadSourceName:String, existingPhones:ArrayCollection, customPhonesFrom:ArrayCollection, isReadOnly:Boolean = false, modal:Boolean = true):TrackingPhoneAssignment
+            {
+                var popup:TrackingPhoneAssignment = new TrackingPhoneAssignment();
+                
+                popup.leadSourceName = leadSourceName;
+                popup.existingPhones = existingPhones;
+                popup.customPhonesFrom = customPhonesFrom;
+                popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                close();
+            }
+            
+			private function init():void 
+			{
+				initPhones();
+			}
+
+            private function initPhones():void 
+            {
+            	phones = new ArrayCollection();
+            	
+            	var allPhones:ArrayCollection = TrackingPhoneRegistry.getInstance().getAll();
+            	for each (var phone:TrackingPhone in allPhones)
+            	{
+            		if (!existsInCollection(phone, existingPhones))
+            			phones.addItem(phone);
+            	}
+            	
+            	phones.filterFunction = getFilteredPhones;
+            	phones.refresh();
+            }
+            
+            private function existsInCollection(phone:TrackingPhone, collection:ArrayCollection):Boolean
+            {
+            	for each (var p:TrackingPhone in collection)
+            	{
+            		if (p.Id == phone.Id)
+            			return true;
+            	}
+            	return false;
+            }
+            
+            private function getFilteredPhones(obj:Object):Boolean 
+            {
+            	if ((cbAssigned == null || !cbAssigned.selected) 
+            		&& (TrackingPhone(obj).LeadSourceTrackingPhones == null || TrackingPhone(obj).LeadSourceTrackingPhones.length > 0))
+            		return false;
+            	
+            	return true;
+            }
+            
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+			private function onNextClick():void 
+			{
+				if (dgPhones.selectedItem == null)
+					return;
+				
+				currentTrackingPhone = dgPhones.selectedItem as TrackingPhone;
+				
+				vsPhones.selectedIndex = 1; 
+			}
+			
+			private function onBackClick():void 
+			{
+				vsPhones.selectedIndex = 0; 
+			}
+			
+			private function onFinishClick():void 
+			{
+				dispatchEvent(new TrackingPhoneEvent(TrackingPhoneEvent.PHONE_COMMIT, currentTrackingPhone));
+				close();
+			}
+			
+			private function onPurchase():void 
+			{
+				var popup:PurchasePhonePopup = PurchasePhonePopup.open(Application.application as DisplayObject);
+				popup.addEventListener("purchasePhoneComplete", 
+					function (event:Event):void 
+					{
+						phones.addItem(popup.phone);
+						phones.refresh();
+						var idx:int = phones.getItemIndex(popup.phone);
+						if (idx != -1)
+						{
+							dgPhones.selectedIndex = idx;
+							dgPhones.scrollToIndex(idx);
+						}
+						TrackingPhoneRegistry.getInstance().storeLocal(popup.phone);
+					});
+			}
+			
+        ]]>
+    </mx:Script>
+    
+    <mx:Binding source="TrackingPhone(dgPhones.selectedItem)" destination="currentTrackingPhone"/>
+    
+    <mx:VBox width="100%" height="100%">
+    	<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" backgroundColor="#FFFFDD">
+    		<mx:Label width="100%" minWidth="300" text="Assign Tracking Phone Number to {leadSourceName}" fontSize="16"/>
+    	</mx:HBox>
+    	
+    	<mx:ViewStack id="vsPhones" width="100%" height="100%" borderColor="#666666" borderStyle="solid" backgroundColor="#FFFFFF"
+    		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+    		<mx:VBox width="100%" height="100%">
+    			<mx:Label text="Select Tracking Phone:" fontSize="14" fontWeight="bold"/>
+
+    			<mx:HDividedBox width="100%" height="100%" horizontalGap="0">
+    				<mx:VBox width="100%" height="100%" verticalGap="2">
+    					<mx:HBox width="100%" horizontalAlign="right" paddingRight="5">
+							<mx:CheckBox id="cbAssigned" label="Show already assigned to another Lead Sources" fontSize="12"
+								change="phones.refresh()" width="100%"/>
+    						<mx:Button label="Purchase New Phone" icon="{imgPlus}" click="onPurchase()" fontSize="12" height="30"/>
+    					</mx:HBox>
+    					<mx:HRule width="100%" height="1" strokeColor="#CCCCCC"/>
+    					<mx:DataGrid id="dgPhones" dataProvider="{phones}" width="100%" height="100%" fontSize="12">
+    						<mx:columns>
+    							<mx:DataGridColumn dataField="ScreenNumber" headerText="Phone" width="120" minWidth="100"/>
+    							<mx:DataGridColumn headerText="Assignments" 
+    								itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.AssignmentsIR" textAlign="left"/>
+    						</mx:columns>
+    					</mx:DataGrid>
+       				</mx:VBox>
+    				
+    				<mx:VBox width="250" height="100%" 
+    					visible="{dgPhones.selectedItem != null &amp;&amp; currentTrackingPhone.LeadSourceTrackingPhones != null &amp;&amp; currentTrackingPhone.LeadSourceTrackingPhones.length != 0}" 
+    					includeInLayout="{dgPhones.selectedItem != null &amp;&amp; currentTrackingPhone.LeadSourceTrackingPhones != null &amp;&amp; currentTrackingPhone.LeadSourceTrackingPhones.length != 0}" 
+    					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+    					backgroundColor="#FFDE80">
+    					<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" backgroundColor="#FFFFFF">
+	    					<mx:Text width="100%" 
+	    						text="{'Phone ' + TrackingPhone(dgPhones.selectedItem).ScreenNumber + ' already assigned to Lead Sources:'}" 
+	    						fontSize="12" color="#333333"/>
+	    					<mx:List width="100%" height="100%" 
+	    						dataProvider="{currentTrackingPhone.LeadSourceTrackingPhones}"
+	    						itemRenderer="com.dalworth.leadCentral.setting.leadSource.LeadSourceIR"/>
+    					</mx:VBox>
+    				</mx:VBox>
+    			</mx:HDividedBox>
+    		</mx:VBox>
+    		
+    		<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+    			<mx:Text text="You assigning Tracking Phone Number" fontSize="14" width="100%" textAlign="center"/>
+    			<mx:Text text="{currentTrackingPhone.ScreenNumber}" fontSize="16" width="100%" textAlign="center" color="#000099"/>
+    			<mx:Text text="to" fontSize="14" width="100%" textAlign="center"/>
+    			<mx:Text text="{leadSourceName}" fontSize="16" width="100%" textAlign="center" color="#000099"/>
+
+    			<mx:VBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+    				width="100%" height="100%"
+    				borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#FFFFEE">
+    				<mx:HBox width="100%" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" backgroundColor="#FFFFDD"
+    					borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+    					<mx:Label text="Phone Rules:" fontSize="12" color="#666666"/>
+    				</mx:HBox>
+    				
+	    			<mx:VBox paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%">
+		    			<trackingPhone:PhoneRulesView width="100%" height="100%" phone="{currentTrackingPhone}" fontSize="12"
+		    				customPhonesFrom="{customPhonesFrom}"/>
+	    			</mx:VBox>
+    			</mx:VBox>
+    		</mx:VBox>
+    	</mx:ViewStack>
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="center" width="100%" fontSize="12">
+        <mx:LinkButton label="Cancel" click="onCancelClick()" width="100" textAlign="center"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Next" click="onNextClick()" enabled="{currentTrackingPhone != null}" 
+			visible="{vsPhones.selectedIndex == 0}" includeInLayout="{vsPhones.selectedIndex == 0}" width="100"/>
+		<mx:Button label="Back" click="onBackClick()" 
+			visible="{vsPhones.selectedIndex == 1}" includeInLayout="{vsPhones.selectedIndex == 1}" width="100"/>
+		<mx:Button label="Finish" click="onFinishClick()" 
+			visible="{vsPhones.selectedIndex == 1}" includeInLayout="{vsPhones.selectedIndex == 1}" width="100"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

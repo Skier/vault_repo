@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsSalesRptByState" targetNamespace="http://tempuri.org/dsSalesRptByState.xsd"
+	elementFormDefault="qualified" xmlns="http://tempuri.org/dsSalesRptByState.xsd" xmlns:mstns="http://tempuri.org/dsSalesRptByState.xsd"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="SalesRptByState">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="StateName" type="xs:string" />
+				<xs:element name="DMADesc" type="xs:string" />
+				<xs:element name="Sales_Count" type="xs:int" />
+				<xs:element name="Average_Collected" type="xs:decimal" />
+				<xs:element name="Amount_Collected" type="xs:decimal" />
+				<xs:element name="Agent_Locations" type="xs:int" />
+				<xs:element name="Sales_Per_Store" type="xs:decimal" />
+				<xs:element name="ReportPeriod" type="xs:string" />
+				<xs:element name="TransactionType" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

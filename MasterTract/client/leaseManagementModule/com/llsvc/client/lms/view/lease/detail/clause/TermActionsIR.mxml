@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.events.LeaseClauseEvent;
+        	import com.llsvc.domain.LeaseClause;
+        
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            private function onDeleteHandler():void 
+            {
+            	var event:LeaseClauseEvent = new LeaseClauseEvent(LeaseClauseEvent.CLAUSE_DELETE, LeaseClause(data), true);
+            	dispatchEvent(event);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Image source="{imgDelete}" width="16" height="16" toolTip="Delete Term" click="onDeleteHandler()"/>
+</mx:HBox>

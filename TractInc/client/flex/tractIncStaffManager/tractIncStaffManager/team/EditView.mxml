@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Team" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    xmlns:smTeamMember="tractIncStaffManager.team.member.*"
+    xmlns:smTeamAssignment="tractIncStaffManager.team.assignment.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.Team;
+            import TractInc.Domain.TeamMember;
+            import TractInc.Domain.TeamAssignment;
+            import TractInc.Domain.Asset;
+            import tractIncStaffManager.StaffManagerController;
+            
+            [Bindable]
+            public var tabData:Array = [
+                {label:"Team", data:"Team"},
+                {label:"Assignments", data:"Assignments"},
+            ];
+        
+            [Bindable]
+            private var controller:TeamController = null;
+            private var currentTeam:Team = null;
+                
+            public static function open(ctrl:TeamController, account:Team, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, account);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:TeamController, cp:Team):void
+            {
+                controller = ctrl;
+                currentTeam = cp;
+            }
+            
+            public function init():void
+            {
+                this.teamMemberView.controller.init(currentTeam, controller);
+                this.teamAssignmentTabView.controller.init(currentTeam, controller);
+                
+                var parents:Array = [null];
+                for each (var a:Team in controller.parentController.model.staffManagerPackage.TeamList) {
+                    parents.push(a);
+                }
+                this.cbParentTeam.dataProvider = parents;
+                this.cbParentTeam.labelField = "TeamName";
+                
+                if ( null != currentTeam ) {
+                    this.txtTeamName.text = currentTeam.TeamName;
+                    this.cbParentTeam.selectedItem = 
+                            getTeamById(currentTeam.ParentTeamId);
+                } else {
+                    currentTeam = new Team();
+                }
+            }
+
+            private function getTeamById(id:int):Team
+            {
+                for each (var item:Team in controller.parentController.model.staffManagerPackage.TeamList) {
+                    if ( id == item.TeamId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+
+            public function getTeam():Team
+            {
+                currentTeam.TeamName = this.txtTeamName.text;
+                currentTeam.CompanyId = StaffManagerController.getInstance().model.staffManagerPackage.StaffCompany.CompanyId;
+  
+                if ( null != this.cbParentTeam.selectedItem ) {
+                    currentTeam.ParentTeamId = 
+                        (this.cbParentTeam.selectedItem as Team).TeamId;
+                } else {
+                    currentTeam.ParentTeamId = 0;
+                }  
+                return currentTeam;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveTeam(getTeam());
+            }
+
+            public function tabChanged(event:ItemClickEvent):void 
+            {
+                tabStack.selectedIndex = event.index;
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtTeamName}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:TabBar id="tabBar" 
+        dataProvider="{tabData}"
+        itemClick="{tabChanged(event);}"/>
+        
+    <mx:ViewStack id="tabStack" creationPolicy="all" minHeight="200" minWidth="400" width="100%" height="100%">
+        <mx:VBox>
+            <mx:Form id="mainForm" 
+                backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+                paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+                width="100%">
+        
+                <mx:FormItem label="Parent Team" width="100%" required="true">
+                    <mx:ComboBox id="cbParentTeam" width="100%"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Name" width="100%" required="true">
+                    <mx:TextInput id="txtTeamName" width="100%"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Members" width="100%" required="true">
+                    <smTeamMember:TeamMemberView id="teamMemberView"  width="100%" height="100%"/>
+                </mx:FormItem>
+        
+            </mx:Form>
+        </mx:VBox>
+        <smTeamAssignment:TeamAssignmentView id="teamAssignmentTabView"/>
+    </mx:ViewStack>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

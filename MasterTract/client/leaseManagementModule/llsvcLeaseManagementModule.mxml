@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:ModuleImpl 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+    layout="absolute" 
+    backgroundColor="#c0c0c0" 
+    xmlns:module="com.llsvc.module.*"
+    xmlns:lm="com.llsvc.client.lm.*"
+    percentWidth="100" 
+    percentHeight="100"
+    xmlns:view="com.llsvc.client.lms.view.*" 
+    xmlns:lease="com.llsvc.client.lms.view.lease.*"
+    creationComplete="onCreationComplete(event)"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+		    import mx.rpc.Responder;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+
+            import com.llsvc.domain.Module;
+            import com.llsvc.domain.User;
+			import com.llsvc.client.lm.DocumentPackage;
+			import com.llsvc.client.lm.storage.Storage;
+
+            private var user:User = null;
+            
+            public override function init(u:Object, module:Object):void 
+            {
+//                trace("LeaseManagement.init: user=" + u.login);
+//                trace("LeaseManagement.init: module=" + module.description);
+				LocalCash.getInstance().storeCurrentUser(User(u));
+                callLater(initLater, [u]);
+            }
+
+            public override function modeChanged(mode:String):void
+            {
+            }   
+                    
+            public override function logout():Boolean
+            {
+            	TabManager.uniqueTabs = new Object();
+                return true;
+            }
+            
+            private function initLater(u:User):void
+            {
+            	user = u;
+        		var responder:mx.rpc.Responder = new mx.rpc.Responder(
+                		getPackageResultHandler, 
+                		getPackageFaultHandler);
+                
+    			Storage.instance.getPackage(u, responder);
+    	
+            }
+    
+    		private function onCreationComplete(event:Event):void {
+            	TabManager.tabNavigator = tnMain;
+            	TabManager.openLeaseList();
+    		}   
+    		     
+		    private function getPackageResultHandler(event:ResultEvent):void {
+		    	var pkg:DocumentPackage = event.result as DocumentPackage;
+				LocalCash.getInstance().storeStates(pkg.stateList);
+		    }
+		    
+		    private function getPackageFaultHandler(event:FaultEvent):void {
+		        Alert.show(event.fault.message);
+		    }
+		    
+        	import com.llsvc.client.lms.view.lease.LeasesPanel;
+        	import com.llsvc.client.lms.control.TabManager;
+        	import com.llsvc.client.lms.LocalCash;
+        	import mx.events.ItemClickEvent;
+            import com.llsvc.domain.Module;
+            import com.llsvc.domain.User;
+			import mx.controls.Alert;
+
+	        private function bbLeaseClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                    TabManager.openLeaseList();
+	                    break;
+	                case 1:
+	                    TabManager.openLease(null);
+	                    break;
+	            }
+	        }
+        
+	        private function bbAssignmentClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                    TabManager.openAssignmentList();
+	                    break;
+	                case 1:
+	                    TabManager.openAssignment(null);
+	                    break;
+	            }
+	        }
+        
+	        private function restart():void
+	        {
+//	            var syncManager:SyncManager = new SyncManager();
+//	            syncManager.synchronize();
+	        }
+        
+        ]]>
+    </mx:Script>
+    
+	<mx:Style source="styles.css"/>
+    
+    <mx:Canvas width="100%" height="100%" styleName="appContainer" minWidth="800">
+        
+        <!-- The Window Header -->
+        <mx:Canvas top="0" left="0" right="0">
+    
+            <mx:Label text="Lease Management System" styleName="appTitle" left="22" verticalCenter="0"/>
+
+            <mx:Image source="@Embed('assets/top_separator.png')" right="420" y="0"/>
+    
+            <mx:ButtonBar id="bbLease" right="333" height="32" itemClick="bbLeaseClick(event)" verticalCenter="0" buttonWidth="40">
+                <mx:dataProvider>
+                    <mx:Object icon="@Embed('assets/icons16/page.png')" toolTip="Leases"/>
+                    <mx:Object icon="@Embed('assets/icons16/page_add.png')" toolTip="Lease"/>
+                </mx:dataProvider>
+            </mx:ButtonBar>
+            
+            <mx:ButtonBar id="bbAssignment" right="248" height="32" itemClick="bbAssignmentClick(event)" verticalCenter="0" buttonWidth="40">
+                <mx:dataProvider>
+                    <mx:Object icon="@Embed('assets/icons16/report.png')" toolTip="Assignments"/>
+                    <mx:Object icon="@Embed('assets/icons16/report_add.png')" toolTip="Assignment"/>
+                </mx:dataProvider>
+            </mx:ButtonBar>
+<!--            
+            <mx:Button icon="@Embed('assets/icon_plus.png')"  toolTip="Create Document"
+            	width="32" height="32" verticalCenter="0" right="248"/>
+-->            
+            <mx:Image source="@Embed('assets/top_separator.png')" right="232.5" y="0"/>
+   
+            <mx:Image source="@Embed('assets/search.png')" right="82" verticalCenter="0"/>
+            <mx:TextInput id="searchStr" borderStyle="none" backgroundAlpha="0" width="110" right="101" verticalCenter="2" focusThickness="0" 
+                borderSkin="@Embed('assets/blank.png')"/>
+           
+            <mx:Image source="@Embed('assets/top_separator.png')" right="66.5" y="0"/>
+    
+            <mx:Button icon="@Embed('assets/icon_synchronize.png')" width="31" height="29" right="23" click="restart()" verticalCenter="0" toolTip="Synchronize"/>
+
+        </mx:Canvas>
+
+        <mx:Box styleName="tabContainer"  backgroundSize="100%" top="62" left="14" right="14" bottom="28" paddingTop="1" paddingLeft="2" paddingBottom="2" paddingRight="2">
+            <mx:TabNavigator id="tnMain" width="100%" height="100%" tabWidth="140"/>
+        </mx:Box>
+
+        <mx:HRule top="90" left="16" right="16" width="100%" height="1" strokeColor="#B9B9B9"/>
+
+    </mx:Canvas>
+    
+</module:ModuleImpl>

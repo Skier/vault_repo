@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+    backgroundColor="#ffffff" backgroundAlpha="1"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.events.ValidationResultEvent;
+            import AerSysCo.UI.Models.ShippingOptionUI;
+            import AerSysCo.UI.Models.ShoppingCartShipmentUI;
+            import AerSysCo.UI.Catalog.CatalogController;
+            
+            [Bindable] public var shipment:ShoppingCartShipmentUI;
+            
+            public function updateShipment():Boolean 
+            {
+                var isSelected:Boolean = false;
+                    
+                for (var i:int = 0; i < shipment.shipmentOptions.length; i++) 
+                {
+                    var so:ShippingOptionUI = shipment.shipmentOptions[i] as ShippingOptionUI;
+
+                    if (mx.controls.RadioButton(radioOption[i]) && mx.controls.RadioButton(radioOption[i]).selected) 
+                    {
+                        shipment.shippingTotal = so.cost;
+                        shipment.shippingTypeId = so.shippingTypeId;
+                        isSelected = true
+                    }
+                }
+                
+                if (!isSelected) 
+                {
+                    Alert.show("Shipping Method for the " 
+                        + CatalogController.getInstance().getWarehouse(shipment.warehouseId).warehouseName 
+                        + " Warehouse must be selected to confirm your order.");
+                    return false;
+                }
+                
+                if (cbLiftgate.selected) 
+                {
+                    shipment.shippingTotal += shipment.liftGateCost;
+                    shipment.needLiftGate = true;
+                    shipment.liftGatePrice = shipment.liftGateCost;
+                } else 
+                {
+                    shipment.needLiftGate = false;
+                    shipment.liftGatePrice = 0;
+                }
+                
+                if (valPONumber.validate().type == ValidationResultEvent.INVALID) 
+                {
+                    Alert.show("Please enter a PO Number for the " 
+                    + CatalogController.getInstance().getWarehouse(shipment.warehouseId).warehouseName 
+                    + " Warehouse.");
+                    return false;
+                } else 
+                {
+                    shipment.poNumber = txtPONumber.text;
+                }
+                
+                return true;
+            }
+            
+            private function txtPONumberFocusOutHandler():void 
+            {
+                txtPONumber.text = txtPONumber.text.toUpperCase();
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:StringValidator id="valPONumber" source="{txtPONumber}" property="text" required="true" maxLength="30"/>
+
+    <mx:HBox
+        width="100%" horizontalGap="0">
+        <mx:Label 
+            text="{CatalogController.getInstance().getWarehouse(shipment.warehouseId).warehouseName}" 
+            width="{ShippingOptionsView(parentDocument).lblWarehouse.width}"
+            fontWeight="bold" textAlign="right"/>
+        <mx:Repeater id="rptShipmentOptions"
+            dataProvider="{shipment.shipmentOptions}">
+            <mx:HBox id="boxOptions"
+                width="{ShippingOptionsView(parentDocument).OPTIONS_WIDTH}" horizontalAlign="center" verticalAlign="middle" horizontalScrollPolicy="off">
+                <mx:RadioButton id="radioOption"
+                    groupName="{shipment.shoppingCartShipmentId.toString()}" 
+                    label="${ShippingOptionUI(rptShipmentOptions.currentItem).cost.toFixed(2)}"
+                    enabled="{ShippingOptionUI(rptShipmentOptions.currentItem).isApplicable}"/>
+            </mx:HBox>
+        </mx:Repeater>
+
+        <mx:HBox width="{ShippingOptionsView(parentDocument).lblLiftgate.width}" horizontalAlign="center" verticalAlign="middle" horizontalScrollPolicy="off">
+            <mx:CheckBox id="cbLiftgate" label="${shipment.liftGateCost}" 
+                selected="{shipment.needLiftGate}"/>
+        </mx:HBox>
+
+        <mx:HBox width="{ShippingOptionsView(parentDocument).lblPONumber.width}" horizontalAlign="center" verticalAlign="middle" horizontalScrollPolicy="off">
+            <mx:TextInput id="txtPONumber" width="100%" maxChars="30"
+                text="{shipment.poNumber}" focusOut="txtPONumberFocusOutHandler()"/>
+        </mx:HBox>
+    </mx:HBox>
+</mx:Box>

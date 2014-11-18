@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0" xmlns:component="com.llsvc.component.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.validators.ValidationResult;
+			import mx.events.ValidationResultEvent;
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				if (!isValid())
+					return false;
+					
+				lease.prospectName = txtName.text;
+				lease.term = (comboYears.selectedIndex == 1) ? int(Number(txtTerm.text) * 12) : int(Number(txtTerm.text));
+				lease.royalty = Number(txtRoyalty.text);
+				lease.royaltyInput = txtRoyaltyInput.text;
+				lease.isPaidUp = cbPaidUp.selected;
+				lease.leaseDate = dateLease.selectedDate;
+				lease.effectiveDate = dateEffective.selectedDate;
+
+				lease.grossAcres = Number(txtGrossAcres.text);
+				
+				return true;
+			}
+			
+			private function isValid():Boolean 
+			{
+				return vGroup.validate(true);
+			}
+			
+	        private static function addMonths(d:Date, x:int) : Date {
+	            var y:Number = Math.floor(x / 12); x -= 12*y;
+	            var m:Number = d.month + x;
+	            if (m > 11) {
+	                y += 1;
+	                m -= 12;
+	            } else if (m < 0) {
+	                y -= 1;
+	                m += 12;
+	            }
+	            return new Date(d.fullYear+y, m, d.date, d.hours, d.minutes, d.seconds, d.milliseconds);
+	        }
+			
+			private function onRoyaltyInputChange(event:Event):void {
+				var royaltyInput:String = this.txtRoyaltyInput.text;
+				if ( 0 != royaltyInput.length && '%' == royaltyInput.charAt(royaltyInput.length-1) ) {
+					var r1:String = royaltyInput.substr(0, royaltyInput.length-1);
+					if ( !isNaN(Number(r1)) ) {
+						lease.royalty = new Number(r1)/100;
+					} else {
+						lease.royalty = 0.00;
+					}
+				} else if ( !isNaN(Number(royaltyInput)) ) {
+					lease.royalty = new Number(royaltyInput);
+				} else {
+					lease.royalty = 0.00;
+				}
+			}			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="General Info"/>
+	</mx:HBox>
+	
+	<component:ValidatorsGroup id="vGroup">
+		<mx:StringValidator id="vName" source="{txtName}" property="text" minLength="2" required="false"/> 
+		<mx:NumberValidator id="vTerm" source="{txtTerm}" property="text" minValue="1" required="true" precision="0"/> 
+		<mx:NumberValidator id="vRoyalty" source="{txtRoyalty}" property="text" minValue="0" required="true"/> 
+		<mx:DateValidator id="vLeaseDate" source="{dateLease}" property="selectedDate" required="true"/>
+		<mx:DateValidator id="vEffectiveDate" source="{dateEffective}" property="selectedDate" required="true"/>
+		<mx:NumberValidator id="vGrossAcres" source="{txtGrossAcres}" property="text" minValue="0" required="false"/> 
+	</component:ValidatorsGroup>
+	
+    <mx:Form width="100%" backgroundColor="#FFFFFF"
+    	labelWidth="80" 
+    	paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+        <mx:FormItem label="Prospect Name" width="100%" labelWidth="120">
+            <component:SelectableInput id="txtName" 
+            	width="100%" text="{lease.prospectName}" change="lease.prospectName = txtName.text"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Term" direction="horizontal" verticalCenter="0">
+            <mx:TextInput id="txtTerm" 
+            	width="35" text="{comboYears.selectedIndex == 0 ? lease.term.toString() : (lease.term / 12).toString()}" textAlign="right" 
+            	change="lease.term = comboYears.selectedIndex == 0 ? int(Number(txtTerm.text)) : int(Number(txtTerm.text) * 12)"/>
+
+            <mx:ComboBox id="comboYears"
+            	dataProvider="[Months, Years]"
+            	change="lease.term = comboYears.selectedIndex == 0 ? lease.term : (lease.term * 12)"/>
+
+            <mx:FormItem label="Royalty">
+            	<mx:HBox verticalAlign="middle">
+	                <mx:TextInput id="txtRoyaltyInput" 
+	                	width="50" text="{lease.royaltyInput}" textAlign="right"
+	                	change="onRoyaltyInputChange(event)"/>
+	                	
+	                <mx:Label id="txtRoyalty" text="{lease.royalty}" fontWeight="bold" width="100"/>
+            	</mx:HBox>
+            </mx:FormItem>
+            
+            <mx:CheckBox id="cbPaidUp" 
+            	label="Is Paid Up" verticalCenter="0"
+            	selected="{lease.isPaidUp}" change="{lease.isPaidUp = cbPaidUp.selected}"/>
+        </mx:FormItem>
+
+        <mx:HBox verticalAlign="middle" width="100%">
+            <mx:FormItem label="Lease">
+                <mx:DateField id="dateLease" 
+                	width="100" yearNavigationEnabled="true" editable="true"
+                	selectedDate="{lease.leaseDate}" 
+                	change="lease.leaseDate = dateLease.selectedDate; dateEffective.selectedDate = dateLease.selectedDate"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="Effective">
+                <mx:DateField id="dateEffective" 
+                	width="100" yearNavigationEnabled="true" editable="true"
+                	selectedDate="{lease.effectiveDate}" 
+                	change="lease.effectiveDate = dateEffective.selectedDate"/>
+            </mx:FormItem>
+
+	        <mx:FormItem label="Expires On:">
+	        	<mx:Label id="lblExpires" 
+	        		text="{comboYears.selectedIndex == 0 ? 
+	        				addMonths(dateEffective.selectedDate, int(Number(txtTerm.text))).toDateString() :
+	        				addMonths(dateEffective.selectedDate, int(Number(txtTerm.text) * 12)).toDateString()}" 
+	        		fontWeight="bold"/>
+	        </mx:FormItem>
+        </mx:HBox>
+
+        <mx:FormItem label="Gross Acres">
+            <mx:TextInput id="txtGrossAcres" 
+            	width="60" text="{isNaN(lease.grossAcres) ? 0 : lease.grossAcres.toString()}" textAlign="right"
+            	change="lease.grossAcres = isNaN(Number(txtGrossAcres.text)) ? 0 : Number(txtGrossAcres.text)"/>
+        </mx:FormItem>
+    </mx:Form>
+</mx:VBox>

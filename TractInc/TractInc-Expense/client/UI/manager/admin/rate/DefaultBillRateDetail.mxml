@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	creationComplete="onCreationComplete()"
+    title="Edit Default Bill Rate"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.BillItemTypeDataObject;
+        	import App.Entity.DefaultBillRateDataObject;
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.events.CollectionEvent;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+        	import common.TypesRegistry;
+			
+            [Bindable]
+            public var defaultRate:DefaultBillRateDataObject;
+            
+			[Bindable]
+			private var _types:ArrayCollection = new ArrayCollection();
+			
+            public static function Open(billRate:DefaultBillRateDataObject, parent:DisplayObject, modal:Boolean = true):DefaultBillRateDetail {
+                var popup:DefaultBillRateDetail = new DefaultBillRateDetail();
+                popup.defaultRate = billRate;
+				
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+				
+                return popup;
+            }
+            
+            private function onCreationComplete():void {
+            	initTypes();
+            	cbBillItemTypes.selectedIndex = _types.getItemIndex(getTypeById(defaultRate.BillItemTypeId));
+            }
+            
+            private function initTypes():void 
+            {
+            	_types = TypesRegistry.instance.getAllBillItemTypes;
+            }
+            
+            private function getTypeById(id:int):BillItemTypeDataObject
+            {
+            	for each (var type:BillItemTypeDataObject in _types) {
+            		if (type.BillItemTypeId == id) {
+            			return type;
+            		}
+            	}
+            	return null;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%">
+        <mx:HBox>
+            <mx:Label text="Bill Item Type:" width="120" textAlign="right" />
+            <mx:ComboBox
+            	id="cbBillItemTypes"
+            	width="120"
+                dataProvider="{_types}"
+                labelField="Name"
+                enabled="false"
+                />
+        </mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Bill Rate:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtBillRate" text="{(1 == defaultRate.BillItemTypeId)? (defaultRate.BillRate * 8).toFixed(3) : defaultRate.BillRate.toFixed(3)}" width="150" maxChars="15"/>
+		</mx:HBox>
+		<!-- mx:HBox>
+			<mx:Label text="Invoice Rate:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtInvoiceRate" text="{defaultRate.InvoiceRate.toFixed(3)}" width="150" maxChars="15"/>
+		</mx:HBox -->
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button
+        	id="btnSubmit"
+        	label="Ok"
+            enabled="{cbBillItemTypes.selectedItem != null &amp;&amp; !isNaN(Number(txtBillRate.text)) &amp;&amp; ((0 == Number(txtBillRate.text))? !defaultRate.IsPresetRate: true)}"/>
+        <mx:Button id="btnCancel" label="Cancel"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

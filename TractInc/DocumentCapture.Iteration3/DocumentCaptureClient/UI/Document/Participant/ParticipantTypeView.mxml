@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    creationComplete="OnCreationComplete();" 
+    title="Participant Type" 
+    width="300" height="200"
+    >
+    <mx:Script>
+        <![CDATA[
+        	import mx.core.UIComponent;
+        	import Domain.Participant;
+        	import mx.collections.ArrayCollection;
+        	import mx.managers.PopUpManager;
+        	import UI.Document.DocumentController;
+        	import Domain.Participantreservation;
+
+            public var participant:Participant;
+            
+            private var type:int;
+            
+	        private function OnCreationComplete():void {
+	            PopUpManager.centerPopUp(this);
+	        }
+	
+	        private function OnOk():void {
+	        	participant.TypeId = int(participantType.selectedValue);
+	            PopUpManager.removePopUp(this);
+	        }
+            
+        ]]>
+    </mx:Script>
+
+	<mx:Label text="Please select Participant Type:" fontWeight="bold"/>
+
+	<mx:VBox width="100%" height="100%"
+		verticalAlign="middle" horizontalAlign="center">
+		
+		<mx:RadioButtonGroup id="participantType" itemClick="(btnOk.enabled = true)"/>
+			<mx:RadioButton label="Company participant" value="0" groupName="participantType"/>
+			<mx:RadioButton label="Individual participant" value="1" groupName="participantType"/>
+	
+	</mx:VBox>
+
+    <mx:ControlBar width="100%" horizontalAlign="center">
+        <mx:Button id="btnOk" label="Ok" click="OnOk()" enabled="false"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

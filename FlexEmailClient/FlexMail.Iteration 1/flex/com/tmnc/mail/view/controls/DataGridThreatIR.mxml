@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" color="0x000000" 
+    horizontalAlign="left" verticalAlign="middle" horizontalGap="0"
+    paddingLeft="5"
+    horizontalScrollPolicy="off">
+
+    <mx:Image id="imageIcon" width="12" visible="false" click="onIconClick()"/>
+    <mx:Label id="labelValue" width="100%"/>
+
+    <mx:Script>
+    <![CDATA[
+        import com.tmnc.mail.view.controls.events.ClosureIconClickEvent;
+        import com.tmnc.mail.business.MessageTreeGroup;
+        
+        import mx.core.Application;
+        
+        private const DEPTH_INDENT:int = 10;
+        
+        [Embed(source="/assets/plus.gif")]
+        private var openIcon:Class;
+
+        [Embed(source="/assets/minus.gif")]
+        private var closeIcon:Class;
+
+        private function onIconClick():void{
+            var event:Event = new ClosureIconClickEvent(MessageTreeGroup(data));
+            Application.application.dispatchEvent(event);
+        }
+        
+        override public function set explicitWidth(value:Number):void {
+            super.explicitWidth = value;
+            super.width = value;
+        }
+        
+        override public function set data(data:Object):void{
+            super.data = data;
+            
+            if(data != null){
+                
+                if (data is MessageTreeGroup){
+                    
+                    labelValue.text = data.messageGroupName;
+                    imageIcon.visible = true;
+                    imageIcon.source = (data.isOpened) ? closeIcon : openIcon;
+                    
+                } else {
+                    
+                    labelValue.text = "";                    
+                    imageIcon.visible = false;
+                    
+                }
+            }
+        }
+        
+    ]]>
+    </mx:Script>
+
+</mx:HBox>

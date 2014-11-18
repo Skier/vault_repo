@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:menu="truetract.web.dashboard.plotter.menu.*" 
+    xmlns:plotter="truetract.plotter.*" 
+    xmlns:plotterView="truetract.web.dashboard.plotter.*" 
+    xmlns:dashboard="truetract.web.dashboard.*">
+
+    <mx:Metadata>
+        [Event(name="close", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <dashboard:DashboardController id="dashboardController"/>
+
+    <plotterView:PlotterController id="controller" view="{this}"/>
+
+    <plotter:Plotter id="plotter" 
+        userName="{controller.appModel.user.FirstName} {controller.appModel.user.LastName}"
+        enabled="{controller.model.tract != null}"
+        width="100%" height="100%" tractViewStyleName="tractView"
+        closeRequest="controller.plotter_closeRequestHandler()"
+        saveRequest="controller.plotter_saveRequestHandler()"
+        printRequest="controller.plotter_printRequestHandler()"
+        pdfExportRequest="controller.plotter_pdfExportRequestHandler(event)"
+        editTractInfoRequest="controller.plotter_editTractInfoRequestHandler()"/>
+
+</mx:VBox>

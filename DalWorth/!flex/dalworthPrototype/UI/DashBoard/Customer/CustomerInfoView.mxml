@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel title = "Customer Summary" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" layout="horizontal" xmlns:Customer="UI.DashBoard.Customer.*">
+	<mx:Script>
+	<![CDATA[
+		import mx.states.State;
+		import mx.managers.PopUpManager;
+		import mx.core.IFlexDisplayObject;
+
+		import Domain.Customer;
+		
+		import Service.CustomerService;
+ 			
+ 			[Bindable]
+ 			private  var _controller:CustomerController;
+ 			
+ 			[Bindable]
+ 			private var _currentCustomer:Customer;
+ 			
+ 			[Bindable]
+ 			private var _isSammaryVisible:Boolean
+ 			
+ 			
+ 			
+ 			
+ 			
+ 			public function set currentCustomer(customer:Customer):void{
+ 					_currentCustomer  = customer;
+ 				
+ 				
+ 			}
+ 			
+ 			public function onSaveClicked():void{
+ 				if (_currentCustomer.customerId == -1){
+ 					_currentCustomer = CustomerService.createCustomer(_currentCustomer);
+ 				}
+ 			
+ 			}
+ 			
+ 			public function set customerController(controller:CustomerController):void {
+ 				this._controller = controller;
+ 			}
+ 			
+ 			private function createNewJob():void{
+ 				var jobInfoView:JobInfoView =
+					PopUpManager.createPopUp(this,JobInfoView, false) as JobInfoView;
+					jobInfoView.init(this._currentCustomer);
+				PopUpManager.centerPopUp(jobInfoView);
+ 			}
+ 			
+ 		]]>
+ 	</mx:Script>
+ 	
+ 	<mx:XMLList id="infoToShow">
+        	<node label="JobsTickts"/>
+        	<node label="Invoices"/>
+        	<node label="Notes"/>
+    </mx:XMLList>
+ 	<mx:Binding source="fname.text" destination="_currentCustomer.firstName"/>
+ 	<mx:Binding source="lname.text" destination="_currentCustomer.lastName"/>
+ 	<mx:Binding source="txtPhone.text" destination="_currentCustomer.phone"/>
+ 	<mx:Binding source="txtMobile.text" destination="_currentCustomer.mobile"/>
+ 	<mx:Binding source="txtEmail.text" destination="_currentCustomer.email"/>
+ 	
+ 	
+	<mx:VBox width="50%" height="100%">
+		<mx:HBox id="summary" width="100%" height="5%">
+			
+				<mx:Label text="Customer ID: {_currentCustomer.customerId}  {_currentCustomer.lastName},{_currentCustomer.firstName} "/>
+				<mx:Label text="Balance:$260.00"/>
+		</mx:HBox>
+		<mx:VBox width="100%" height="70%">
+			 <mx:TabNavigator id="tn"  width="100%" height="100%">
+            <!-- Define each panel using a VBox container. -->
+
+	            <mx:VBox label="General Info" horizontalAlign="left" verticalAlign="middle">
+	               <mx:Form width="100%" height="100%"  >
+          
+
+		            	<mx:FormItem label="First name" horizontalAlign="left" >
+		                	<mx:TextInput id="fname" width="200" text="{_currentCustomer.firstName}"/>
+		            	</mx:FormItem>
+			            <mx:FormItem label="Last Name" horizontalAlign="left" >
+		                	<mx:TextInput id="lname" width="200" text="{_currentCustomer.lastName}"/>
+		            	</mx:FormItem>
+			
+						<mx:FormItem label="Phone" horizontalAlign="left" >
+		                	<mx:TextInput id="txtPhone" width="200" text="{_currentCustomer.phone}"/>
+		            	</mx:FormItem>
+		            	
+		            	<mx:FormItem label="Mobile" horizontalAlign="left" >
+		                	<mx:TextInput id="txtMobile" width="200" text="{_currentCustomer.mobile}"/>
+		            	</mx:FormItem>
+		            	
+		            	<mx:FormItem label="Email" horizontalAlign="left" >
+		                	<mx:TextInput id="txtEmail" width="200" text="{_currentCustomer.email}"/>
+		            	</mx:FormItem>
+        			</mx:Form>
+	            </mx:VBox>
+	
+	            <mx:VBox label="Address Info">
+	                 <mx:Form width="100%" height="100%"  >
+          
+
+		            	<mx:FormItem label="Address1" horizontalAlign="left" >
+		                	<mx:TextInput id="txtAddr1" width="200" text="{_currentCustomer.billAddress.address1}"/>
+		            	</mx:FormItem>
+			            <mx:FormItem label="Address2" horizontalAlign="left" >
+		                	<mx:TextInput id="txtAddr2" width="200" text="{_currentCustomer.billAddress.address2}"/>
+		            	</mx:FormItem>
+			
+						<mx:FormItem label="City" horizontalAlign="left" >
+		                	<mx:TextInput id="txtCity" width="200" text="{_currentCustomer.billAddress.city}"/>
+		            	</mx:FormItem>
+		            	
+		            	<mx:FormItem label="State" horizontalAlign="left" >
+		                	<mx:TextInput id="txtState" width="200" text="{_currentCustomer.billAddress.state}"/>
+		            	</mx:FormItem>
+		            	
+		            	<mx:FormItem label="Zip" horizontalAlign="left" >
+		                	<mx:TextInput id="txtZip" width="200" text="{_currentCustomer.billAddress.zip}"/>
+		            	</mx:FormItem>
+        			</mx:Form>
+	            </mx:VBox>
+	
+	            <mx:VBox label="Payment Info">
+	                <mx:Label text="TabNavigator container panel 3"/>
+	            </mx:VBox>
+        	</mx:TabNavigator>
+		</mx:VBox>
+		<mx:VBox width="100%" height="25%">
+			
+		<mx:Label text = "For this customer"/>
+		<mx:LinkButton id="btnCreateNewJob" label="Create New Job"  click="createNewJob()"/>
+		<mx:LinkButton label="Receive Payment" />
+			
+		</mx:VBox>
+	</mx:VBox>
+	<mx:VBox width="50%" height="100%">
+		
+		<mx:PopUpMenuButton id="p2" 
+            dataProvider="{infoToShow}"
+           labelField="@label" />
+    	
+		<Customer:CustomerInfoJobView width="100%" height="90%" customerController="{this._controller}"  currentCustomer="{this._currentCustomer}"/>
+		
+            
+		<mx:HBox width="100%" height="10%">
+			<mx:Spacer width="80%"/>
+			<mx:Button id ="btnSave" click="onSaveClicked()" label="Save"/>
+			<mx:Button id ="btnCancel"  label="Cancel"/>
+			<mx:Button id ="btnCustomerDash" click="_controller.showDash()" label="Finished"/>
+			
+		</mx:HBox>
+		
+	</mx:VBox>
+ 
+</mx:Panel>

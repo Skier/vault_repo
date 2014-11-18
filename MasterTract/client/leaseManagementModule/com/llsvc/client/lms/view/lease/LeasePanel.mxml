@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:lease="com.llsvc.client.lms.view.lease.*" 
+    xmlns:controls="com.llsvc.controls.*"
+    xmlns:component="com.llsvc.component.*"
+    icon="@Embed('assets/icons16/page.png')" label="{lease.document.id == 0 ? 'Lease [New]' : lease.leaseName}">
+
+    <mx:Metadata>
+        [Event(name="closeTabRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.client.lms.events.LeaseEvent;
+            import mx.events.CloseEvent;
+            import com.llsvc.client.lms.control.TabManager;
+            import mx.rpc.Responder;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.events.FaultEvent;
+            
+            import mx.controls.Alert;
+            import mx.events.ItemClickEvent;
+            
+            import com.llsvc.domain.Lease;
+            import com.llsvc.client.lm.storage.Storage;
+            
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+
+            private function getResult():Boolean 
+            {
+                var result:Boolean = true;
+
+                if (viewLeaseSummary && !viewLeaseSummary.getResult()){
+                    Alert.show("Lease Summary Information is incorrect");
+                    result = false;
+                }
+                
+                if (viewLPR && !viewLPR.getResult()) {
+                    Alert.show("LPR Information is incorrect");
+                    result = false;
+                }
+                
+                if (viewLeaseTracts && !viewLeaseTracts.getResult()) {
+                    Alert.show("Breakdown information is incorrect");
+                    result = false;
+                }
+                
+                if (txtLeaseName.text.length > 0) {
+                    lease.leaseName = txtLeaseName.text;
+                } else {
+                    lease.leaseName = lease.leasorStr;
+                }
+                
+                lease.document.checkInActors();
+                //lease.document.commitAttachments();
+                
+                return result;
+            }
+
+            private function startRemoting(name:String):void 
+            {
+                content.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                content.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+            private function create():void 
+            {
+                startRemoting("Creating Lease");
+                
+                var panel:LeasePanel = this;
+                
+                Storage.instance.createLease(this.lease,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Lease is created.");
+                            lease.populate(event.result as Lease);
+                            lease.isDirty = false;
+            
+                            TabManager.setUniqueTab("LEASE:" + lease.document.id.toString(), panel); 
+                            
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+                            dispatchEvent(new LeaseEvent(LeaseEvent.CREATE_LEASE, lease));
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function save():void 
+            {
+                startRemoting("Saving Lease");
+                
+                Storage.instance.storeLease(this.lease,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            lease.populate(event.result as Lease);
+                            lease.isDirty = false;
+                            
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+                            dispatchEvent(new LeaseEvent(LeaseEvent.UPDATE_LEASE, lease));
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function remove():void 
+            {
+                startRemoting("Deleting Lease");
+                
+                Storage.instance.deleteLease(this.lease.document.id,
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void 
+                        {
+                            stopRemoting();
+                            content.enabled = false;
+                            
+                            dispatchEvent(new Event("closeTabRequest"));
+                            //dispatchEvent(new Event("updateLeaseListRequest"));
+							dispatchEvent(new LeaseEvent(LeaseEvent.REMOVE_LEASE, lease));
+                        }, 
+                        function (event:FaultEvent):void 
+                        {
+                            stopRemoting();
+                            Alert.show("Error: " + event.fault.faultString);
+                        }
+                    )
+                )
+            }
+            
+            private function buttonBarClick(event:ItemClickEvent):void
+            {
+                switch (event.index) 
+                {
+                    case 0:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 1:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 2:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 3:
+                        Alert.show("Do not realised yet !");
+                        break;
+                    case 4:
+                        Alert.show("Do not realised yet !");
+                        break;
+                }
+            }
+        
+            public function onSaveClick(event:Event):void 
+            {
+                if (!getResult())   
+                    return;
+                
+                if ( !lease.document.id ) {
+                    create();
+                } else {
+                    save();
+                }
+            }   
+                    
+            private function onDeleteClick():void 
+            {
+                Alert.show("Do you really want to delete this Lease ?", 
+                   "Delete Lease", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                            remove();
+                        }
+                    });
+            }
+            
+            private function onCloseClick():void 
+            {
+                dispatchEvent(new Event("closeTabRequest"));
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Canvas width="100%" height="100%">
+        <mx:VBox id="content" width="100%" height="100%">
+            <mx:HBox width="100%" paddingRight="10" verticalAlign="middle">
+                <mx:Spacer width="4"/>
+
+                <mx:ToggleButtonBar dataProvider="{vsLease}" selectedButtonTextStyleName=""/>
+
+                <mx:Spacer width="40"/>
+
+                <mx:HBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" 
+                    borderColor="#cccccc" borderStyle="solid" backgroundColor="#eeeeee" cornerRadius="2"
+                    verticalAlign="middle">
+                    <mx:Label text="Lease Reference Name:" fontWeight="bold"/>
+                    <component:SelectableInput id="txtLeaseName" 
+                        text="{lease.leaseName}" 
+                        width="150" maxChars="50"
+                        change="{lease.leaseName = (txtLeaseName.text.length == 0) ? lease.leasorStr : txtLeaseName.text}"/>
+                </mx:HBox>
+        
+                <mx:Spacer width="100%"/>
+        
+                <mx:ButtonBar id="bbUtil" right="10" itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="30" buttonHeight="24">
+                    <mx:dataProvider>
+                        <mx:Object icon="@Embed('assets/icons16/page_excel.png')" toolTip="Export to Excel"/>
+                        <mx:Object icon="@Embed('assets/icons16/page_white_acrobat.png')" toolTip="Create PDF Report"/>
+                        <mx:Object icon="@Embed('assets/icons16/printer.png')" toolTip="Print"/>
+                        <mx:Object icon="@Embed('assets/icons16/chart_bar.png')" toolTip="Compare against other"/>
+                        <mx:Object icon="@Embed('assets/icons16/calculator.png')" toolTip="Calculator"/>
+                    </mx:dataProvider>
+                </mx:ButtonBar>
+            </mx:HBox>
+        
+            <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+        
+            <mx:ViewStack id="vsLease" width="100%" height="100%" creationPolicy="auto">
+                <lease:LeaseSummary id="viewLeaseSummary" 
+                    label="Summary" lease="{lease}"/>
+                    
+                <lease:LPR id="viewLPR" 
+                    label="LPR" lease="{lease}"/>
+                    
+                <lease:LeaseTracts id="viewLeaseTracts" 
+                    label="Tracts" lease="{lease}" enabled="{lease.document.givers.length &gt; 0 || lease.tracts.length &gt; 0}"/>
+                    
+                <lease:LeaseAssignmentSummary id="viewLeaseAssignment" 
+                    label="Assignment" assignment="{lease.assignment}" enabled="{lease.assignment != null}"/>
+<!-- -->
+                <lease:LeaseMap id="viewLeaseMap" 
+                    label="Map" lease="{lease}" enabled="{lease != null}"/>
+<!-- -->
+            </mx:ViewStack>
+            
+            <mx:VBox width="100%" verticalGap="0">
+                <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+            
+                <mx:HBox width="100%" horizontalAlign="right" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4">
+                    <mx:Button width="100" label="Close Tab" icon="@Embed('assets/icon_close16.png')" toolTip="Close Tab" 
+                        horizontalCenter="0" verticalCenter="0" click="onCloseClick()"/>
+                        
+                    <mx:Spacer width="100%"/>
+        
+                    <mx:Button width="100" label="Save" icon="@Embed('assets/icons16/disk.png')" toolTip="Save Lease Package" 
+                        horizontalCenter="0" verticalCenter="0" click="onSaveClick(event)"/>
+                        
+                    <mx:Button width="100" label="Delete" icon="@Embed('assets/icons16/delete.png')" toolTip="Delete Current Lease Package" 
+                        horizontalCenter="0" verticalCenter="0" click="onDeleteClick()"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+        
+        <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false">
+            <mx:Panel title="Remote process">
+                <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+            </mx:Panel>
+        </mx:VBox>
+    </mx:Canvas>
+</mx:VBox>

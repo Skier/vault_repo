@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:highlighter="truetract.web.util.highlighter.*"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import tractIncClientApp.document.DocumentEvent;
+            import truetract.domain.Document;
+            import truetract.domain.Project;
+            import tractIncClientApp.project.ProjectEvent;
+            import truetract.domain.SearchItem;
+            
+            [Bindable] public var searchItem:SearchItem;
+            [Bindable] public var searchString:String;
+            
+            [Embed(source="/assets/report.png")]
+            [Bindable]
+            private var imgProject:Class;
+            
+            [Embed(source="/assets/page.png")]
+            [Bindable]
+            private var imgDocument:Class;
+            
+            private function onOpenProjectClick():void 
+            {
+                var project:Project = new Project();
+                project.ProjectId = searchItem.xmlItem.@id
+                dispatchEvent(new ProjectEvent(ProjectEvent.OPEN_PROJECT, project));
+            }
+            
+            private function onOpenDocumentClick():void 
+            {
+                var doc:Document = new Document();
+                doc.DocID = searchItem.xmlItem.@id
+                dispatchEvent(new DocumentEvent(DocumentEvent.OPEN_DOCUMENT, doc));
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Metadata>
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+        [Event(name="openProject", type="tractIncClientApp.project.ProjectEvent")]
+    </mx:Metadata>
+
+    <mx:HBox width="100%" borderColor="#dddddd" borderStyle="solid" borderThickness="1"
+        paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+        <mx:Image source="{searchItem.itemType == SearchItem.ITEM_TYPE_PROJECT ? imgProject : imgDocument}"/>
+        <mx:VBox id="projectRenderer" 
+            width="100%"
+            visible="{searchItem.itemType == SearchItem.ITEM_TYPE_PROJECT}"
+            includeInLayout="{searchItem.itemType == SearchItem.ITEM_TYPE_PROJECT}">
+            <mx:HBox width="100%" backgroundColor="#eeeeee" verticalAlign="middle">
+                <mx:Label text="Project" fontWeight="bold"/>
+                <mx:Label text=" Name:"/>
+                <highlighter:HighlighterText 
+                    text="{searchItem.xmlItem.@name}" highlightString="{searchString}"/>
+                <mx:Spacer width="100%"/>
+                <mx:CheckBox id="cbShowProjectDetail" label="show details"/>
+                <mx:Button height="20" 
+                    label="Open" fontWeight="normal" fontSize="10" verticalCenter="0"
+                    styleName="toolButton"
+                    toolTip="Open Project" 
+                    click="onOpenProjectClick()"/>
+            </mx:HBox>
+            <mx:VBox width="100%"
+                visible="{cbShowProjectDetail.selected}"
+                includeInLayout="{cbShowProjectDetail.selected}"
+                >
+                <mx:HBox width="100%"
+                    includeInLayout="{XMLList(searchItem.xmlItem.attachments.attachment).length() > 0}"
+                    visible="{XMLList(searchItem.xmlItem.attachments.attachment).length() > 0}"
+                    >
+                    <mx:Label text="Attachments:" 
+                        />
+                    <mx:VBox width="100%" verticalGap="0">
+                        <mx:Repeater id="rptProjAttachment" dataProvider="{searchItem.xmlItem.attachments.attachment}" width="100%">
+                            <mx:HBox width="100%">
+                                <mx:Label text="name:"/>
+                                <highlighter:HighlighterText 
+                                    text="{rptProjAttachment.currentItem.file.@name}" highlightString="{searchString}" />
+                                <mx:Label text="description:"/>
+                                <highlighter:HighlighterText 
+                                    text="{rptProjAttachment.currentItem.file.@description}" highlightString="{searchString}" 
+                                    width="100%"/>
+                            </mx:HBox>
+                        </mx:Repeater>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:HBox width="100%"
+                    includeInLayout="{XMLList(searchItem.xmlItem.tabs.projectTab).length() > 0}"
+                    visible="{XMLList(searchItem.xmlItem.tabs.projectTab).length() > 0}"
+                    >
+                    <mx:Label text="Tabs:" 
+                        />
+                    <mx:VBox width="100%" verticalGap="2">
+                        <mx:Repeater id="rptProjTab" dataProvider="{searchItem.xmlItem.tabs.projectTab}" width="100%">
+                            <mx:HBox width="100%" backgroundColor="#ffffcc">
+                                <highlighter:HighlighterText 
+                                    text="{rptProjTab.currentItem.@name}" highlightString="{searchString}" />
+                            </mx:HBox>
+                            <mx:HBox width="100%"
+                                includeInLayout="{XMLList(XML(rptProjTab.currentItem).contacts.contact).length() > 0}"
+                                visible="{XMLList(XML(rptProjTab.currentItem).contacts.contact).length() > 0}"
+                                >
+                                <mx:Label text="Contacts:" 
+                                    />
+                                <mx:VBox width="100%" verticalGap="0">
+                                    <mx:Repeater id="rptProjTabContact" dataProvider="{rptProjTab.currentItem.contacts.contact}" width="100%">
+                                        <mx:VBox width="100%" verticalGap="0">
+                                            <mx:HBox width="100%" backgroundColor="#ccccff">
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@contactName}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@firstName}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@middleName}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@lastName}" highlightString="{searchString}" />
+                                            </mx:HBox>
+                                            <mx:HBox width="100%">
+                                                <mx:Label text="email:"/>
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@email}" highlightString="{searchString}" />
+                                                <mx:Label text="phone:"/>
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.@phone}" highlightString="{searchString}" />
+                                            </mx:HBox>
+                                            <mx:HBox width="100%">
+                                                <mx:Label text="physical address:"/>
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.physicalAddress.@address1}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.physicalAddress.@address2}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.physicalAddress.@city}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.physicalAddress.@state}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.physicalAddress.@zip}" highlightString="{searchString}" />
+                                            </mx:HBox>
+                                            <mx:HBox width="100%">
+                                                <mx:Label text="mailing address:"/>
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.mailingAddress.@address1}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.mailingAddress.@address2}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.mailingAddress.@city}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.mailingAddress.@state}" highlightString="{searchString}" />
+                                                <highlighter:HighlighterText 
+                                                    text="{rptProjTabContact.currentItem.mailingAddress.@zip}" highlightString="{searchString}" />
+                                            </mx:HBox>
+                                        </mx:VBox>
+                                    </mx:Repeater>
+                                </mx:VBox>
+                            </mx:HBox>
+                            <mx:HBox width="100%"
+                                includeInLayout="{XMLList(XML(rptProjTab.currentItem).documents.tabDocument).length() > 0}"
+                                visible="{XMLList(XML(rptProjTab.currentItem).documents.tabDocument).length() > 0}"
+                                >
+                                <mx:Label text="Documents:" 
+                                    />
+                                <mx:VBox width="100%" verticalGap="0">
+                                    <mx:Repeater id="rptProjTabDocument" dataProvider="{rptProjTab.currentItem.documents.tabDocument}" width="100%">
+                                        <mx:HBox width="100%">
+                                            <mx:Label text="description:"/>
+                                            <highlighter:HighlighterText 
+                                                text="{rptProjTabDocument.currentItem.@description}" highlightString="{searchString}" 
+                                                width="100%"/>
+                                            <mx:Label text="remarks:"/>
+                                            <highlighter:HighlighterText 
+                                                text="{rptProjTabDocument.currentItem.@remarks}" highlightString="{searchString}" 
+                                                width="100%"/>
+                                        </mx:HBox>
+                                    </mx:Repeater>
+                                </mx:VBox>
+                            </mx:HBox>
+                        </mx:Repeater>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+        <mx:VBox id="documentRenderer" 
+            width="100%"
+            visible="{searchItem.itemType == SearchItem.ITEM_TYPE_DOCUMENT}"
+            includeInLayout="{searchItem.itemType == SearchItem.ITEM_TYPE_DOCUMENT}">
+            <mx:HBox width="100%" backgroundColor="#eeeeee" verticalAlign="middle">
+                <mx:Label text="Document" fontWeight="bold"/>
+                <mx:HBox>
+                    <mx:Label text=" Type:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@type}" highlightString="{searchString}"/>
+                </mx:HBox>
+                <mx:HBox
+                    includeInLayout="{String(searchItem.xmlItem.@docNo).length > 0}"
+                    visible="{String(searchItem.xmlItem.@docNo).length > 0}"
+                    >
+                    <mx:Label text=" DocNo:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@docNo}" highlightString="{searchString}" />
+                </mx:HBox>
+                <mx:HBox
+                    includeInLayout="{String(searchItem.xmlItem.@volume).length > 0}"
+                    visible="{String(searchItem.xmlItem.@volume).length > 0}"
+                    >
+                    <mx:Label text=" Volume:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@volume}" highlightString="{searchString}" />
+                </mx:HBox>
+                <mx:HBox
+                    includeInLayout="{String(searchItem.xmlItem.@page).length > 0}"
+                    visible="{String(searchItem.xmlItem.@page).length > 0}"
+                    >
+                    <mx:Label text=" Page:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@page}" highlightString="{searchString}" />
+                </mx:HBox>
+                <mx:HBox>
+                    <mx:Label text=" State:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@state}" highlightString="{searchString}"/>
+                </mx:HBox>
+                <mx:HBox>
+                    <mx:Label text=" County:" 
+                        />
+                    <highlighter:HighlighterText 
+                        text="{searchItem.xmlItem.@county}" highlightString="{searchString}"/>
+                </mx:HBox>
+                <mx:Spacer width="100%"/>
+                <mx:CheckBox id="cbShowDocumentDetail" label="show details"/>
+                <mx:Button height="20" 
+                    label="Open" fontWeight="normal" fontSize="10" verticalCenter="0"
+                    styleName="toolButton"
+                    toolTip="Open Document" 
+                    click="onOpenDocumentClick()"/>
+            </mx:HBox>
+
+            <mx:VBox width="100%"
+                visible="{cbShowDocumentDetail.selected}"
+                includeInLayout="{cbShowDocumentDetail.selected}"
+                >
+                <mx:HBox width="100%">
+                    <mx:Label text="Seller:" 
+                        />
+                    <highlighter:HighlighterText
+                        text="{searchItem.xmlItem.seller.participant.@asNamed}" highlightString="{searchString}" />
+                </mx:HBox>
+                <mx:HBox width="100%">
+                    <mx:Label text="State:" 
+                        />
+                    <highlighter:HighlighterText
+                        text="{searchItem.xmlItem.buyer.participant.@asNamed}" highlightString="{searchString}" />
+                </mx:HBox>
+                <mx:HBox width="100%"
+                    includeInLayout="{XMLList(searchItem.xmlItem.attachments.attachment).length() > 0}"
+                    visible="{XMLList(searchItem.xmlItem.attachments.attachment).length() > 0}"
+                    >
+                    <mx:Label text="Attachments:" 
+                        />
+                    <mx:VBox width="100%">
+                        <mx:Repeater id="rptDocAttachment" dataProvider="{searchItem.xmlItem.attachments.attachment}" width="100%">
+                            <mx:HBox width="100%">
+                                <highlighter:HighlighterText 
+                                    text="{rptDocAttachment.currentItem.file.@name}" highlightString="{searchString}" />
+                                <highlighter:HighlighterText 
+                                    text="({rptDocAttachment.currentItem.file.@description})" highlightString="{searchString}" 
+                                    width="100%"/>
+                            </mx:HBox>
+                        </mx:Repeater>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:HBox width="100%"
+                    includeInLayout="{XMLList(searchItem.xmlItem.tracts.tract).length() > 0}"
+                    visible="{XMLList(searchItem.xmlItem.tracts.tract).length() > 0}"
+                    >
+                    <mx:Label text="Tracts:" 
+                        />
+                    <mx:VBox width="100%">
+                        <mx:Repeater id="rptDocTract" dataProvider="{searchItem.xmlItem.tracts.tract}" width="100%">
+                            <mx:HBox width="100%">
+                                <highlighter:HighlighterText 
+                                    text="{rptDocTract.currentItem.@refName}" highlightString="{searchString}" />
+                            </mx:HBox>
+                        </mx:Repeater>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:HBox>
+    
+</mx:Box>

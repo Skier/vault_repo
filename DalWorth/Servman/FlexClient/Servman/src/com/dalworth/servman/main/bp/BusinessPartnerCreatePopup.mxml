@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="600"  
+    title="Create Business Partner" close="btnCloseClickHandler(event)" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:controls="com.affilia.controls.*"
+    xmlns:containers="com.arc90.flexlib.containers.*" xmlns:voice="com.affilia.voice.*" xmlns:user="com.dalworth.servman.main.owner.setting.user.*">
+    
+    <mx:Metadata>
+        [Event(name="leadSave", type="com.dalworth.servman.events.LeadEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.servman.service.BusinessPartnerService;
+        	import mx.events.ValidationResultEvent;
+        	import com.dalworth.servman.events.BusinessPartnerEvent;
+        	import com.dalworth.servman.domain.SalesRep;
+        	import com.dalworth.servman.domain.User;
+        	import com.dalworth.servman.domain.BusinessPartner;
+        	import com.dalworth.servman.main.MainAppModel;
+        	import com.dalworth.servman.main.owner.OwnerModel;
+        	import com.dalworth.servman.domain.LeadStatus;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import com.dalworth.servman.events.LeadEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import com.dalworth.servman.service.LeadService;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+        	import com.dalworth.servman.domain.Lead;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            [Bindable] private var isBusy:Boolean = false;
+            [Bindable] private var isReadOnly:Boolean = false;
+            
+			private var _businessPartner:BusinessPartner;
+			[Bindable]
+			public function get businessPartner():BusinessPartner { return _businessPartner; }
+			public function set businessPartner(value:BusinessPartner):void 
+			{
+				_businessPartner = value;
+			}
+			
+            public static function open(parent:DisplayObject, businessPartner:BusinessPartner, isReadOnly:Boolean = false, modal:Boolean = true):BusinessPartnerCreatePopup
+            {
+                var popup:BusinessPartnerCreatePopup = new BusinessPartnerCreatePopup();
+                
+                popup.businessPartner = businessPartner;
+                popup.isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                if (!isBusy)
+                    close();
+            }
+            
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				if (!cbCanLogin.selected)
+					return result;
+				
+				if (!viewUserInfo.isValid())
+					result = false;
+				
+				return result;
+			}
+
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var newPartner:BusinessPartner = businessPartner.prepareToSend();
+				
+				newPartner.ShowAs = txtName.text;
+				newPartner.IsActive = cbCanLogin.selected;
+				
+				if (cbCanLogin.selected)
+				{
+					newPartner.RelatedUser = viewUserInfo.getUser();
+					newPartner.RelatedUser.Name = txtName.text;
+				}
+				
+				if (newPartner.Id == 0)
+				{
+					newPartner.DateCreated = new Date();
+					newPartner.CreatedByUserId = MainAppModel.getInstance().currentUser.Id;
+				}
+				
+				var view:UIComponent = this;
+				view.enabled = false;
+				BusinessPartnerService.getInstance().saveBusinessPartner(newPartner).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							view.enabled = true;
+							var result:BusinessPartner = event.result as BusinessPartner
+							businessPartner.applyFields(result);
+							businessPartner.RelatedUser = result.RelatedUser;
+							dispatchEvent(new BusinessPartnerEvent(BusinessPartnerEvent.BUSINESS_PARTNER_SAVE, businessPartner));
+							
+							close();
+						},
+						function (event:FaultEvent):void 
+						{
+							view.enabled = true;
+							Alert.show(event.fault.message);
+						}));
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{businessPartner.Id == 0}" enabled="false"/>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		borderColor="#999999" borderStyle="solid" fontSize="12">
+		<mx:Form width="100%" minWidth="250" labelWidth="120"
+			paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+			<mx:FormItem label="Business Partner" width="100%" required="true">
+				<mx:HBox width="100%" verticalAlign="middle">
+					<mx:TextInput id="txtName" width="100%" text="{businessPartner.ShowAs}"/>
+					<mx:CheckBox id="cbCanLogin" label="can login" selected="true"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
+
+		<user:UserEditView id="viewUserInfo" width="100%" user="{businessPartner.RelatedUser}"
+			visible="{cbCanLogin.selected}" includeInLayout="{cbCanLogin.selected}"/>
+
+	</mx:VBox>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%"  enabled="{!isBusy}">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Create" click="onSaveClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

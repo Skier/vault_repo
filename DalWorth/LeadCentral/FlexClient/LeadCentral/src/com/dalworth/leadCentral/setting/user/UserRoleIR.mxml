@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	width="24">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.User;
+			
+            [Embed(source="/assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+            [Embed(source="/assets/icons16/user--exclamation.png")]
+            [Bindable]
+            private var imgUserAttention:Class;
+
+            [Embed(source="/assets/icons16/building.png")]
+            [Bindable]
+            private var imgBuilding:Class;
+
+            [Embed(source="/assets/icons16/building--exclamation.png")]
+            [Bindable]
+            private var imgBuildingAttention:Class;
+
+            [Embed(source="/assets/icons16/user-business-boss.png")]
+            [Bindable]
+            private var imgBoss:Class;
+
+            [Embed(source="/assets/icons16/telephone-network.png")]
+            [Bindable]
+            private var imgTelephone:Class;
+
+			[Bindable]
+			private var user:User;
+
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				this.user = value as User;
+				imageRole.source = getImageSource();
+			}
+			
+			private function getImageSource():Class 
+			{
+				if (user == null) 
+					return null;
+				
+				if (user.RoleName == User.ROLE_BUSINESS_PARTNER)
+					return user.IsActive ? imgBuilding : imgBuildingAttention;
+				else if (user.RoleName == User.ROLE_STAFF)
+					return user.IsActive ? imgUser : imgUserAttention;
+				else if (user.RoleName == User.ROLE_ADMINISTRATOR)
+					return imgBoss;
+				else
+					return null;
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox top="0" bottom="0" left="0" right="0" verticalAlign="middle" horizontalAlign="center">
+		<mx:Image id="imageRole"/>
+	</mx:VBox>
+</mx:Canvas>

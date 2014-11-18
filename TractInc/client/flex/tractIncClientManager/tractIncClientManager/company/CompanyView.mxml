@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	xmlns:cmCompany="tractIncClientManager.company.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.Company;
+			
+            private function masterGridOnClickHandler(event:Event):void
+            {
+                var c:Company = masterDataGrid.selectedItem as Company;
+                this.detailDataGrid.dataProvider = c.ClientList;
+            }
+		]]>
+	</mx:Script>
+
+	<cmCompany:CompanyController id="controller" view="{this}"/>
+	
+    <mx:Button id="addButton" label="Add Company" click="controller.addButtonOnClickHandler(event)"/>
+    <mx:HBox width="100%" height="100%">
+        <mx:DataGrid id="masterDataGrid" click="masterGridOnClickHandler(event)" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="20" dataField="CompanyId"/>
+                <mx:DataGridColumn headerText="Name" width="85" dataField="CompanyName"/>
+                <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                        itemRenderer="tractIncClientManager.company.ActionIR"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:DataGrid id="detailDataGrid" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="20" dataField="ClientId"/>
+                <mx:DataGridColumn headerText="Name" width="85" dataField="ClientName"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:HBox>
+    
+</mx:VBox>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TabNavigator 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:Download="UI.ProcessManager.Download.*"
+    xmlns:Upload="UI.ProcessManager.Upload.*"
+	width="100%" height="100%"
+	creationComplete="Controller.OnCreationComplete()"
+    dragEnter="Controller.OnDragEnter(event)"
+    dragDrop="Controller.OnDragDrop(event)"
+	historyManagementEnabled="false"
+	>
+	<mx:Script>
+		<![CDATA[
+		
+			import UI.AppController;
+
+			public function set ParentController(parent:AppController):void {
+				Controller = new ProcessManagerController( ProcessManagerView(this), parent );
+			}
+			
+			[Bindable]
+			public var Controller:ProcessManagerController;
+
+		]]>
+	</mx:Script>
+
+	<mx:Canvas id="download" label="Download processes" width="100%" height="100%">
+		<Download:DownloadView width="100%" height="100%" ParentController="{Controller}"/>
+	</mx:Canvas>
+	<mx:Canvas id="upload" label="Upload processes" width="100%" height="100%">
+		<Upload:UploadView width="100%" height="100%" ParentController="{Controller}"/>
+	</mx:Canvas>
+	
+</mx:TabNavigator>

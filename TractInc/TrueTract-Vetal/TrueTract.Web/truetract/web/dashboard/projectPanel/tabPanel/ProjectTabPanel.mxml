@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollapsiblePanel
+    xmlns="truetract.web.dashboard.projectPanel.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    dragEnter="dragEnterHandler(event)"
+    creationComplete="init()" verticalGap="2">
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.core.DragSource;
+            import truetract.domain.DocumentAttachment;
+            import truetract.domain.Document;
+            import truetract.domain.ProjectTab;
+            import truetract.domain.ProjectTabDocument;
+            import truetract.web.dashboard.events.DocumentEvent;
+
+            import mx.events.DragEvent;
+            import mx.core.UIComponent;
+            import mx.collections.ArrayCollection;
+            import mx.controls.List;
+            import mx.controls.Button;
+            import mx.controls.CheckBox;
+            import mx.controls.Alert;
+            import mx.managers.DragManager;
+
+            [Bindable] public var projectTab:ProjectTab;
+
+            [Bindable] private var editMode:Boolean = false;
+
+            [Bindable]
+            [Embed(source="/assets/note_edit.png")]
+            private var editIcon:Class;
+
+            private function init():void
+            {
+                var btn:Button = new Button();
+                btn.width = 20;
+                btn.height = 20;
+                btn.styleName = "toolButton";
+                btn.setStyle("icon", editIcon);
+                btn.toolTip = "Edit Tab Name and description";
+                btn.addEventListener(MouseEvent.CLICK, doEditTabInfo);
+
+                addHeaderItem(btn);
+            }
+
+            private function doEditTabInfo(event:MouseEvent):void
+            {
+                var popup:ProjectTabEditView = ProjectTabEditView.open(this, true);
+                popup.projectTab = projectTab;
+            }
+
+            private function dragOverHandler(event:DragEvent):void
+            {
+                if (event.dragInitiator is List && 
+                    List(event.dragInitiator).selectedItems.length > 0 &&
+                    List(event.dragInitiator).selectedItems[0] is Document)
+                {
+                    DragManager.showFeedback(DragManager.COPY);
+                    documentDG.showDropFeedback(event);
+                } else {
+                    DragManager.showFeedback(DragManager.NONE);
+                }
+            }
+
+            private function dragEnterHandler(event:DragEvent):void
+            {
+                if (event.dragInitiator is List && 
+                    List(event.dragInitiator).selectedItems.length > 0 &&
+                    List(event.dragInitiator).selectedItems[0] is Document)
+                {
+                    collapsed = false;
+                }
+            }
+
+            private function dragDropHandler(event:DragEvent):void
+            {
+                documentDG.hideDropFeedback(event);
+                
+                if (event.dragInitiator is List && 
+                    List(event.dragInitiator).selectedItems.length > 0 &&
+                    List(event.dragInitiator).selectedItems[0] is Document)
+                {
+                    var dropIndex:int = documentDG.calculateDropIndex(event);
+    
+                    var documentList:List = List(event.dragInitiator);
+                    var documents:Array = documentList.selectedItems;
+    
+                    for each (var doc:Document in documents)
+                    {
+                        if (!projectTab.containsDocument(doc))
+                            projectTab.addDocument(doc);
+                    }
+                }
+            }
+
+            private function documentDG_doubleClickHandler():void
+            {
+                var doc:ProjectTabDocument = ProjectTabDocument(documentDG.selectedItem);
+                var popup:ProjectTabDocumentEditView = ProjectTabDocumentEditView.open(this, true);
+                popup.tabDocument = doc;
+            }
+
+            private function openDocumentButton_clickHandler():void
+            {
+                var tabDocuments:Array = documentDG.selectedItems;
+
+                if (tabDocuments)
+                {
+                    for each (var tabDoc:ProjectTabDocument in tabDocuments)
+                    {
+                        var document:Document = tabDoc.DocumentRef;
+                        dispatchEvent(new DocumentEvent(DocumentEvent.OPEN_DOCUMENT, document));
+                    }
+                }
+            }
+
+            private function openPdfButton_clickHandler():void
+            {
+                var tabDocuments:Array = documentDG.selectedItems;
+
+                if (tabDocuments)
+                {
+                    for each (var tabDoc:ProjectTabDocument in tabDocuments)
+                    {
+                        var document:Document = tabDoc.DocumentRef;
+                        if (document.PdfCopy) {
+                            var file:DocumentAttachment = DocumentAttachment(document.PdfCopy);
+
+                            navigateToURL(new URLRequest(file.FileUrl), '_blank');
+                        }
+                    }
+                }
+            }
+
+            private function removeButton_clickHandler():void
+            {
+                var tabDocuments:Array = documentDG.selectedItems;
+
+                if (tabDocuments)
+                {
+                    for each (var tabDoc:ProjectTabDocument in tabDocuments)
+                    {
+                        var itemIndex:int = projectTab.DocumentsList.getItemIndex(tabDoc);
+                        projectTab.DocumentsList.removeItemAt(itemIndex);
+                    }
+                }
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Text 
+        visible="{!editMode}" includeInLayout="{!editMode}"
+        text="{projectTab.Description}" 
+        width="100%"/>
+
+    <mx:HBox width="100%">
+        <mx:Label text="Runsheet" fontWeight="bold"/>
+        <mx:Button 
+            icon="@Embed(source='/assets/page_white_delete.png')" width="20" height="20" 
+            styleName="toolButton"
+            toolTip="Remove selected Document from Runsheet" 
+            enabled="{documentDG.selectedItems.length > 0 }"
+            click="removeButton_clickHandler()"/>
+
+        <mx:Button 
+            icon="@Embed(source='/assets/page_go.png')" width="20" height="20" 
+            styleName="toolButton"
+            toolTip="Open Document" enabled="{documentDG.selectedItems.length > 0}"
+            click="openDocumentButton_clickHandler()"/>
+
+        <mx:Button 
+            icon="@Embed(source='/assets/page_white_acrobat.png')" width="20" height="20" 
+            styleName="toolButton"
+            toolTip="Open Attached PDF" enabled="{documentDG.selectedItems.length > 0}"
+            click="openPdfButton_clickHandler()"/>
+    </mx:HBox>
+
+    <mx:DataGrid id="documentDG" 
+        fontSize="9" height="100%" width="100%" allowMultipleSelection="true" doubleClickEnabled="true"
+        dataProvider="{projectTab.DocumentsList}"
+        doubleClick="documentDG_doubleClickHandler()"
+        dragEnter="DragManager.acceptDragDrop(UIComponent(event.currentTarget))"
+        dragOver="dragOverHandler(event)"
+        dragDrop="dragDropHandler(event)">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Instrument" width="85" dataField="DocumentTypeName"/>
+            <mx:DataGridColumn headerText="Date Signed" width="75" dataField="DateSigned"/>
+            <mx:DataGridColumn headerText="Date Filed" width="75" dataField="DateFiled"/>
+            <mx:DataGridColumn headerText="Grantor" dataField="SellerName"/>
+            <mx:DataGridColumn headerText="Grantee" dataField="BuyerName"/>
+            <mx:DataGridColumn headerText="Description" dataField="Description" 
+                itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.LongTextIR"/>
+            <mx:DataGridColumn headerText="Remarks" dataField="Remarks" 
+                itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.LongTextIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+</CollapsiblePanel>

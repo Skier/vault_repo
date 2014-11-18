@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalScrollPolicy="off"> 
+    
+    <mx:Metadata>
+       [Event(name="addAttachment", type="com.tmnc.mail.business.AttachmentListEvent")]
+       [Event(name="removeAttachment", type="com.tmnc.mail.business.AttachmentListEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+                import mx.states.RemoveChild;
+        import mx.collections.ArrayCollection;
+        import com.tmnc.mail.view.Attachment.event.AttachmentListEvent;
+                
+        import mx.core.*;
+        import mx.effects.*;
+        import mx.events.*;
+        import mx.managers.DragManager;
+        import mx.effects.EffectManager;
+        
+        public var items:Array = [];
+
+        public var newItemStartX:int;
+        public var newItemStartY:int;
+        
+        [Bindable]
+        private var playingEffects:Dictionary = new Dictionary(true);
+        
+        [Bindable]
+        public var totalSize:int = 0;
+        
+        public var uploadRequestURL:URLRequest;
+                
+        public function addAttachment():void {
+            var fr:FileReference = new FileReference();
+                
+            fr.addEventListener(Event.SELECT, 
+                function(event:Event):void {
+                    if (indexOf(fr.name) != -1){
+                        return; // Do not allow to add files with equal names
+                    }
+                            
+                    var item:AttachmentListItem = new AttachmentListItem();
+                    item.addEventListener(AttachmentListEvent.REMOVE_ATTACHMENT, removeItemHandler);
+        
+                    var index:int = items.length;
+                    items[index] = item;
+                    addChild(item);
+                    layoutItems(index, true);
+
+                    dispatchEvent(new AttachmentListEvent(AttachmentListEvent.ADD_ATTACHMENT));
+
+                    item.uploadFile(fr, uploadRequestURL);
+                    calculateTotalSize();
+
+                });
+                
+            fr.browse();
+        }
+
+                public function get hasBusyItems():Boolean{
+            for (var i:int = 0; i < items.length; i++) {
+                if (items[i].uploadInProgress){
+                        return true;
+                }
+            }
+           
+            return false;
+                }
+                     
+        public function getFileNames():Array {
+            var ret:Array = [];
+            for (var i:int = 0; i < items.length; i++) {
+                ret[i] = items[i].fileName;
+            }
+            return ret;
+        }
+                
+        public function removeAllItems():void{
+            items.length = 0;
+            removeAllChildren();
+        }
+        
+        private function removeItemHandler(event:Event):void {
+            var item:AttachmentListItem = event.target as AttachmentListItem;
+            var index:int = indexOf(item.fileName);
+            items.splice(index, 1);
+            removeChild(item);
+            layoutItems(index);
+            calculateTotalSize();
+        }
+
+        private function calculateTotalSize():void{
+            totalSize = 0;
+            for (var i:int = 0; i < items.length; i++) {
+                totalSize += items[i].fileSize;
+            }
+        }
+                 
+        private function layoutItems(startIndex:int, scrollToBottom:Boolean=false):void {
+            var n:int = items.length;
+            var e:Move;
+            for (var i:int = startIndex; i < n ; i++) {
+                var item:AttachmentListItem = items[i];
+                var yTo:Number = i * (item.height);
+                //still need to prevent items that are already in motion from getting
+                //jumpy
+                if (playingEffects[item] == null) {
+                    e = new Move(item);
+                    if (item.x == 0 && item.y == 0)
+                    {
+                        e.xFrom = newItemStartX;
+                        e.yFrom = newItemStartY;
+                    }
+    
+                    e.xTo = 0;
+                    e.yTo = yTo;
+                    playingEffects[item] = e;
+                    e.addEventListener(EffectEvent.EFFECT_END, function(event:Event):void {
+                       delete playingEffects[item];
+                    });
+                    e.play();
+                } else {
+                    playingEffects[item].pause();
+                    playingEffects[item].yTo = yTo;
+                    playingEffects[item].play();
+                }
+            }
+            //get the last event and if we should scroll make sure we can validate
+            //and scroll to maxVPosition
+            if (scrollToBottom){
+                e.addEventListener(EffectEvent.EFFECT_END, function(event:Event):void {
+                    validateNow();
+                    verticalScrollPosition = maxVerticalScrollPosition;    
+                });
+            }
+        }
+        
+        private function indexOf(fileName:String):int {
+            var index:int = -1;
+
+            var n:int = items.length;
+                        for (var i:int = 0; i < items.length; i++){
+                if (items[i].fileName == fileName){
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        }     
+                
+        ]]>
+    </mx:Script>    
+</mx:Canvas>

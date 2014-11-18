@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+    xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="updateActiveDocument", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.DynamicEvent;
+        	import truetract.domain.ProjectTabDocument;
+        	import tractIncClientApp.document.DocumentEvent;
+
+            [Bindable] public var activeTabDocument:ProjectTabDocument;
+            [Bindable] public var readOnly:Boolean = false;
+
+            private function txtDescription_doubleClickHandler():void 
+            {
+            	if (activeTabDocument) 
+            	{
+	            	txtDescription.editable = true;
+	            	txtDescription.setStyle("backgroundColor", 0xffffff);
+            	}
+            }
+
+            private function txtDescription_focusOutHandler():void 
+            {
+            	if (readOnly)
+            		return;
+            	
+            	if (activeTabDocument) 
+            	{
+	            	txtDescription.editable = false;
+	            	txtDescription.setStyle("backgroundColor", 0xaeaeff);
+
+					activeTabDocument.Description = txtDescription.text;
+					
+					dispatchEvent(new DynamicEvent("updateActiveDocument"));
+            	}
+            }
+
+        ]]>
+    </mx:Script>
+
+	<mx:VBox id="boxDocInfo" width="100%">
+        <mx:VBox width="100%" verticalGap="-5">
+            <mx:Label text="Document Info :" fontWeight="bold"/>
+            
+            <mx:VBox id="docInfoBox"
+                width="100%" verticalGap="-5" borderStyle="solid" borderColor="#aeaeff" 
+                backgroundAlpha="0.1" backgroundColor="#aeaeff">
+                
+                <mx:HBox width="100%">
+                    <mx:Label text="Instrument Type :" fontWeight="bold"/>
+                    <mx:Label text="{activeTabDocument.DocumentTypeName}"/>
+                </mx:HBox>
+
+                <mx:HBox width="100%">
+                    <mx:Label text="Inst#/Vol &amp; Page :" fontWeight="bold"/>
+                    <mx:Label text="{activeTabDocument.DocumentRef.DocumentPlacement}"/>
+                </mx:HBox>
+                
+                <mx:HBox width="100%">
+                    <mx:Label text="Acreage :" fontWeight="bold"/>
+                    <mx:Label text="{activeTabDocument.DocumentRef.TractsAcres}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+	    <mx:VBox verticalGap="-5" width="100%">
+	        <mx:Label text="Description :" fontWeight="bold"/>
+	    
+            <mx:TextArea id="txtDescription"
+            	editable="false" 
+            	text="{activeTabDocument.Description}" width="100%" minHeight="20" maxHeight="60"
+            	doubleClickEnabled="{!readOnly}"
+            	doubleClick="txtDescription_doubleClickHandler()"
+            	focusOut="txtDescription_focusOutHandler()"
+            	borderColor="#aeaeff" backgroundColor="#aeaeff" backgroundAlpha="0.1"/>
+	    </mx:VBox>
+	</mx:VBox>
+    <mx:VBox height="{boxDocInfo.height}" width="100%" verticalGap="-5">
+<!--
+        <mx:Label text="Tracts:" fontWeight="bold"/>
+ -->        
+		<mx:TabNavigator width="100%" height="100%"
+			fontSize="9" tabHeight="15" 
+			verticalGap="0" paddingTop="0">
+        	<mx:Box label="Tracts:" width="100%" height="100%">
+			    <mx:DataGrid id="dgTracts"
+			    	borderThickness="0"
+			        dataProvider="{activeTabDocument.DocumentRef.TractsList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%"
+			        selectable="false">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Reference Name" dataField="RefName"/>
+			            <mx:DataGridColumn headerText="Called Size" width="85" dataField="calledString"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+        	</mx:Box>
+        	<mx:Box label="Referenced:" width="100%" height="100%">
+			    <mx:DataGrid id="dgReferences" 
+			    	borderThickness="0"
+			        dataProvider="{activeTabDocument.DocumentRef.ReferencesList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%"
+			        selectable="false">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Instrument" dataField="DocumentTypeName"/>
+			            <mx:DataGridColumn headerText="Date Signed" dataField="DateSigned"/>
+			            <mx:DataGridColumn headerText="Date Filed" dataField="DateFiledDisplayValue"/>
+			            <mx:DataGridColumn headerText="Grantor" dataField="SellerName"/>
+			            <mx:DataGridColumn headerText="Grantee" dataField="BuyerName"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+        	</mx:Box>
+		</mx:TabNavigator>
+<!--
+ 		<mx:LinkBar dataProvider="{vsDocDetail}" textDecoration="underline" color="#000099"/>
+
+        <mx:ViewStack id="vsDocDetail" width="100%" height="100%">
+        	<mx:Box label="Tracts:" width="100%" height="100%">
+			    <mx:DataGrid id="dgTracts" 
+			        dataProvider="{activeTabDocument.DocumentRef.TractsList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%"
+			        selectable="false">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Reference Name" dataField="RefName"/>
+			            <mx:DataGridColumn headerText="Called Size" width="85" dataField="calledString"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+        	</mx:Box>
+        	<mx:Box label="Referenced:" width="100%" height="100%">
+			    <mx:DataGrid id="dgReferences" 
+			        dataProvider="{activeTabDocument.DocumentRef.ReferencesList}" sortableColumns="false" dragEnabled="false"
+			        fontSize="9" height="100%" width="100%"
+			        selectable="false">
+			        <mx:columns>
+			            <mx:DataGridColumn headerText="Instrument" dataField="DocumentTypeName"/>
+			            <mx:DataGridColumn headerText="Date Signed" dataField="DateSigned"/>
+			            <mx:DataGridColumn headerText="Date Filed" dataField="DateFiledDisplayValue"/>
+			            <mx:DataGridColumn headerText="Grantor" dataField="SellerName"/>
+			            <mx:DataGridColumn headerText="Grantee" dataField="BuyerName"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+        	</mx:Box>
+        </mx:ViewStack>
+ -->
+    </mx:VBox>
+
+</mx:HBox>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:GridItem xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+<mx:Script>
+	<![CDATA[
+		import Service.Database;
+		import Domain.*;
+		import mx.managers.DragManager;
+		import mx.events.DragEvent;
+		import mx.core.DragSource;
+		
+		private function beginDragAndDrop(event:MouseEvent):void{
+			var target:DataGrid = DataGrid(event.currentTarget);
+			var jobTicket:JobTicket = JobTicket(target.selectedItem);
+			
+			var dragSource:DragSource = new DragSource();
+			dragSource.addData(jobTicket, "pendingJobTicket");
+			dragSource.addData(target.selectedIndex, "index");
+			
+			
+			
+			var proxy:DragProxy = new DragProxy();
+			proxy.initialize();
+			
+			proxy.lblTicketNumber.text = jobTicket.ticketNumber.toString();
+			proxy.lblType.text = jobTicket.type;
+			DragManager.doDrag(target, dragSource, event, proxy);
+			
+		}
+		
+	]]>
+</mx:Script>
+	<mx:VBox width="100%" height="100%" >
+		<mx:Label text="PENDING TICKETS"  fontSize="12"  fontThickness="2"/>
+		<mx:DataGrid id="dbTech10Work" showHeaders="false" width="100%" height="100%" dataProvider="{Database.Instance.pendingJobTickets}" 
+			 mouseDown="beginDragAndDrop(event)">
+			<mx:columns>
+				<mx:DataGridColumn  itemRenderer="UI.DashBoard.Dispatch.DispatchJobTicketGridItemRenderer"  headerText=""/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:GridItem>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:components="truetract.plotter.components.*" 
+	xmlns:document="truetract.web.client.document.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Document;
+			import truetract.domain.Tract;
+			import mx.core.UIComponent;
+		
+			public function show(item:Object):void 
+			{
+				if (item is Tract) 
+				{
+					viewTract.tract = item as Tract;
+					switchView(viewTract);
+				} else if (item is Document) 
+				{
+					viewDocument.docum = item as Document;
+					switchView(viewDocument);
+				} else 
+				{
+					this.visible = false;
+					this.includeInLayout = false;
+				}
+			}
+			
+			private function switchView(view:UIComponent):void  
+			{
+				for each (var child:UIComponent in getChildren()) 
+				{
+					child.visible = false;
+				}
+				
+				if (view is TractQuickView) 
+				{
+					viewTract.visible = true;
+				} else if (view is DocumentQuickDetail) 
+				{
+					viewDocument.visible = true;
+				} 
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<components:TractQuickView id="viewTract" width="100%" height="100%" visible="false"/>
+	<document:DocumentQuickDetail id="viewDocument" width="100%" height="100%" visible="false"/>
+</mx:Canvas>

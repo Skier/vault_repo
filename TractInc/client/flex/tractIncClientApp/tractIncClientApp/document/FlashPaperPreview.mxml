@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:containers="truetract.web.containers.*"
+    currentState="loading"
+	creationComplete="onCreationComplete();">
+	
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.ResizeEvent;
+        	import truetract.domain.File;
+        	import mx.binding.utils.ChangeWatcher;
+        	import truetract.domain.DocumentAttachment;
+            import flash.utils.getTimer;
+            import mx.controls.Alert;
+            
+            private var _attachFile:File;
+            [Bindable]
+            public function get attachFile():File {return _attachFile;}
+            public function set attachFile(value:File):void 
+            {
+            	_attachFile = value;
+            	
+            	ChangeWatcher.watch(this, "attachFile", attachFileChangeHandler);
+            }
+            
+            private function attachFileChangeHandler(e:*):void 
+            {
+            	//flashPaperURL = attachFile.FileUrl + ".swf";
+            	flashPaperURL = "http://test.affilia.com/001.swf"
+//            	flashPaperURL = "http://localhost/DocumentStorage/attachments/documents/614/001.swf"
+            	fpProxyId = getTimer();
+
+                ExternalInterface.addCallback( "onLoadError" + fpProxyId, onLoadError );
+                ExternalInterface.addCallback( "onLoadInit" + fpProxyId, onLoadInit );
+
+                swfLoader.source = "FlashPaperLoader.swf?&swfDomId=" + swfDomId 
+                                                        + "&id=" + fpProxyId 
+                                                        + "&url=" + escape( flashPaperURL );
+            }
+        
+            private var flashPaperURL:String;
+            
+            private function onCreationComplete():void 
+            {
+				swfLoader.addEventListener(ResizeEvent.RESIZE, swfLoaderContainerResized);
+            }
+            
+            private function swfLoaderContainerResized(e:ResizeEvent):void 
+            {
+            	swfLoader.setSize(swfLoader.width, swfLoader.height);
+            }
+
+            [Bindable]
+            private var fpProxyId:int;
+
+            private const swfDomId:String = "main";
+            
+            public function onLoadError( errorCode:String, httpStatus:String ):void
+            {
+                currentState = '';
+                
+                Alert.show( errorCode + "\n" + httpStatus, "Load Error" );
+            }
+            
+            public function onLoadInit():void
+            {
+                currentState = '';
+
+                swfLoader.includeInLayout = true;
+            	swfLoader.setSize(swfLoader.width, swfLoader.height);
+            }
+            
+        ]]>
+    </mx:Script>    
+
+    <mx:states>
+        <mx:State name="loading">
+            <mx:AddChild position="lastChild">
+                <mx:ProgressBar labelPlacement="bottom" id="progressBar" indeterminate="true" enabled="true" label="Please wait, loading document..." />
+            </mx:AddChild>
+            <mx:SetProperty name="width" value="100%" />
+            <mx:SetProperty name="height" value="100%" />
+            <mx:SetStyle name="horizontalAlign" value="center" />
+            <mx:SetStyle name="verticalAlign" value="middle" />
+            <mx:SetProperty target="{swfLoader}" name="includeInLayout" value="false" />
+            <!--<mx:SetProperty target="{swfLoader}" name="visible" value="false" />-->
+        </mx:State>
+    </mx:states>
+    
+    <containers:FlashPaperLoader id="swfLoader"
+        fpProxyId="{fpProxyId}"
+        swfDomId="{swfDomId}"
+        width="100%"
+        height="100%" />
+
+</mx:Box>

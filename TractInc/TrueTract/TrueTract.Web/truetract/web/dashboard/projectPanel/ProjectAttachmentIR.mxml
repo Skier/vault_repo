@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="-3"
+    width="100%" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.domain.DictionaryRegistry;
+
+            private function doOpenFile():void
+            {
+                var urlRequest:URLRequest = new URLRequest(data.FileRef.fileFullUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:HBox width="100%">
+        <mx:Label text="Reference Name: "/>
+
+        <mx:LinkButton 
+            label="{data.FileRef.Description}" height="16"
+            click="doOpenFile()"
+            textAlign="left" 
+            textDecoration="underline" color="#000099"
+            />
+    </mx:HBox>
+
+    <mx:HBox width="100%">
+        <mx:Label text="Type:"/>
+        <mx:Label text="{DictionaryRegistry.getInstance().projectAttachmentTypes.AttachmentType.(@Id == data.ProjectAttachmentTypeId).@Name}" 
+        	fontWeight="bold"/>
+        <mx:Label text="Created:"/>
+        <mx:Label text="{df.format(data.FileRef.Created)}" fontWeight="bold"/>
+        <mx:Label text="Added By:"/>
+        <mx:Label text="{data.FileRef.CreatedByName}" fontWeight="bold"/>
+    </mx:HBox>
+
+</mx:VBox>

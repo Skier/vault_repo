@@ -1,0 +1,63 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Domain.QbInvoice
+<div style="background: #F7F7F7; border: 1px solid #DDDDDD; padding: 10px; margin-top: 3px; margin-bottom: 10px;">
+    <table class="form" style="width:100%;">
+        <tr>
+            @if (Model.Id == 0)
+            {
+            <td rowspan="2"style="width:30px; background-color:@Model.ColorByMatchLevel; vertical-align:top; white-space:nowrap;">
+                <input type="checkbox" name="matchInvoices" value="@Model.QbInvoiceId"/>
+            </td>
+            }
+            <td style="text-align:right;"><span style="font-size:16px; font-weight:bold;">Invoice:</span></td>
+            <td><span style="font-size:16px; font-weight:bold;">@Model.IdsInvoiceNumber</span></td>
+            <td rowspan="2" style="width:100%; white-space:nowrap; vertical-align:top;">
+                <b>Customer:</b>
+                <p style="width:300px;height:50px;">@Model.IdsCustomerName<br/>@Model.IdsCustomerAddress</p>
+                @if (!string.IsNullOrEmpty(Model.IdsCustomerPhoneStr))
+                {
+                    <b>Phone:</b>@Model.IdsCustomerPhoneStr
+                }
+            </td>
+            <td rowspan="2" style="vertical-align:bottom; white-space:nowrap;">
+                @if (Model.Id != 0 && !ContextHelper.GetCurrentUser().IsBusinessPartner && !ContextHelper.GetCurrentUser().IsAccounter())
+                {
+                    <span>@Html.ActionLink("UnMatch Invoice", "UnmatchQbInvoice", "Leads", new { id = Model.Id, leadId = Model.LeadId }, new { @class = "button" })</span>
+                }
+                @if (Model.RelatedIdsInvoice.Line != null && Model.RelatedIdsInvoice.Line.Count() > 0)
+                {
+                <a class="button" onclick="javascript:$('#invoice-items-@Model.Index').toggle();">Details</a>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right;">created:</td>
+            <td><b>@Model.IdsInvoiceDateCreatedStr</b></td>
+        </tr>
+    </table>
+    @if (Model.RelatedIdsInvoice.Line != null && Model.RelatedIdsInvoice.Line.Count() > 0)
+    {
+    <table id="invoice-items-@Model.Index" class="list" style="display:none;">
+        <thead>
+            <tr>
+                <td>Item</td>
+                <td class="right">Amount</td>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var line in Model.RelatedIdsInvoice.Line)
+        {
+            <tr>
+                <td>@line.Desc</td>
+                <td class="right">@String.Format("{0:C}", line.Amount)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    }
+    <div class="details" style="text-align:right;padding:10px;font-size:14px;">
+    Closed Amount:<b>@String.Format("{0:C}", Model.Amount)</b>
+    Tax:<b>@String.Format("{0:C}", Model.TaxAmount)</b>
+    Total:<b>@String.Format("{0:C}", Model.TotalAmount)</b>
+    </div>
+</div>

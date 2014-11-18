@@ -1,0 +1,57 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Lead.LeadEdit
+
+@{
+    ViewBag.Title = "Lead Details";
+}
+
+@using (Html.BeginForm())
+{
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit">Save</button>
+        @Html.ActionLink("Cancel", "Index", new{controller="Leads"}, new { @class = "button" })
+      </div>
+      <h1>New Lead</h1>
+    </div>
+    <div class="content">
+        @Html.HiddenFor(model => model.CurrentLead.DateCreated)
+        @Html.HiddenFor(model => model.CurrentLead.Id)
+        @Html.HiddenFor(model => model.CurrentLead.SourceId)
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Campaign</td>
+              <td>@Html.DropDownList("CampaignId", new SelectList(Model.CampaignList, "Id", "CampaignName", Model.CurrentLead.CampaignId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.DropDownList("BusinessPartnerId", new SelectList(Model.BusinessPartnerList, "Id", "PartnerName", Model.CurrentLead.BusinessPartnerId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">First Name</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.FirstName, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Last Name</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.LastName, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.Phone, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Address</td>
+              <td>@Html.TextAreaFor(model => model.CurrentLead.Address, new { @cols=40, @rows=4 })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Customer Notes</td>
+              <td>@Html.TextAreaFor(model => model.CurrentLead.CustomerNotes, new { @cols=40, @rows=6 })</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+}

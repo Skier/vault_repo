@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical"
+	styleName="initPopup">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			public static function open(parent:DisplayObject, modal:Boolean = true):WaitScreen 
+			{
+				var popup:WaitScreen = new WaitScreen();
+				PopUpManager.addPopUp(popup, parent, modal);
+
+				PopUpManager.centerPopUp(popup);
+				
+				return popup;
+			}
+			
+			public function close():void 
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%">
+		<mx:ProgressBar indeterminate="true" width="100%"/>
+	</mx:VBox>
+	
+	<mx:Label id="lblMessage" text="Validating address and determining shipping rates." fontWeight="bold" width="100%"/>
+	
+</mx:TitleWindow>

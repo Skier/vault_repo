@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" verticalAlign="middle"
+	horizontalScrollPolicy="off" horizontalAlign="center"
+	paddingLeft="5" paddingRight="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.BillItem;
+			
+			private function onClickAttach(billItem:BillItem):void 
+			{
+				BillItemAttachmentsView.Open(billItem, parentDocument.parentDocument, true, true);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button width="20" height="20"
+        icon="@Embed(source='/common/attachment/paperclip.gif')"
+    	visible="{data.RelatedBillItemAttachment.length > 0}"
+    	includeInLayout="{data.RelatedBillItemAttachment.length > 0}"
+        click="onClickAttach(data as BillItem)"/>
+    <mx:Label text="({data.RelatedBillItemAttachment.length})" fontWeight="bold"
+    	visible="{data.RelatedBillItemAttachment.length > 0}"
+    	includeInLayout="{data.RelatedBillItemAttachment.length > 0}"
+    	/>
+
+</mx:HBox>

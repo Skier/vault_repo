@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:segment="com.ebs.eroof.view.segment.*" xmlns:company="com.ebs.eroof.view.company.*" xmlns:client="com.ebs.eroof.view.client.*" xmlns:facility="com.ebs.eroof.view.facility.*" xmlns:section="com.ebs.eroof.view.section.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Company;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.model.wrapper.Client;
+			import com.ebs.eroof.model.wrapper.Segment;
+			
+			private var _model:Object;
+			[Bindable]
+			public function get model():Object { return _model; }
+			public function set model(value:Object):void 
+			{
+				_model = value;
+				init(_model);
+			}
+			
+			public function init(obj:Object):void 
+			{
+				if (obj is Section)
+					selectSection(obj as Section);
+				else if (obj is Facility)
+					selectFacility(obj as Facility);
+				else if (obj is Client)
+					selectClient(obj as Client);
+				else if (obj is Segment)
+					selectSegment(obj as Segment);
+				else if (obj is Company)
+					selectCompany(obj as Company);
+			}
+			
+			private function selectCompany(company:Company):void 
+			{
+				vsMain.selectedChild = viewCompanyDetail;
+				viewCompanyDetail.init(company);
+			}
+			
+			private function selectSegment(segment:Segment):void 
+			{
+				vsMain.selectedChild = viewSegmentDetail;
+				viewSegmentDetail.init(segment);
+			}
+			
+			private function selectClient(client:Client):void 
+			{
+				vsMain.selectedChild = viewClientDetail;
+				viewClientDetail.init(client);
+			}
+			
+			private function selectFacility(facility:Facility):void 
+			{
+				vsMain.selectedChild = viewFacilityDetail;
+				viewFacilityDetail.init(facility);
+			}
+			
+			private function selectSection(section:Section):void 
+			{
+				vsMain.selectedChild = viewSectionDetail;
+				viewSectionDetail.init(section);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsMain" width="100%" height="100%">
+		<company:CompanyDetailPanel id="viewCompanyDetail" width="100%" height="100%"/>
+		<segment:SegmentDetailPanel id="viewSegmentDetail" width="100%" height="100%"/>
+		<client:ClientDetailPanel id="viewClientDetail" width="100%" height="100%"/>
+		<facility:FacilityDetailPanel id="viewFacilityDetail" width="100%" height="100%"/>
+		<section:SectionDetailPanel id="viewSectionDetail" width="100%" height="100%"/>
+	</mx:ViewStack>
+	
+</mx:Canvas>

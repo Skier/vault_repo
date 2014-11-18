@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*"
+	creationComplete="onCreate()" xmlns:bp="com.dalworth.servman.main.bp.*" xmlns:owner="com.dalworth.servman.main.owner.setting.owner.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import com.dalworth.servman.events.OwnerEvent;
+			import com.dalworth.servman.domain.Owner;
+			import mx.core.Application;
+			import com.dalworth.servman.main.bp.BusinessPartnerCreatePopup;
+			import com.dalworth.servman.events.BusinessPartnerEvent;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_EMAIL:String = "columnEmail";
+			private static const COLUMN_PHONE:String = "columnPhone";
+			
+			[Bindable]
+			public var isEditMode:Boolean = false;
+			
+			[Bindable]
+			private var model:OwnersModel = OwnersModel.getInstance();
+			
+			[Bindable]
+			private var controller:OwnersController;
+			
+			public function init():void 
+			{
+				isEditMode = false;
+				
+				controller = new OwnersController(this);
+				controller.initModel();
+				if (vsOwners != null)
+					vsOwners.selectedIndex = 0;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Owners ";
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is Owner) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return Owner(item).ShowAs;
+						
+						case COLUMN_EMAIL :
+							return Owner(item).RelatedUser != null ? Owner(item).RelatedUser.Email : "";
+						
+						case COLUMN_PHONE :
+							return Owner(item).RelatedUser != null ? Owner(item).RelatedUser.Phone : "";
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onCreate():void 
+			{
+				viewOwnerEditor.addEventListener(OwnerEvent.OWNER_SAVE, onOwnerSave);
+				viewOwnerEditor.addEventListener("closeOwnerEditor",
+					function(event:*):void 
+					{
+						isEditMode = false;
+						vsOwners.selectedChild = viewOwnersList;
+						viewOwnerEditor.setOwner(null);
+						BreadCrumbModel.getInstance().breadCrumbString = "Settings > Owners ";
+					});  
+			}
+			
+			private function onOwnerSave(event:OwnerEvent):void 
+			{
+				var ownerUser:Owner = event.ownerUser;
+				if(!model.owners.contains(ownerUser))
+					model.owners.addItem(ownerUser);
+				var idx:int = model.owners.getItemIndex(ownerUser);
+				dgOwners.selectedIndex = idx;
+				dgOwners.scrollToIndex(idx);
+			}
+			
+			private function onNewClick():void 
+			{
+				var owner:Owner = new Owner();
+				owner.IsActive = true;
+				var popup:OwnerCreatePopup = OwnerCreatePopup.open(Application.application as DisplayObject, owner);
+				popup.addEventListener(OwnerEvent.OWNER_SAVE, onOwnerSave);
+			}
+			
+			private function onOwnerDoubleClick():void 
+			{
+				var owner:Owner = dgOwners.selectedItem as Owner;
+				vsOwners.selectedChild = viewOwnerEditor;
+				viewOwnerEditor.setOwner(owner);
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Owners > Edit Owner [" + owner.ShowAs + "]";
+				
+				isEditMode = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsOwners" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewOwnersList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:DataGrid id="dgOwners" dataProvider="{model.owners}" width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="onOwnerDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" labelFunction="getLabel" dataField="{COLUMN_NAME}" minWidth="100"/>
+						<mx:DataGridColumn headerText="Email" labelFunction="getLabel" dataField="{COLUMN_EMAIL}" width="150" minWidth="100"/>
+						<mx:DataGridColumn headerText="Phone" labelFunction="getLabel" dataField="{COLUMN_PHONE}" width="150" minWidth="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox height="100%" width="150">
+				<mx:Button width="100%" height="35" label="Create New" click="onNewClick()"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<owner:OwnerEditView id="viewOwnerEditor" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:HBox>

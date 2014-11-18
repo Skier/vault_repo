@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:filters="flash.filters.*"
+	xmlns:rs="com.rubenswieringa.book.*"
+	layout="vertical" 
+	backgroundColor="#ffffff" 
+	viewSourceURL="source/index.html" xmlns:pdf="com.affilia.pdf.*" xmlns:containers="com.affilia.containers.*">
+<!--	
+	<mx:Style source="assets/style/book.css" />
+-->	
+	<mx:Script>
+		<![CDATA[
+			import com.affilia.pdf.BitmapPdfPage;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			
+			import mx.effects.Fade;
+			import com.rubenswieringa.book.*;
+			
+			[Bindable]
+			private var currentZoom:Number = 1;
+			
+			private function onClickZoomIn():void 
+			{
+				if (currentZoom == 1){
+					currentZoom = 1.5;
+				} else if (currentZoom == 1.5) {
+					currentZoom = 2;
+				} else if (currentZoom == 2) {
+					currentZoom = 2.5;
+				} else {
+					currentZoom = 3;
+				}
+				
+				rescaleBook();
+			}
+			
+			private function onClickZoomOut():void 
+			{
+				if (currentZoom == 3) {
+					currentZoom = 2.5;
+				} else if (currentZoom == 2.5) {
+					currentZoom = 2;
+				} else if (currentZoom == 2) {
+					currentZoom = 1.5;
+				} else {
+					currentZoom = 1;
+				}
+				
+				rescaleBook();
+			}
+			
+			private function rescaleBook():void 
+			{
+				myBook.scaleX = currentZoom;
+				myBook.scaleY = currentZoom;
+			}
+			
+			private function addNote():void 
+			{
+			}
+			
+			private function onCompletePage(event:Event):void 
+			{
+				var page:BitmapPdfPage = event.currentTarget as BitmapPdfPage;
+				page.image.scaleX = (myBook.width / 2) / page.image.width;
+				page.image.scaleY = myBook.height / page.image.height;
+			}
+			
+			private function onClickPrev():void 
+			{
+				currentZoom = 1;
+				rescaleBook();
+				callLater(myBook.prevPage);
+			}
+			
+			private function onClickNext():void 
+			{
+				currentZoom = 1;
+				rescaleBook();
+				callLater(myBook.nextPage);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox width="250" height="100%">
+			<mx:TabNavigator width="100%" height="100%">
+				<mx:VBox width="100%" height="100%" label="TOC"
+					borderColor="#002252" borderStyle="solid" borderThickness="1" 
+					dropShadowEnabled="true" shadowDistance="0"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+					<mx:Label text="Table of Contests" fontWeight="bold"/>
+					<mx:List width="100%" height="100%"/>
+				</mx:VBox>
+				<mx:VBox width="100%" height="100%" label="Search"
+					dropShadowEnabled="true" shadowDistance="0"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+					<mx:HBox backgroundColor="#dddddd" width="100%"
+						borderColor="#002252" borderStyle="solid" borderThickness="1" 
+						dropShadowEnabled="true" shadowDistance="0"
+						verticalAlign="middle" horizontalAlign="center"
+						paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+						<mx:TextInput width="100%"/>
+						<mx:Button label="Search"/>
+					</mx:HBox>
+
+					<mx:List width="100%" height="100%"/>
+				</mx:VBox>
+			</mx:TabNavigator>
+			<mx:VBox width="100%" height="50"
+				backgroundColor="#6699ff" 
+				borderColor="#002252" borderStyle="solid" borderThickness="2" 
+				dropShadowEnabled="true" shadowDistance="0"
+				verticalAlign="middle" horizontalAlign="center">
+				<mx:Label color="#990000" text="Advertisement place"/>
+			</mx:VBox>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%">
+			<mx:VBox width="100%" backgroundColor="#eeeeee">
+				<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+					<mx:Button label="Zoom In" click="onClickZoomIn()"/>
+					<mx:Button label="Zoom Out" click="onClickZoomOut()"/>
+					<mx:Spacer width="20"/>
+					<mx:Button label="Prev" click="onClickPrev()"/>
+					<mx:Button label="Next" click="onClickNext()"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:Canvas width="100%" height="100%">
+				<rs:Book id="myBook" width="804" height="522" 
+					openAt="0" autoFlipDuration="600" easing="0.7" regionSize="150" creationPolicy="auto"
+					sideFlip="true" hardCover="true" hover="true" snap="false" flipOnClick="true"
+					>
+					<rs:Page backgroundColor="#ffff99" backgroundAlpha="1">
+						<mx:Label 
+							x="100" y="180" 
+							fontFamily="Verdana" fontSize="42" color="#333333" 
+							text="TITUS" />
+						<mx:Label 
+							x="100" top="230" 
+							fontFamily="Tahoma" fontSize="16" color="#333333" 
+							text="e-Catalog prototype" />
+					</rs:Page>
+					
+					<rs:Page backgroundColor="#ffffff" backgroundAlpha="1"/>
+			
+					<rs:Page backgroundColor="#ffffff" backgroundAlpha="1">
+						<mx:Label 
+							x="100" y="180" 
+							fontFamily="Verdana" fontSize="42" color="#333333" 
+							text="TITUS" />
+						<mx:Label 
+							x="100" top="230" 
+							fontFamily="Tahoma" fontSize="16" color="#333333" 
+							text="e-Catalog prototype" />
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000001.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+						<mx:Canvas id="p1_w4"   x="{192 * (402/603)}" y="{8 * (522/783)}"   width="{103 * (402/603)}" height="{25 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p1_w42"  x="{101 * (402/603)}" y="{153 * (522/783)}" width="{36 * (402/603)}"  height="{11 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p1_w102" x="{85 * (402/603)}"  y="{233 * (522/783)}" width="{36 * (402/603)}"  height="{11 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p1_w512" x="{444 * (402/603)}" y="{616 * (522/783)}" width="{39 * (402/603)}"  height="{11 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p1_w630" x="{162 * (402/603)}" y="{46 * (522/783)}"  width="{59 * (402/603)}"  height="{17 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000002.png" width="100%" height="100%" complete="onCompletePage(event)">
+							<containers:NotesWindow 
+								borderColor="#ffff00" backgroundColor="#ffff00" 
+								borderThicknessBottom="0" borderThicknessLeft="0" borderThicknessRight="0" borderThicknessTop="0"
+								cornerRadius="0"
+								x="50" y="20" width="120" height="120" title="note #1" 
+								text="some text some text some text some text some text some text some text "/>
+						</pdf:BitmapPdfPage>
+						<mx:Canvas id="p2_w4"   x="{482 * (402/603)}" y="{8 * (522/783)}"   width="{103 * (402/603)}" height="{25 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p2_w15"  x="{289 * (402/603)}" y="{46 * (522/783)}"  width="{59 * (402/603)}"  height="{17 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000003.png" width="100%" height="100%" complete="onCompletePage(event)">
+							<containers:NotesWindow
+								borderColor="#ffff00" backgroundColor="#ffff00" 
+								borderThicknessBottom="0" borderThicknessLeft="0" borderThicknessRight="0" borderThicknessTop="0"
+								cornerRadius="0"
+								x="50" y="200" width="100" height="150" title="note #2"
+								text="some text some text some text some text some text some text some text "/>
+						</pdf:BitmapPdfPage>
+						<mx:Canvas id="p3_w4"   x="{192 * (402/603)}" y="{8 * (522/783)}"   width="{103 * (402/603)}" height="{25 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p3_w400" x="{162 * (402/603)}" y="{46 * (522/783)}"  width="{59 * (402/603)}"  height="{17 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000004.png" width="100%" height="100%" complete="onCompletePage(event)">
+							<containers:NotesWindow 
+								borderColor="#ffff00" backgroundColor="#ffff00" 
+								borderThicknessBottom="0" borderThicknessLeft="0" borderThicknessRight="0" borderThicknessTop="0"
+								cornerRadius="0"
+								x="80" y="120" width="200" height="100" title="note #3"
+								text="some text some text some text some text some text some text some text "/>
+						</pdf:BitmapPdfPage>
+						<mx:Canvas id="p4_w4"   x="{482 * (402/603)}" y="{8 * (522/783)}"   width="{103 * (402/603)}" height="{25 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+						<mx:Canvas id="p4_w288" x="{278 * (402/603)}" y="{46 * (522/783)}"  width="{59 * (402/603)}"  height="{17 * (522/783)}" backgroundColor="#ff0000" backgroundAlpha="0.5"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000005.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000006.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000007.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000008.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000009.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000010.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000011.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000012.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000013.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000014.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000015.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000016.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000017.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000018.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000019.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000020.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000021.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000022.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+					<rs:Page backgroundAlpha="0">
+						<pdf:BitmapPdfPage imageUrl="assets/titus/144_-000023.png" width="100%" height="100%" complete="onCompletePage(event)"/>
+					</rs:Page>
+			
+				</rs:Book>
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Application>

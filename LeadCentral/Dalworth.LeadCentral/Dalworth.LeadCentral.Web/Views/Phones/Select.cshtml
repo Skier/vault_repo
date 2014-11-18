@@ -1,0 +1,50 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Phone.SelectPhone
+
+@{
+    ViewBag.Title = "Select";
+    var returnUrl = string.IsNullOrEmpty(ViewBag.ReturnUrl) ? "/Phones" : ViewBag.ReturnUrl;
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Please Select Phone Number</h1>
+    <div style="float:right;padding: 8px 0px 8px 0px;"><a href="@returnUrl" class="button">cancel</a></div>
+  </div>
+  <div class="content">
+@if (Model != null && Model.UnassignedPhones != null && Model.UnassignedPhones.Count > 0)
+{
+    <table class="list">
+    <thead>
+        <tr>
+        <td class="left">Number</td>
+        <td class="left">Friendly Number</td>
+        <td class="left">Redirect Number</td>
+        <td class="left">Description</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var phone in Model.UnassignedPhones)
+    {
+        <tr>
+        <td class="left">@phone.PhoneNumber</td>
+        <td class="left">@phone.FriendlyNumber</td>
+        <td class="left">@phone.RedirectPhoneNumber</td>
+        <td class="left">@Html.ActionLink("Select", "AddPhone", 
+            new { controller = "Campaigns", 
+                phoneNo = phone.PhoneNumber, 
+                friendlyNo = phone.FriendlyNumber, 
+                redirectNo = phone.RedirectPhoneNumber, 
+                isTollfree = phone.IsTollFree }, 
+            new { @class = "button" })</td>
+        </tr>
+    }
+    </tbody>
+    </table>
+} else
+{
+    <div>No available Phone Numbers in selected Area. Please select another area.</div>
+}
+  </div>
+</div>

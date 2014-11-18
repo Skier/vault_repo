@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.loveland.mapper.UI.events.ToolBarEvent;
+			import mx.events.ItemClickEvent;
+			
+			public static const TOOL_MAPPOINT:int = 0;
+			public static const TOOL_POLYLINE:int = 1;
+			public static const TOOL_POLYGON:int = 2;
+			
+			public static const TOOL_MAPPOINT_NAME:String = "Marker Tool";
+			public static const TOOL_POLYLINE_NAME:String = "Polyline Tool";
+			public static const TOOL_POLYGON_NAME:String = "Polygon Tool";
+			
+			[Bindable]
+			public var activeTool:String;
+			
+			public function setTool(tool:int):void 
+			{
+				switch (tool) 
+				{
+					case TOOL_MAPPOINT:
+						buttonBarSelectTool.selectedIndex = 0;
+						activeTool = TOOL_MAPPOINT_NAME;
+						dispatchEvent(new ToolBarEvent(ToolBarEvent.MAPPOINT_ACTIVATE));
+						break;
+					case TOOL_POLYLINE:
+						buttonBarSelectTool.selectedIndex = 1;
+						activeTool = TOOL_POLYLINE_NAME;
+						dispatchEvent(new ToolBarEvent(ToolBarEvent.POLYLINE_ACTIVATE));
+						break;
+					case TOOL_POLYGON:
+						buttonBarSelectTool.selectedIndex = 2;
+						activeTool = TOOL_POLYGON_NAME;
+						dispatchEvent(new ToolBarEvent(ToolBarEvent.POLYGON_ACTIVATE));
+						break;
+					default:
+						setTool(TOOL_MAPPOINT);
+						break;
+				}
+			}
+			
+			private function buttonBarClickHandler(event:ItemClickEvent):void 
+			{
+				setTool(event.index);
+			}
+			
+		]]>
+	</mx:Script>
+
+    <mx:Metadata>
+        [Event(name="changeTool", type="com.loveland.mapper.UI.events.ToolBarEvent")]
+    </mx:Metadata>
+
+	<mx:ToggleButtonBar id="buttonBarSelectTool" itemClick="buttonBarClickHandler(event)" direction="vertical">
+		<mx:dataProvider>
+			<mx:Object label="MapPoint"/>
+			<mx:Object label="Polyline"/>
+			<mx:Object label="Polygon"/>
+		</mx:dataProvider>
+	</mx:ToggleButtonBar>
+
+</mx:Canvas>

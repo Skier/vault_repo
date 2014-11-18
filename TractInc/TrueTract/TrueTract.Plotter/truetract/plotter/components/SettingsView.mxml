@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtendedTitleWindow
+    xmlns="truetract.plotter.containers.*"     
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:settingsViewClasses="truetract.plotter.components.settingsViewClasses.*" 
+    title="Deed Pro Settings" layout="vertical"
+    paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0"
+    width="360" height="225"
+    creationComplete="vs.selectedChild = colorSettings">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.core.Container;
+            import mx.managers.PopUpManager;
+            import mx.events.ListEvent;
+            
+            public static function open(parent:DisplayObject, modal:Boolean = false):SettingsView
+            {
+                var dialog:SettingsView = new SettingsView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+                
+                return dialog;
+            }
+
+            private function commit():void
+            {
+                popupSettings.CommitChanges();
+                fontSettings.CommitChanges();
+                colorSettings.CommitChanges();
+                
+                close();
+            }
+            
+            private function close():void
+            {
+                this.setStyle("footerColors", null); //bug arround
+                PopUpManager.removePopUp(this);
+            }
+
+            private function settingsList_changeHandler(event:ListEvent):void 
+            {
+                 switch (settingsList.selectedItem)
+                 {
+                    case colorItem:
+                        vs.selectedChild = colorSettings;
+                        break;
+
+                    case fontItem:
+                        vs.selectedChild = fontSettings;
+                        break;
+
+                    case popupItem:
+                        vs.selectedChild = popupSettings;
+                        break;
+
+                    default:
+                        break;                
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:HBox width="100%" height="100%" horizontalGap="2">
+        <mx:List id="settingsList" 
+            height="100%" backgroundAlpha="0.5" width="100" iconField="icon"
+            change="settingsList_changeHandler(event)"
+            >
+            <mx:Array>
+                <mx:Object id="colorItem" label="Color" 
+                    icon="@Embed(source='/assets/colorWheel.png')"/>
+                    
+                <mx:Object id="fontItem" label="Font" 
+                    icon="@Embed(source='/assets/font_style.png')"/>
+                    
+                <mx:Object id="popupItem" label="Pop-up" 
+                    icon="@Embed(source='/assets/windows_style.png')"/>
+            </mx:Array>
+        </mx:List>
+
+        <mx:ViewStack id="vs" width="100%" height="100%" creationPolicy="all">
+            <settingsViewClasses:ColorSettings id="colorSettings" 
+                label="Color" width="100%" height="100%"/>
+
+            <settingsViewClasses:FontSettings id="fontSettings" 
+                label="Font" width="100%" height="100%"/>
+
+            <settingsViewClasses:PopUpsSettings id="popupSettings" 
+                label="Pop-Up Window" width="100%" height="100%" Parent="{this}"/>
+        </mx:ViewStack>
+    </mx:HBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" click="commit()"/>
+
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+
+</ExtendedTitleWindow>

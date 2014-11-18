@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Attachment Detail" width="350" xmlns:controls="com.llsvc.controls.*" xmlns:attachment="com.llsvc.expense.view.attachment.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.domain.File;
+			import com.llsvc.services.FileService;
+			import mx.managers.PopUpManager;
+			import com.llsvc.registry.MainModel;
+			import com.llsvc.domain.InvoiceItemAttachment;
+			import mx.rpc.Responder;
+
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var isReadOnly:Boolean;
+			
+			[Bindable] public var attachment:InvoiceItemAttachment;
+			
+            public static function open(parent:DisplayObject, attachment:InvoiceItemAttachment, isReadOnly:Boolean = false, modal:Boolean = true):AttachmentEditView
+            {
+                var popup:AttachmentEditView = new AttachmentEditView();
+                
+                popup.attachment = attachment;
+                popup.isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			public function save():void 
+			{
+				if (attachment == null || attachment.file == null)
+				{
+					trace("Attachment is incomplete!");
+					return;
+				}
+				
+				var oldNote:String = attachment.file.note;
+				attachment.file.note = txtNote.text;
+				
+				startRemoting();				
+
+				FileService.instance.saveFile(attachment.file).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							close();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							attachment.file.note = oldNote;
+							Alert.show("Expense Item saving failed !\n" + event.fault.message); 
+						}));
+			}
+			
+			private function btnCancelClickHandler(event:*):void 
+			{
+				close();
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				save();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%">
+		<mx:FormItem label="Note" width="100%">
+			<mx:TextArea id="txtNote" enabled="{!isBusy &amp;&amp; !isReadOnly}" width="100%"
+				text="{attachment.file.note}"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+		visible="{isBusy}" includeInLayout="{isBusy}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!isBusy &amp;&amp; !isReadOnly}" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" enabled="{!isBusy}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

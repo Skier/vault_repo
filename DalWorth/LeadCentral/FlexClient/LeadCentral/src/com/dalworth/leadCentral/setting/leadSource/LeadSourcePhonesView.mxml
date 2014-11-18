@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.graphics.codec.PNGEncoder;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.events.LeadSourcePhoneEvent;
+			import com.dalworth.leadCentral.domain.LeadSourcePhone;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import mx.core.Application;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			public var ownPhones:ArrayCollection = new ArrayCollection();
+			
+			private var _leadSource:LeadSource;
+			[Bindable]
+			public function get leadSource():LeadSource { return _leadSource; }
+			public function set leadSource(value:LeadSource):void 
+			{
+				_leadSource = value;
+				initPhones();
+			}
+			
+			public function getOwnPhones():Array
+			{
+				return ownPhones.source;
+			}
+			
+			private function initPhones():void 
+			{
+				ownPhones.removeAll();
+				
+				if (leadSource == null)
+					return;
+					
+				PhoneService.getInstance().getLeadSourcePhones(leadSource, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							ownPhones.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}
+					));
+
+			}
+			
+			private function editPhone(phone:LeadSourcePhone):void 
+			{
+				var popup:PhoneEditPopup = PhoneEditPopup.open(Application.application as DisplayObject, phone);
+				popup.addEventListener(LeadSourcePhoneEvent.PHONE_COMMIT, 
+					function (event:LeadSourcePhoneEvent):void 
+					{
+						var phone:LeadSourcePhone = popup.phone;
+						if (!ownPhones.contains(phone))
+							ownPhones.addItem(phone);
+						var idx:int = ownPhones.getItemIndex(phone);
+						dgOwnPhones.selectedIndex = idx;
+						dgOwnPhones.scrollToIndex(idx); 
+					});
+			}
+			
+			private function onAddPhone():void 
+			{
+				var phone:LeadSourcePhone = new LeadSourcePhone();
+				phone.LeadSourceId = leadSource.Id;
+				editPhone(phone);
+			}
+			
+			private function onDoubleClickPhone():void 
+			{
+				var phone:LeadSourcePhone = dgOwnPhones.selectedItem as LeadSourcePhone;
+				editPhone(phone);
+			}
+			
+			private function onRemovePhone():void 
+			{
+				var phone:LeadSourcePhone = dgOwnPhones.selectedItem as LeadSourcePhone;
+				var idx:int = ownPhones.getItemIndex(phone);
+				ownPhones.removeItemAt(idx);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="boxPhones" width="100%" height="100%">
+		<mx:VBox width="100%" height="100%" verticalGap="0">
+			<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="0" paddingBottom="0">
+				<mx:Text width="100%" text="The lead source can be identified  by calls from these phone numbers regardless of tracking phone numbers"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%" verticalAlign="middle" 
+				backgroundColor="#EEEEEE" 
+				paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:Label text="Own Phone Numbers:"/>
+				<mx:Spacer width="100%"/>
+				<mx:Button label="Remove" click="onRemovePhone()" enabled="{dgOwnPhones.selectedItem != null}" width="90"/>
+				<mx:Button label="Add" click="onAddPhone()" width="90"/>
+			</mx:HBox>
+			
+			<mx:DataGrid id="dgOwnPhones" width="100%" height="100%" dataProvider="{ownPhones}"
+				sortableColumns="false" draggableColumns="false" editable="false"
+				doubleClickEnabled="true" itemDoubleClick="onDoubleClickPhone()">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Phone Number" dataField="PhoneNumber"/>
+					<mx:DataGridColumn headerText="Description" dataField="Description"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <mx:Metadata>
+        [Event(name="businessPartnerCreated", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.domain.User;
+			import mx.events.ValidationResultEvent;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.core.UIComponent;
+			import com.dalworth.servman.service.BusinessPartnerService;
+			import com.dalworth.servman.domain.BusinessPartner;
+			
+			import mx.rpc.Responder;
+			
+			private var _businessPartner:BusinessPartner;
+			[Bindable]
+			public function get businessPartner():BusinessPartner { return _businessPartner; }
+			public function set businessPartner(value:BusinessPartner):void 
+			{
+				_businessPartner = value;
+			}
+			
+			[Bindable] public var canUpdateBusinessPartner:Boolean = true;
+			
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vEmail.enabled = true;
+				if (vEmail.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vFirstName.enabled = true;
+				if (vFirstName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vLastName.enabled = true;
+				if (vLastName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+
+			private function onUpdateClick():void 
+			{
+				if (cbCanLogin.selected && !isFormValid())
+					return;
+				
+				var newPartner:BusinessPartner =  businessPartner.prepareToSend();
+				newPartner.IsActive = cbCanLogin.selected;
+				newPartner.ShowAs = txtName.text;
+				newPartner.RelatedUser = businessPartner.RelatedUser;
+				
+				if (newPartner.IsActive)
+				{
+					if (!newPartner.RelatedUser)
+						newPartner.RelatedUser = new User();
+
+					newPartner.RelatedUser.Name = txtName.text;
+					newPartner.RelatedUser.FirstName = txtFirstName.text;
+					newPartner.RelatedUser.LastName = txtLastName.text;
+					newPartner.RelatedUser.Email = txtEmail.text;
+					newPartner.RelatedUser.Phone = txtPhone.text;
+					newPartner.RelatedUser.Address = txtAddress.text;
+				}
+				
+				if (newPartner.Id == 0)
+				{
+					newPartner.DateCreated = new Date();
+					newPartner.CreatedByUserId = MainAppModel.getInstance().currentUser.Id;
+				}
+				
+				var view:UIComponent = this;
+				view.enabled = false;
+				BusinessPartnerService.getInstance().saveBusinessPartner(newPartner).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							view.enabled = true;
+							var result:BusinessPartner = event.result as BusinessPartner;
+							businessPartner.applyFields(result);
+							businessPartner.RelatedUser = result.RelatedUser;
+							
+							dispatchEvent(new Event("businessPartnerCreated"));
+						},
+						function (event:FaultEvent):void 
+						{
+							view.enabled = true;
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:EmailValidator id="vEmail" source="{txtEmail}" property="text" required="{businessPartner.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{businessPartner.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vFirstName" source="{txtFirstName}" property="text" required="{businessPartner.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vLastName" source="{txtLastName}" property="text" required="{businessPartner.Id == 0}" enabled="false"/>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#ffffcc">
+		<mx:HBox width="100%">
+			<mx:Form width="100%" minWidth="250" labelWidth="100"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+				<mx:FormItem label="Business Partner" width="100%" required="true">
+					<mx:TextInput id="txtName" width="100%" text="{businessPartner.ShowAs}"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:Spacer width="20"/>
+			<mx:CheckBox id="cbCanLogin" label="can login" selected="{businessPartner.IsActive}"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Form width="100%" minWidth="250" labelWidth="100"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+				enabled="{cbCanLogin.selected}">
+				<mx:FormItem label="First Name" required="{businessPartner.Id == 0}" width="100%">
+					<mx:TextInput id="txtFirstName" width="100%" text="{businessPartner.RelatedUser.FirstName}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Last Name" required="{businessPartner.Id == 0}" width="100%">
+					<mx:TextInput id="txtLastName" width="100%" text="{businessPartner.RelatedUser.LastName}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Email" required="{businessPartner.Id == 0}" width="100%">
+					<mx:TextInput id="txtEmail" width="100%" text="{businessPartner.RelatedUser.Email}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone" width="100%">
+					<mx:TextInput id="txtPhone" width="100%" text="{businessPartner.RelatedUser.Phone}"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VBox width="250" height="100%" minWidth="150">
+				<mx:Label text="Address:"/>
+				<mx:TextArea id="txtAddress" width="100%" height="100%" text="{businessPartner.RelatedUser.Address}"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox height="100%" width="120" verticalAlign="top">
+		<mx:Button width="100%" label="{businessPartner.Id == 0 ? 'Create' : 'Update'}" click="onUpdateClick()" enabled="{canUpdateBusinessPartner}"/>
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8EBF48CF-4143-4DF5-A822-626F566D3858}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Controls</RootNamespace>
+    <AssemblyName>Dalworth.Controls</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>Dalworth.Controls</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="AutoDropDown.cs" />
+    <Compile Include="Backlight.cs" />
+    <Compile Include="FullScreenEngine.cs" />
+    <Compile Include="GUI.cs" />
+    <Compile Include="HardwareButton.cs" />
+    <Compile Include="ImageButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Joystick.cs" />
+    <Compile Include="MaskedEdit\CurrencyEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaskedEdit\DigitsEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaskedEdit\MaskedEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\IMenuButton.cs" />
+    <Compile Include="Menu\MenuButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="POINT.cs" />
+    <Compile Include="RECT.cs" />
+    <Compile Include="Signature.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sound.cs" />
+    <Compile Include="Table\ComboboxTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\CurrencyTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\DefaultTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableHeaderRenderer.cs" />
+    <Compile Include="Table\DigitsTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\DragAndDrop.cs" />
+    <Compile Include="Table\DrawControl.cs" />
+    <Compile Include="Table\ImageTableCellRenderer.cs" />
+    <Compile Include="Table\ITableCellEditor.cs" />
+    <Compile Include="Table\ITableCellRenderer.cs" />
+    <Compile Include="Table\ITableModel.cs" />
+    <Compile Include="Table\ListTableModel.cs" />
+    <Compile Include="Table\MaskedTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\Table.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\TableCell.cs" />
+    <Compile Include="Table\TableColumn.cs" />
+    <Compile Include="TextBoxReadOnly.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Video.cs" />
+    <Compile Include="WinAPI.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Domain\Dalworth.Domain.csproj">
+      <Project>{A5C21082-985A-4B11-8487-2649A442751B}</Project>
+      <Name>Dalworth.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth\Dalworth.csproj">
+      <Project>{DB694166-7403-425C-912B-A9D33014299C}</Project>
+      <Name>Dalworth</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsCE.Forms" />
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="system, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.dll</HintPath>
+    </Reference>
+    <Reference Include="system.data, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.data.dll</HintPath>
+    </Reference>
+    <Reference Include="system.drawing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="system.windows.forms, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.windows.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="system.xml, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

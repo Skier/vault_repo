@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" title="Invoice Edit" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:note="com.llsvc.expense.view.note.*"
+	creationComplete="creationCompleteHandler()" xmlns:invoice="com.llsvc.expense.view.invoice.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.llsvc.domain.Company;
+			import com.llsvc.expense.view.expenses.ExpenseFilter;
+			import com.llsvc.expense.view.attachment.AttachmentsPopup;
+			import mx.core.Application;
+			import com.llsvc.domain.events.InvoiceItemEvent;
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.events.ValidationResultEvent;
+			import com.llsvc.services.InvoiceService;
+			import mx.managers.PopUpManager;
+			import com.llsvc.domain.User;
+			import com.llsvc.expense.view.expenses.ExpenceItemEditView;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.services.InvoiceItemService;
+			import com.llsvc.domain.InvoiceItem;
+			import com.llsvc.domain.Client;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.Invoice;
+			import mx.rpc.Responder;
+			
+			[Bindable] public var invoice:Invoice;
+
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var availableItems:ArrayCollection;
+			[Bindable] private var filteredItems:ArrayCollection = new ArrayCollection();
+			[Bindable] private var user:User;
+			[Bindable] private var companies:ArrayCollection;
+			[Bindable] private var filter:InvoiceFilter;
+			
+            public static function open(parent:DisplayObject, invoice:Invoice, availableItems:ArrayCollection, filter:InvoiceFilter = null, modal:Boolean = true):InvoiceDetailEditView
+            {
+                var popup:InvoiceDetailEditView = new InvoiceDetailEditView();
+                
+                popup.invoice = invoice;
+                popup.availableItems = availableItems;
+                popup.user = invoice.user;
+                popup.companies = invoice.user.companies;
+                
+                popup.filter = filter;
+                
+                popup.callLater(popup.refreshFilteredItems);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private var remoteCounter:int = 0;
+            private function startRemoting():void 
+            {
+            	if (remoteCounter == 0)
+            		this.enabled = false;
+            	remoteCounter++;
+            }
+            
+            private function stopRemoting():void 
+            {
+            	remoteCounter--;
+            	if (remoteCounter < 1)
+            		this.enabled = true;
+            }
+            
+			private function refreshFilteredItems():void 
+			{
+				filteredItems.removeAll();
+				
+				var client:Client = comboClients.selectedItem as Client;
+				if (client == null)
+					return;
+				
+				for each (var item:InvoiceItem in availableItems) 
+				{
+					if (item.invoice == null && item.project.clientid == client.clientid)
+						filteredItems.addItem(item);
+				}
+			}
+			
+			private function addItemToInvoice(item:InvoiceItem):void 
+			{
+				startRemoting();
+				item.invoiceid = invoice.invoiceid;
+				item.invoice = invoice;
+				InvoiceItemService.instance.saveInvoiceItem(item).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							if (!invoice.expenceItems.contains(item))
+								invoice.expenceItems.addItem(item);
+							refreshFilteredItems();
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+							item.invoiceid = 0;
+							item.invoice = null;
+							refreshFilteredItems();
+						}
+					));
+			}
+			
+			private function removeItemFromInvoice(item:InvoiceItem):void 
+			{
+				startRemoting();
+				item.invoiceid = 0;
+				item.invoice = null;
+				InvoiceItemService.instance.saveInvoiceItem(item).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							if (invoice.expenceItems.contains(item))
+								invoice.expenceItems.removeItemAt(invoice.expenceItems.getItemIndex(item));
+							refreshFilteredItems();
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+							item.invoiceid = invoice.invoiceid;
+							item.invoice = invoice;
+							refreshFilteredItems();
+						}
+					));
+			}
+			
+			private function openExpense(expense:InvoiceItem):void 
+			{
+				var filter:ExpenseFilter = new ExpenseFilter();
+				filter.company = expense.project.client.company;
+				filter.client = expense.project.client;
+				var expenseView:ExpenceItemEditView = ExpenceItemEditView.open(this, expense, filter);
+				expenseView.addEventListener("invoiceItemSavingComplete",
+					function (event:Event):void 
+					{
+						if (!expense.project.expenceItems.contains(expenseView.invoiceItem))
+							expense.project.expenceItems.addItem(expenseView.invoiceItem);
+						
+						if (!invoice.expenceItems.contains(expense) && expense.invoice == invoice)
+							invoice.expenceItems.addItem(expense);
+
+						refreshFilteredItems();
+						expenseView.close();
+					});
+				expenseView.addEventListener("cancelRequest",
+					function (event:Event):void 
+					{
+						expenseView.close();
+					});
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vInvoiceNo.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vClient.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vDate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vStartDate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vEndDate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				return result;
+			}
+			
+			private function getInvoice():Invoice 
+			{
+				invoice.client = Client(comboClients.selectedItem);
+				invoice.clientid = invoice.client.clientid;
+				invoice.invoicedate = dateInvoice.selectedDate;
+				invoice.startdate = dateFrom.selectedDate;
+				invoice.enddate = dateTo.selectedDate;
+				invoice.status = comboStatus.value as String;
+				invoice.invoiceno = txtInvoiceNo.text;
+				
+				return invoice;
+			}
+			
+			public function save(invoice:Invoice):void 
+			{
+				if (invoice == null)
+				{
+					trace("Invoice is incomplete!");
+					return;
+				}
+
+				startRemoting();				
+
+				InvoiceService.instance.saveInvoice(invoice).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							refreshFilteredItems();
+							dispatchEvent(new Event("invoiceSavingComplete"));
+						}, faultHandler));
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Invoice saving failed !\n" + event.fault.message); 
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+			    dgInvoiceItems.addEventListener("openAttachmentsRequest", openAttachmentsHandler);
+			    dgInvoiceItems.addEventListener(InvoiceItemEvent.INVOICE_ITEM_ACTION_REMOVE, removeItemHandler);
+			    dgAvailableItems.addEventListener("openAttachmentsRequest", openAttachmentsHandler);
+			    dgAvailableItems.addEventListener(InvoiceItemEvent.INVOICE_ITEM_ACTION_ADD, addItemHandler);
+            }
+            
+            private function openAttachmentsHandler(event:InvoiceItemEvent):void 
+            {
+            	var isReadOnly:Boolean = (invoice.status == Invoice.STATUS_SUBMITTED || invoice.status == Invoice.STATUS_PAID);
+            	AttachmentsPopup.open(Application.application as DisplayObject, event.invoiceItem, isReadOnly);
+            }
+            
+            private function addItemHandler(event:InvoiceItemEvent):void 
+            {
+            	addItemToInvoice(event.invoiceItem);
+            }
+            
+            private function removeItemHandler(event:InvoiceItemEvent):void 
+            {
+            	removeItemFromInvoice(event.invoiceItem);
+            }
+            
+			private function btnCloseClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("closeRequest"));
+			}
+			
+			private function btnCreateClickHandler(event:*):void 
+			{
+				if (!isFormValid())
+					return;
+					
+				save(getInvoice());
+			}
+			
+			private function comboCompaniesChangeHandler():void 
+			{
+				refreshFilteredItems();
+			}
+			
+			private function comboClientsChangeHandler():void 
+			{
+				refreshFilteredItems();
+			}
+			
+			private function btnAddAllClickHandler():void 
+			{
+				for each (var item:InvoiceItem in filteredItems) 
+				{
+					addItemToInvoice(item);
+				}
+			}
+			
+			private function btnRemoveAllClickHandler():void 
+			{
+				for each (var item:InvoiceItem in invoice.expenceItems) 
+				{
+					removeItemFromInvoice(item);
+				}
+			}
+			
+			private function  setLabel(obj:Object, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				if (obj is InvoiceItem) 
+				{
+					var item:InvoiceItem = obj as InvoiceItem;
+					
+					if (column.dataField == "rate") {
+						result = cf.format(item.rate);
+					} else if (column.dataField == "quantity") {
+						result = cf.format(item.quantity);
+					} else if (column.dataField == "amount") {
+						result = cf.format(item.amount);
+					} else if (column.dataField == "adjustment") {
+						result = cf.format(item.adjustment);
+					} else if (column.dataField == "total") {
+						result = cf.format(item.total);
+					}
+				}
+				
+				return result;
+			}
+			
+			private function btnGetFileClickHandler():void 
+			{
+				var popup:InvoicePrepareView = InvoicePrepareView.open(this);
+				popup.addEventListener("sumbitRequest", 
+					function (e:*):void 
+					{
+						if (popup.comboGroup.selectedLabel.toLowerCase() == "project") 
+						{
+							if (popup.comboFormat.selectedLabel.toLowerCase() == "pdf")
+							{
+								navigateToURL(new URLRequest("getInvoicePdfProjectFrom.cfm?invoiceId=" + invoice.invoiceid.toString()));
+							} else 
+							{
+								navigateToURL(new URLRequest("getInvoiceExcelProjectFrom.cfm?invoiceId=" + invoice.invoiceid.toString()));
+							}
+						} else 
+						{
+							if (popup.comboFormat.selectedLabel.toLowerCase() == "pdf")
+							{
+								navigateToURL(new URLRequest("getInvoicePdfDateFrom.cfm?invoiceId=" + invoice.invoiceid.toString()));
+							} else 
+							{
+								navigateToURL(new URLRequest("getInvoiceExcelDateFrom.cfm?invoiceId=" + invoice.invoiceid.toString()));
+							}
+						}
+						
+						popup.close();
+					})
+			}
+			
+			private function btnGetExcelClickHandler():void 
+			{
+				navigateToURL(new URLRequest("getXlsInvoice.cfm?invoiceId=" + invoice.invoiceid.toString()));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+
+	<invoice:InvoiceNoValidator id="vInvoiceNo" 
+		source="{txtInvoiceNo}" property="text" required="true" 
+		invoices="{user.invoices}" currInvoice="{invoice}"/>
+
+	<mx:StringValidator id="vClient" source="{comboClients}" property="selectedLabel" required="true"/>
+	<mx:DateValidator id="vDate" source="{dateInvoice}" property="selectedDate" required="true"/>
+	<mx:DateValidator id="vStartDate" source="{dateFrom}" property="selectedDate" required="true"/>
+	<mx:DateValidator id="vEndDate" source="{dateTo}" property="selectedDate" required="true"/>
+
+	<mx:VBox backgroundColor="#ffffee">
+		<mx:VDividedBox width="100%" height="100%" verticalGap="5">
+			<mx:VBox width="100%" height="100%" horizontalAlign="right">
+				<mx:VBox width="100%" backgroundColor="#ffffdd" horizontalAlign="right" 
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+					<mx:HBox verticalAlign="bottom" width="100%">
+						<mx:VBox width="100%">
+							<mx:HBox verticalAlign="middle">
+								<mx:Label text="#({invoice.invoiceid})" fontWeight="bold"/>
+								<mx:TextInput id="txtInvoiceNo" text="{invoice.invoiceno}" width="100" maxChars="150"/>
+
+								<mx:Label text="Company:" fontWeight="bold"/>
+								<controls:ComboBox id="comboCompanies" 
+									value="{filter.company != null? filter.company.companyid : invoice.client.companyid}" 
+									valueField="companyid" 
+									dataProvider="{companies}" labelField="name"
+									change="comboCompaniesChangeHandler()" 
+									enabled="{filter.company == null &amp;&amp; invoice.expenceItems.length == 0 &amp;&amp; invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+
+								<mx:Label text="Client:" fontWeight="bold"/>
+								<controls:ComboBox id="comboClients" 
+									value="{filter.client != null ? filter.client.clientid : invoice.clientid}" valueField="clientid" 
+									dataProvider="{Company(comboCompanies.selectedItem).clients}" labelField="name"
+									change="comboClientsChangeHandler()" 
+									enabled="{filter.client == null &amp;&amp; invoice.expenceItems.length == 0 &amp;&amp; invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+							</mx:HBox>
+							
+							<mx:HBox verticalAlign="middle">
+								<mx:Label text="Date:" fontWeight="bold"/> 
+								<mx:DateField id="dateInvoice" selectedDate="{invoice.invoicedate}"
+									enabled="{invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+
+								<mx:Label text="From:" fontWeight="bold"/> 
+								<mx:DateField id="dateFrom" selectedDate="{invoice.startdate}"
+									enabled="{invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+
+								<mx:Label text="to:" fontWeight="bold"/> 
+								<mx:DateField id="dateTo" selectedDate="{invoice.enddate}"
+									enabled="{invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+
+								<mx:Label text="Status:" fontWeight="bold"/> 
+								<controls:ComboBox id="comboStatus" 
+									dataProvider="{Invoice.getStates()}" value="{invoice.status}" labelField="data" valueField="data"/>
+							</mx:HBox>
+						</mx:VBox>
+
+						<mx:Button height="24" id="btnCreate" label="{invoice.invoiceid == 0 ? 'Create' : 'Save'}"  
+							click="btnCreateClickHandler(event)"/>
+
+						<note:NotesRenderer invoice="{invoice}" height="100%" width="100%"
+							enabled="{invoice.invoiceid &gt; 0 &amp;&amp; invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"/>
+					</mx:HBox>
+				</mx:VBox>
+				
+				<mx:VBox width="100%" height="100%" 
+					enabled="{invoice.invoiceid &gt; 0}">
+					<mx:HBox width="100%" backgroundColor="#eeeeee">
+						<mx:Label text="Expense Items:" fontWeight="bold"/>
+						<mx:Spacer width="100%"/>
+						<mx:Button height="24" id="btnRemove" label="Remove All" 
+							enabled="{invoice.expenceItems.length &gt; 0 &amp;&amp; invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}" 
+							click="btnRemoveAllClickHandler()"/>
+					</mx:HBox>
+					<mx:DataGrid id="dgInvoiceItems" width="100%" height="100%" dataProvider="{invoice.expenceItems}" enabled="{invoice.invoiceid > 0}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Date" dataField="itemDateStr" textAlign="center"/>
+							<mx:DataGridColumn headerText="Project" dataField="projectName"/>
+							<mx:DataGridColumn headerText="Type" dataField="itemTypeName" textAlign="center"/>
+							<mx:DataGridColumn headerText="Rate" dataField="rate" textAlign="right" labelFunction="setLabel"/>
+							<mx:DataGridColumn headerText="Qty" dataField="quantity" textAlign="right"/>
+							<mx:DataGridColumn headerText="Amount" dataField="amount" textAlign="right" labelFunction="setLabel"/>
+							<mx:DataGridColumn headerText="Adjust" dataField="adjustment" textAlign="right" labelFunction="setLabel"/>
+							<mx:DataGridColumn headerText="Total" dataField="total" textAlign="right" labelFunction="setLabel"/>
+							<mx:DataGridColumn headerText="Files" itemRenderer="com.llsvc.expense.view.attachment.AttachmentsIR"/>
+							<mx:DataGridColumn headerText=" " itemRenderer="com.llsvc.expense.view.invoice.InvoiceItemActionIR" width="20"/>
+						</mx:columns>
+					</mx:DataGrid>
+					<mx:HBox width="100%" backgroundColor="#ffeeee">
+						<mx:Label text="Summary:" fontWeight="bold"/>
+						<mx:Spacer width="100%"/> 
+						<mx:Label text="Amount:"/> 
+						<mx:Label text="${invoice.amount.toFixed(2)}" fontWeight="bold"/> 
+						<mx:Label text="Adjustment:"/> 
+						<mx:Label text="${invoice.adjustment.toFixed(2)}" fontWeight="bold"/> 
+						<mx:Label text="Total:"/> 
+						<mx:Label text="${invoice.total.toFixed(2)}" fontWeight="bold"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:VBox>
+			<mx:VBox width="100%" height="100%" backgroundColor="#eeffee"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+				enabled="{invoice.invoiceid &gt; 0}"
+				visible="{invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}"
+				includeInLayout="{invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}">
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="Available Items:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Button height="24" id="btnAdd" label="Add all to Invoice" 
+						enabled="{availableItems.length &gt; 0 &amp;&amp; invoice.status != Invoice.STATUS_SUBMITTED &amp;&amp; invoice.status != Invoice.STATUS_PAID}" 
+						click="btnAddAllClickHandler()"/>
+				</mx:HBox>
+				<mx:DataGrid id="dgAvailableItems" width="100%" height="100%" dataProvider="{filteredItems}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Date" dataField="itemDateStr"/>
+						<mx:DataGridColumn headerText="Project" dataField="projectName"/>
+						<mx:DataGridColumn headerText="Type" dataField="itemTypeName"/>
+						<mx:DataGridColumn headerText="Rate" dataField="rate" textAlign="right" labelFunction="setLabel"/>
+						<mx:DataGridColumn headerText="Qty" dataField="quantity" textAlign="right" labelFunction="setLabel"/>
+						<mx:DataGridColumn headerText="Amount" dataField="amount" textAlign="right" labelFunction="setLabel"/>
+						<mx:DataGridColumn headerText="Adjust" dataField="adjustment" textAlign="right" labelFunction="setLabel"/>
+						<mx:DataGridColumn headerText="Total" dataField="total" textAlign="right" labelFunction="setLabel"/>
+						<mx:DataGridColumn headerText="Files" itemRenderer="com.llsvc.expense.view.attachment.AttachmentsIR"/>
+						<mx:DataGridColumn headerText=" " itemRenderer="com.llsvc.expense.view.invoice.InvoiceItemActionIR" width="20"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:VBox>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button height="24" label="Preview" click="btnGetFileClickHandler()"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button height="24" label="Close" click="btnCloseClickHandler(event)"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

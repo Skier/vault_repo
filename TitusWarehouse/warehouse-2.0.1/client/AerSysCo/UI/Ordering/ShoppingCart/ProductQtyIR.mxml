@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.ShoppingCartDetailUI;
+			import mx.controls.Alert;
+		
+			private function onChange():void 
+			{
+				if (!isNaN(Number(txtQty.text))) 
+				{
+					var inputQty:int = int(Number(txtQty.text));
+
+					if (inputQty > 0) 
+					{
+						var item:ShoppingCartDetailUI;
+						item = ShoppingCartDetailUI(data);
+	
+						if (inputQty != item.qtyNeeded) 
+						{
+							if (inputQty > item.qtyAvailable) 
+							{
+								Alert.show("You can not add into the shopping cart more quantity than we have in the warehouse.");
+								return;
+							}
+							
+							item.setMemento();
+	
+							var qtyPackets:int = int(inputQty / item.modelItem.item.qtyIncrement);
+							
+							if ((qtyPackets * item.modelItem.item.qtyIncrement) != inputQty) 
+							{
+								Alert.show("SKU [" + item.modelItem.item.sku + "] can only be sold in increments of " + item.modelItem.item.qtyIncrement + ". Please adjust the Quantity to be ordered.");
+								return;
+							}
+					
+							item.qtyNeeded = qtyPackets * item.modelItem.item.qtyIncrement;
+							txtQty.text = item.qtyNeeded.toString();
+
+							ShoppingCartView(parentDocument.parentDocument).updateItem(item);
+						}
+					} else 
+					{
+						Alert.show("Order QTY indicated is 0. Please update the quantity for your purchase or Delete the line item.");
+						txtQty.text = ShoppingCartDetailUI(data).qtyNeeded.toString();
+					}
+				} else 
+				{
+					txtQty.text = ShoppingCartDetailUI(data).qtyNeeded.toString();
+				}
+			}
+			
+			private function onFocusIn():void 
+			{
+				txtQty.selectionBeginIndex = 0;
+				txtQty.selectionEndIndex = txtQty.text.length;
+			}
+			
+			private function onFocusOut():void 
+			{
+				onChange();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:TextInput id="txtQty" 
+		width="100%" height="100%" 
+		text="{ShoppingCartDetailUI(data).qtyNeeded}"
+		focusIn="onFocusIn()"
+		focusOut="onFocusOut()"/>
+</mx:Canvas>

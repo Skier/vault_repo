@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:report="com.llsvc.client.lms.view.lease.report.*"
+	creationComplete="onCreationComplete()"
+	paddingLeft="5" paddingRight="5" paddingBottom="5"
+	verticalGap="0"
+	fontSize="9" xmlns:controls="com.llsvc.controls.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.Responder;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.domain.Lease;
+			import mx.collections.ArrayCollection;
+
+			private var _leases:ArrayCollection;
+			[Bindable] 
+			public function get leases():ArrayCollection { return _leases}
+			public function set leases(value:ArrayCollection):void {
+				_leases = value;
+				initLeasesUI();
+			}
+			
+			private function onCreationComplete():void 
+			{
+				initLeasesUI();
+			}
+			
+			private function initLeasesUI():void 
+			{
+				if (leases) 
+				{
+					listLeases.leases = leases;
+				}
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function btnSaveClickHandler():void 
+			{	
+				for each (var lease:Lease in leases) 
+				{
+					if (lease.isDirty) {
+						startRemoting();
+						saveLease(lease);
+					}
+				}
+			}
+			
+			private function saveLease(lease:Lease):void 
+			{
+				Storage.instance.storeLease(lease, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							lease.populate(event.result as Lease);
+							
+							lease.isDirty = false;
+							
+							for each (var l:Lease in leases) 
+							{
+								if (l.isDirty) return;
+							}
+							
+							stopRemoting();
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.faultString);
+						} 
+					)
+				); 
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<controls:PercentBoxFixed width="100%" height="100%" verticalGap="2">
+		<mx:HBox width="100%" horizontalGap="-1">
+			<mx:VBox id="boxStatus" 
+				width="20"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+			</mx:VBox>
+			
+			<mx:VBox id="boxLeaseNo" 
+				width="60"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lease No" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxLessor" 
+				width="150"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lessor" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxLessee" 
+				width="150"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lessee" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxRecording" 
+				width="80"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Recording" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Book/Page" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxLeaseDate" 
+				width="90"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lease Date" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxExpDate" 
+				width="90"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Primary" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Exp Date" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+	
+			<mx:VBox id="boxRange" 
+				width="100"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Township" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Range" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxSections" 
+				width="40"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Sec" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxInterest" 
+				width="180"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Leased Interests" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxGrossAcres" 
+				width="40"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Gross" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Acres" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxNetAcres" 
+				width="40"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Net" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Acres" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxLeaseInterest" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Interest" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxLeaseBurden" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lease" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Burden" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxNRI" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Lease" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="NRI" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxCWI" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="FCR" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="WI" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxBurden" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="Burden" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxCNRI" 
+				width="50"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="FCR" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="NRI" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:VBox id="boxCNetAcres" 
+				width="50" horizontalScrollPolicy="off"
+				height="100%" horizontalAlign="center" verticalAlign="bottom" verticalGap="-3" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1">
+				<mx:Label text="FCR Net" width="100%" fontWeight="bold" textAlign="center"/>
+				<mx:Label text="Acres" width="100%" fontWeight="bold" textAlign="center"/>
+			</mx:VBox>
+			
+			<mx:Spacer width="18"/>
+		</mx:HBox>
+		
+		<controls:PercentBoxFixed direction="horizontal" height="100%" horizontalScrollPolicy="off" horizontalGap="-1">
+			<report:LeasesContainer id="listLeases" 
+				verticalGap="-1"
+					leaseStatusWidth="{boxStatus.width}"
+					leaseNoWidth="{boxLeaseNo.width}"
+					leaseLessorWidth="{boxLessor.width}"
+					leaseLesseeWidth="{boxLessee.width}"
+					recordingWidth="{boxRecording.width}"
+					leaseDateWidth="{boxLeaseDate.width}"
+					leaseExpDateWidth="{boxExpDate.width}"
+					townshipRangeWidth="{boxRange.width}"
+					sectionWidth="{boxSections.width}"
+					interestWidth="{boxInterest.width}"
+					grossAcresWidth="{boxGrossAcres.width}"
+					netAcresWidth="{boxNetAcres.width}"
+					leaseInteresWidth="{boxLeaseInterest.width}"
+					leaseBurdenWidth="{boxLeaseBurden.width}"
+					nriWidth="{boxNRI.width}"
+					cwiWidth="{boxCWI.width}"
+					burdenWidth="{boxBurden.width}"
+					cnriWidth="{boxCNRI.width}"
+					cNetAcresWidth="{boxCNetAcres.width}"
+					/>
+	
+			<mx:Spacer width="18"/>
+		</controls:PercentBoxFixed>
+	</controls:PercentBoxFixed>	
+
+	<mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		backgroundColor="#ffffdd">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Save changes" click="btnSaveClickHandler()"/>
+	</mx:HBox>
+</mx:VBox>

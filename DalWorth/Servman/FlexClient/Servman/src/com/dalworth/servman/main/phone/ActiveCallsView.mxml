@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	initialize="onInit()" xmlns:phone="com.dalworth.servman.main.phone.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.dalworth.servman.domain.PhoneCall;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.User;
+			import mx.rpc.Responder;
+			
+			[Bindable] public var user:User;
+			[Bindable] public var calls:ArrayCollection;
+			
+			[Bindable] private var isBusy:Boolean;
+			
+			private var timer:Timer;
+			
+			private function getCalls():void 
+			{
+				if (user == null)
+					return;
+				
+				isBusy = true;
+				PhoneService.getInstance().getActiveCalls().addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							isBusy = false;
+							calls.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							isBusy = false;
+						}
+					));
+			}
+			
+			private function onInit():void 
+			{
+				calls = new ArrayCollection();
+				
+				timer = new Timer(5000);
+				timer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				timer.start();
+			}
+			
+			private function onTimerTick(event:TimerEvent):void 
+			{
+				return;
+				if (!isBusy)
+					getCalls();
+			}
+			
+			private function onPickUp(event:PhoneCallEvent):void 
+			{
+				var call:PhoneCall = event.phoneCall;
+				if (call)
+				{
+					isBusy = true;
+					PhoneService.getInstance().handleCall(call.CallSid, user).addResponder(
+						new mx.rpc.Responder(
+							function (event:ResultEvent):void 
+							{
+								isBusy = false;
+								call.AnsweredByUserId = user.Id;
+								CallActionSelector.open(Application.application as DisplayObject, call);
+							}, 
+							function (event:FaultEvent):void 
+							{
+								isBusy = false;
+								Alert.show(event.fault.message);
+							}));
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox backgroundColor="#FFFF99" borderColor="#999999" borderStyle="solid" cornerRadius="3"
+		visible="{calls.length &gt; 0}" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0"
+		paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4" enabled="{!isBusy}">
+		<mx:Label text="Active Calls:" fontSize="14" fontWeight="bold"/>
+		<mx:VBox verticalGap="-2">
+			<mx:Repeater id="rpt" dataProvider="{calls}">
+				<phone:CallIR phoneCall="{rpt.currentItem as PhoneCall}" pickUp="onPickUp(event)"/>
+			</mx:Repeater>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

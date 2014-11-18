@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.Job;
+			
+			private var _job:Job;
+			[Bindable]
+			public function get job():Job { return _job; }
+			public function set job(value:Job):void 
+			{
+				_job = value;
+			}
+			
+			private function onCancelClick():void
+			{
+			}
+			
+			private function onUndoCancelClick():void 
+			{
+			}
+			
+			private function onToProjectClick():void 
+			{
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		borderColor="#999999" backgroundColor="#ffffee" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%" backgroundColor="#dddddd">
+			<mx:Label text="Project details:" fontWeight="bold" fontSize="14"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:VBox height="100%">
+		<mx:Button width="100" label="Update" click="onCancelClick()"/>
+		<mx:Spacer height="100%"/>
+		<mx:Button width="100" label="Cancelling" click="onCancelClick()"/>
+		<mx:Button width="100" label="Undo Cancel" click="onUndoCancelClick()"/>
+		<mx:Button width="100" label="To Project" click="onToProjectClick()"/>
+	</mx:VBox>
+</mx:HBox>

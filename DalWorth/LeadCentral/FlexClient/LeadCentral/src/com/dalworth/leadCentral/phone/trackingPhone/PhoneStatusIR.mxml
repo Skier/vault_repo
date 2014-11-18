@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+		]]>
+	</mx:Script>
+	<mx:Label width="100%" minWidth="30"
+		text="{TrackingPhone(data).IsSuspended ? 'Suspended' : 'Active'}" 
+		color="{TrackingPhone(data).IsSuspended ? 0x990000 : 0x009900}" 
+		fontWeight="bold" textAlign="center"/>
+</mx:Canvas>

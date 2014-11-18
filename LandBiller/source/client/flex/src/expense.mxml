@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+    backgroundGradientColors="[#cccccc, #eeeeee]" 
+	xmlns:dashboard="com.llsvc.expense.view.dashboard.*"
+	creationComplete="creationCompleteHandler(event)" backgroundGradientAlphas="[1.0, 1.0]">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.expense.view.login.UserEditView;
+			import mx.controls.Alert;
+			import com.llsvc.domain.User;
+			import com.llsvc.registry.MainModel;
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.expense.view.login.LoginView;
+			
+			private var loginView:LoginView;
+			private var registerView:UserEditView;
+			
+			private function login(user:User = null):void 
+			{
+				removePopups();
+
+				loginView = LoginView.open(this, user);
+				loginView.addEventListener(UserEvent.LOGIN_SUCCESSFULL, loginCompleteHandler); 
+				loginView.addEventListener("registrationRequest", 
+					function (event:*):void 
+					{
+						register();
+					}); 
+			}
+			
+			private function register():void 
+			{
+				removePopups();
+
+				registerView = UserEditView.open(this);
+				registerView.addEventListener(UserEvent.REGISTRATION_SUCCESSFULL, 
+					function (event:UserEvent):void 
+					{
+						login(event.user);
+						Alert.show("Registration Sucessfull !"); 
+					}); 
+				registerView.addEventListener("cancelRequest", 
+					function (event:Event):void 
+					{
+						login();
+					}); 
+			}
+			
+			private function logout():void 
+			{
+				viewDashboard.visible = false;
+				MainModel.instance.reset();
+				login();
+			}
+			
+			private function removePopups():void 
+			{
+				if (loginView != null)
+					loginView.close();
+				
+				if (registerView != null)
+					registerView.close();
+			}
+			
+			private function creationCompleteHandler(event:*):void 
+			{
+				var model:MainModel = MainModel.instance;
+				model.loadStates();
+				model.addEventListener("statesLoaded", 
+					function (event:*):void 
+					{
+						login();
+					});
+			} 
+			
+			private function loginCompleteHandler(event:UserEvent):void 
+			{
+				if (event.user != null && event.user.userid > 0)
+				{
+					removePopups();
+					
+					viewDashboard.visible = true;
+					viewDashboard.init(event.user.userid);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+    <mx:Style source="css/styles.css"/>
+	
+	<dashboard:DashboardView id="viewDashboard" width="100%" height="100%" visible="false" logoutRequest="logout()"/>
+</mx:Application>

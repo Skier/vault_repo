@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle" horizontalGap="2">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.Role;
+            
+            [Bindable]
+            override public function set data(value:Object):void{
+                super.data = value;
+                this.checkbox.selected=(data as Role).Selected;
+            }
+            
+            private function checkRoleOnClickHandler():void 
+            {
+                trace("RoleCheckIR.checkRoleOnClickHandler: data=" + data);
+                var role:Role = data as Role;
+                role.Selected = this.checkbox.selected;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:CheckBox id="checkbox" click="checkRoleOnClickHandler()"/>
+
+</mx:HBox>

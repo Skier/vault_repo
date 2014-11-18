@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.ProjectTab;
+			
+        	[Embed(source="/assets/delete2.png")]
+        	[Bindable]
+        	private var imgDelete:Class;
+        	
+			private function removeDocClickHandler():void 
+			{
+				ProjectTabsDetailPanel(parentDocument).deleteProjectTab(data as ProjectTab);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{imgDelete}"
+		includeInLayout="{!parentDocument.readOnly}"
+		visible="{!parentDocument.readOnly}"
+        toolTip="Remove Entry from Project Tab" 
+        click="removeDocClickHandler()"/>
+</mx:HBox>

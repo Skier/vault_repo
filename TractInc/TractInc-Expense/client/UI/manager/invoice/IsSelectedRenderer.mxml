@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%" 
+	horizontalAlign="center"
+	verticalAlign="middle"
+	dataChange="onDataChange()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.InvoiceItemDataObject;
+			import App.Entity.InvoiceItemStatusDataObject;
+
+			[Bindable]
+			private var invoiceItem:InvoiceItemDataObject;
+
+			private function onClick():void {
+				if (invoiceItem.Status == InvoiceItemStatusDataObject.INVOICE_ITEM_STATUS_PAID || invoiceItem.Status == InvoiceItemStatusDataObject.INVOICE_ITEM_STATUS_VOID) {
+					return;
+				} else {
+					data.setSelected(!data.IsSelected);
+				}
+			}
+
+			private function onDataChange():void {
+				if (data is InvoiceItemDataObject) {
+					invoiceItem = data as InvoiceItemDataObject;
+				} else if (data != null && data.items != null && data.items.length > 0) {
+					invoiceItem = data.items[0] as InvoiceItemDataObject;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox selected="{data.IsSelected}" width="14" minWidth="14"
+		click="onClick()" enabled="{invoiceItem.Status == InvoiceItemStatusDataObject.INVOICE_ITEM_STATUS_NEW}"
+		color="{data.partiallySelected ? 0xffffcc : 0xffffff}" left="2" right="2"/>
+</mx:HBox>

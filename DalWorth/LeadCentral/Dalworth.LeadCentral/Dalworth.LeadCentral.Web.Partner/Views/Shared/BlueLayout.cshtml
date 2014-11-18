@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/leadcentral.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="header">
+      <div class="div1">
+        <div class="div2"><a href="@Url.Action("Index", "Home")"><img src="@Url.Content("~/Content/themes/leadcentral/image/logo.png")" title="" alt="" /></a></div>
+        <div class="div3">Special zone</div>
+        <div class="div4">
+            @{var homeSelected = (ViewBag.CurrentTabName == "Home") ? "selected" : "";}<a href="@Url.Action("Index", "Home")" class="@homeSelected">Home</a>
+            @{var leadsSelected = (ViewBag.CurrentTabName == "Leads") ? "selected" : "";}<a href="@Url.Action("Index", "Leads")" class="@leadsSelected">Leads</a>
+            @{var sourcesSelected = (ViewBag.CurrentTabName == "Lead Sources") ? "selected" : "";}<a href="@Url.Action("Index", "Home")" class="@sourcesSelected">Lead Sources</a>
+            @{var profileSelected = (ViewBag.CurrentTabName == "Profile") ? "selected" : "";}<a href="@Url.Action("Index", "Home")" class="@profileSelected">Profile</a>
+            @{var aboutSelected = (ViewBag.CurrentTabName == "About") ? "selected" : "";}<a href="@Url.Action("About", "Home")" class="@aboutSelected">About</a>
+        </div>
+        <div class="div5">
+          <div class="left"></div>
+          <div class="right"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+      <div class="div6">
+        <div class="left"></div>
+        <div class="right"></div>
+        <div class="center">
+          <div id="breadcrumb">@Html.ActionLink("Home", "Index", "Home") &gt; @Html.ActionLink("Leads", "Index", "Leads")</div>
+          <div class="div7"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="top">
+        <div class="left"></div>
+        <div class="right"></div>
+        <div class="center">
+          <h1>[@ViewBag.ContentTitle]</h1>
+        </div>
+      </div>
+      <div class="middle">
+        <div class="heading">Place for filter</div>
+        @RenderBody()
+      </div>
+      <div class="bottom">
+        <div class="left"></div>
+        <div class="right"></div>
+        <div class="center"></div>
+      </div>
+    </div>
+
+
+  </div>
+</body>
+</html>

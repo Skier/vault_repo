@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" verticalCenter="0" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseTract;
+			
+            [Embed(source="assets/icons16/bullet_green.png")]
+            [Bindable]
+            private var imgGreen:Class;
+
+            [Embed(source="assets/icons16/bullet_red.png")]
+            [Bindable]
+            private var imgRed:Class;
+
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="{LeaseTract(data).townshipRangeStr}" width="100"/>
+	
+	<mx:VRule left="102" height="100%" width="1"/>
+	
+	<mx:Label left="105" text="Sec.{LeaseTract(data).sectionStr}" width="40"/>
+
+	<mx:VRule left="147" height="100%" width="1"/>
+	
+	<mx:Image left="150" source="{LeaseTract(data).qqs.length > 0 ? imgGreen : imgRed}"/>
+	
+	<mx:Label left="166" text="{LeaseTract(data).tract}" width="100%"/>
+</mx:Canvas>

@@ -1,0 +1,95 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "ZipArchive"=..\tools\ZipArchive\ZipArchive_STL.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "advpcs"=.\advpcs\advpcs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name atflib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ZipArchive
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "atflib"=..\tools\atflib\atflib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name staticexpat
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "staticexpat"=..\tools\expat\staticexpat.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "testconnect"=.\testconnect\testconnect.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name atflib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ZipArchive
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name staticexpat
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    title="Add Extra Funds" width="400" xmlns:controls="com.affilia.controls.*" xmlns:user="com.dalworth.leadCentral.setting.user.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import flash.net.navigateToURL;
+        	import com.dalworth.leadCentral.MainModel;
+        	import mx.validators.ValidationResult;
+        	import com.dalworth.leadCentral.events.UserEvent;
+        	import com.dalworth.leadCentral.service.UserService;
+        	import com.dalworth.leadCentral.domain.User;
+        	import mx.collections.SortField;
+        	import mx.collections.Sort;
+        	import mx.utils.StringUtil;
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.Alert;
+        	import mx.managers.PopUpManager;
+        	import mx.core.UIComponent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.events.CloseEvent;
+        	import mx.events.ValidationResultEvent;
+        	import mx.rpc.Responder;
+            
+            public static function open(parent:DisplayObject, modal:Boolean = true):AddFundsPopup
+            {
+                var popup:AddFundsPopup = new AddFundsPopup();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                close();
+            }
+            
+            private function isValid():Boolean 
+            {
+            	nv.enabled = true;
+
+            	var result:Boolean = true;
+            	if (nv.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function getPaymentUrl():String 
+            {
+            	var result:String = MainModel.getInstance().paymentUrl;
+            	result += ("&amount=" + Number(txtAmount.text));
+            	return result;
+            }
+            
+			private function onClickAdd():void 
+			{
+				if (!isValid())
+					return;
+
+			    navigateToURL(new URLRequest(getPaymentUrl()));
+			    boxContent.enabled = false;
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+    
+    <mx:NumberValidator id="nv" minValue="5" maxValue="1000" source="{txtAmount}" property="text" enabled="false"/>
+	
+	<mx:HBox id="boxContent" width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		verticalAlign="middle">
+		<mx:Label text="$" fontSize="14" fontWeight="bold"/>
+		<mx:TextInput id="txtAmount" width="100%" fontSize="14" text="20.00"/>
+		<mx:Button label="Add Funds" click="onClickAdd()" fontSize="14"/>
+	</mx:HBox>
+
+    <mx:ControlBar horizontalAlign="center" width="100%" fontSize="12">
+		<mx:Spacer width="100%"/>
+        <mx:LinkButton label="Close" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

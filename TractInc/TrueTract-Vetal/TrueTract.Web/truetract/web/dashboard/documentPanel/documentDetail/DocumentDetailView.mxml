@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="addTract", type="flash.events.Event")]
+        [Event(name="openTract", type="mx.events.DynamicEvent")]
+        [Event(name="addAttachment", type="flash.events.Event")]
+        [Event(name="deleteAttachment", type="mx.events.DynamicEvent")]
+        [Event(name="openAttachment", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import flash.net.navigateToURL;
+            import truetract.domain.*;
+            
+            import mx.events.DynamicEvent;
+            import mx.controls.Alert;
+            
+            [Bindable] public var docum:Document;
+
+            private function addTract_clickHandler():void
+            {
+                dispatchEvent(new Event("addTract"));
+            }
+
+            private function addFile_clickHandler():void
+            {
+                dispatchEvent(new Event("addAttachment"));
+            }
+
+            private function deleteFile_clickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("deleteAttachment");
+                event.attachment = DocumentAttachment(fileList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+            private function openFile_clickHandler():void
+            {
+                var file:DocumentAttachment = DocumentAttachment(fileList.selectedItem);
+                var urlRequest:URLRequest = new URLRequest(file.FileUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+
+            private function tractList_doubleClickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("openTract");
+                event.tract = Tract(tractList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+            private function fileList_doubleClickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("openAttachment");
+                event.attachment = DocumentAttachment(fileList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:TabNavigator 
+        width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingBottom="5"
+        backgroundAlpha="0.52">
+
+        <mx:VBox id="tractsBox" label="Tracts" width="100%" height="100%">
+
+            <mx:DataGrid id="tractList"
+                dataProvider="{docum.TractsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="tractList_doubleClickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="Ref.Name" dataField="RefName"/>
+                    <mx:DataGridColumn headerText="Called" dataField="calledString" width="150"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:HBox>
+                <mx:Button 
+                    label="Add Tract" enabled="{docum.IsActive}"
+                    click="addTract_clickHandler()"/>
+    
+                <mx:Button 
+                    label="Export.." enabled="false"
+                    click="Alert.show('Not implemented yet')"/>
+                    
+                <mx:Button 
+                    label="Import.." enabled="false"
+                    click="Alert.show('Not implemented yet')"/>
+            </mx:HBox>
+
+        </mx:VBox>
+
+        <mx:VBox id="filesBox" label="Files" width="100%" height="100%">
+
+            <mx:DataGrid id="fileList"
+                dataProvider="{docum.AttachmentsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="fileList_doubleClickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="File Name" dataField="FileName"/>
+                    <mx:DataGridColumn headerText="Type" dataField="TypeName"/>
+                    <mx:DataGridColumn headerText="Description" dataField="Description"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:HBox>
+                <mx:Button 
+                    enabled="{docum.IsActive}"
+                    label="Add File" click="addFile_clickHandler()"/>
+
+                <mx:Button 
+                    enabled="{fileList.selectedItem != null}"
+                    label="Open" click="openFile_clickHandler()"/>
+
+                <mx:Button 
+                    enabled="{fileList.selectedItem != null}"
+                    label="Delete" click="deleteFile_clickHandler()"/>
+
+            </mx:HBox>
+
+        </mx:VBox>
+
+        <mx:VBox id="commentsBox" enabled="false" label="Comments" width="100%" height="100%">
+
+            <mx:List width="100%" height="100%" backgroundAlpha="1"/>
+            
+            <mx:HBox>
+                <mx:Button 
+                    label="Add Comment" click="Alert.show('Not implemented yet')"/>
+            </mx:HBox>
+        </mx:VBox>
+
+    </mx:TabNavigator>
+    
+</mx:VBox>

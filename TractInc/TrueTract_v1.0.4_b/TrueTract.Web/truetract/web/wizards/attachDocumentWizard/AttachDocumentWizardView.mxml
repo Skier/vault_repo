@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:startPageWizard="truetract.web.wizards.startPageWizard.*"
+    xmlns:steps="truetract.web.wizards.steps.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    title="{controller.activeStep.stepTitle}"
+    width="450" height="300" 
+    creationComplete="controller.init();">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.web.util.wizard.AbstractStep;
+            import truetract.web.AppController;
+
+            import mx.managers.PopUpManager;
+
+            public static function open(parent:DisplayObject, modal:Boolean):AttachDocumentWizardView
+            {
+                var popup:AttachDocumentWizardView = new AttachDocumentWizardView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                this.setStyle("footerColors", null); //bug arround
+
+                PopUpManager.removePopUp(this);
+            }
+            
+            [Bindable]
+            public var controller:AttachDocumentWizardController = 
+                new AttachDocumentWizardController(AttachDocumentWizardView(this));
+
+            [Bindable] public var appController:AppController;
+
+            public function getStepIndex(step:AbstractStep):int
+            {
+                return (null != step) 
+                    ? stepsVS.getChildIndex(step) 
+                    : -1;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:RemoteObject id="trueTractService" 
+        destination="GenericDestination" source="TractInc.TrueTract.TrueTractService" 
+        showBusyCursor="true"/>
+
+    <mx:ViewStack id="stepsVS" creationPolicy="all" 
+        selectedIndex="{getStepIndex(controller.activeStep)}"
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        width="100%" height="100%" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <steps:SelectDocumentStep id="selectDocumentStep" 
+            service="{trueTractService}" hasNextStep="false"
+            newDocumentRequest="controller.selectDocument_newDocumentRequestHandler()"
+            stepTitle="Select Document"/>
+
+        <steps:FillDocFieldsStep id="fillDocReqFieldsStep" 
+            stepTitle="Document Required Fields" hasNextStep="false"/>
+
+    </mx:ViewStack>
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button id="buttonBack"
+            label="&lt; Back" width="70" 
+            enabled="{stepsVS.selectedChild != selectDocumentStep}"
+            click="controller.goToPreviousStep()"/>
+
+        <mx:Button id="buttonNext"
+            label="{controller.activeStep.hasNextStep ? 'Next &gt;' : 'Finish'}" width="70" 
+            enabled="{controller.activeStep.formValid}"
+            click="controller.goToNextStep()"/>
+        
+        <mx:Spacer width="10"/>
+        
+        <mx:Button label="Cancel" click="controller.cancel()" width="70"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

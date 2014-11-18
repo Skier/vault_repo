@@ -1,0 +1,3069 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdb="http://xmlns.oracle.com/xdb"
+           xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:include schemaLocation="MetaData.xsd"/>
+    <xs:include schemaLocation="../finance/Finance.xsd"/>
+    <xs:element name="AccountQuery" type="AccountQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for GL Account</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BillQuery" type="BillQuery" substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Bills</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BillPaymentQuery" type="BillPaymentQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Bill Payments made by Checks only</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BillPaymentCreditCardQuery" type="BillPaymentCreditCardQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Bill Payments made by Credit Cards</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BOMComponentQuery" type="BOMComponentQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for BOM components</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CheckQuery" type="CheckQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Checks</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ChargeQuery" type="ChargeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Charge</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ClassQuery" type="ClassQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Class</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CompanyRequest" type="CompanyRequest">
+        <xs:annotation>
+            <xs:documentation>Add company XML payload to add or modify company info</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardChargeQuery" type="CreditCardChargeQuery">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Credit Card Charge</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardCreditQuery" type="CreditCardCreditQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Credit Card Credit</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardRefundQuery" type="CreditCardRefundQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Credit Card Refund</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditMemoQuery" type="CreditMemoQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Credit Memo</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomerQuery" type="CustomerQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for CUSTOMER</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomerMsgQuery" type="CustomerMsgQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Customer Message</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomerTypeQuery" type="CustomerTypeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Customer Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomFieldQuery" type="CustomFieldQuery">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Custom Fields (Data Extensions)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomFieldDefinitionQuery" type="CustomFieldDefinitionQuery">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Custom Fields Definition</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="DepositQuery" type="DepositQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Deposit</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="DiscountQuery" type="DiscountQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Discount</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="EmployeeQuery" type="EmployeeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Employee</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="EstimateQuery" type="EstimateQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Estimate</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="FixedAssetQuery" type="FixedAssetQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Fixed Asset</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="InventoryAdjustmentQuery" type="InventoryAdjustmentQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Inventory Adjustment</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="InvoiceQuery" type="InvoiceQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Invoice</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ItemReceiptQuery" type="ItemReceiptQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Item Receipt</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ItemGroupComponentQuery" type="ItemGroupComponentQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Item Group Components</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ItemQuery" type="ItemQuery" substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Item</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="JobQuery" type="JobQuery" substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Job</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="JobTypeQuery" type="JobTypeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Job Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="JournalEntryQuery" type="JournalEntryQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Journal Entry</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="NameValueQuery" type="NameValueQuery">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Journal Entry</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="OtherNameQuery" type="OtherNameQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Other Name</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PaymentQuery" type="PaymentQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Payment</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PaymentMethodQuery" type="PaymentMethodQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for PaymentMethod</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PayrollItemQuery" type="PayrollItemQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for PayrollItem</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PurchaseOrderQuery" type="PurchaseOrderQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Purchase Order</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesOrderQuery" type="SalesOrderQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for SalesOrder</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesReceiptQuery" type="SalesReceiptQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Sales Receipt</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesRepQuery" type="SalesRepQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Sales Rep</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxCodeQuery" type="SalesTaxCodeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for SalesTaxCode</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxGroupQuery" type="SalesTaxGroupQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for SalesTaxGroup</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxPaymentCheckQuery" type="SalesTaxPaymentCheckQuery"
+                substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Sales Tax Payment Check </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxQuery" type="SalesTaxQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for SalesTax</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ShipMethodQuery" type="ShipMethodQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for ShipMethod</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="TemplateNameQuery" type="TemplateNameQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Template Names</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!--xs:element name="TemplateRefMapQuery" type="TemplateRefMapQuery"
+                substitutionGroup="QueryObjects" abstract="false"/-->
+    <xs:element name="TermQuery" type="TermQuery" substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Sales Term</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="TimeActivityQuery" type="TimeActivityQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for TimeActivity</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="UOMQuery" type="UOMQuery" substitutionGroup="QueryObjects" abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for UOM</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorCreditQuery" type="VendorCreditQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Vendor Credit</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorQuery" type="VendorQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Vendor</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorTypeQuery" type="VendorTypeQuery" substitutionGroup="QueryObjects"
+                abstract="false">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for Vendor Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="RecordCountQuery" type="RecordCountQuery">
+        <xs:annotation>
+            <xs:documentation>query for XML payload for getting record count for a set of filter criteria for various entity queries</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="RecordCountQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:element ref="QueryObjects" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="QueryObjects" type="QueryBase" abstract="false"/>
+
+    <xs:element name="SyncStatusRequest" type="SyncStatusRequest">
+        <xs:annotation>
+            <xs:documentation>request for data about Meta data for specific add mod operations</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SyncStatusResponse" type="SyncStatusResponse">
+        <xs:annotation>
+            <xs:documentation>Represnts the add mod status response</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!--Sync status definitions -->
+    <xs:complexType name="SyncStatusRequest">
+        <xs:annotation>
+            <xs:documentation>request responses passing one or more of ids of 3 types</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="GlobalParameterGroup"/>
+            <xs:element name="NgIdSet" type="NgIdSet" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="RequestId" type="guid" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="BatchId" type="guid" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:group ref="CreationDateRangeFilter" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="ErroredObjectsOnly" type="xs:boolean" default="false">
+            <xs:annotation>
+                <xs:documentation>By default, only objects in the "success" state are returned in the query response. This attribute allows for requesting the objects that are in the "error" state.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="NgIdSet">
+        <xs:annotation>
+            <xs:documentation>Contains type ng id and the type of object. id needs to be provided to get the status. For add request request will be using requestid</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NgId" type="xs:string"/>
+            <xs:element name="SyncToken" type="syncToken" minOccurs="0"/>
+            <xs:element name="NgObjectType" type="objectName"/>
+            <xs:element name="PartyId" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SyncStatusResponse">
+        <xs:annotation>
+            <xs:documentation>generic meta data response for any add mod</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="NgIdSet" type="NgIdSet" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>can be either request, batch, or ng id values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RequestId" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>can be either request, batch, or ng id values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="BatchId" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>can be either request, batch, or ng id values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="StateCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Current state code of object</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="StateDesc" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Current state desc of object</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MessageCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>status message code generated by esb app or ngc write</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MessageDesc" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>status message if error occured else null</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ResponseLogTMS" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="SyncActivityRequest" type="SyncActivityRequest">
+        <xs:annotation>
+            <xs:documentation>request for upload abd download sync activity data</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SyncActivityResponse" type="SyncActivityResponse">
+        <xs:annotation>
+            <xs:documentation>sync activity response data</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!--Sync status definitions -->
+    <xs:complexType name="SyncActivityRequest">
+        <xs:annotation>
+            <xs:documentation>request for sync activity report</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="GlobalParameterGroup"/>
+            <xs:group ref="TransactionDateFilter"/>
+            <xs:group ref="CreationDateRangeFilter" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- *********************************the actual reponse for sync status activity is below********************** -->
+    <xs:complexType name="SyncActivityResponse">
+        <xs:annotation>
+            <xs:documentation>sync activity response object</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SyncType" type="syncType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>can be either Upload or Writeback sync type</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="StartSyncTMS" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>indicates when the data sync upload or writeback started</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EndSyncTMS" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>indicates when the data sync upload or writeback completed</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EntityName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>name of the entity that is part of the data sync</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EntityRowCount" type="xs:positiveInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>number of rows of this entity that have been uploaded or written back to qb</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:sequence>
+                <xs:element name="SyncStatusDrillDown" type="SyncStatusDrillDown" minOccurs="0"
+                            maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- **************************************actual response detail drill down for sync status********************* -->
+    <xs:complexType name="SyncStatusDrillDown">
+        <xs:annotation>
+            <xs:documentation>sync status detail down to object ID and error message</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SyncEventId" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>unique Identifier for each write back run and each upload run</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncTMS" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>date and time of specific data sync event</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EntityId" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>id of the entity in question</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RequestId" type="guid" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>request id guid specific to writeback logging operations</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NgObjectType" type="objectName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Type of the entity that is part of the data sync</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="OperationType" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>specific to writeback operations</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncMessageCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>writeback logger error code </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SyncMessage" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>writeback logger result message</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="syncType">
+        <xs:annotation>
+            <xs:documentation>must be either upload or writeback</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Upload"/>
+            <xs:enumeration value="Writeback"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- *********************************end of sync status activity response************************************** -->
+    <!-- *********************************CDCObjectRequest********************** -->
+    <xs:element name="CDCObjectRequest" type="CDCObjectRequest">
+        <xs:annotation>
+            <xs:documentation>request for latest modified time stamps for each CDM object</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="CDCObjectRequest">
+        <xs:annotation>
+            <xs:documentation>request CDCObject</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="GlobalParameterGroup"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- *********************************CDCObjectResponse********************** -->
+    <xs:complexType name="CDCObject">
+        <xs:annotation>
+            <xs:documentation>all CDM objects and their latest modified time stamps</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="ObjectName" type="objectName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>supported object names</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MostRecentTMS" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>indicates when the data sync upload or writeback occured last time</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CDCObjectResponses">
+        <xs:annotation>
+            <xs:documentation>unbound set of responses of sync activity</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmComplexBase">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="CDCObject"
+                                type="CDCObject"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CDCObjectResponses" type="CDCObjectResponses" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <!-- General defintions used for sorting. provides the template for defining sort operations(columnar values and sort order attributes) -->
+    <xs:simpleType name="sortOrder">
+        <xs:annotation>
+            <xs:documentation>The enum value of Asc means sorting in ascending order and enum value of Desc means sorting in descending order </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Ascending"/>
+            <xs:enumeration value="Descending"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortBy" abstract="true" mixed="false">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <!-- Actual Sort criteria definition for various transactions and list objects returned by the web service-->
+    <xs:simpleType name="SortByColumnAccount">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Account queries</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AccountName"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnAccountWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Account queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnAccount"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnCharge">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Charge queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnChargeWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Charge queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnCharge"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnCreditMemo">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Credit Memo queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnCreditMemoWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Credit Memo queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnCreditMemo"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnCustomer">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for CUSTOMER queries if NULL will sort by CUSTOMER_ID</xs:documentation>
+            <xs:documentation> sorting by 'CityCountry' sorts Customer based on the string formed by concatenating city,postal_code,ac.state and country</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LastName">
+                <xs:annotation>
+                    <xs:documentation>Note: Deprecated. The sorting for this entity is performed by using the "Name" element, not the "LastName".</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="CityCountry"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+            <xs:enumeration value="OpenBalance"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnCustomerWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Customer queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnCustomer"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnDeposit">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Deposit queries, if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="SortByColumnDepositWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Deposit queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnDeposit"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnEmployee">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Employee NAME queries if NULL will sort by NAME_ID</xs:documentation>
+            <xs:documentation> sorting by 'CityCountry' sorts Customer based on the string formed by concatenating city,postal_code,ac.state and country</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LastName">
+                <xs:annotation>
+                    <xs:documentation>Note: Deprecated. The sorting is performed by using the "Name" element, not the "LastName".</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="CityCountry"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnEmployeeWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Employee queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnEmployee"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnEstimate">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Estimate queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="OpenBalance"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="SortByColumnEstimateWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Estimate queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnEstimate"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnFixedAsset">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Fixed Asset queries</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ItemName"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+            <xs:enumeration value="PurchaseCost"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnFixedAssetWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Fixed Asset queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnFixedAsset"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnInventoryAdjustment">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Inventory Adjustment queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnInventoryAdjustmentWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Inventory Adjustment queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnInventoryAdjustment"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnInvoice">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Invoice queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="OpenBalance"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnInvoiceWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Invoice queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnInvoice"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+
+    <xs:simpleType name="SortByColumnItem">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Item queries</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ItemName"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+            <xs:enumeration value="QOH"/>
+            <xs:enumeration value="UnitPrice"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnItemWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Item queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnItem"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnJournalEntry">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Journal Entry queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnJournalEntryWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Journal Entry queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnJournalEntry"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnNameDate">
+        <xs:annotation>
+            <xs:documentation> sort by Name or Created Date</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnNameDateWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for JobType/VendorType queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnNameDate"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnOtherName">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Other Name queries if NULL will sort by ID</xs:documentation>
+            <xs:documentation> sorting by 'CityCountry' sorts Customer based on the string formed by concatenating city,postal_code,ac.state and country</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LastName">
+                <xs:annotation>
+                    <xs:documentation>Note: Deprecated. The sorting is performed by using the "Name" element, not the "LastName".</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="CityCountry"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnOtherNameWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Other Name queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnOtherName"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnPayment">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Payment queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnPaymentWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Payment queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnPayment"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnPurchaseOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for PurchaseOrder queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnPurchaseOrderWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Purchase Order queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnPurchaseOrder"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnSalesOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for SalesOrder queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="OpenBalance"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnSalesOrderWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Sales Order queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnSalesOrder"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnSalesReceipt">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Sales Receipt queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+            <xs:enumeration value="TotalAmount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnSalesReceiptWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Sales Receipt queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnSalesReceipt"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnTimeActivity">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Time Activity queries if NULL will sort by TRANSACTION_ID</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TransactionDate"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnTimeActivityWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Time Activity queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnTimeActivity"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SortByColumnVendor">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Vendor NAME queries if NULL will sort by NAME_ID</xs:documentation>
+            <xs:documentation> sorting by 'CityCountry' sorts Customer based on the string formed by concatenating city,postal_code,ac.state and country</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LastName">
+                <xs:annotation>
+                    <xs:documentation>Note: Deprecated. The sorting is performed by using the "Name" element, not the "LastName".</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="CityCountry"/>
+            <xs:enumeration value="DBCreatedTMS"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="SortByColumnVendorWithOrder">
+        <xs:annotation>
+            <xs:documentation> allowed sort options for Vendor queries also specifying ascending/descending order as an attribute</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="SortBy">
+                <xs:simpleType>
+                    <xs:restriction base="SortByColumnVendor"/>
+                </xs:simpleType>
+                <xs:attribute name="sortOrder" type="sortOrder" default="Descending"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- Global filtering and Request definition tags. -->
+    <xs:simpleType name="customFieldFilterEnumType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Exclude"/>
+            <xs:enumeration value="Include"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="operatorEnumType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="GT">
+                <xs:annotation>
+                    <xs:documentation>Greater Than, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="GTE">
+                <xs:annotation>
+                    <xs:documentation>Greater Than Or Equal, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LT">
+                <xs:annotation>
+                    <xs:documentation>Less Than, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LTE">
+                <xs:annotation>
+                    <xs:documentation>Less Than Or Equal, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EQ">
+                <xs:annotation>
+                    <xs:documentation>Equal, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="XEQ">
+                <xs:annotation>
+                    <xs:documentation>Not Equal, applies to Dates as well.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CT">
+                <xs:annotation>
+                    <xs:documentation>Contains.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="XCT">
+                <xs:annotation>
+                    <xs:documentation>Does Not Contain.</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="CustomFieldQueryParam">
+        <xs:annotation>
+            <xs:documentation>Defines repeatable parameters for the Custom Field Query</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="CustomFieldDefinitionId" type="IdType">
+                <xs:annotation>
+                    <xs:documentation>Query request parameter indicating that query needs to filter only objects that either contain or not contain custom fields Id column and, optionally, associated value. Contain vs. do not contain is controlled by the CustomFieldFilter parameter.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CustomFieldValue" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Query paramter specifying comma-delimited values that are to be associated with CustomFieldDefinitionId and will match / not match on value.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Operator" type="operatorEnumType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:group name="CreationDateRangeFilter">
+        <xs:annotation>
+            <xs:documentation>If only StartCreatedTMS tag is present filter for transactions created greater than or equal to this date</xs:documentation>
+            <xs:documentation>If only EndCreatedTMS tag is present filter for transactions created less than or equal to this date</xs:documentation>
+            <xs:documentation>If both Start and EndCreated tags are found filter for transactions created between this date range</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="StartCreatedTMS" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="EndCreatedTMS" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="CustomFieldQueryGroup">
+        <xs:annotation>
+            <xs:documentation>Defines query parameters for Custom Field (Data Extensions)</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="CustomFieldEnable" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Query request parameter indicating that query output should output all CDM CustomFields (data extensions) if definitions and values were previously provided.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="CustomFieldValueQueryGroup" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>These parameters can be seen as specifying the "WHERE" sql clause</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:element name="CustomFieldDefinitionIdSet" type="IdSet" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Query request parameter specifying the set of Ids of custom field ID columns the query should DISPLAY as part of its XML response. If not specified, ALL defined custom fields and their values will be displayed per qualified CDM objects. By default, no custom fields will be rendered at all unless any of the above filters are specified. There Ids can be seen as specifying the SELECT parameters.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="CustomFieldValueQueryGroup">
+        <xs:sequence>
+            <xs:element name="CustomFieldQueryParam" type="CustomFieldQueryParam" minOccurs="0"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Specifies CustomField Definitions and values used for filtering. Up to 3 sets are permitted.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CustomFieldFilter" type="customFieldFilterEnumType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Query parameter that drives inclusion or exclusion of objects that contain / do not contain ANY of the CustomFieldValues values specified in the value set. If not provided, the default value is "Include".</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="DateFilterGroupForNonTransactions">
+        <xs:annotation>
+            <xs:documentation>When trying to specify date filter criteria only one of the possible set of filters is allowed</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:group ref="CreationDateRangeFilter" minOccurs="0"/>
+            <xs:group ref="ModifiedDateRangeFilter" minOccurs="0"/>
+        </xs:choice>
+    </xs:group>
+    <xs:group name="DateFilterGroupForTransactions">
+        <xs:annotation>
+            <xs:documentation>When trying to specify date filter criteria only one of the possible set of filters is allowed</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:group ref="CreationDateRangeFilter" minOccurs="0"/>
+            <xs:group ref="ModifiedDateRangeFilter" minOccurs="0"/>
+            <xs:group ref="TransactionDateFilter" minOccurs="0"/>
+        </xs:choice>
+    </xs:group>
+    <xs:group name="GlobalParameterGroup">
+        <xs:sequence>
+            <xs:annotation>
+                <xs:documentation>Specifying offering Id and the version of the CDM being requested for</xs:documentation>
+            </xs:annotation>
+            <xs:element name="OfferingId" type="offeringId" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="IteratorParameterGroup">
+        <xs:sequence>
+            <xs:annotation>
+                <xs:documentation>if ChunkSize is NULL will force 1000 xml object LIMIT for all queries</xs:documentation>
+            </xs:annotation>
+            <xs:element name="IteratorId" type="guid" minOccurs="0"/>
+            <xs:element name="ChunkSize" type="ChunkSizeInteger" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="ListsAndTxnsParamsGroup">
+        <xs:sequence>
+            <xs:annotation>
+                <xs:documentation>Specifies the query parameters that apply globally to all list and transaction filters</xs:documentation>
+            </xs:annotation>
+            <xs:element name="CDCAsOf" type="xs:dateTime" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Change Data Capture filter. When specified, all objects that were created after the time provided in the parameter will be returned.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SynchronizedFilter" type="SynchronizedFilterEnumType" minOccurs="0" >
+                <xs:annotation>
+                    <xs:documentation>When specified, only objects that exist in the specified synchronization state will be returned.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DraftFilter" type="DraftFilterEnumType" minOccurs="0" >
+                <xs:annotation>
+                    <xs:documentation>When specified, only objects that exist in the specified Draft state will be returned.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="ModifiedDateRangeFilter">
+        <xs:annotation>
+            <xs:documentation>If only StartModifiedTMS tag is present filter for transactions modified greater than or equal to this date</xs:documentation>
+            <xs:documentation>If only EndModifiedTMS tag is present filter for transactions modified less than or equal to this date</xs:documentation>
+            <xs:documentation>If both Start and EndModified tags are found filter for transactions modified between this date range</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="StartModifiedTMS" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="EndModifiedTMS" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="TransactionDateFilter">
+        <xs:annotation>
+            <xs:documentation>Filter for those transactions whose date on the transactions are those specified in this filter</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="StartTransactionDate" type="xs:date" minOccurs="0"/>
+            <xs:element name="EndTransactionDate" type="xs:date" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <!-- Type definitions used internally in the request specification -->
+    <xs:simpleType name="DraftFilterEnumType">
+        <xs:annotation>
+            <xs:documentation>Enumeration of Draft filter options.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="All"/>
+            <xs:enumeration value="DraftOnly"/>
+            <xs:enumeration value="MyAppDraftOnly"/>
+            <xs:enumeration value="NonDraft"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="requestName">
+        <xs:annotation>
+            <xs:documentation>Supported request types </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AccountQuery"/>
+            <xs:enumeration value="AccountAdd"/>
+            <xs:enumeration value="AccountMod"/>
+            <xs:enumeration value="AccountDel"/>
+            <xs:enumeration value="AccountRevert"/>
+            <xs:enumeration value="BillQuery"/>
+            <xs:enumeration value="BillAdd"/>
+            <xs:enumeration value="BillDel"/>
+            <xs:enumeration value="BillPaymentQuery"/>
+            <xs:enumeration value="BillPaymentAdd"/>
+            <xs:enumeration value="BillPaymentMod"/>
+            <xs:enumeration value="BillPaymentDel"/>
+            <xs:enumeration value="BillPaymentCreditCardQuery"/>
+            <xs:enumeration value="BillPaymentCreditCardAdd"/>
+            <xs:enumeration value="BillPaymentCreditCardMod"/>
+            <xs:enumeration value="BillPaymentCreditCardDel"/>
+            <xs:enumeration value="BOMComponentQuery"/>
+            <xs:enumeration value="CDCObjectsQuery"/>
+            <xs:enumeration value="ChargeQuery"/>
+            <xs:enumeration value="CheckQuery"/>
+            <xs:enumeration value="CheckAdd"/>
+            <xs:enumeration value="CheckDel"/>
+            <xs:enumeration value="ClassQuery"/>
+            <xs:enumeration value="ClassAdd"/>
+            <xs:enumeration value="ClassDel"/>
+            <xs:enumeration value="CompanyQuery"/>
+            <xs:enumeration value="CompanyAdd"/>
+            <xs:enumeration value="CompanyMod"/>
+            <xs:enumeration value="CreditCardChargeQuery"/>
+            <xs:enumeration value="CreditCardCreditQuery"/>
+            <xs:enumeration value="CreditCardRefundQuery"/>
+            <xs:enumeration value="CreditMemoAdd"/>
+            <xs:enumeration value="CreditMemoQuery"/>
+            <xs:enumeration value="CustomerQuery"/>
+            <xs:enumeration value="CustomerAdd"/>
+            <xs:enumeration value="CustomerMod"/>
+            <xs:enumeration value="CustomerDel"/>
+            <xs:enumeration value="CustomerRevert"/>
+            <xs:enumeration value="CustomerMsgQuery"/>
+            <xs:enumeration value="CustomerTypeQuery"/>
+            <xs:enumeration value="CustomFieldQuery"/>
+            <xs:enumeration value="CustomFieldAdd"/>
+            <xs:enumeration value="CustomFieldMod"/>
+            <xs:enumeration value="CustomFieldDefinitionQuery"/>
+            <xs:enumeration value="CustomFieldDefinitionAdd"/>
+            <xs:enumeration value="CustomFieldDefinitionMod"/>
+            <xs:enumeration value="DepositQuery"/>
+            <xs:enumeration value="DiscountQuery"/>
+            <xs:enumeration value="DiscountAdd"/>
+            <xs:enumeration value="DiscountMod"/>
+            <xs:enumeration value="EmployeeQuery"/>
+            <xs:enumeration value="EmployeeAdd"/>
+            <xs:enumeration value="EmployeeMod"/>
+            <xs:enumeration value="EmployeeDel"/>
+            <xs:enumeration value="EmployeeRevert"/>
+            <xs:enumeration value="ErrorRequest"/>
+            <xs:enumeration value="EstimateQuery"/>
+            <xs:enumeration value="EstimateAdd"/>
+            <xs:enumeration value="EstimateMod"/>
+            <xs:enumeration value="EstimateDel"/>
+            <xs:enumeration value="EstimateRevert"/>
+            <xs:enumeration value="FixedAssetQuery"/>
+            <xs:enumeration value="FixedAssetAdd"/>
+            <xs:enumeration value="InventoryAdjustmentQuery"/>
+            <xs:enumeration value="InventoryAdjustmentAdd"/>
+            <xs:enumeration value="InventoryAdjustmentDel"/>
+            <xs:enumeration value="InvoiceQuery"/>
+            <xs:enumeration value="InvoiceAdd"/>
+            <xs:enumeration value="InvoiceMod"/>
+            <xs:enumeration value="InvoiceDel"/>
+            <xs:enumeration value="InvoiceRevert"/>
+            <xs:enumeration value="ItemQuery"/>
+            <xs:enumeration value="ItemAdd"/>
+            <xs:enumeration value="ItemMod"/>
+            <xs:enumeration value="ItemDel"/>
+            <xs:enumeration value="ItemRevert"/>
+            <xs:enumeration value="ItemGroupComponentQuery"/>
+            <xs:enumeration value="ItemReceiptQuery"/>
+            <xs:enumeration value="ItemReceiptAdd"/>
+            <xs:enumeration value="ItemReceiptDel"/>
+            <xs:enumeration value="JobQuery"/>
+            <xs:enumeration value="JobAdd"/>
+            <xs:enumeration value="JobMod"/>
+            <xs:enumeration value="JobDel"/>
+            <xs:enumeration value="JobRevert"/>
+            <xs:enumeration value="JobTypeQuery"/>
+            <xs:enumeration value="JournalEntryQuery"/>
+            <xs:enumeration value="JournalEntryAdd"/>
+            <xs:enumeration value="JournalEntryDel"/>
+            <xs:enumeration value="NameValueQuery"/>
+            <xs:enumeration value="OtherNameQuery"/>
+            <xs:enumeration value="PaymentQuery"/>
+            <xs:enumeration value="PaymentAdd"/>
+            <xs:enumeration value="PaymentDel"/>
+            <xs:enumeration value="PaymentMethodQuery"/>
+            <xs:enumeration value="PaymentMethodAdd"/>
+            <xs:enumeration value="PaymentMethodDel"/>
+            <xs:enumeration value="PayrollItemQuery"/>
+            <xs:enumeration value="PreferencesQuery"/>
+            <xs:enumeration value="PurchaseOrderQuery"/>
+            <xs:enumeration value="PurchaseOrderAdd"/>
+            <xs:enumeration value="PurchaseOrderDel"/>
+            <xs:enumeration value="RecordCountQuery"/>
+            <xs:enumeration value="ReportAccountBalances"/>
+            <xs:enumeration value="ReportBalanceSheet"/>
+            <xs:enumeration value="ReportCustomersWhoOweMe"/>
+            <xs:enumeration value="ReportIncomeBreakdown"/>
+            <xs:enumeration value="ReportProfitAndLoss"/>
+            <xs:enumeration value="ReportSalesSummary"/>
+            <xs:enumeration value="ReportTopCustomersBySales"/>
+            <xs:enumeration value="SalesOrderQuery"/>
+            <xs:enumeration value="SalesOrderAdd"/>
+            <xs:enumeration value="SalesOrderDel"/>
+            <xs:enumeration value="SalesReceiptQuery"/>
+            <xs:enumeration value="SalesReceiptAdd"/>
+            <xs:enumeration value="SalesReceiptMod"/>
+            <xs:enumeration value="SalesReceiptDel"/>
+            <xs:enumeration value="SalesReceiptRevert"/>
+            <xs:enumeration value="SalesRepAdd"/>
+            <xs:enumeration value="SalesRepDel"/>
+            <xs:enumeration value="SalesRepQuery"/>
+            <xs:enumeration value="SalesTaxQuery"/>
+            <xs:enumeration value="SalesTaxAdd"/>
+            <xs:enumeration value="SalesTaxCodeQuery"/>
+            <xs:enumeration value="SalesTaxGroupQuery"/>
+            <xs:enumeration value="SalesTaxGroupAdd"/>
+            <xs:enumeration value="SalesTaxPaymentCheckQuery"/>
+            <xs:enumeration value="TermQuery"/>
+            <xs:enumeration value="SalesTermAdd"/>
+            <xs:enumeration value="SalesTermDel"/>
+            <xs:enumeration value="ShipMethodQuery"/>
+            <xs:enumeration value="SyncActivityQuery"/>
+            <xs:enumeration value="SyncStatusQuery"/>
+            <xs:enumeration value="TemplateNameQuery"/>
+            <xs:enumeration value="TemplateRefMapQuery"/>
+            <xs:enumeration value="TemplateRefMapAdd"/>
+            <xs:enumeration value="TemplateRefMapMod"/>
+            <xs:enumeration value="TimeActivityQuery"/>
+            <xs:enumeration value="TimeActivityAdd"/>
+            <xs:enumeration value="TimeActivityMod"/>
+            <xs:enumeration value="TimeActivityDel"/>
+            <xs:enumeration value="TimeActivityRevert"/>
+            <xs:enumeration value="UOMQuery"/>
+            <xs:enumeration value="VendorQuery"/>
+            <xs:enumeration value="VendorAdd"/>
+            <xs:enumeration value="VendorMod"/>
+            <xs:enumeration value="VendorDel"/>
+            <xs:enumeration value="VendorRevert"/>
+            <xs:enumeration value="VendorCreditAdd"/>
+            <xs:enumeration value="VendorCreditQuery"/>
+            <xs:enumeration value="VendorTypeQuery"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="objectName">
+        <xs:annotation>
+            <xs:documentation>Supported CDC Object Names </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Account"/>
+            <xs:enumeration value="Bill"/>
+            <xs:enumeration value="BillPayment"/>
+            <xs:enumeration value="BillPaymentCreditCard"/>
+            <xs:enumeration value="Charge"/>
+            <xs:enumeration value="Check"/>
+            <xs:enumeration value="Class"/>
+            <xs:enumeration value="Company"/>
+            <xs:enumeration value="CreditMemo"/>
+            <xs:enumeration value="Customer"/>
+            <xs:enumeration value="CustomerMsg"/>
+            <xs:enumeration value="CustomerType"/>
+            <xs:enumeration value="Discount"/>
+            <xs:enumeration value="Employee"/>
+            <xs:enumeration value="Estimate"/>
+            <xs:enumeration value="FixedAsset"/>
+            <xs:enumeration value="InventoryAdjustment"/>
+            <xs:enumeration value="Invoice"/>
+            <xs:enumeration value="Item"/>
+            <xs:enumeration value="ItemReceipt"/>
+            <xs:enumeration value="Job"/>
+            <xs:enumeration value="JobType"/>
+            <xs:enumeration value="JournalEntry"/>
+            <xs:enumeration value="OtherName"/>
+            <xs:enumeration value="Payment"/>
+            <xs:enumeration value="PaymentMethod"/>
+            <xs:enumeration value="PayrollItem"/>
+            <xs:enumeration value="Preferences"/>
+            <xs:enumeration value="PurchaseOrder"/>
+            <xs:enumeration value="SalesOrder"/>
+            <xs:enumeration value="SalesReceipt"/>
+            <xs:enumeration value="SalesRep"/>
+            <xs:enumeration value="SalesTax"/>
+            <xs:enumeration value="SalesTaxCode"/>
+            <xs:enumeration value="SalesTaxGroup"/>
+            <xs:enumeration value="SalesTaxPaymentCheck"/>
+            <xs:enumeration value="ShipMethod"/>
+            <xs:enumeration value="TemplateName"/>
+            <xs:enumeration value="Term"/>
+            <xs:enumeration value="TimeActivity"/>
+            <xs:enumeration value="UOM"/>
+            <xs:enumeration value="Vendor"/>
+            <xs:enumeration value="VendorCredit"/>
+            <xs:enumeration value="VendorType"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="guid">
+        <xs:annotation>
+            <xs:documentation>Type definition for GUID's</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:minLength value="32"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SynchronizedFilterEnumType">
+        <xs:annotation>
+            <xs:documentation>Enumeration of Id Domain filters. NotSynchronized Ids belong to objects created or modified in the cloud but not yet synchronized with QB desktop. Internal names for Synchronized and NotSynchronized domains are QB and NG respectively.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="All"/>
+            <xs:enumeration value="NotSynchronized"/>
+            <xs:enumeration value="Synchronized"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Actual Query Definitions -->
+    <xs:complexType name="QueryBase" abstract="true">
+        <xs:sequence>
+            <xs:group ref="GlobalParameterGroup" minOccurs="0"/>
+            <xs:group ref="IteratorParameterGroup" minOccurs="0"/>
+            <xs:element name="IncludeTagElements" type="xs:string" minOccurs="0"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>For 'IncludeTagElement' tag please specify the *full path* (from the root node) to the actual node in the xml tree.Please look at the documentation for the entities that actually support this tag </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <!-- <xs:attribute name="MetaDataOnly" type="xs:boolean" default="false">
+            <xs:annotation>
+                <xs:documentation>Setting this flag to true allows the user to request for Meta Data information associated with the query.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>-->
+        <xs:attribute name="DeletedObjects" type="xs:boolean" default="false">
+            <xs:annotation>
+                <xs:documentation>Enables ability to query DELETED objects as of a specific date and later specified in the CDCAsOf  element.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ReportQueryBase" abstract="true">
+        <xs:sequence>
+            <xs:group ref="GlobalParameterGroup" minOccurs="0"/>
+            <xs:group ref="IteratorParameterGroup" minOccurs="0"/>
+            <xs:choice>
+                <xs:element name="DateMacro" type="DateMacro" minOccurs="0"/>
+                <xs:group ref="TransactionDateFilter" minOccurs="0"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ListQueryBase" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:group ref="ListsAndTxnsParamsGroup" minOccurs="0"/>
+                    <xs:group ref="CustomFieldQueryGroup" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="ListIdSet" type="IdSet" minOccurs="0"/>
+                        <xs:group ref="DateFilterGroupForNonTransactions" minOccurs="0"/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="ErroredObjectsOnly" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>By default, only objects in the "success" state are returned in the query response. This attribute allows for requesting the objects that are in the "error" state.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute default="false" name="ActiveOnly" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>When specified by default, all list elements, active and inactive (hidden) are returned; else if set to TRUE only active or non-hidden elements are returned.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="NameQueryBase" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TransactionQueryBase" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:group ref="ListsAndTxnsParamsGroup" minOccurs="0"/>
+                    <xs:group ref="CustomFieldQueryGroup" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="ContactIdSet" type="IdSet" minOccurs="0"/>
+                        <xs:element name="TransactionIdSet" type="IdSet" minOccurs="0"/>
+                    </xs:choice>
+                    <xs:group ref="DateFilterGroupForTransactions" minOccurs="0"/>
+                    <xs:element name="ThinObject" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="TemplateRefMapEnable" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+                <xs:attribute name="ErroredObjectsOnly" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>By default, only objects in the "success" state are returned in the query response. This attribute allows for requesting the objects that are in the "error" state.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="IncludeGroupMemberFlag" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>If specified as "true", the "GroupMember" flag is going to be included in each transaction line.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="AccountQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnAccountWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BillQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BillPaymentQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BillPaymentCreditCardQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BOMComponentQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:element name="ListIdSet" type="IdSet" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>set of Id's of bill of materials(item assemblies) whose constituent item components are to be queried.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ChargeQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnChargeWithOrder" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CheckQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ClassQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CompanyRequest">
+        <xs:sequence>
+            <xs:element name="Action" type="postAction"/>
+            <xs:element name="CompanyMetaData" type="CompanyMetaData"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CreditCardChargeQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CreditCardCreditQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CreditCardRefundQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CreditMemoQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnCreditMemoWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomerQuery">
+        <xs:complexContent>
+            <xs:extension base="NameQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnCustomerWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="FirstLastName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="FirstLastEnd" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastStart" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastInside" type="xs:string" minOccurs="0"/>
+                    </xs:choice>
+                    <xs:element name="OpenBalanceWithJobs" type="xs:boolean" minOccurs="0" default ="false" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomerMsgQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnNameDateWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomerTypeQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnNameDateWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomFieldQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CustomFieldDefinitionQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DepositQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="SortByColumn" type="SortByColumnDepositWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DiscountQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="EmployeeQuery">
+        <xs:complexContent>
+            <xs:extension base="NameQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnEmployeeWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="FirstLastName" type="xs:string" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="FirstLastEnd" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastStart" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastInside" type="xs:string" minOccurs="0"/>
+                    </xs:choice>
+                    <xs:element name="IncludeTimeEntryEnum" type="xs:boolean" minOccurs="0" default="false"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="EstimateQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="SortByColumn" type="SortByColumnEstimateWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="JobIdSet" type="IdSet" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FixedAssetQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnFixedAssetWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="InventoryAdjustmentQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnInventoryAdjustmentWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="InvoiceQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IsPaid" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="IsOverDue" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="SortByColumn" type="SortByColumnInvoiceWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="JobIdSet" type="IdSet" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ItemGroupComponentQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:element name="ListIdSet" type="IdSet" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>set of Id's of item groups whose member item components are to be queried.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ItemReceiptQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ItemQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnItemWithOrder" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="JobQuery">
+        <xs:complexContent>
+            <xs:extension base="NameQueryBase">
+                <xs:sequence>
+                    <xs:element name="CustomerIdSet" type="IdSet" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="JobTypeQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnNameDateWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="JournalEntryQueryBase" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence>
+                    <xs:group ref="CustomFieldQueryGroup" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="ContactIdSet" type="IdSet" minOccurs="0"/>
+                        <xs:element name="TransactionIdSet" type="IdSet" minOccurs="0"/>
+                        <xs:element name="AccountIdSet" type="IdSet" minOccurs="0"/>
+                    </xs:choice>
+                    <xs:group ref="DateFilterGroupForTransactions" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="JournalEntryQuery">
+        <xs:complexContent>
+            <xs:extension base="JournalEntryQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnJournalEntryWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="DraftFilter" type="DraftFilterEnumType" minOccurs="0" >
+                        <xs:annotation>
+                            <xs:documentation>When specified, only objects that exist in the specified Draft state will be returned.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="NameValueQuery" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="QueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="OtherNameQuery">
+        <xs:complexContent>
+            <xs:extension base="NameQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnOtherNameWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="FirstLastName" type="xs:string" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="FirstLastEnd" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastStart" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastInside" type="xs:string" minOccurs="0"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PaymentQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="SortByColumn" type="SortByColumnPaymentWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="JobIdSet" type="IdSet" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PaymentMethodQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PayrollItemQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PurchaseOrderQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>The filter criteria(minimum balance) is not supported for Purchase Orders </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SortByColumn" type="SortByColumnPurchaseOrderWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesRepQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesReceiptQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnSalesReceiptWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesOrderQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="SortByColumn" type="SortByColumnSalesOrderWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="JobIdSet" type="IdSet" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesTaxCodeQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesTaxGroupQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesTaxPaymentCheckQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="MinimumAmount" type="xs:decimal" minOccurs="0"/>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SalesTaxQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ShipMethodQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TemplateNameQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TemplateRefMapQuery">
+        <xs:complexContent>
+            <xs:extension base="QueryBase">
+                <xs:sequence minOccurs="1">
+                    <xs:element name="TemplateRefParam" type="TemplateRefParam" minOccurs="1"
+                                maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TemplateRefParam">
+        <xs:sequence minOccurs="1">
+            <xs:element name="TxnId" type="IdType" minOccurs="1"/>
+            <xs:element name="Type" type="TemplateTypeEnum" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="TermQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TimeActivityQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnTimeActivityWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UOMQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="VendorQuery">
+        <xs:complexContent>
+            <xs:extension base="NameQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnVendorWithOrder" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="FirstLastName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="MinimumBalance" type="xs:decimal" minOccurs="0"/>
+                    <xs:choice>
+                        <xs:element name="FirstLastEnd" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastStart" type="xs:string" minOccurs="0"/>
+                        <xs:element name="FirstLastInside" type="xs:string" minOccurs="0"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="VendorCreditQuery">
+        <xs:complexContent>
+            <xs:extension base="TransactionQueryBase">
+                <xs:sequence>
+                    <xs:element name="IncludeLine" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="VendorTypeQuery">
+        <xs:complexContent>
+            <xs:extension base="ListQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="SortByColumnNameDateWithOrder"
+                                minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="postAction">
+        <xs:annotation>
+            <xs:documentation> all supported actions for overloaded posts </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PUT"/>
+            <xs:enumeration value="POST"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="AbstractRequest" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Request abstract base type.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="RequestParams" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="RequestId" type="guid" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="AddRequest">
+        <xs:annotation>
+            <xs:documentation>Request type to add new data to the system</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractRequest">
+                <xs:sequence>
+                    <xs:element ref="CdmObject"/>
+                </xs:sequence>
+                <xs:attribute name="Draft" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the given object is ready to be written back to QuickBooks. The default value is false, meaning the object is ready to be written to QB.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="FullResponse" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the entire object should be returned in the response to the Add, Mod or Revert request. The default value is false and the response will contain the status of the request and Id of the object.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ModRequest">
+        <xs:annotation>
+            <xs:documentation>Request type to modify existing data in the system</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractRequest">
+                <xs:sequence>
+                    <xs:element ref="CdmObject"/>
+                </xs:sequence>
+                <xs:attribute name="Draft" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the given object is ready to be written back to QuickBooks. The default value is false, meaning the object is ready to be written to QB.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Sparse" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the object provided in the Mod request contains the entire object or only partial data. If only the partial data is provided (sparse = true), when writing the data back to QuickBooks, the given data will be merged with the data from the provisional data base. The missing elements will not be removed from the object.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="FullResponse" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the entire object should be returned in the response to the Add, Mod or Revert request. The default value is false and the response will contain the status of the request and Id of the object.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DelRequest">
+        <xs:annotation>
+            <xs:documentation>Request type to delete existing draft data in the system</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractRequest">
+                <xs:sequence>
+                    <xs:element ref="CdmObject"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="RevertRequest">
+        <xs:annotation>
+            <xs:documentation>Request type to revert the changes in the existing data in the system</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="AbstractRequest">
+                <xs:sequence>
+                    <xs:element ref="CdmObject"/>
+                </xs:sequence>
+                <xs:attribute name="FullResponse" type="xs:boolean" default="false">
+                    <xs:annotation>
+                        <xs:documentation>Specifies whether the entire object should be returned in the response to the Add, Mod or Revert request. The default value is false and the response will contain the status of the request and Id of the object.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Add" type="AddRequest" substitutionGroup="Request"/>
+    <xs:element name="Mod" type="ModRequest" substitutionGroup="Request"/>
+    <xs:element name="Del" type="DelRequest" substitutionGroup="Request"/>
+    <xs:element name="Revert" type="RevertRequest" substitutionGroup="Request"/>
+    <xs:element name="BatchRequestSet">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="RequestParams"/>
+                <xs:element ref="Request" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="RequestId" type="guid" use="required"/>
+        </xs:complexType>
+        <xs:unique name="uniqueRequestIds">
+            <xs:selector xpath=".//*"/>
+            <xs:field xpath="@RequestId"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="Object" type="CdmBase" substitutionGroup="CdmObject"/>
+    <xs:group name="RequestParams">
+        <xs:sequence>
+            <xs:element name="OfferingId" type="offeringId" minOccurs="0"/>
+            <xs:element name="ExternalRealmId" type="xs:string" nillable="false" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:complexType name="AbstractResponse">
+        <xs:annotation>
+            <xs:documentation>Response abstract base type</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmComplexBase">
+                <xs:sequence>
+                    <xs:group ref="ResponseParams"/>
+                </xs:sequence>
+                <xs:attribute name="RequestId" type="guid" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:group name="ResponseParams">
+        <xs:sequence>
+            <xs:choice minOccurs="0">
+                <xs:element ref="CdmObjectRef"/>
+                <xs:element ref="CdmObject"/>
+            </xs:choice>
+            <xs:element name="RequestName" type="requestName"/>
+            <!--<xs:element name="Status" type="xs:string"></xs:element>-->
+            <xs:element name="ProcessedTime" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:complexType name="SuccessResponse">
+        <xs:complexContent>
+            <xs:extension base="AbstractResponse">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ErrorResponse">
+        <xs:complexContent>
+            <xs:extension base="AbstractResponse">
+                <xs:sequence>
+                    <xs:element name="ErrorCode" type="xs:integer"/>
+                    <xs:element name="ErrorDesc" type="xs:string" minOccurs="0"/>
+                    <xs:element name="DBErrorCode" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="BatchResponseSet">
+        <xs:complexContent>
+            <xs:extension base="CdmComplexBase">
+                <xs:sequence>
+                    <xs:element ref="SystemResponse" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="RequestId" type="guid" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ObjectRef">
+        <xs:complexContent>
+            <xs:extension base="CdmObjectRef">
+                <xs:sequence>
+                    <xs:element name="LastUpdatedTime" type="xs:dateTime"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PartyRoleRef">
+        <xs:complexContent>
+            <xs:extension base="ObjectRef">
+                <xs:sequence>
+                    <xs:element name="PartyReferenceId" type="IdType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="PartyRoleRef" type="PartyRoleRef" substitutionGroup="CdmObjectRef"/>
+    <xs:element name="ObjectRef" type="ObjectRef" substitutionGroup="CdmObjectRef"/>
+    <xs:element name="Request" type="AbstractRequest" abstract="true"/>
+    <xs:simpleType name="ChunkSizeInteger">
+        <xs:restriction base="xs:positiveInteger">
+            <xs:maxInclusive value="999"/>
+            <xs:minInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="IdSet">
+        <xs:annotation>
+            <xs:documentation>Representing a set of Id's of type IdType</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Id" type="IdType" nillable="false" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="NameValues">
+        <xs:annotation>
+            <xs:documentation>unbound set of responses of sync activity</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmCollections">
+                <xs:sequence>
+                    <xs:element name="NameValue" type="NameValue" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SyncStatusResponses">
+        <xs:annotation>
+            <xs:documentation>unbound set of responses per request batch ng pk id sets</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmComplexBase">
+                <xs:sequence>
+                    <xs:element name="SyncStatusResponse" type="SyncStatusResponse"
+                                maxOccurs="unbounded"/>
+                    <xs:element ref="CdmObject" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute default="false" name="IncludeRelatedObjects" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SyncActivityResponses">
+        <xs:annotation>
+            <xs:documentation>unbound set of responses of sync activity</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmComplexBase">
+                <xs:sequence>
+                    <xs:element name="SyncActivityResponse" type="SyncActivityResponse"
+                                maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="SystemResponse" type="CdmComplexBase" abstract="true"/>
+    <xs:element name="SyncStatusResponses" type="SyncStatusResponses" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <xs:element name="SyncActivityResponses" type="SyncActivityResponses" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <xs:element name="Success" type="SuccessResponse" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <xs:element name="Error" type="ErrorResponse" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <xs:element name="NameValue" type="NameValue" abstract="false"/>
+    <!--    <xs:element name="MetaDataSets" type="MetaDataSets" abstract="false"
+         substitutionGroup="SystemResponse"/>-->
+    <xs:element name="NameValues" type="NameValues" abstract="false"
+                substitutionGroup="SystemResponse"/>
+    <xs:element name="BatchResponseSet" type="BatchResponseSet" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:unique name="uniqueResponseIds">
+            <xs:selector xpath=".//*"/>
+            <xs:field xpath="@RequestId"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="RestResponse">
+        <xs:annotation>
+            <xs:documentation>This is the enclosing envelope for all responses returned by the system.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="SystemResponse"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ============================================================================== -->
+    <!--Element Sets for bulk data exchange-->
+    <!-- ============================================================================== -->
+    <xs:element name="Accounts" type="Accounts" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Accounts complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Bills" type="Bills" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Bills complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BillPayments" type="BillPayments" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See BillPayments complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BillPaymentCreditCards" type="BillPaymentCreditCards" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See BillPaymentCreditCards complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BOMComponents" type="BOMComponents" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See BOMComponents complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Charges" type="Charges" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Charges complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Checks" type="Checks" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Checks complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Classes" type="Classes" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Classes complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CompanyPreferences" type="CompanyPreferences" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Company Preferences complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardCharges" type="CreditCardCharges" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Credit Card Charges complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardCredits" type="CreditCardCredits" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Credit Card Credits complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditCardRefunds" type="CreditCardRefunds" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Credit Card Refunds complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CreditMemos" type="CreditMemos" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See CreditMemos complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Customers" type="Customers" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Customers complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomerMsgs" type="CustomerMsgs" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Customer Msgs complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomerTypes" type="CustomerTypes" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Customer Types complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CustomFieldDefinitions" type="CustomFieldDefinitions" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Custom Field Definitions complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Deposits" type="Deposits" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Deposits complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Discounts" type="Discounts" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Discounts complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Employees" type="Employees" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Employees complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Estimates" type="Estimates" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Estimates complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="FixedAssets" type="FixedAssets" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Fixed Assets complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="InventoryAdjustments" type="InventoryAdjustments" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See InventoryAdjustments complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Invoices" type="Invoices" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Invoices complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ItemGroupComponents" type="ItemGroupComponents" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See ItemGroupComponents complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ItemReceipts" type="ItemReceipts" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See ItemReceipts complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Items" type="Items" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Items complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Jobs" type="Jobs" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Jobs complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="JobTypes" type="JobTypes" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Job Types complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="JournalEntries" type="JournalEntries" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See JournalEntries complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="OtherNames" type="OtherNames" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Other Names complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Payments" type="Payments" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Payments complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PaymentMethods" type="PaymentMethods" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Payment Methods complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PayrollItems" type="PayrollItems" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Payroll Items complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PurchaseOrders" type="PurchaseOrders" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See PurchaseOrders complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="RecordCounts" type="RecordCounts" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See RecordCounts complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesOrders" type="SalesOrders" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesOrders complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesReceipts" type="SalesReceipts" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesReceipts complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesReps" type="SalesReps" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesReps complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxes" type="SalesTaxes" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesTaxes complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxCodes" type="SalesTaxCodes" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesTaxCodes complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxGroups" type="SalesTaxGroups" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesTaxGroups complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTaxPaymentChecks" type="SalesTaxPaymentChecks" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesTaxPaymentChecks complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SalesTerms" type="SalesTerms" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See SalesTerms complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ShipMethods" type="ShipMethods" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See ShipMethods complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="TemplateNames" type="TemplateNames" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See TemplateNames complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!--xs:element name="TemplateRefMaps" type="TemplateRefMaps" abstract="false"
+                substitutionGroup="SystemResponse">
+         </xs:element-->
+    <xs:element name="TimeActivities" type="TimeActivities" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See TimeActivities complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="TxnGenerics" type="TxnGenerics" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See TxnGenerics complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="UOMs" type="UOMs" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See UOMs complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorCredits" type="VendorCredits" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See VendorCredits complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorCreditsToApply" type="VendorCreditsToApply" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See VendorCreditsToApply complex Type</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Vendors" type="Vendors" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Vendors complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="VendorTypes" type="VendorTypes" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Vendor Types complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CompaniesMetaData" type="CompaniesMetaData" abstract="false"
+                substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Vendors complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Report" type="Report" abstract="false" substitutionGroup="SystemResponse">
+        <xs:annotation>
+            <xs:documentation>See Reports complexType</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!-- Mobile aggregate request objects -->
+    <xs:element name="ReportCustomersWhoOweMe" type="ReportCustomersWhoOweMe">
+        <xs:annotation>
+            <xs:documentation>Customers who owe me</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportCustomersWhoOweMe">
+        <xs:annotation>
+            <xs:documentation>Customers who owe me. No filter criteria</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="sortByColumnNameAmountDueDate"
+                                minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="sortByColumnNameAmountDueDate">
+        <xs:annotation>
+            <xs:documentation>allowed sort options for</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="AmountDue"/>
+            <xs:enumeration value="DueDate"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="ReportProfitAndLoss" type="ReportProfitAndLoss">
+        <xs:annotation>
+            <xs:documentation>Profit and Loss Statement for a company file</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportProfitAndLoss">
+        <xs:annotation>
+            <xs:documentation>Profit and Loss Statement for a company file</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="ReportBalanceSheet" type="ReportBalanceSheet">
+        <xs:annotation>
+            <xs:documentation>Balance Sheet for company file. Ignores the start transaction date if provided</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportBalanceSheet">
+        <xs:annotation>
+            <xs:documentation>Balance Sheet for a company file</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="ReportSalesSummary" type="ReportSalesSummary">
+        <xs:annotation>
+            <xs:documentation>Sales Summary for company file</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportSalesSummary">
+        <xs:annotation>
+            <xs:documentation>Sales Summary for a company file</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Top customers -->
+    <xs:element name="ReportTopCustomersBySales" type="ReportTopCustomersBySales">
+        <xs:annotation>
+            <xs:documentation>Top customers by sale</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportTopCustomersBySales">
+        <xs:annotation>
+            <xs:documentation>Customers who owe me. No filter criteria</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="sortByColumnNameAmount" minOccurs="0"
+                                maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="sortByColumnNameAmount">
+        <xs:annotation>
+            <xs:documentation>allowed sort options for</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Name"/>
+            <xs:enumeration value="Amount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Account balance query -->
+    <xs:element name="ReportAccountBalances" type="ReportAccountBalances">
+        <xs:annotation>
+            <xs:documentation>Details of accounts and balances</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportAccountBalances">
+        <xs:annotation>
+            <xs:documentation>Balance Sheet Accounts balances. No filter criteria</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="sortByColumnNameAmount" minOccurs="0"
+                                maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- Income break down query -->
+    <xs:element name="ReportIncomeBreakdown" type="ReportIncomeBreakdown">
+        <xs:annotation>
+            <xs:documentation>Income breakdown</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="ReportIncomeBreakdown">
+        <xs:annotation>
+            <xs:documentation>Customers who owe me. No filter criteria</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ReportQueryBase">
+                <xs:sequence>
+                    <xs:element name="SortByColumn" type="sortByColumnNameAmount" minOccurs="0"
+                                maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>sorting order is descending by default.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="DateMacro">
+        <xs:annotation>
+            <xs:documentation>Date macros.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="All"/>
+            <xs:enumeration value="Today"/>
+            <xs:enumeration value="This Week"/>
+            <xs:enumeration value="This Week-to-date"/>
+            <xs:enumeration value="This Month"/>
+            <xs:enumeration value="This Month-to-date"/>
+            <xs:enumeration value="This Fiscal Quarter"/>
+            <xs:enumeration value="This Fiscal Quarter-to-date"/>
+            <xs:enumeration value="This Fiscal Year"/>
+            <xs:enumeration value="This Fiscal Year-to-date"/>
+            <xs:enumeration value="Yesterday"/>
+            <xs:enumeration value="Last Week"/>
+            <xs:enumeration value="Last Week-to-date"/>
+            <xs:enumeration value="Last Month"/>
+            <xs:enumeration value="Last Month-to-date"/>
+            <xs:enumeration value="Last Fiscal Quarter"/>
+            <xs:enumeration value="Last Fiscal Quarter-to-date"/>
+            <xs:enumeration value="Last Fiscal Year"/>
+            <xs:enumeration value="Last Fiscal Year-to-date"/>
+            <xs:enumeration value="Next Week"/>
+            <xs:enumeration value="Next 4 Weeks"/>
+            <xs:enumeration value="Next Month"/>
+            <xs:enumeration value="Next Fiscal Quarter"/>
+            <xs:enumeration value="Next Fiscal Year"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="CdmObjectRef" abstract="true">
+        <xs:sequence>
+            <xs:element name="Id" type="IdType"/>
+            <xs:element name="SyncToken" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="CdmObjectRef" type="CdmObjectRef" abstract="true"/>
+    <xs:complexType name="CustomFieldDefinitionRef">
+        <xs:complexContent>
+            <xs:extension base="CdmObjectRef">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="CustomFieldDefinitionRef" type="CustomFieldDefinitionRef"
+                substitutionGroup="CdmObjectRef"/>
+    <xs:complexType name="InternalCustomField" abstract="true">
+        <xs:annotation>
+            <xs:documentation>IDS CustomField type. Note: DefinitionId and Name are not used</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:restriction base="CustomField">
+                <xs:sequence>
+                    <xs:element name="DefinitionId" type="IdType" fixed="0"/>
+                    <xs:element name="Name" type="xs:string" minOccurs="0" fixed="ids.extension"/>
+                </xs:sequence>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TemplateRef">
+        <xs:annotation>
+            <xs:documentation>QB Template reference, MUST have only QB domain ReferenceId.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="InternalCustomField">
+                <xs:sequence>
+                    <xs:element name="TemplateId">
+                        <xs:complexType>
+                            <xs:simpleContent>
+                                <xs:restriction base="IdType">
+                                    <xs:attribute name="idDomain" type="idDomainEnum" use="required"
+                                                  fixed="QB"/>
+                                </xs:restriction>
+                            </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TemplateName" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,86 @@
+<!--- #include virtual="/weborb/eCatalog/header_ecatalog.asp" --->
+
+<script language="JavaScript" type="text/javascript">
+<!--
+// Version check for the Flash Player that has the ability to start Player Product Install (6.0r65)
+var hasProductInstall = DetectFlashVer(6, 0, 65);
+
+// Version check based upon the values defined in globals
+var hasRequestedVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
+
+
+// Check to see if a player with Flash Product Install is available and the version does not meet the requirements for playback
+if ( hasProductInstall && !hasRequestedVersion ) {
+    // MMdoctitle is the stored document.title value used by the installation process to close the window that started the process
+    // This is necessary in order to close browser windows that are still utilizing the older version of the player after installation has completed
+    // DO NOT MODIFY THE FOLLOWING FOUR LINES
+    // Location visited after installation is complete if installation is required
+    var MMPlayerType = (isIE == true) ? "ActiveX" : "PlugIn";
+    var MMredirectURL = window.location;
+    document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+    var MMdoctitle = document.title;
+
+    AC_FL_RunContent(
+        "src", "playerProductInstall",
+        "width", "980px",
+        "height", "100%",
+        "align", "middle",
+        "id", "eCatalog",
+        "quality", "high",
+        "bgcolor", "#002252",
+        "name", "eCatalog",
+        "allowScriptAccess","sameDomain",
+        "type", "application/x-shockwave-flash",
+        "flashvars", "u=<%=Request.Cookies("UName")%>&p=<%=Request.Cookies("PWord")%>&b=1&a=<%=Request.Cookies("warehouseEnabled")%>",
+        "pluginspage", "http://www.adobe.com/go/getflashplayer"
+    );
+} else if (hasRequestedVersion) {
+    // if we've detected an acceptable version
+    // embed the Flash Content SWF when all tests are passed
+    AC_FL_RunContent(
+            "src", "main",
+            "width", "980px",
+            "height", "100%",
+            "align", "middle",
+            "id", "eCatalog",
+            "quality", "high",
+            "bgcolor", "#002252",
+            "name", "eCatalog",
+            "allowScriptAccess","sameDomain",
+            "type", "application/x-shockwave-flash",
+            "flashvars", "u=<%=Request.Cookies("UName")%>&p=<%=Request.Cookies("PWord")%>&b=1&a=<%=Request.Cookies("warehouseEnabled")%>",
+            "pluginspage", "http://www.adobe.com/go/getflashplayer"
+    );
+  } else {  // flash is too old or we can't detect the plugin
+    var alternateContent = 'Alternate HTML content should be placed here. '
+    + 'This content requires the Adobe Flash Player. '
+    + '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>';
+    document.write(alternateContent);  // insert non-flash content
+  }
+// -->
+</script>
+
+<div id="crumbsCont"><a href="/">Home</a> | <a href="/repsonly/">MyTitus</a> | Warehouse</div>
+
+
+                </div>
+            
+            </div>
+
+            <div id="footer" class="footer">
+                <img src="/images/img_footer.jpg" width="960" height="40" border="0" usemap="#incFooter">
+                <map name="incFooter">
+                    <area shape="rect" coords="20,11,103,30" href="/legal/terms.asp">
+                    <area shape="rect" coords="94,11,147,30" href="/sitemap.asp">
+                    <area shape="rect" coords="173,11,252,30" href="/legal/privacy.asp">
+                    <area shape="rect" coords="732,5,847,35" href="http://www.adobe.com/products/acrobat/readstep2.html" target="_blank">
+                    <area shape="rect" coords="855,5,936,35" href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" target="_blank">
+                </map>
+                <!--div style="width:780px;height:40px;background-image:url(/images/img_footer.jpg);">s</div-->
+            </div>
+
+        </div>
+
+    </body>
+
+</html>

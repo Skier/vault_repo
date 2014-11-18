@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	title="Attachments Edit" 
+	width="370" showCloseButton="true" close="btnCloseClickHandler(event)" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:attachment="com.llsvc.expense.view.attachment.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.InvoiceItem;
+			import mx.managers.PopUpManager;
+			import com.llsvc.registry.MainModel;
+			
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var isReadOnly:Boolean;
+			
+			[Bindable] public var invoiceItem:InvoiceItem;
+			
+            public static function open(parent:DisplayObject, invoiceItem:InvoiceItem, isReadOnly:Boolean = false, modal:Boolean = true):AttachmentsPopup
+            {
+                var popup:AttachmentsPopup = new AttachmentsPopup();
+                
+                popup.invoiceItem = invoiceItem;
+                popup.isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function btnCloseClickHandler(event:*):void 
+			{
+				if (!panelAttachments.isBusy)
+					close();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<attachment:AttachmentsView id="panelAttachments" 
+		isReadOnly="{isReadOnly}"
+		width="100%" height="150" invoiceItem="{invoiceItem}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Close" enabled="{!panelAttachments.isBusy}" click="btnCloseClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

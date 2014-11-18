@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			private function onClick():void 
+			{
+				dispatchEvent(new Event("removeAttachment", true));
+			}
+		]]>
+	</mx:Script>
+	
+    <mx:Button id="btnRemove" 
+    	width="28" height="20" icon="@Embed('assets/icons16/delete.png')" toolTip="Remove attachment"
+    	click="onClick()"/>
+	
+</mx:HBox>

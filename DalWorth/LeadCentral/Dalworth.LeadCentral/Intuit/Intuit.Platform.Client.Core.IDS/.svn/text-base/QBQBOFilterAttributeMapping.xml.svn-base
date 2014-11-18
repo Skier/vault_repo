@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Resources>
+  <Resource Name="Account">
+    <Name>Name</Name>
+    <StartCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <Sort>
+      <AccountName Order="aToz">Name</AccountName>
+    </Sort>
+  </Resource>
+  <Resource Name="Bill">
+    <TransactionIdSet ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">TxnId</TransactionIdSet>
+    <StartCreatedTMS>CreateTime</StartCreatedTMS>
+    <EndCreatedTMS>CreateTime</EndCreatedTMS>
+    <StartModifiedTMS>LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS>LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate>TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <ContactIdSet ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">VendorId</ContactIdSet>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="BillPayment">
+    <TransactionIdSet  ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">TxnId</TransactionIdSet>
+    <StartCreatedTMS >CreateTime</StartCreatedTMS>
+    <EndCreatedTMS >CreateTime</EndCreatedTMS>
+    <StartModifiedTMS >LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS >LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate >TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <APACCOUNTID>APACCOUNTID</APACCOUNTID>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="CashPurchase">
+    <TxnId>TxnId</TxnId>
+    <CreateTime>CreateTime</CreateTime>
+    <LastUpdatedTime>LastUpdatedTime</LastUpdatedTime>
+    <TxnDate>TxnDate</TxnDate>
+    <DocNumber>DocNumber</DocNumber>
+    <AccountId>AccountId</AccountId>
+    <EntityId>EntityId</EntityId>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest or OldestToNewest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="Check">
+    <TransactionIdSet  ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">TxnId</TransactionIdSet>
+    <StartCreatedTMS >CreateTime</StartCreatedTMS>
+    <EndCreatedTMS >CreateTime</EndCreatedTMS>
+    <StartModifiedTMS >LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS >LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate >TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <AccountId>AccountId</AccountId>
+    <EntityId>EntityId</EntityId>
+  </Resource>
+  <Resource Name="CreditCardCharge">
+    <TransactionIdSet  ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">TxnId</TransactionIdSet>
+    <StartCreatedTMS >CreateTime</StartCreatedTMS>
+    <EndCreatedTMS >CreateTime</EndCreatedTMS>
+    <StartModifiedTMS >LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS >LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate >TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <EntityId>EntityId</EntityId>
+  </Resource>
+  <Resource Name="Customer">
+    <DBAName>DBAName</DBAName>
+    <StartCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <FamilyName>FamilyName</FamilyName>
+    <GivenName>GivenName</GivenName>
+    <FirstLastName>Name</FirstLastName>
+    <Sort>
+      <Name Order ="aToz">Name</Name>
+      <DBCreatedTMS  Order ="NewestToOldest">CreatedTime</DBCreatedTMS>
+    </Sort>
+  </Resource>
+  <Resource Name="Employee">
+    <StartCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <FamilyName>FamilyName</FamilyName>
+    <GivenName>GivenName</GivenName>
+    <FirstLastName>Name</FirstLastName>
+    <Sort>
+      <Name Order ="aToz">Name</Name>
+      <DBCreatedTMS  Order ="NewestToOldest">CreatedTime</DBCreatedTMS>
+    </Sort>
+  </Resource>
+  <Resource Name="Estimate">
+    <StartCreatedTMS>CreateTime</StartCreatedTMS>
+    <EndCreatedTMS>CreateTime</EndCreatedTMS>
+    <StartModifiedTMS>LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS>LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate>TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <ContactIdSet ValuePropertyName ="Item1"
+                  PropertyName="Item1ElementName">CustomerId"</ContactIdSet>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="Invoice">
+    <StartCreatedTMS>CreateTime</StartCreatedTMS>
+    <EndCreatedTMS>CreateTime</EndCreatedTMS>
+    <StartModifiedTMS>LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS>LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate>TxnDate</EndTransactionDate>
+    <DocNumber>DocNumber</DocNumber>
+    <ContactIdSet ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">CustomerId</ContactIdSet>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="Item">
+    <StartCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <Name>Name</Name>
+    <Desc>Desc</Desc>
+    <Sort>
+      <Name Order ="aToz">Name</Name>
+      <DBCreatedTMS  Order ="NewestToOldest">CreatedTime</DBCreatedTMS>
+    </Sort>
+  </Resource>
+  <Resource Name="Payment">
+    <StartCreatedTMS>CreateTime</StartCreatedTMS>
+    <EndCreatedTMS>CreateTime</EndCreatedTMS>
+    <StartModifiedTMS>LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS>LastUpdatedTime</EndModifiedTMS>
+    <ContactIdSet ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">CustomerId</ContactIdSet>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="PaymentMethod">
+    <StartCreatedTMS ValuePropertyName ="Items"
+                      PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <Name>Name</Name>
+  </Resource>
+  <Resource Name="SalesReceipt">
+    <StartCreatedTMS>CreateTime</StartCreatedTMS>
+    <EndCreatedTMS>CreateTime</EndCreatedTMS>
+    <StartModifiedTMS>LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS>LastUpdatedTime</EndModifiedTMS>
+    <StartTransactionDate>TxnDate</StartTransactionDate>
+    <EndTransactionDate>TxnDate</EndTransactionDate>
+    <ContactIdSet ValuePropertyName ="Item1"
+                     PropertyName="Item1ElementName">CustomerId</ContactIdSet>
+    <Sort>
+      <TransactionDate Order ="NewestToOldest">TxnDate</TransactionDate>
+    </Sort>
+  </Resource>
+  <Resource Name="Term">
+    <StartCreatedTMS ValuePropertyName ="Items"
+                    PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <Name>Name</Name>
+  </Resource>
+  <Resource Name="Vendor">
+    <DBAName>DBAName</DBAName>
+    <StartCreatedTMS ValuePropertyName ="Items"
+                      PropertyName="ItemsElementName">CreateTime</StartCreatedTMS>
+    <EndCreatedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">CreateTime</EndCreatedTMS>
+    <StartModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</StartModifiedTMS>
+    <EndModifiedTMS ValuePropertyName ="Items"
+                     PropertyName="ItemsElementName">LastUpdatedTime</EndModifiedTMS>
+    <FamilyName>FamilyName</FamilyName>
+    <AcctNum>AcctNum</AcctNum>
+    <FirstLastName>Name</FirstLastName>
+    <Sort>
+      <Name Order ="aToz">Name</Name>
+      <DBCreatedTMS  Order ="NewestToOldest">CreatedTime</DBCreatedTMS>
+    </Sort>
+  </Resource>
+</Resources>

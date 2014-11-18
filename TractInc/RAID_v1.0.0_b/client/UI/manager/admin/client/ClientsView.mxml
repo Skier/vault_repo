@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalGap="5">
+    
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import App.Domain.AssetAssignment;
+            import weborb.data.ActiveCollection;
+            import UI.manager.admin.AdminController;
+            import App.Domain.SubAfe;
+            import App.Domain.Afe;
+            import App.Domain.Client;
+            import App.Domain.ActiveRecords;
+            import UI.manager.ManagerController;
+            
+            public var controller:ClientsController;
+            
+            public function set parentController(parent:AdminController):void 
+            {
+                controller = new ClientsController(this as ClientsView, parent);
+            }
+            
+            public function getClientById(id:int):Client 
+            {
+            	return controller.getClientById(id);
+            }
+            
+            private function setAssignmentLabels(item:AssetAssignment, column:DataGridColumn):String 
+            {
+            	if (column.dataField == "name") {
+            		return item.RelatedAsset.Name;
+            	} else {
+            		return "";
+            	}
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="350" backgroundColor="#eeeeee"
+        borderColor="#999999" borderStyle="solid"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        >
+        <mx:HBox width="100%">
+            <mx:Label text="Client:" fontWeight="bold"/>
+            <mx:Spacer width="100%"/>
+            <mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+                visible="{dgClients.dataProvider != null &amp;&amp; ActiveCollection(dgClients.dataProvider).IsLoading}"/>
+        </mx:HBox>
+        <mx:DataGrid id="dgClients" 
+            width="100%" height="100%" minWidth="300"
+            doubleClickEnabled="true" itemDoubleClick="controller.onClickEditClient()"
+            dataProvider="{ActiveRecords.Client.findByDeleted(false)}"
+            >
+            <mx:columns>
+                <mx:DataGridColumn headerText="Client Name" dataField="ClientName" width="150"/>
+                <mx:DataGridColumn headerText="Client Address" dataField="ClientAddress"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <mx:Button label="New" click="controller.onClickNewClient()"/>
+            <mx:Button label="Edit" click="controller.onClickEditClient()" enabled="{dgClients.selectedItem != null}"/>
+            <mx:Button label="Delete" click="controller.onClickDeleteClient()" enabled="{dgClients.selectedItem != null}"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:HDividedBox width="100%" height="100%" verticalGap="5" backgroundColor="#eeeeee"
+        borderColor="#999999" borderStyle="solid"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        >
+        <mx:VBox width="40%" height="100%">
+            <mx:HBox width="100%">
+                <mx:Label text="Related AFEs:" fontWeight="bold"/>
+                <mx:Spacer width="100%"/>
+                <mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+                    visible="{dgAfes.dataProvider != null &amp;&amp; ActiveCollection(dgAfes.dataProvider).IsLoading}"/>
+            </mx:HBox>
+            <mx:DataGrid id="dgAfes" 
+                width="100%" height="100%" minWidth="300"
+	            doubleClickEnabled="true" itemDoubleClick="controller.onClickEditAfe()"
+                dataProvider="{dgClients.selectedItem == null ? new ActiveCollection() : ActiveRecords.Afe.findByClientIdAndDeleted(dgClients.selectedItem.ClientId, false)}"
+                >
+                <mx:columns>
+                    <mx:DataGridColumn headerText="Afe Code" dataField="AFE" width="150"/>
+                    <mx:DataGridColumn headerText="Afe Name" dataField="AFEName"/>
+                    <mx:DataGridColumn headerText="Status" dataField="AFEStatus"/>
+                </mx:columns>
+            </mx:DataGrid>
+            <mx:HBox width="100%" horizontalAlign="right">
+                <mx:Button label="New" click="controller.onClickNewAfe()" enabled="{dgClients.selectedItem != null}"/>
+                <mx:Button label="Edit" click="controller.onClickEditAfe()" enabled="{dgAfes.selectedItem != null}"/>
+                <mx:Button label="Delete" click="controller.onClickDeleteAfe()" enabled="{dgAfes.selectedItem != null}"/>
+            </mx:HBox>
+        </mx:VBox>
+        <mx:HBox width="60%" height="100%">
+	        <mx:VBox width="60%" height="100%">
+	            <mx:HBox width="100%">
+	                <mx:Label text="Related projects:" fontWeight="bold"/>
+	                <mx:Spacer width="100%"/>
+	                <mx:Label text="loading. please wait..." fontWeight="bold" color="#cc3300"
+	                    visible="{dgSubAfes.dataProvider != null &amp;&amp; ActiveCollection(dgSubAfes.dataProvider).IsLoading}"/>
+	            </mx:HBox>
+	            <mx:DataGrid id="dgSubAfes" 
+	                width="100%" height="100%" minWidth="300"
+		            doubleClickEnabled="true" itemDoubleClick="controller.onClickEditSubAfe()"
+	                dataProvider="{dgAfes.selectedItem == null ? new ActiveCollection() : ActiveRecords.SubAfe.findByAFEAndDeleted(dgAfes.selectedItem.AFE, false)}"
+	                >
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText="Project Name" dataField="SubAFE"/>
+	                    <mx:DataGridColumn headerText="Short Name" dataField="ShortName"/>
+	                    <mx:DataGridColumn headerText="Status" dataField="SubAFEStatus"/>
+	                </mx:columns>
+	            </mx:DataGrid>
+	            <mx:HBox width="100%" horizontalAlign="right">
+	                <mx:Button label="New" click="controller.onClickNewSubAfe()" enabled="{dgClients.selectedItem != null &amp;&amp; dgAfes.selectedItem != null}"/>
+	                <mx:Button label="Edit" click="controller.onClickEditSubAfe()" enabled="{dgSubAfes.selectedItem != null}"/>
+	                <mx:Button label="Delete" click="controller.onClickDeleteSubAfe()" enabled="{dgSubAfes.selectedItem != null}"/>
+	            </mx:HBox>
+	        </mx:VBox>
+            <mx:VBox width="40%" height="100%">
+            	<mx:Label text="Assigned to project:" fontWeight="bold"/>
+	            <mx:DataGrid id="dgAssignments" 
+	                width="100%" minWidth="150" height="{dgSubAfes.height}"
+	                dataProvider="{dgSubAfes.selectedItem == null ? new ActiveCollection() : ActiveRecords.AssetAssignment.findByAFEAndSubAFEAndDeleted(dgSubAfes.selectedItem.AFE, dgSubAfes.selectedItem.SubAFE, false)}"
+	                >
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText="Asset Name" dataField="name" labelFunction="setAssignmentLabels"/>
+	                </mx:columns>
+            	</mx:DataGrid>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:HDividedBox>
+
+</mx:VDividedBox>

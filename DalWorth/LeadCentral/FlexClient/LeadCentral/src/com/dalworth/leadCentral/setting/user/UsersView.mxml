@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:help="com.dalworth.leadCentral.help.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.events.UserEvent;
+			import com.dalworth.leadCentral.domain.User;
+			import mx.core.UIComponent;
+			import mx.core.Application;
+			
+            [Embed(source="/assets/icons24/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+			[Bindable]
+			private var model:UsersModel;
+			private var controller:UsersController;
+			
+			public function init():void 
+			{
+				controller.initModel();
+			}
+			
+			private function onInit():void 
+			{
+				model = UsersModel.getInstance();
+				controller = new UsersController(this as UIComponent);
+			}
+			
+			private function openUser(user:User):void 
+			{
+				var popup:UserEditPopup = UserEditPopup.open(Application.application as DisplayObject, user);
+				popup.addEventListener(UserEvent.USER_SAVED, 
+					function (event:UserEvent):void 
+					{
+						var newUser:User = event.user;
+						if (!model.users.contains(newUser))
+							model.users.addItem(newUser);
+						var idx:int = model.users.getItemIndex(newUser);
+						dgUsers.selectedIndex = idx;
+						dgUsers.scrollToIndex(idx);
+					});
+			}
+			
+			private function onUserDoubleClick():void 
+			{
+				var user:User = dgUsers.selectedItem as User;
+				openUser(user);
+			}
+			
+			private function onCreateNew():void 
+			{
+				var user:User = new User();
+				user.IsActive = true;
+				openUser(user);
+			}
+			
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=149";
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="viewUsersList" width="100%" height="100%" backgroundColor="#FFFFFF" verticalGap="0">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Manage Users" fontSize="24" color="#666666"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button  label="Create New" height="35" fontSize="14" click="onCreateNew()" icon="{imgPlus}"/>
+		</mx:HBox> 
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<mx:DataGrid id="dgUsers" 
+			width="100%" height="100%" dataProvider="{model.users}"
+			doubleClickEnabled="true" itemDoubleClick="onUserDoubleClick()">
+			<mx:columns>
+				<mx:DataGridColumn headerText="" 
+					itemRenderer="com.dalworth.leadCentral.setting.user.UserRoleIR" width="24" minWidth="24"/>
+				<mx:DataGridColumn headerText="First Name" dataField="FirstName"/>
+				<mx:DataGridColumn headerText="Last Name" dataField="LastName"/>
+				<mx:DataGridColumn headerText="Email" dataField="Email"/>
+				<mx:DataGridColumn headerText="Role" dataField="RoleName"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	title="Select Client and Invoice period"
+	initialize="onInit()"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.PeriodDataObject;
+			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEvent;
+			
+			private var _isLoaded:Boolean = false;
+			
+			[Bindable] public var clients:ArrayCollection = new ArrayCollection();
+			[Bindable] public var periods:ArrayCollection = new ArrayCollection();
+			[Bindable] public var assets:ArrayCollection = new ArrayCollection();
+			
+			private function onInit():void {
+			}
+			
+			private function initPeriods():void 
+			{
+				onPeriodChange();
+				
+				var year:int = Number(txtYear.text);
+				
+				periods.removeAll();
+
+				if (0 == year) {
+					return;
+				}
+				
+				periods.addItem(new PeriodDataObject(year, 01, true));
+				periods.addItem(new PeriodDataObject(year, 01, false));
+				periods.addItem(new PeriodDataObject(year, 02, true));
+				periods.addItem(new PeriodDataObject(year, 02, false));
+				periods.addItem(new PeriodDataObject(year, 03, true));
+				periods.addItem(new PeriodDataObject(year, 03, false));
+				periods.addItem(new PeriodDataObject(year, 04, true));
+				periods.addItem(new PeriodDataObject(year, 04, false));
+				periods.addItem(new PeriodDataObject(year, 05, true));
+				periods.addItem(new PeriodDataObject(year, 05, false));
+				periods.addItem(new PeriodDataObject(year, 06, true));
+				periods.addItem(new PeriodDataObject(year, 06, false));
+				periods.addItem(new PeriodDataObject(year, 07, true));
+				periods.addItem(new PeriodDataObject(year, 07, false));
+				periods.addItem(new PeriodDataObject(year, 08, true));
+				periods.addItem(new PeriodDataObject(year, 08, false));
+				periods.addItem(new PeriodDataObject(year, 09, true));
+				periods.addItem(new PeriodDataObject(year, 09, false));
+				periods.addItem(new PeriodDataObject(year, 10, true));
+				periods.addItem(new PeriodDataObject(year, 10, false));
+				periods.addItem(new PeriodDataObject(year, 11, true));
+				periods.addItem(new PeriodDataObject(year, 11, false));
+				periods.addItem(new PeriodDataObject(year, 12, true));
+				periods.addItem(new PeriodDataObject(year, 12, false));
+				
+				if ((new Date()).fullYear == year) {
+					selectCurrentPeriod();
+				}
+			}
+			
+			private function onCreationComplete():void 
+			{
+				initPeriods();
+				
+				selectCurrentPeriod();
+			}
+			
+			private function selectCurrentPeriod():void {
+				var now:Date = new Date();
+				var index:int = (now.date > 15) ? (now.month * 2 + 1) : (now.month * 2);
+				
+				if (index >= 0 && index < 23) {
+					cbPeriod.selectedIndex = index;
+				}
+			}
+			
+			private function onPeriodChange():void {
+				cbByAsset.selected = false;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%">
+	
+		<mx:HBox
+			width="100%"
+			horizontalAlign="right"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+			<mx:Label text="Year:"/>
+			<mx:TextInput
+				id="txtYear"
+				width="80"
+				text="{(new Date()).fullYear.toString()}"
+				change="initPeriods()" />
+		</mx:HBox>
+		
+		<mx:HRule width="100%" height="1"/>
+		
+		<mx:HBox width="100%" height="100%"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+			>
+			<mx:VBox>
+				<mx:Label
+					text="Select Client:"/>
+				<mx:ComboBox
+					id="cbClient"
+					width="150"
+					dataProvider="{clients}"
+					labelField="ClientName"/>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:Label
+					text="Select Period:"/>
+				<mx:ComboBox
+					id="cbPeriod"
+					width="150"
+					dataProvider="{periods}"
+					labelField="label"
+					change="onPeriodChange()"/>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" height="100%"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+			
+			<mx:CheckBox
+				id="cbByAsset"
+				label="For specified Asset"/>
+			
+			<mx:HBox
+				width="100%"
+				includeInLayout="{cbByAsset.selected}"
+				visible="{cbByAsset.selected}"
+				>
+				<mx:Label
+					text="Select Asset:"/>
+				<mx:ComboBox
+					id="cbAsset"
+					width="100%"
+					dataProvider="{assets}"
+					labelField="BusinessName"/>
+			</mx:HBox>
+
+		</mx:VBox>
+		
+	</mx:VBox>
+	
+	<mx:ControlBar width="100%" horizontalAlign="center">
+		<mx:Button
+			id="Submit"
+			label="Ok" 
+			enabled="{cbClient.selectedItem != null &amp;&amp; cbPeriod.selectedItem != null &amp;&amp; cbAsset.selectedItem != null}"/>
+		<mx:Button id="Cancel" label="Cancel"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

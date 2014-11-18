@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<mx:Panel 
+    	xmlns:mx="http://www.adobe.com/2006/mxml"
+    	xmlns:view="com.tmnc.mail.view.*" width="100%"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+		verticalCenter="0" horizontalCenter="0">
+		
+    <mx:Script>
+        <![CDATA[
+            import com.tmnc.mail.control.events.AccountEvent;
+        	import com.tmnc.mail.model.MailBoxModel;
+        	import com.tmnc.mail.business.*;                
+        
+            import mx.managers.PopUpManager;
+            import mx.events.CloseEvent;
+        	import mx.events.ValidationResultEvent;
+        	import mx.validators.ValidationResult;
+            import mx.core.*;
+            import mx.controls.*;
+            	    
+            private var _accountInfo:AccountInfo;
+            private var _smtpInfo:ServerSettingsInfo;
+            private var _pop3Info:ServerSettingsInfo;
+                                    
+            public function setData(accountInfo:AccountInfo, 
+                pop3Settings:ServerSettingsInfo, smtpSettings:ServerSettingsInfo):void
+            {
+                _accountInfo = accountInfo;
+                _smtpInfo = smtpSettings;
+                _pop3Info = pop3Settings;
+                
+                userEmail.text = _accountInfo.Email;
+                smtpServer.text = _smtpInfo.Host;
+                smtpPort.text = _smtpInfo.Port.toString();
+
+                if (_smtpInfo.ConnectionType == ServerSettingsInfo.SECURE_TLS_CONNECTION_TYPE)
+                    smtpConnectionType.selectedIndex = 1;
+                    
+                smtpUserName.text = _smtpInfo.UserName;
+                smtpPassword.text = _smtpInfo.Password;
+
+                pop3Server.text = _pop3Info.Host;
+                pop3Port.text = _pop3Info.Port.toString();
+                
+                if (_pop3Info.ConnectionType == ServerSettingsInfo.SECURE_TLS_CONNECTION_TYPE)
+                    pop3ConnectionType.selectedIndex = 1;
+                
+                pop3UserName.text = _pop3Info.UserName;
+                pop3Password.text = _pop3Info.Password;
+            }
+            
+            public function onOk():void {
+				if (!IsFormValid()){
+					Alert.show("You are not filled required fields.");
+					return;
+				}
+				                
+            	var accountInfo:AccountInfo = new AccountInfo();
+            	var smtpSettings:ServerSettingsInfo = new ServerSettingsInfo();
+            	var pop3Settings:ServerSettingsInfo = new ServerSettingsInfo();
+				
+				if (_accountInfo){
+				    accountInfo.Id = this._accountInfo.Id;
+				    smtpSettings.Id = this._smtpInfo.Id;
+				    pop3Settings.Id = this._pop3Info.Id;
+				} 
+
+            	accountInfo.Email = userEmail.text;				
+
+            	pop3Settings.Host = pop3Server.text;
+            	pop3Settings.Port = int(pop3Port.text);
+            	pop3Settings.ConnectionType = (pop3ConnectionType.selectedLabel == "Regular")
+            	    ? ServerSettingsInfo.REGULAR_CONNECTION_TYPE
+            	    : ServerSettingsInfo.SECURE_TLS_CONNECTION_TYPE;
+            	
+            	pop3Settings.UserName = pop3UserName.text;
+            	pop3Settings.Password = pop3Password.text;
+            	
+            	smtpSettings.Host = smtpServer.text;
+            	smtpSettings.Port = int(smtpPort.text);
+            	smtpSettings.ConnectionType = (smtpConnectionType.selectedLabel == "Regular")
+            	    ? ServerSettingsInfo.REGULAR_CONNECTION_TYPE
+            	    : ServerSettingsInfo.SECURE_TLS_CONNECTION_TYPE;
+            	
+            	smtpSettings.UserName = smtpUserName.text;
+            	smtpSettings.Password = smtpPassword.text;
+            	            	
+            	var eventType:String = (accountInfo.Id) 
+            	    ? AccountEvent.EVENT_UPDATE
+            	    : AccountEvent.EVENT_REGISTER;
+            	    
+		        Application.application.dispatchEvent(
+		            new AccountEvent(eventType, accountInfo, pop3Settings, smtpSettings, this ));
+            }
+
+			public function onCancel():void{
+                PopUpManager.removePopUp(this);			    
+			}
+						
+			private function IsFormValid():Boolean {
+				if ((userEmailV.validate().type   == ValidationResultEvent.INVALID) ||
+				   (smtpServerV.validate().type   == ValidationResultEvent.INVALID) ||
+				   (smtpPortV.validate().type 	  == ValidationResultEvent.INVALID) ||
+				   (popServerV.validate().type 	  == ValidationResultEvent.INVALID) ||
+				   (popPortV.validate().type 	  == ValidationResultEvent.INVALID) ||
+				   (pop3UserNameV.validate().type == ValidationResultEvent.INVALID) ||
+				   (pop3PasswordV.validate().type == ValidationResultEvent.INVALID)) 
+			    {
+					return false;				   	
+				}
+				
+				return true;
+			}
+						
+        ]]>
+    </mx:Script>  
+
+	<mx:StringValidator id="userEmailV" source="{userEmail}" property="text"/>
+	<mx:StringValidator id="smtpServerV" source="{smtpServer}" property="text"/>
+	<mx:StringValidator id="smtpPortV" source="{smtpPort}" property="text"/>
+	<mx:StringValidator id="popServerV" source="{pop3Server}" property="text"/>
+	<mx:StringValidator id="popPortV" source="{pop3Port}" property="text"/>
+	<mx:StringValidator id="pop3UserNameV" source="{pop3UserName}" property="text"/>
+	<mx:StringValidator id="pop3PasswordV" source="{pop3Password}" property="text"/>
+					
+		<mx:Form>
+	        <mx:FormItem label="User Email:" required="true" width="100%">
+	            <mx:TextInput id="userEmail" width="100%"/>
+	        </mx:FormItem>
+	        
+	        <mx:FormHeading label="Send Mail"/>
+	        <mx:FormItem label="SMTP Server:" required="true" width="100%">
+	             <mx:TextInput id="smtpServer" width="100%"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="SMTP Port:" required="true" width="100%">
+	             <mx:TextInput id="smtpPort" text="25" width="50"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="Connection :" width="100%">
+	            <mx:ComboBox id="smtpConnectionType" selectedIndex="0" width="100%">
+                    <mx:ArrayCollection>
+                        <mx:String>Regular</mx:String>
+                        <mx:String>Secure to dedicated port (TLS)</mx:String>
+                    </mx:ArrayCollection>
+	            </mx:ComboBox>
+	        </mx:FormItem>
+	        <mx:FormItem label="User Name:" width="100%">
+	             <mx:TextInput id="smtpUserName" width="100%"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="Password:" width="100%">
+	             <mx:TextInput id="smtpPassword" displayAsPassword="true" width="100%"/>
+	        </mx:FormItem>
+
+	        <mx:FormHeading label="Receive Mail"/>
+	        <mx:FormItem label="POP3 Server:" required="true" width="100%">
+	             <mx:TextInput id="pop3Server" width="100%"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="POP3 Port:" required="true">
+	             <mx:TextInput id="pop3Port" text="110"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="Connection :" width="100%">
+	            <mx:ComboBox id="pop3ConnectionType" selectedIndex="0" width="100%">
+                    <mx:ArrayCollection>
+                        <mx:String>Regular</mx:String>
+                        <mx:String>Secure to dedicated port (TLS)</mx:String>
+                    </mx:ArrayCollection>
+	            </mx:ComboBox>
+	        </mx:FormItem>
+	        
+	        <mx:FormItem label="User Name:" required="true" width="100%">
+	             <mx:TextInput id="pop3UserName" width="100%"/>
+	        </mx:FormItem>
+	        <mx:FormItem label="Password:" required="true" width="100%">
+	             <mx:TextInput id="pop3Password" displayAsPassword="true" width="100%"/>
+	        </mx:FormItem>
+			
+		</mx:Form>
+	
+	    <mx:ControlBar>
+	        <mx:Spacer width="100%"/>
+	        <mx:Button label="Ok" id="okButton" click="onOk()"/>	        
+	        <mx:Button label="Cancel" id="cancelButton" click="onCancel()"/>
+	    </mx:ControlBar>
+		
+</mx:Panel>

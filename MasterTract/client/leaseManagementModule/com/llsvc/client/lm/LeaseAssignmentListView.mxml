@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.controls.Alert;
+        	
+        	import com.llsvc.domain.LeaseAssignment;
+        	
+        	[Bindable]
+        	public var controller:LeaseManagerController;
+        	
+            private function getAssignorList(item:LeaseAssignment, column:DataGridColumn):String {
+                return "Assignor: to do";
+            }
+            
+            private function getAssigneeList(item:LeaseAssignment, column:DataGridColumn):String {
+                return "Assignee: to do";
+            }
+            
+            private function getStateName(item:LeaseAssignment, column:DataGridColumn):String {
+//                return item.document.state.name;
+				return "";
+            }
+            
+            private function getCountyName(item:LeaseAssignment, column:DataGridColumn):String {
+//                return item.document.county.name;
+                return "";
+            }
+            
+            private function getDocNo(item:LeaseAssignment, column:DataGridColumn):String {
+//                return item.document.docNo;
+				return "";
+            }
+            
+            private function getDocDate(item:LeaseAssignment, column:DataGridColumn):String {
+//                return item.document.docDate.toString();
+				return "";
+            }
+            
+            private function onGridDoubleClick():void{
+/*            	
+                var lease:Lease = this.dgLeaseList.selectedItem as Lease;
+                if ( null != lease ){
+                    controller.doEditLease(lease);
+                }
+*/                
+            } 
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox height="100%" width="100%">
+        <mx:Button label="Add Assignment" click="{controller.onAddAssignmentClick()}"/>
+        <mx:DataGrid id="dgLeaseAssignmentList" 
+            left="10" 
+            right="10" 
+            top="0" 
+            bottom="10" 
+            width="100%" 
+            height="100%" 
+            doubleClick="onGridDoubleClick()" 
+            doubleClickEnabled="true"
+            >
+            <mx:columns>
+                <mx:DataGridColumn id="dgcAssignor" headerText="Assignor" labelFunction="getAssignorList" width="130" resizable="false"/>
+                <mx:DataGridColumn id="dgcAssignee" headerText="Assignee" labelFunction="getAssigneeList" width="130" resizable="false"/>
+                <mx:DataGridColumn id="dgcState" headerText="State" labelFunction="getStateName" width="110" resizable="false"/>
+                <mx:DataGridColumn id="dgcCounty" headerText="County" labelFunction="getCountyName" width="158" resizable="false"/>
+                <mx:DataGridColumn id="dgcDocNumber" headerText="Document No" labelFunction="getDocNo" width="88" resizable="false"/>
+                <mx:DataGridColumn id="dgcDate" headerText="Lease Date" labelFunction="getDocDate"/>
+                <mx:DataGridColumn id="dgcRoyalty" headerText="Royalty" dataField="royalty" width="68" resizable="false"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+    
+</mx:Canvas>

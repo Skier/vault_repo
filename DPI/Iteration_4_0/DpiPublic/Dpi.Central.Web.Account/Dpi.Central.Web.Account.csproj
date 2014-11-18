@@ -1,0 +1,889 @@
+﻿<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Web"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{E210D673-88F9-4DA9-B05E-15AC04899257}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "Dpi.Central.Web.Account"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "Dpi.Central.Web.Account"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "BusComp"
+                    Project = "{39E1C1EA-9DC4-467B-BE60-BF9B9DD36AA1}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "ClientComp"
+                    Project = "{DE82C6F7-A112-448D-8A26-3CECE5C75E95}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "DPIComp"
+                    Project = "{AAE61D0E-3697-4BB6-B5C9-2E117FB7E6F2}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Interfaces"
+                    Project = "{21A6A10E-ACE2-4570-ADE9-E389DA94587C}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Services"
+                    Project = "{690BD868-E152-4B04-8B48-24F85398C45B}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Drawing.Design"
+                    AssemblyName = "System.Drawing.Design"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.Design.dll"
+                />
+                <Reference
+                    Name = "System.Design"
+                    AssemblyName = "System.Design"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Design.dll"
+                />
+                <Reference
+                    Name = "Dpi.Central.Web.Common"
+                    Project = "{C03B6E2A-9872-45C5-92DE-7A2F3638081A}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BaseAccountPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BaseImagedAccountPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BaseLoginPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Global.asax"
+                    SubType = "Component"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Global.asax.cs"
+                    DependentUpon = "Global.asax"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Global.asax.resx"
+                    DependentUpon = "Global.asax.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "password_reminder.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "password_reminder.aspx.cs"
+                    DependentUpon = "password_reminder.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "password_reminder.aspx.resx"
+                    DependentUpon = "password_reminder.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "public_login.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "public_login.aspx.cs"
+                    DependentUpon = "public_login.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "public_login.aspx.resx"
+                    DependentUpon = "public_login.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "signup.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "signup.aspx.cs"
+                    DependentUpon = "signup.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "signup.aspx.resx"
+                    DependentUpon = "signup.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "terms_and_conditions.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "terms_and_conditions.aspx.cs"
+                    DependentUpon = "terms_and_conditions.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "terms_and_conditions.aspx.resx"
+                    DependentUpon = "terms_and_conditions.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Web.config"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\account_settings.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\account_settings.aspx.cs"
+                    DependentUpon = "account_settings.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\account_settings.aspx.resx"
+                    DependentUpon = "account_settings.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\change_password.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\change_password.aspx.cs"
+                    DependentUpon = "change_password.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\change_password.aspx.resx"
+                    DependentUpon = "change_password.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\login.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\login.aspx.cs"
+                    DependentUpon = "login.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\login.aspx.resx"
+                    DependentUpon = "login.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\order_status.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\order_status.aspx.cs"
+                    DependentUpon = "order_status.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\order_status.aspx.resx"
+                    DependentUpon = "order_status.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment_forecast.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment_forecast.aspx.cs"
+                    DependentUpon = "payment_forecast.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment_forecast.aspx.resx"
+                    DependentUpon = "payment_forecast.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\summary.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\summary.aspx.cs"
+                    DependentUpon = "summary.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\summary.aspx.resx"
+                    DependentUpon = "summary.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\tabs.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\tabs.ascx.cs"
+                    DependentUpon = "tabs.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\tabs.ascx.resx"
+                    DependentUpon = "tabs.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\Web.config"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\account_info.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\account_info.ascx.cs"
+                    DependentUpon = "account_info.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\account_info.ascx.resx"
+                    DependentUpon = "account_info.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\BasePaymentPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\BaseRecurringPaymentPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\cc_info.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\cc_info.ascx.cs"
+                    DependentUpon = "cc_info.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\cc_info.ascx.resx"
+                    DependentUpon = "cc_info.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\cc_payment.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\cc_payment.aspx.cs"
+                    DependentUpon = "cc_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\cc_payment.aspx.resx"
+                    DependentUpon = "cc_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\check_info.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\check_info.ascx.cs"
+                    DependentUpon = "check_info.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\check_info.ascx.resx"
+                    DependentUpon = "check_info.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\check_payment.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\check_payment.aspx.cs"
+                    DependentUpon = "check_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\check_payment.aspx.resx"
+                    DependentUpon = "check_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\payment_history.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\payment_history.aspx.cs"
+                    DependentUpon = "payment_history.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\payment_history.aspx.resx"
+                    DependentUpon = "payment_history.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\payment_selection.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\payment_selection.aspx.cs"
+                    DependentUpon = "payment_selection.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\payment_selection.aspx.resx"
+                    DependentUpon = "payment_selection.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\promise_to_pay.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\promise_to_pay.aspx.cs"
+                    DependentUpon = "promise_to_pay.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\promise_to_pay.aspx.resx"
+                    DependentUpon = "promise_to_pay.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\rec_cc_payment.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\rec_cc_payment.aspx.cs"
+                    DependentUpon = "rec_cc_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\rec_cc_payment.aspx.resx"
+                    DependentUpon = "rec_cc_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\rec_check_payment.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\rec_check_payment.aspx.cs"
+                    DependentUpon = "rec_check_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\rec_check_payment.aspx.resx"
+                    DependentUpon = "rec_check_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\rec_deactivate_confirmation.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\rec_deactivate_confirmation.aspx.cs"
+                    DependentUpon = "rec_deactivate_confirmation.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\rec_deactivate_confirmation.aspx.resx"
+                    DependentUpon = "rec_deactivate_confirmation.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\rec_payments.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\rec_payments.aspx.cs"
+                    DependentUpon = "rec_payments.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\rec_payments.aspx.resx"
+                    DependentUpon = "rec_payments.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account\payment\reciept.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account\payment\reciept.aspx.cs"
+                    DependentUpon = "reciept.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account\payment\reciept.aspx.resx"
+                    DependentUpon = "reciept.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.ascx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.ascx.cs"
+                    DependentUpon = "account_summary.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.ascx.resx"
+                    DependentUpon = "account_summary.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.aspx.cs"
+                    DependentUpon = "account_summary.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\account_summary.aspx.resx"
+                    DependentUpon = "account_summary.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\account_summary_print_version.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\account_summary_print_version.aspx.cs"
+                    DependentUpon = "account_summary_print_version.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\account_summary_print_version.aspx.resx"
+                    DependentUpon = "account_summary_print_version.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\AccountSetupInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\AccountSetupModel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\AccountSetupProcessMapProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\address_info.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\address_info.ascx.cs"
+                    DependentUpon = "address_info.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\address_info.ascx.resx"
+                    DependentUpon = "address_info.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\AjaxZip.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\BaseAccountSetupPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\cc_payment.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\cc_payment.aspx.cs"
+                    DependentUpon = "cc_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\cc_payment.aspx.resx"
+                    DependentUpon = "cc_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\check_payment.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\check_payment.aspx.cs"
+                    DependentUpon = "check_payment.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\check_payment.aspx.resx"
+                    DependentUpon = "check_payment.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\FeaturesMatrix31.txt"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\FeaturesTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\Lifeline Application.pdf"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "account_setup\order_summary.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\order_summary.aspx.cs"
+                    DependentUpon = "order_summary.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\order_summary.aspx.resx"
+                    DependentUpon = "order_summary.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\package_details.ascx"
+                    SubType = "UserControl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\package_details.ascx.cs"
+                    DependentUpon = "package_details.ascx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\package_details.ascx.resx"
+                    DependentUpon = "package_details.ascx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\ppd_explanation.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\ppd_explanation.aspx.cs"
+                    DependentUpon = "ppd_explanation.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\ppd_explanation.aspx.resx"
+                    DependentUpon = "ppd_explanation.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\ProductsTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\select_package.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\select_package.aspx.cs"
+                    DependentUpon = "select_package.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\select_package.aspx.resx"
+                    DependentUpon = "select_package.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\select_provider.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\select_provider.aspx.cs"
+                    DependentUpon = "select_provider.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\select_provider.aspx.resx"
+                    DependentUpon = "select_provider.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\select_services.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\select_services.aspx.cs"
+                    DependentUpon = "select_services.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\select_services.aspx.resx"
+                    DependentUpon = "select_services.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\select_services.js"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\select_services_request_processor.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\select_services_request_processor.aspx.cs"
+                    DependentUpon = "select_services_request_processor.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\select_services_request_processor.aspx.resx"
+                    DependentUpon = "select_services_request_processor.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\service_address.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\service_address.aspx.cs"
+                    DependentUpon = "service_address.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\service_address.aspx.resx"
+                    DependentUpon = "service_address.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\ServicePackageInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\tpv_agreement.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\tpv_agreement.aspx.cs"
+                    DependentUpon = "tpv_agreement.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\tpv_agreement.aspx.resx"
+                    DependentUpon = "tpv_agreement.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\tpv_disagreement.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\tpv_disagreement.aspx.cs"
+                    DependentUpon = "tpv_disagreement.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\tpv_disagreement.aspx.resx"
+                    DependentUpon = "tpv_disagreement.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_setup\zip_request_processor.aspx"
+                    SubType = "Form"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_setup\zip_request_processor.aspx.cs"
+                    DependentUpon = "zip_request_processor.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_setup\zip_request_processor.aspx.resx"
+                    DependentUpon = "zip_request_processor.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

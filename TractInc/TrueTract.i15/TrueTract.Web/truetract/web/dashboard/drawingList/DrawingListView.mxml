@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    label="Drawings ({(drawingsList != null) ? drawingsList.length : 0})" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:dashboard="truetract.web.dashboard.*">
+
+    <mx:Metadata>
+        [Event(name="openSelectedItem", type="flash.events.Event")]
+        [Event(name="applyFilter", type="mx.events.DynamicEvent")]
+        [Event(name="resetFilter", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.events.DynamicEvent;
+            import mx.controls.Alert;
+            import mx.collections.ArrayCollection;
+            
+            [Bindable] public var drawingsList:ArrayCollection;
+            
+        ]]>
+    </mx:Script>
+
+    <dashboard:DashboardController id="dashboardController"/>
+
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <components:ExtendedPopUpButton id="moveToFolderButton"
+            label="Move to Folder" popUp="{dashboardController.model.folderListMenu}"
+            enabled="{drawingsListControl.selectedItem != null}"
+            openAlways="true" popUpWidth="{moveToFolderButton.width}"/>
+
+        <mx:Button 
+            enabled="{drawingsListControl.selectedItem != null}"
+            label="Delete" click="Alert.show('Not implemented yet')"/>
+
+        <mx:Button 
+            enabled="{drawingsListControl.selectedItem != null}"
+            label="Attach To Document"
+            click="Alert.show('Not implemented yet')"/>
+
+    </mx:HBox>
+
+    <mx:List id="drawingsListControl" 
+        dataProvider="{drawingsList}" labelField="RefName"
+        doubleClickEnabled="true"
+        doubleClick="dispatchEvent(new Event('openSelectedItem'))"
+        width="100%" height="100%" horizontalScrollPolicy="off"/>
+    
+</mx:Box>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:view="com.titus.catalog.view.*"
+	horizontalGap="0">
+
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.model.CatalogItemPackage;
+			import mx.controls.Alert;
+			import com.titus.catalog.model.PdfDocument;
+			import com.titus.catalog.events.CatalogItemEvent;
+			
+			public static const CATEGORIES_WIDTH:int = 200;//235
+		
+            [Embed(source="assets/go_left.png")]
+            [Bindable]
+            private var imgLeft:Class;
+            
+            [Embed(source="assets/go_right.png")]
+            [Bindable]
+            private var imgRight:Class;
+            
+            [Bindable]
+            private var isCategoriesCollapsed:Boolean = false;
+            
+            private function collapse():void 
+            {
+            	panelControl.width = 0;
+            	isCategoriesCollapsed = true;
+            	panelContent.expand();
+            }
+            
+            private function expand():void 
+            {
+            	panelControl.width = CATEGORIES_WIDTH;
+            	isCategoriesCollapsed = false;
+            	panelContent.collapse();
+            }
+            
+            public function swapState():void 
+            {
+            	if (isCategoriesCollapsed) {
+            		expand();
+            	} else {
+            		collapse();
+            	}
+            }
+            
+			private function catalogItemChangeHandler(event:CatalogItemEvent):void 
+			{
+				panelContent.catalogItemPackage = main.getStorage().getCatalogItemPackage(CatalogItemEvent(event).catalogItem);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Box width="10" height="100%" verticalAlign="top" backgroundColor="#dddddd">
+		<mx:Button width="11" height="11" cornerRadius="2" icon="{isCategoriesCollapsed ? imgRight : imgLeft}" click="swapState()"/>
+	</mx:Box>
+	<view:ControlPanel id="panelControl" width="{CATEGORIES_WIDTH}" height="100%" catalogItemChanged="catalogItemChangeHandler(event)"/>
+	<mx:Spacer width="2"/>
+	<view:ContentPanel id="panelContent" width="100%" height="100%"/>
+</mx:HBox>

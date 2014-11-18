@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.MainModel;
+			import mx.core.Application;
+			import flash.net.navigateToURL;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.leadCentral.service.BaseService;
+			import mx.rpc.Responder;
+			
+            [Embed(source="/assets/icons16/status.png")]
+            [Bindable]
+            private var imgStatusOk:Class;
+
+            [Embed(source="/assets/icons16/status-busy.png")]
+            [Bindable]
+            private var imgStatusFail:Class;
+
+			private var timer:Timer;
+			
+			[Bindable]
+			private var oAuthStatus:Boolean = false;
+			
+			private function onInit():void 
+			{
+				timer = new Timer(5000);
+				timer.addEventListener(TimerEvent.TIMER, onTimerTick);
+			}
+			
+			private function onCreate():void
+			{
+				timer.start();
+				updateStatus();
+			}
+			
+			private function updateStatus():void 
+			{
+				BaseService.getInstance().getOAuthConnectionStatus(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							oAuthStatus = event.result as Boolean;
+							if (oAuthStatus)
+							{
+								timer.delay = 600000;
+								Application.application.dispatchEvent(new Event("oAuthInited"));
+							}
+						}, 
+						function (event:FaultEvent):void 
+						{
+							oAuthStatus = false;
+						}));
+			}
+			
+			private function onTimerTick(event:TimerEvent):void 
+			{
+				updateStatus();
+			}
+			
+			public function initOAuth():void 
+			{
+				if (oAuthStatus)
+					return;
+
+				var url:String = MainModel.getInstance().oAuthUrl;
+				navigateToURL(new URLRequest(url), '_blank');
+			}
+			
+			private function onImageClick():void
+			{
+				initOAuth();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+
+	<mx:HBox height="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		backgroundColor="#EEEEEE" backgroundAlpha="0.8"
+		borderColor="#FFFFFF" borderStyle="solid" cornerRadius="3">
+		<mx:Label text="OAuth" fontSize="14" color="#000099"/>
+		<mx:Image source="{oAuthStatus ? imgStatusOk : imgStatusFail}" height="25" verticalAlign="middle" 
+			toolTip="{oAuthStatus ? 'Sync autorization Ok' : 'Sync status failed. Plase click here to resolve this problem'}"
+			click="onImageClick()"/>
+	</mx:HBox>
+</mx:Canvas>

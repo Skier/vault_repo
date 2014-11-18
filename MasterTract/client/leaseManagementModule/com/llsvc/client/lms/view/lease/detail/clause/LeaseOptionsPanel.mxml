@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	backgroundColor="#eeeeee"
+	paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4"
+	xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.Lease;
+			
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+            
+            [Bindable]
+            private var leaseOptions:ArrayCollection = 
+            	new ArrayCollection([{data:"OPTION TO LEASE"}, {data:"ACTIVE LEASE"}]);
+            
+            [Bindable]
+            private var termStatuses:ArrayCollection = 
+            	new ArrayCollection([{data:"N/A"}, {data:"PRIMARY TERM"}, {data:"HELD BY PRODUCTION"}, {data:"SUSPENDED"}]);
+
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%" labelWidth="70"
+		paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="1">
+		<mx:FormItem label="Vetted">
+			<mx:CheckBox id="cbVet" 
+				selected="{lease.vet}" change="lease.vet = cbVet.selected"/>
+		</mx:FormItem>
+		<mx:FormItem label="Option">
+			<controls:ComboBox id="comboOptions" 
+				dataProvider="{leaseOptions}" value="{lease.options}" labelField="data"
+				change="lease.options = comboOptions.value as String"/>
+		</mx:FormItem>
+		<mx:FormItem label="Term status">
+			<controls:ComboBox id="comboTermStatus" 
+				dataProvider="{termStatuses}" value="{lease.termStatus}" labelField="data"
+				change="lease.termStatus = comboTermStatus.value as String"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+</mx:VBox>

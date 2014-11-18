@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:flexlib="http://code.google.com/p/flexlib/"
+    xmlns:cmAccount="tractIncContractManager.account.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            import TractInc.Domain.Account;
+            import TractInc.Domain.Client;
+            import tractIncContractManager.ContractManagerController;
+            
+/*                
+            public function treeChanged(event:Event):void {
+                var accounts:Array = [];
+                if ( null != (trAccount.selectedItem.data as Account) ) {
+                    accounts = [this.trAccount.selectedItem.data];
+                }
+                dgAccount.dataProvider = accounts;
+
+                if ( null != (trAccount.selectedItem.data as Client) ) {
+                    var client:Client = trAccount.selectedItem.data as Client;
+                    var acct2:ArrayCollection = new ArrayCollection();
+                    for each(var a:Account in ContractManagerController.getInstance().model.contractManagerPackage.AccountList) {
+                        if ( 0 == a.ParentAccountId && client.ClientId == a.ClientId ) {
+                            acct2.addItem(a);
+                        }
+                    }
+                    dgAccount.dataProvider = acct2;
+                }
+            }
+*/                
+        ]]>
+    </mx:Script>
+
+    <cmAccount:AccountController id="controller" view="{this}"/>
+    
+    <mx:Button id="addButton" label="Add Account" click="controller.addButtonOnClickHandler(event)"/>
+
+<!--
+            click="controller.masterGridOnClickHandler(event)"
+-->
+    
+    <mx:HDividedBox width="100%" height="100%">
+        <flexlib:TreeGrid id="masterDataGrid"
+            headerStyleName="dataGridHeader"
+            width="100%" height="100%" 
+            paddingLeft="25"
+            verticalTrunks="none"
+            showRoot="false"
+            disclosureClosedIcon="@Embed(source='/assets/treeAssets.swf#TreeDisclosureClosed')"
+            disclosureOpenIcon="@Embed(source='/assets/treeAssets.swf#TreeDisclosureOpen')">
+            <flexlib:columns>
+                <flexlib:TreeGridColumn dataField="label" headerText="Client/Account" />
+                <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                        itemRenderer="tractIncContractManager.account.ActionIR"/>
+            </flexlib:columns>
+        </flexlib:TreeGrid>
+<!--        
+        <mx:Tree id="trAccount" width="50%" height="100%" labelField="label"
+            showRoot="false" change="treeChanged(event)"/>
+        <mx:DataGrid id="dgAccount" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="20" dataField="AccountId"/>
+                <mx:DataGridColumn headerText="Name" width="85" dataField="AccountName"/>
+                <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                        itemRenderer="tractIncContractManager.account.ActionIR"/>
+            </mx:columns>
+        </mx:DataGrid>
+-->            
+    </mx:HDividedBox>
+</mx:VBox>

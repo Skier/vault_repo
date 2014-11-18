@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by PETER VOGEL (INTUIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdb="http://xmlns.oracle.com/xdb" xmlns="http://www.intuit.com/sb/cdm/v2" xmlns:junk="http://www.intuit.com/sb/cdm/junk" targetNamespace="http://www.intuit.com/sb/cdm/junk" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="./RestDataFilter.xsd"/>
+	<xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../finance/Finance.xsd"/>
+	<xs:element name="Junk" type="junk:Junk"/>
+	<xs:complexType name="Junk">
+		<xs:annotation>
+			<xs:documentation>Just here to create references for some enums that we want code generated for, but that aren't referenced anywhere else</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EmailAddressLabel" type="EmailAddressLabelType"/>
+			<xs:element name="PhysicalAddressLabel" type="PhysicalAddressLabelType"/>
+			<xs:element name="TelephoneNumberLabel" type="TelephoneNumberLabelType"/>
+			<xs:element name="TelephoneDevice" type="TelephoneDevice"/>
+			<xs:element name="IdDomain" type="idDomainEnum"/>
+			<xs:element name="AccountSubtype" type="AccountSubtypeEnum"/>
+			<xs:element name="EstimateStatus" type="EstimateStatusEnum"/>
+			<xs:element name="PaymentStatus" type="PaymentStatusEnum"/>
+			<xs:element name="PaymentMethod" type="PaymentMethodEnum"/>
+			<xs:element name="QBOAccountDetailType" type="QboAccountDetailTypeEnum"/>
+			<xs:element name="QBOEstimateStatus" type="QboEstimateStatusEnum"/>
+			<xs:element name="ReimbursableType" type="ReimbursableTypeEnum"/>
+			<xs:element name="SalesTermType" type="SalesTermTypeEnum"/>
+			<xs:element name="EmployeeType" type="EmployeeTypeEnum"/>
+			<xs:element name="ReportName" type="ReportNameEnum"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" width="480"
+	enabled="{controller.model.isLoaded &amp;&amp; controller.storageBaseUrlLoaded &amp;&amp; controller.uploaderUrlLoaded}"
+	title="Load attachment">
+
+	<mx:Script>
+		<![CDATA[
+			import UI.landman.Composition;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var controller:BillItemAttachmentsController;
+			
+            public static function Open(item:BillItem, parent:DisplayObject, isReadOnly:Boolean, composition:Composition = null):BillItemAttachmentsView {
+                var popup:BillItemAttachmentsView = new BillItemAttachmentsView();
+                popup.controller = new BillItemAttachmentsController(popup, item, isReadOnly, composition);
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+
+		]]>
+	</mx:Script>
+	
+	<mx:ControlBar>
+		<mx:HBox width="100%">
+			<mx:ProgressBar id="pbUpload" labelPlacement="right" mode="manual" width="100%"/>
+			<mx:VBox>
+				<mx:Button id="upload" label="Select" click="controller.onClickUpload()" enabled="{!controller.model.uploadingInProgress}"/>
+				<mx:Button id="cancel" label="Cancel" click="controller.onClickCancelUpload()"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

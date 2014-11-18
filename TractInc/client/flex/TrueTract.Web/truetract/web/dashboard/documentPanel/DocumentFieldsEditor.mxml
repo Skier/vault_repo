@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.binding.utils.ChangeWatcher;
+            import mx.utils.ObjectUtil;
+            import truetract.domain.*;
+            
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] public var docum:Document;
+
+            [Bindable] public var editable:Boolean = false;
+
+            public function discardChanges():void
+            {
+                var d:Document = docum;
+                docum = null;
+                docum = d; //call binding
+            }
+
+            public function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+            
+            public function setCombos():void 
+            {
+                stateCmb.selectedItem = dictionary.statesAndCounties.state.(@StateId == docum.State);
+                countyCmb.selectedItem = stateCmb.selectedItem.county.(@CountyId == docum.County);
+
+                ChangeWatcher.watch(stateCmb, ["selectedItem"], 
+                    function (e:*):void {
+                        countyCmb.dataProvider = stateCmb.selectedItem.county;
+                        countyCmb.selectedItem = stateCmb.selectedItem.county.(@CountyId == docum.County);
+                    });
+            }
+            
+            public function getChanges():Document
+            {
+                var result:Document = Document(ObjectUtil.copy(docum));
+                
+                if (isFormValid())
+                {
+
+                    if (!result.Buyer) {
+                        result.Buyer = new Participant();
+                        result.Buyer.IsSeler = false;
+                    }
+    
+                    if (!result.Seller) {
+                        result.Seller = new Participant();
+                        result.Seller.IsSeler = true;
+                    }
+    
+                    result.State = stateCmb.selectedItem.@StateId;
+                    result.County = countyCmb.selectedItem.@CountyId;
+                    result.DocTypeId = documentTypeCmb.selectedItem.@DocTypeID;
+                    result.Buyer.AsNamed = buyerNameTxt.text;
+                    result.Seller.AsNamed = sellerNameTxt.text;
+                    result.DateFiled = filledDate.value;
+                    result.DateSigned = signedDate.value;
+                    result.DocumentNo = (documNoTxt.text.length > 0) ? documNoTxt.text : null;
+                    result.Volume = (volumeTxt.text.length > 0) ? volumeTxt.text : null;
+                    result.Page = (pageTxt.text.length > 0) ? pageTxt.text : null;
+                }
+
+                return result;
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+    <mx:NumberFormatter id="nf" precision="2"/>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator
+            source="{documentTypeCmb}" property="selectedLabel" required="true"/>
+
+        <mx:StringValidator
+            source="{stateCmb}" property="selectedLabel" required="true"/>
+
+        <mx:StringValidator
+            source="{countyCmb}" property="selectedLabel" required="true"/>
+
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}"/>
+
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" 
+            required="{volumeTxt.text.length == 0 &amp;&amp; pageTxt.text.length == 0}" />
+
+        <mx:DateValidator
+            daySource="{filledDate.dayTxt}" dayProperty="text" 
+            monthSource="{filledDate.monthTxt}" monthProperty="text" 
+            yearSource="{filledDate.yearTxt}" yearProperty="text" required="true"/>
+        
+        <mx:DateValidator
+            daySource="{signedDate.dayTxt}" dayProperty="text" 
+            monthSource="{signedDate.monthTxt}" monthProperty="text" 
+            yearSource="{signedDate.yearTxt}" yearProperty="text" 
+            required="true"/>
+
+        <mx:StringValidator
+            source="{sellerNameTxt}" property="text" required="true"/>
+
+        <mx:StringValidator
+            source="{buyerNameTxt}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Fade id="fadeEffect" />
+
+    <mx:VBox width="100%">
+        <mx:HBox width="100%">
+            <mx:Form 
+                paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                verticalGap="3" indicatorGap="3" labelWidth="90">
+<!--
+                <mx:FormItem label="State :" width="210">
+                    <mx:Label width="100%"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc Type :">
+                    <mx:Label width="100%"
+                        text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}" />
+                </mx:FormItem>
+                
+                <mx:FormItem label="Vol :">
+                    <mx:Label width="100%"
+                        text="{docum.Volume}"/>
+                </mx:FormItem>
+ -->    
+                <mx:FormItem label="State :">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+    
+                        <mx:ComboBox id="stateCmb"
+                            visible="{editable}" includeInLayout="{editable}"
+                            labelField="@Name" width="120"
+                            dataProvider="{dictionary.statesAndCounties.state}"
+                            selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State)}"/>
+                    </mx:Box>
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc Type :">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}" />
+                            
+                        <components:ExtendedComboBox id="documentTypeCmb"
+                            visible="{editable}" includeInLayout="{editable}"
+                            labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+                            dataProvider="{dictionary.documentTypes.DocumentType}" 
+                            selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId)}"/>
+                    </mx:Box>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Vol :">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{docum.Volume}"/>
+
+                        <mx:TextInput id="volumeTxt" 
+                            visible="{editable}" includeInLayout="{editable}"
+                            width="120" text="{docum.Volume}" maxChars="15"/>
+                    </mx:Box>
+                </mx:FormItem>
+
+                <mx:FormItem label="Date Signed :">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{df.format(docum.DateSigned)}"/>
+
+                        <components:CombinedDateField id="signedDate"
+                            visible="{editable}" includeInLayout="{editable}"
+                            width="120" value="{docum.DateSigned}" />
+                    </mx:Box>
+                </mx:FormItem>
+            </mx:Form>
+
+            <mx:Form 
+                paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" 
+                verticalGap="3" indicatorGap="3" width="100%">
+<!--
+                <mx:FormItem label="County :" width="210">
+                    <mx:Label width="100%"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Doc Number :" width="100%">
+                    <mx:Label width="100%"
+                        text="{docum.DocumentNo}" />
+                </mx:FormItem>
+    
+                <mx:FormItem label="Page :" width="100%">
+                    <mx:Label width="100%"
+                        text="{docum.Page}" />
+                </mx:FormItem>
+ -->    
+                <mx:FormItem label="County :" width="100%">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}" width="100%"/>
+
+                        <mx:ComboBox id="countyCmb"
+                            visible="{editable}" includeInLayout="{editable}"
+                            labelField="@Name" width="120"
+                            dataProvider="{stateCmb.selectedItem.county}"
+                            selectedItem="{stateCmb.selectedItem.county.(@CountyId == docum.County)}"/>
+                    </mx:Box>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Doc Number :" width="100%">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            width="100%" text="{docum.DocumentNo}" />
+                            
+                        <mx:TextInput id="documNoTxt" 
+                            visible="{editable}" includeInLayout="{editable}"
+                            width="120" text="{docum.DocumentNo}" />
+                    </mx:Box>
+                    
+                </mx:FormItem>
+    
+                <mx:FormItem label="Page :" width="100%">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            width="100%" text="{docum.Page}" />
+
+                        <mx:TextInput id="pageTxt" 
+                            visible="{editable}" includeInLayout="{editable}"
+                            text="{docum.Page}" width="120"/>
+                    </mx:Box>
+                </mx:FormItem>
+
+                <mx:FormItem label="Date Filled :" width="100%">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            visible="{!editable}" includeInLayout="{!editable}"
+                            text="{df.format(docum.DateFiled)}"/>
+                
+                        <components:CombinedDateField id="filledDate"
+                            visible="{editable}" includeInLayout="{editable}"
+                            value="{docum.DateFiled}" width="120"/>
+                    </mx:Box>
+                </mx:FormItem>
+
+                <mx:FormItem label="Total Tract Acres :" width="100%">
+                    <mx:Box width="100%">
+                        <mx:Label 
+                            text="{nf.format(docum.TractsAcres)}"/>
+                    </mx:Box>
+                </mx:FormItem>
+
+            </mx:Form>
+        </mx:HBox>
+
+        <mx:Form 
+            paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+            width="100%" indicatorGap="3" labelWidth="90">
+
+            <mx:FormItem label="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName != ''
+                ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName : 'Seller'}:" width="100%">
+                <mx:Box width="100%">
+                    <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        width="100%" text="{docum.Seller.AsNamed}"/>
+                        
+                    <mx:TextInput id="sellerNameTxt" 
+                        visible="{editable}" includeInLayout="{editable}"
+                        width="100%" text="{docum.Seller.AsNamed}" />
+                </mx:Box>
+            </mx:FormItem>
+    
+            <mx:FormItem label="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName != ''
+                ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName : 'Buyer'}:" width="100%">
+                <mx:Box width="100%">
+                    <mx:Label 
+                        visible="{!editable}" includeInLayout="{!editable}"
+                        width="100%" text="{docum.Buyer.AsNamed}"/>
+                
+                    <mx:TextInput id="buyerNameTxt" 
+                        visible="{editable}" includeInLayout="{editable}"
+                        width="100%" text="{docum.Buyer.AsNamed}"/>
+                </mx:Box>
+                
+            </mx:FormItem>
+
+        </mx:Form>
+
+    </mx:VBox>
+    
+</mx:VBox>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:local="*"
+    horizontalAlign="center"
+    verticalGap="-1" 
+    width="100%"
+    styleName="itemVbox"
+    xmlns:components="components.*"
+    >
+     
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.InvoiceItemDataObject;
+        	import mx.collections.ListCollectionView;
+        	import mx.core.Application;
+        	import mx.managers.PopUpManager;
+        	import mx.controls.CheckBox;
+        	import util.DateUtil;
+        	import common.StatusesRegistry;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import mx.events.DataGridEvent;
+        	import util.NumberUtil;
+        	
+        	private static const ROW_HEIGHT:int = 26;
+        	
+        	[Embed(source="/assets/expand.png")]
+        	[Bindable]
+        	private var imgPlus:Class;
+        	
+        	[Embed(source="/assets/collapse.png")]
+        	[Bindable]
+        	private var imgMinus:Class;
+        	
+            private function expand(event:Event = null) : void
+            {
+                if (currentState == "") {
+	                currentState = "expanded";
+                }
+            }
+            
+            private function collapse(event:Event = null) : void
+            {
+                if (currentState == "expanded") {
+	                currentState = "";
+                }
+            }
+            
+            private function toggleState() : void
+            {
+                currentState = currentState == "expanded" ? "" : "expanded";
+                invalidateDisplayList();
+            }
+            
+            private function setSubAfeGroupLabels(group:InvoiceItemGroupBySubAfe, column:DataGridColumn):String {
+            	if (column.dataField == "subAfe") {
+            		return group.subAfe;
+            	} else if (column.dataField == "totalDays") {
+            		return NumberUtil.fraction(group.totalDays, 8)
+            	} else if (column.dataField == "dailyAmt") {
+            		return (Math.round(group.dailyAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "otherAmt") {
+            		return (Math.round(group.otherAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "totalAmt") {
+            		return (Math.round(group.totalAmount * 100) / 100).toFixed(2);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function setAssetLabels(item:InvoiceItemGroupByAsset, column:DataGridColumn):String {
+            	if (column.dataField == "asset") {
+            		return item.asset.BusinessName;
+            	} else if (column.dataField == "totalDays") {
+            		return NumberUtil.fraction(item.totalDays, 8)
+            	} else if (column.dataField == "dailyAmt") {
+            		return (Math.round(item.dailyAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "otherAmt") {
+            		return (Math.round(item.otherAmount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "totalAmt") {
+            		return (Math.round(item.totalAmount * 100) / 100).toFixed(2);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function selectGroupColor(item:InvoiceItemGroupBySubAfe, color:uint):uint 
+            {
+           		return color;
+            }
+            
+            private function selectItemColor(item:InvoiceItemGroupByAsset, color:uint):uint 
+            {
+           		return color;
+            }
+            
+            private function onLandmanDoubleClick():void {
+            	if (dgLandmans.selectedItem == null) {
+            		return;
+            	}
+            
+            	var assetGroup:InvoiceItemGroupByAsset = dgLandmans.selectedItem as InvoiceItemGroupByAsset;
+            	
+            	var popup:InvoiceLandmanDetail = PopUpManager.createPopUp(Application.application as DisplayObject, InvoiceLandmanDetail, true) as InvoiceLandmanDetail; 
+				popup.init(assetGroup);
+				PopUpManager.centerPopUp(popup);
+            }
+            
+            private function showWorkLog():void {
+            	var group:InvoiceItemGroupBySubAfe = InvoiceItemGroupBySubAfe(data);
+            	
+            	var log:ListCollectionView = new ListCollectionView(group.items);
+            	log.filterFunction = filterDailyItems;
+            	log.refresh();
+            	
+    	    	SubAfeWorkLogView.Open(group.subAfe, log, DisplayObject(parentDocument));
+            }
+            
+            private function filterDailyItems(item:Object):Boolean {
+            	return 1 == InvoiceItemDataObject(item).InvoiceItemTypeId;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" horizontalGap="0" right="0">
+
+		<mx:VBox width="26" height="26" horizontalAlign="center" verticalAlign="middle">
+			<mx:Image source="{currentState == 'expanded' ? imgMinus : imgPlus}" click="toggleState()"/>
+		</mx:VBox>
+	    <components:ColoredDataGrid
+	    	id="dgAfes"
+	    	dataProvider="{data}"
+	    	showHeaders="false"
+	        width="100%"
+	        height="{ROW_HEIGHT}"
+	        borderThickness="1"
+	        minWidth="415"
+			rowColorFunction="selectGroupColor"
+	        backgroundColor="#FFFFCC"
+	        selectable="false">
+	        <components:columns>
+				<mx:DataGridColumn dataField="subAfe" labelFunction="setSubAfeGroupLabels"/>
+				<mx:DataGridColumn dataField="totalDays" labelFunction="setSubAfeGroupLabels" textAlign="right" width="60"/>
+				<mx:DataGridColumn dataField="dailyAmt" labelFunction="setSubAfeGroupLabels" textAlign="right" width="75"/>
+				<mx:DataGridColumn dataField="otherAmt" labelFunction="setSubAfeGroupLabels" textAlign="right" width="75"/>
+				<mx:DataGridColumn dataField="totalAmt" labelFunction="setSubAfeGroupLabels" textAlign="right" width="75"/>
+				<mx:DataGridColumn dataField="IsSelected" itemRenderer="UI.manager.invoice.IsSelectedRenderer" width="26" textAlign="center"/>
+	        </components:columns>
+	    </components:ColoredDataGrid>
+    
+    </mx:HBox>
+
+    <mx:states>
+        <mx:State name="expanded">
+            <mx:AddChild position="lastChild">
+				<mx:VBox id="expandedPart" width="100%" verticalGap="0">
+	            	<mx:HBox width="100%">
+	            		<mx:Spacer width="40"/>
+		                <components:ColoredDataGrid id="dgLandmans" width="100%" enabled="true"
+							height="{data.assetGroups.length &lt; 5 ? ((data.assetGroups.length + 1) * ROW_HEIGHT) : (6 * ROW_HEIGHT)}" 
+							rowHeight="{ROW_HEIGHT}"
+		                    borderThickness="1" showHeaders="true"
+          					rowColorFunction="selectItemColor"
+		                    dataProvider="{data.assetGroups}"
+		                    doubleClickEnabled="true" itemDoubleClick="onLandmanDoubleClick()"
+		                    >
+		                    <components:columns>
+								<mx:DataGridColumn headerText="Landman" dataField="asset" labelFunction="setAssetLabels"/>
+								<mx:DataGridColumn headerText="Days" dataField="totalDays" labelFunction="setAssetLabels" textAlign="right" width="60"/>
+								<mx:DataGridColumn headerText="Daily Amt" dataField="dailyAmt" labelFunction="setAssetLabels" textAlign="right" width="75"/>
+								<mx:DataGridColumn headerText="Other Amt" dataField="otherAmt" labelFunction="setAssetLabels" textAlign="right" width="75"/>
+								<mx:DataGridColumn headerText="Total Amt" dataField="totalAmt" labelFunction="setAssetLabels" textAlign="right" width="75"/>
+								<mx:DataGridColumn headerText=" " dataField="IsSelected" itemRenderer="UI.manager.invoice.IsSelectedRenderer" width="26" textAlign="center"/>
+		                    </components:columns>
+		                </components:ColoredDataGrid>
+	            	</mx:HBox>
+	            	
+	           		<mx:HBox width="100%" horizontalAlign="right">
+		           		<mx:Button label="{'work log (' + InvoiceItemGroupBySubAfe(data).dailyItemsCount.toString() + ')'}" click="showWorkLog()" />
+	           		</mx:HBox>
+	           		
+	           		<mx:Spacer height="5"/>
+	            	
+				</mx:VBox>
+            </mx:AddChild>
+        </mx:State>
+    </mx:states>
+    
+    <mx:transitions>
+        <mx:Transition fromState="*" toState="*">
+            <mx:Resize target="{this}"/>
+        </mx:Transition>
+    </mx:transitions>
+
+</mx:VBox>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:components="truetract.plotter.components.*"
+    layout="vertical" title="Document Reference">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.managers.PopUpManager;
+        	import truetract.domain.DictionaryRegistry;
+        	import mx.utils.ObjectUtil;
+        	import truetract.web.services.DocumentService;
+        	import truetract.domain.DocumentReference;
+
+            public static function open(parent:DisplayObject, modal:Boolean):DocumentReferenceEditor
+            {
+                var popup:DocumentReferenceEditor = new DocumentReferenceEditor();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+            
+            private var _documentReference:DocumentReference;
+			[Bindable] public function set documentReference(value:DocumentReference):void 
+			{
+				_documentReference = value; 
+				
+				setCombos();
+				documentReference.updateLocalFields();
+			}
+			public function get documentReference():DocumentReference { return _documentReference; }
+
+			[Bindable] public var isReadOnly:Boolean = false;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            private var docService:DocumentService = DocumentService.getInstance();
+
+			private function setCombos():void 
+			{
+				comboState.selectedItem = dictionary.statesAndCounties.state.(@StateId == documentReference.State);
+
+				ChangeWatcher.watch(comboState, ["selectedItem"], 
+					function (e:*):void {
+						comboCounty.dataProvider = comboState.selectedItem.county;
+						comboCounty.selectedItem = comboState.selectedItem.county.(@CountyId == documentReference.County);
+					});
+			}
+			
+            private function btnSubmitClickHandler():void
+            {
+                if (!isFormValid()) return;
+                
+                documentReference.State = comboState.selectedItem.@StateId;
+                documentReference.County = comboCounty.selectedItem.@CountyId;
+                documentReference.DocTypeId = comboDocType.selectedItem.@DocTypeID;
+                documentReference.DocumentNo = txtDocNo.text;
+                documentReference.Volume = txtVolume.text;
+                documentReference.Page = txtPage.text;
+                
+                documentReference.Description = txtDescription.text;
+
+            	dispatchEvent(new Event("submit"));
+            }
+            
+            private function btnCancelClickHandler():void
+            {
+                dispatchEvent(new Event("cancel"));
+                close();
+            }
+
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator
+            source="{comboState}" property="selectedLabel" required="true"/>
+
+        <mx:StringValidator
+            source="{comboCounty}" property="selectedLabel" required="true"/>
+
+<!--
+        <mx:StringValidator
+            source="{comboDocType}" property="selectedLabel" required="true"/>
+
+        <mx:NumberValidator 
+            source="{txtDocNo}" property="text" 
+            required="{txtVolume.text.length == 0 &amp;&amp; txtPage.text.length == 0}" />
+
+        <mx:NumberValidator 
+            source="{txtVolume}" property="text" 
+            required="{txtDocNo.text.length == 0}"/>
+
+        <mx:NumberValidator 
+            source="{txtPage}" property="text" 
+            required="{txtDocNo.text.length == 0}"/>
+ -->
+    </validators:ValidatorsGroup>
+
+	<mx:VBox width="100%" height="100%"
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+	    <mx:HBox width="100%">
+	        <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="2" indicatorGap="3">
+	            <mx:FormItem label="State :">
+	                <components:ExtendedComboBox id="comboState"
+	                	tabIndex="10"
+	                	enabled="{!isReadOnly}"
+	                    labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+	                    dataProvider="{dictionary.statesAndCounties.state}"
+	                    selectedItem="{dictionary.statesAndCounties.state.(@StateId == documentReference.State)}"/>
+	            </mx:FormItem>
+	            
+	            <mx:FormItem label="Doc Type :">
+	                <components:ExtendedComboBox id="comboDocType"
+	                	tabIndex="30"
+	                	enabled="{!isReadOnly}"
+	                    labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+	                    dataProvider="{dictionary.documentTypes.DocumentType}" 
+	                    selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == documentReference.DocTypeId)}"/>
+	            </mx:FormItem>
+	            
+	            <mx:FormItem label="Vol :">
+	                <mx:TextInput id="txtVolume" 
+	                	tabIndex="50"
+	                	enabled="{!isReadOnly}"
+	                	width="120" text="{documentReference.Volume}"/>
+	            </mx:FormItem>
+	        </mx:Form>
+	
+	        <mx:Spacer width="100%" />
+	
+	        <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="2" indicatorGap="3">
+	            <mx:FormItem label="County :">
+	                <components:ExtendedComboBox id="comboCounty"
+	                	tabIndex="20"
+	                	enabled="{!isReadOnly}"
+	                    labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+	                    dataProvider="{comboState.selectedItem.county}"
+	                    selectedItem="{comboState.selectedItem.county.(@CountyId == documentReference.County)}"/>
+	            </mx:FormItem>
+	
+	            <mx:FormItem label="Doc No :">
+	                <mx:TextInput id="txtDocNo" 
+	                	tabIndex="40" width="120" 
+	                	enabled="{!isReadOnly}"
+	                	text="{documentReference.DocumentNo}"/>
+	            </mx:FormItem>
+	
+	            <mx:FormItem label="Page :">
+                    <mx:TextInput id="txtPage" 
+	                	tabIndex="60" width="120" 
+	                	enabled="{!isReadOnly}"
+	                	text="{documentReference.Page}"/>
+	            </mx:FormItem>
+	        </mx:Form>
+	    </mx:HBox>
+	
+		<mx:VBox width="100%" height="100%" verticalGap="0">
+			<mx:Label text="Short description:"/>
+			<mx:TextArea id="txtDescription"
+               	tabIndex="70" 
+               	enabled="{!isReadOnly}"
+				width="100%" height="100%" text="{documentReference.Description}" maxChars="250"/>
+		</mx:VBox>
+	</mx:VBox>
+
+    <mx:ControlBar horizontalAlign="center">
+        <mx:Button id="btnSubmit"
+            label="Submit" width="70" 
+            includeInLayout="{!isReadOnly}"
+            visible="{!isReadOnly}"
+            click="btnSubmitClickHandler()"/>
+
+        <mx:Button id="btnCancel"
+            label="{isReadOnly ? 'Close' : 'Cancel'}" width="70" 
+            click="btnCancelClickHandler()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

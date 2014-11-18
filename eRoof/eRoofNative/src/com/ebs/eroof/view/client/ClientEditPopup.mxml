@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Clients_DTO;
+			import com.ebs.eroof.model.wrapper.Client;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var client:Client;
+			
+            public static function open(parent:DisplayObject, client:Client, modal:Boolean = true):ClientEditPopup
+            {
+                var popup:ClientEditPopup = new ClientEditPopup();
+                
+                popup.client = client;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function storeClient():void 
+            {
+            	clientForm.populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreClient, client.clientDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(client.clientDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreClient(storedClient:Clients_DTO):void 
+            {
+            	client.clientDTO = storedClient;
+            	client.addToSegment();
+            	
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	storeClient();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<widgets:IDNForm id="clientForm" dto="{client.clientDTO}">
+		<widgets:IDNField fieldName="ClientName" fieldLabel="Client Name" required="true"/>
+		<widgets:IDNField fieldName="BriefName" fieldLabel="Brief Name" required="false"/>
+		<widgets:IDNField fieldName="Address" fieldLabel="Address" required="false"/>
+		<widgets:IDNField fieldName="Country" fieldLabel="Country" required="false"/>
+		<widgets:IDNField fieldName="PostalCode" fieldLabel="Postal Code" required="false"/>
+		<widgets:IDNField fieldName="Province" fieldLabel="Province" required="false"/>
+		<widgets:IDNField fieldName="City" fieldLabel="City" required="false"/>
+		<widgets:IDNField fieldName="EMail" fieldLabel="EMail" required="false"/>
+		<widgets:IDNField fieldName="Phone" fieldLabel="Phone" required="false"/>
+		<widgets:IDNField fieldName="Fax" fieldLabel="Fax" required="false"/>
+		<widgets:IDNField fieldName="AdditionalContacts" fieldLabel="Additional Contacts" required="false"/>
+	</widgets:IDNForm>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CallPropertiesView 
+    xmlns="truetract.plotter.components.tractViewClasses.call.propertyViews.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:Geo="truetract.plotter.utils.*" xmlns:validators="truetract.plotter.validators.*"
+    creationComplete="onCreationComplete()" xmlns:components="truetract.plotter.components.*">
+        
+    <mx:Script>
+        <![CDATA[
+        	import truetract.plotter.domain.TractCall;
+            import truetract.plotter.utils.UnitOfMeasure;
+            import truetract.plotter.utils.UOMUtil;
+            import truetract.plotter.domain.callparams.*;
+            import truetract.plotter.utils.GeoBearing;
+
+            import mx.events.ValidationResultEvent;
+            
+            [Bindable] private var uomUtil:UOMUtil = UOMUtil.getInstance();
+                        
+            public var radiusUom:UnitOfMeasure;
+
+            private function onCreationComplete():void
+            {
+                radiusUomList.selectedItem = radiusUom;
+                rInBearingTxt.setFocus();
+            }
+            
+            override protected function getParameters():ParamCollection
+            {
+                if (!isFormValid())
+                    return null;
+                
+                var rInBearing:GeoBearing = GeoBearing.Parse(rInBearingTxt.text);
+                var rOutBearing:GeoBearing = GeoBearing.Parse(rOutBearingTxt.text);
+                var radius:Number = Number(radiusTxt.text);
+
+                var params:ParamCollection = new ParamCollection();
+                
+                params.addItem(new RadialInBearingParam(rInBearing));
+                params.addItem(new RadialOutBearingParam(rOutBearing));
+                params.addItem(new RadiusParam(radius, UnitOfMeasure(radiusUomList.selectedItem)));                
+                
+                return params;
+            }
+             
+            override protected function getType():String
+            {
+                return TractCall.CALL_TYPE_CURVE;
+            }
+                        
+            private function isFormValid():Boolean
+            {
+                var result:Boolean = true;
+                
+                if (radiusV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (inBearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (outBearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                
+                return result;
+            }
+            
+            private function degreeInput_changeHandler(event:Event):void 
+            {
+            	var input:TextInput = event.currentTarget as TextInput;
+            	
+				input.text = input.text.replace("\u00b0", "*");
+				input.text = input.text.replace("'", "*");
+				input.text = input.text.replace("\"", "*");
+
+				var gradFound:Boolean = false;
+				var minFound:Boolean = false;
+				var secFound:Boolean = false;
+
+				var result:String = "";
+
+				for ( var i:int=0; i < input.text.length; i++ ) {
+					if (input.text.charAt(i) == "*" && !gradFound) {
+						result += "\u00b0";
+						gradFound = true;
+					} else if (input.text.charAt(i) == "*" && !minFound) {
+						result += "'";
+						minFound = true;
+					} else if (input.text.charAt(i) == "*" && !secFound) {
+						result += "\"";
+						secFound = true;
+					} else {
+						result += input.text.charAt(i);
+					}
+				}
+				
+				input.text = result;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:NumberValidator id="radiusV" 
+        source="{radiusTxt}" property="text" required="true" allowNegative="false" minValue="0.001"/>
+        
+    <validators:GeoBearingValidator id="inBearingV" 
+        source="{rInBearingTxt}" property="text" required="true"/>
+        
+    <validators:GeoBearingValidator id="outBearingV" 
+        source="{rOutBearingTxt}" property="text" required="true"/>
+
+    <subComponents>
+    
+        <mx:Form verticalGap="2" paddingBottom="0" paddingLeft="0" 
+            paddingRight="0" paddingTop="0" indicatorGap="5"
+            >
+            <mx:FormItem label="Rad In" toolTip="Radial In Bearing">
+                <mx:TextInput id="rInBearingTxt" 
+                	change="degreeInput_changeHandler(event)"
+                    toolTip="Radial In Bearing" width="100" enter="commit()"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="Rad Out" toolTip="Radial Out Bearing">
+                <mx:TextInput id="rOutBearingTxt" 
+                	change="degreeInput_changeHandler(event)"
+                    toolTip="Radial Out Bearing" width="100" enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Radius">
+                <mx:HBox horizontalGap="3">
+                    <mx:TextInput id="radiusTxt" 
+                        toolTip="Radius" width="100" enter="commit()"/>
+                    
+                    <components:ExtendedComboBox id="radiusUomList" 
+                        toolTip="Radius Units" showDataTips="true"
+                        labelField="Name" width="75"
+                        dataProvider="{uomUtil.unitList}" enter="commit()"/>
+                </mx:HBox>
+            </mx:FormItem>
+        </mx:Form>        
+    </subComponents>
+    
+</CallPropertiesView>

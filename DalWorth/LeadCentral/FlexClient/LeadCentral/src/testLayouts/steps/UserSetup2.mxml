@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="622" height="516" xmlns:steps="testLayouts.steps.*">
+
+	<mx:ViewStack id="vsStep" width="100%" height="100%" creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<mx:LinkButton label="Video" click="vsStep.selectedIndex = 1" x="555" y="10" fontSize="12" color="#003399"/>
+			<mx:Label x="10" y="10" text="Add more Staff Users to Lead Central" fontSize="14" fontWeight="bold"/>
+			<mx:Label x="10" y="41" text="Users of Lead Central:" fontSize="12"/>
+			<mx:DataGrid width="602" height="235" fontSize="12" x="10" y="69">
+				<mx:columns>
+					<mx:DataGridColumn headerText="First Name" dataField="col1" width="150"/>
+					<mx:DataGridColumn headerText="Last Name" dataField="col2" width="150"/>
+					<mx:DataGridColumn headerText="Email" dataField="col3"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="602" x="10" bottom="10">
+				<mx:VBox width="100%" backgroundColor="#F8F8F8" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+					<mx:Form width="100%" fontSize="12" backgroundColor="#FFFFFF">
+						<mx:FormItem label="Select Vendor or Employee:" width="100%">
+							<mx:ComboBox width="100%"></mx:ComboBox>
+						</mx:FormItem>
+						<mx:FormItem label="First Name:" width="100%" required="true">
+							<mx:TextInput width="100%"/>
+						</mx:FormItem>
+						<mx:FormItem label="Last Name:" width="100%" required="true">
+							<mx:TextInput width="100%"/>
+						</mx:FormItem>
+						<mx:FormItem label="Email:" width="100%" required="true">
+							<mx:TextInput width="100%"/>
+						</mx:FormItem>
+					</mx:Form>
+					<mx:HBox width="100%" fontSize="12" horizontalAlign="right">
+						<mx:Button label="Add User" width="100" height="30"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:Button label="Add New User" fontSize="12" height="30" width="154" x="458" y="36"/>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<steps:VideoTutorial label="Video Tutorial" width="622" height="516"/>
+			<mx:LinkButton label="Back to Wizard" click="vsStep.selectedIndex = 0" fontSize="12" color="#003399" right="10" top="10"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+</mx:Canvas>

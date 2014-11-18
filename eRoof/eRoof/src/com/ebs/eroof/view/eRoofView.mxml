@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+          xmlns:widgets="com.quickbase.idn.widgets.*"
+          creationComplete="waitForReady()"
+          height="100%" width="100%" xmlns:view="com.ebs.eroof.view.*" xmlns:test="com.ebs.eroof.view.test.*">
+   <mx:Script>
+         <![CDATA[
+         	import mx.events.MenuEvent;
+           import com.ebs.eroof.model.eRoofModel; //replace with correct model reference
+       	   import com.quickbase.idn.control.events.KingussieEventDoUserMgmt;
+           import com.quickbase.idn.view.UserMgmtDialog;
+           import com.adobe.cairngorm.control.CairngormEventDispatcher;
+           import com.quickbase.idn.core.QBApp;
+               
+           //Get the model, make sure we can bind to it in our UI components
+           [Bindable] public var model:eRoofModel = eRoofModel.getInstance();
+               
+           //variable to record whether the UI has been initialized
+           private var panelInitialized:Boolean = false;
+               
+           //function to call when the component creation is complete, basically just
+           //ensures that we wait for QBApp to tell us QuickBase is ready for 
+           //interaction.
+           private function waitForReady():void
+           {
+               this.addEventListener(QBApp.QUICKBASE_READY_EVENT, initPanel);
+           }
+           
+           //function to call when the QBApp component notifies us that QuickBase is ready
+           //for interaction.
+           private function initPanel(ev:Event):void
+           {
+               if (!panelInitialized) {
+                   panelInitialized = true;
+               }
+               
+               viewDashboard.init();
+               viewTestUI.init();
+           }
+           private function doUserMgmt():void
+           {
+           		new KingussieEventDoUserMgmt().dispatch();
+           }
+           
+           	private function onMenuItemClick(event:MenuEvent):void 
+           	{
+           		if (event.label == "All Facilities")
+           			vsMain.selectedIndex = 0;
+           		else if (event.label == "Test UI - Forms")
+           			vsMain.selectedIndex = 1;
+           		else if (event.label == "Test UI - Grids")
+           			vsMain.selectedIndex = 2;
+           	}
+           
+         ]]>
+   	</mx:Script>
+   	
+	<mx:XMLList id="xmlMenu">
+		<menuitem label="Development">
+			<menuitem label="Database tables" enabled="false"/>
+			<menuitem label="Test UI - Forms"/>
+			<menuitem label="Test UI - Grids"/>
+		</menuitem>
+		<menuitem label="Admin">
+			<menuitem label="Business Setup"/>
+			<menuitem label="Preferences"/>
+			<menuitem label="Report library" enabled="false"/>
+			<menuitem label="Roles" enabled="false"/>
+			<menuitem label="Users"/>
+			<menuitem label="Virtual Assistant" enabled="false"/>
+		</menuitem>
+		<menuitem label="Facilities">
+			<menuitem label="All Facilities"/>
+		</menuitem>
+		<menuitem label="Analysis"/>
+		<menuitem label="Financial"/>
+		<menuitem label="Tasks">
+			<menuitem label="Approve inspections (3)" enabled="false"/>
+			<menuitem label="Approve service work (5)" enabled="false"/>
+		</menuitem>
+	</mx:XMLList>
+   	
+   	<mx:MenuBar id="mainMenu" width="100%" 
+   		labelField="@label" dataProvider="{xmlMenu}" 
+        itemClick="onMenuItemClick(event)"
+        fontSize="12"/>
+
+	<mx:ViewStack id="vsMain" width="100%" height="100%" creationPolicy="all">
+		<view:DashboardView id="viewDashboard" width="100%" height="100%"/>
+		<test:TestSectionManager id="viewTestUI" width="100%" height="100%"/>
+		<test:TestDataGridFlow id="viewTestGrid" width="100%" height="100%"/>  
+	</mx:ViewStack>
+
+</mx:VBox>

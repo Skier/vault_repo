@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalAlign="top"
+	xmlns:userProfile="tractIncUserProfile.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.User;
+			
+			public function init(user:User):void 
+			{
+				controller.init(user);
+			}
+			
+			public function logout():Boolean 
+			{
+				return controller.logout();
+			}
+			
+			public function isValid():Boolean 
+			{
+				return true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<userProfile:UserProfileController id="controller" view="{this}"/>
+
+    <mx:VBox horizontalAlign="left" width="100%" height="100%">
+    <mx:TabBar id="tabBar" 
+	    dataProvider="{controller.tabData}"
+	    itemClick="{controller.tabChanged(event);}"
+        horizontalAlign="left"/>
+	
+	<mx:ViewStack id="tabStack" creationPolicy="all"
+            backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+            paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+            width="100%">
+	
+		<mx:Form id="formPersonalInfo" visible="true">
+			<mx:FormHeading label="Personal information"/>
+			<mx:FormItem label="First Name:">
+				<mx:TextInput id="txtFirstName" maxChars="50"/>
+			</mx:FormItem>
+			<mx:FormItem label="Last Name:">
+				<mx:TextInput id="txtLastName" maxChars="50"/>
+			</mx:FormItem>
+			<mx:FormItem label="Middle Name:">
+				<mx:TextInput id="txtMiddleName" maxChars="50"/>
+			</mx:FormItem>
+			<mx:FormItem label="Email:">
+				<mx:TextInput id="txtEmail" maxChars="50"/>
+			</mx:FormItem>
+			<mx:FormItem label="Phone Num:">
+				<mx:TextInput id="txtPhone" maxChars="50"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:Form id="formPreferences">
+			<mx:FormHeading label="Preferences"/>
+			<mx:FormItem label="Default Site:">
+				<mx:TextInput id="txtDefaultSite" maxChars="50" enabled="false"/>
+			</mx:FormItem>
+			<mx:FormItem label="New Tracts:">
+				<mx:TextInput id="txtNewTracts" maxChars="10" enabled="false"/>
+			</mx:FormItem>
+		</mx:Form>
+
+		<mx:Form id="formChangePassword">
+			<mx:FormHeading label="Password changing"/>
+			<mx:FormItem label="Old password:">
+				<mx:TextInput id="txtOldPassword" maxChars="50" displayAsPassword="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="New password:">
+				<mx:TextInput id="txtNewPassword" maxChars="50" displayAsPassword="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="Confirm password:">
+				<mx:TextInput id="txtConfirmPassword" maxChars="50" displayAsPassword="true"/>
+			</mx:FormItem>
+		</mx:Form>
+
+	</mx:ViewStack>
+
+	<mx:ControlBar horizontalAlign="left">
+		<mx:Button label="Save" click="controller.btnSave_clickHandler()"/>
+		<mx:Button label="Reset" click="controller.btnReset_clickHandler()"/>
+	</mx:ControlBar>
+    </mx:VBox>
+		
+</mx:VBox>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+    <mx:Metadata>
+        [Event(name="editCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="deleteCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="addClientRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="selectClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+    </mx:Metadata>
+    
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.ClientEvent;
+			import com.llsvc.domain.Client;
+			import com.llsvc.domain.events.CompanyEvent;
+			import com.llsvc.domain.Company;
+			
+			private var _company:Company;
+			[Bindable]
+			public function get company():Company { return _company; }
+			public function set company(value:Company):void 
+			{
+				_company = value;
+			}
+			
+			private function btnAddClientClickHandler():void 
+			{
+				dispatchEvent(new CompanyEvent("addClientRequest", company));
+			}
+			
+			private function btnEditClickHandler():void 
+			{
+				dispatchEvent(new CompanyEvent("editCompanyRequest", company));
+			}
+			
+			private function btnDeleteClickHandler():void 
+			{
+				dispatchEvent(new CompanyEvent("deleteCompanyRequest", company));
+			}
+			
+			private function dgClientsDoubleClickHandler():void 
+			{
+				var client:Client = dgClients.selectedItem as Client;
+				dispatchEvent(new ClientEvent("selectClientRequest", client));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#ffffee"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+		<mx:VBox width="100%" height="100%">
+			<mx:Label text="Company: {company.name}" fontWeight="bold" fontSize="14"/>
+			<mx:Label text="Description:" fontWeight="bold" fontSize="14"/>
+			<mx:Text text="{company.description}" width="100%"/>
+		</mx:VBox>
+
+		<mx:VBox width="100%">
+			<mx:Label text="Clients:" fontWeight="bold" fontSize="14"/>
+			<mx:DataGrid id="dgClients" width="100%" height="100%" dataProvider="{company.clients}"
+				doubleClickEnabled="true" doubleClick="dgClientsDoubleClickHandler()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name" headerText="Client Name"/>
+					<mx:DataGridColumn dataField="personStr" headerText="Contact person"/>
+					<mx:DataGridColumn dataField="phoneStr" headerText="Phones"/>
+					<mx:DataGridColumn dataField="addressStr" headerText="Address"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button height="24" label="Add new Client" click="btnAddClientClickHandler()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:HRule width="100%"/>
+		
+	<mx:HBox width="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:Spacer width="100%"/>
+		<mx:Button height="24" label="Edit" click="btnEditClickHandler()"/>
+		<mx:Button height="24" label="Delete" click="btnDeleteClickHandler()"/>
+	</mx:HBox>
+	
+</mx:VBox>

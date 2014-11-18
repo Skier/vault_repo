@@ -1,0 +1,482 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://systinet.com/wasp/package/1.2"
+    xmlns:tns="http://systinet.com/wasp/package/1.2" elementFormDefault="qualified"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <xsd:annotation>
+        <xsd:documentation>
+
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="documentation">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="description" type="xsd:string" minOccurs="0"/>       <!-- optional -->
+                <xsd:element name="display-name" type="xsd:string" minOccurs="1"/>      <!-- required -->
+                <xsd:element name="large-icon" type="xsd:anyURI" minOccurs="0"/>        <!-- optional -->
+                <xsd:element name="small-icon" type="xsd:anyURI" minOccurs="0"/>        <!-- optional -->
+            </xsd:all>
+            <xsd:attribute name="url" type="xsd:anyURI" use="optional"/>                <!-- optional -->
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="named">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>                   <!-- required -->
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="implementable">
+        <xsd:attribute name="implementation-class" type="xsd:string" use="required"/>   <!-- required -->
+    </xsd:attributeGroup>
+
+    <xsd:simpleType name="qNameOrAsterisk">
+        <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base='xsd:QName'/>
+            </xsd:simpleType>
+            <xsd:simpleType>
+                <xsd:restriction base='xsd:string'>
+                    <xsd:enumeration value='*'/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="qNameOrAsteriskList">
+        <xsd:list itemType="tns:qNameOrAsterisk"/>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="qNameList">
+        <xsd:list itemType="xsd:QName">
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="nMTOKENList">
+        <xsd:list itemType="xsd:NMTOKEN">
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:attributeGroup name="ordered">
+        <xsd:attribute name="preceding-parts" type="tns:qNameOrAsteriskList" use="optional"/>     <!-- optional -->
+        <xsd:attribute name="following-parts" type="tns:qNameOrAsteriskList" use="optional"/>     <!-- optional -->
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="named-implementable">
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attributeGroup ref="tns:implementable"/>                                   <!-- required -->
+    </xsd:attributeGroup>
+
+    <xsd:complexType name="dependency">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="ref" type="xsd:QName" use="required"/>                     <!-- required -->
+        <xsd:attribute name="version" type="xsd:string" use="required"/>                <!-- required -->
+        <xsd:attribute name="location" type="xsd:anyURI" use="optional"/>               <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:complexType name="packager">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="1"/>                  <!-- required -->
+            <xsd:element name="email" type="xsd:string" minOccurs="0"/>                 <!-- optional -->
+            <xsd:element name="company" type="xsd:string" minOccurs="0"/>               <!-- optional -->
+            <xsd:element name="url" type="xsd:anyURI" minOccurs="0"/>                   <!-- optional -->
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="interceptor-direction">
+        <xsd:list>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="in"/>
+                    <xsd:enumeration value="out"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:element name="interceptor" type="tns:interceptor"/>
+    <xsd:complexType name="interceptor">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation" minOccurs="0"/>                        <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+        <xsd:attribute name="direction" type="tns:interceptor-direction"
+            default="in out" use="optional"/>                                           <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="transport" type="tns:transport"/>
+    <xsd:complexType name="transport">
+        <xsd:sequence>
+            <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+        <xsd:attribute name="preload" type="xsd:boolean" default="true" use="optional"/><!-- optional -->
+        <xsd:attribute name="scheme" type="xsd:string" use="required"/>                 <!-- required -->
+        <xsd:attribute name="default-server" type="xsd:boolean" default="false" use="optional"/><!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="module" type="tns:module"/>
+    <xsd:complexType name="module">
+        <xsd:sequence>
+            <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="serialization" type="tns:serialization"/>
+    <xsd:complexType name="serialization">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation" minOccurs="0"/>                        <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attribute name="serializer-class" type="xsd:string"/>
+        <xsd:attribute name="deserializer-class" type="xsd:string"/>                    <!-- either serializer or deserializer class required -->
+        <xsd:attribute name="serialized-class" type="xsd:string" use="optional"/>       <!-- optional -->
+        <xsd:attribute name="serialized-type" type="xsd:QName" use="optional"/>         <!-- optional -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="fault-serialization" type="tns:fault-serialization"/>
+    <xsd:complexType name="fault-serialization">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attribute name="serializer-class" type="xsd:string"/>
+        <xsd:attribute name="deserializer-class" type="xsd:string"/>                    <!-- either serializer or deserializer class required -->
+        <xsd:attribute name="serialized-exception-class" type="xsd:string"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="fault-code" type="xsd:QName" use="optional"/>              <!-- optional -->
+        <xsd:attribute name="fault-actor" type="xsd:string" use="optional"/>            <!-- optional -->
+        <xsd:attribute name="fault-detail" type="xsd:QName" use="optional"/>            <!-- optional -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="use">
+        <xsd:complexType>
+            <xsd:attribute name="ref" type="xsd:string" use="required"/>               <!-- required -->
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="header-processor-direction">
+        <xsd:list>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="in"/>
+                    <xsd:enumeration value="out"/>
+                    <xsd:enumeration value="in-fault"/>
+                    <xsd:enumeration value="out-fault"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:element name="header-processor" type="tns:header-processor"/>
+    <xsd:complexType name="header-processor">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:schema"/>                                             <!-- optional -->
+            <xsd:element ref="tns:header"/>                                             <!-- optional -->
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+        <xsd:attribute name="needs-body" type="xsd:boolean"
+            default="false" use="optional"/>                                            <!-- optional -->
+        <xsd:attribute name="direction" type="tns:header-processor-direction"
+                       default="in out in-fault out-fault" use="optional"/>             <!-- optional -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+        <xsd:attribute name="understands" type="tns:qNameList" use="optional"/>         <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="header" type="tns:header"/>
+    <xsd:complexType name="header">
+        <xsd:attribute name="name" type="xsd:QName" use="required"/>
+        <xsd:attribute name="class" type="xsd:string" use="optional"/>
+        <xsd:attribute name="direction" type="tns:header-direction" use="optional" default="in out"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="header-direction">
+        <xsd:list>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="in"/>
+                    <xsd:enumeration value="out"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:element name="handler" type="tns:handler"/>
+    <xsd:complexType name="handler">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:schema"/>                                             <!-- optional -->
+            <xsd:element ref="tns:header"/>                                             <!-- optional -->
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+        <xsd:attribute name="direction" type="tns:handler-direction"
+                       default="in out fault" use="optional"/>                          <!-- optional -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:simpleType name="handler-direction">
+        <xsd:list>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="in"/>
+                    <xsd:enumeration value="out"/>
+                    <xsd:enumeration value="fault"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:list>
+    </xsd:simpleType>
+
+    <xsd:element name="package" type="tns:package"/>
+    <xsd:complexType name="package">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element name="dependency" type="tns:dependency"/>                      <!-- optional -->
+            <xsd:element name="packager" type="tns:packager"/>                          <!-- optional -->
+            <xsd:element name="license" type="xsd:anyURI"/>                             <!-- optional -->
+            <xsd:element name="location" type="xsd:anyURI"/>                            <!-- optional -->
+            <xsd:element ref="tns:interceptor" />                                       <!-- optional -->
+            <xsd:element ref="tns:serialization"/>                                      <!-- optional -->
+            <xsd:element ref="tns:service-instance"/>                                   <!-- optional -->
+            <xsd:element ref="tns:processing"/>                                         <!-- optional -->
+            <xsd:element ref="tns:service-endpoint"/>                                   <!-- optional -->
+            <xsd:element ref="tns:service-client"/>                                     <!-- optional -->
+            <xsd:element ref="tns:header-processor"/>                                   <!-- optional -->
+            <xsd:element ref="tns:handler"/>                                            <!-- optional -->
+            <xsd:element ref="tns:fault-serialization"/>                                <!-- optional -->
+            <xsd:element ref="tns:export"/>                                             <!-- optional -->
+            <xsd:element ref="tns:transport"/>                                          <!-- optional -->
+            <xsd:element ref="tns:module"/>                                             <!-- optional -->
+            <xsd:element ref="tns:type-mapping"/>                                       <!-- optional -->
+            <xsd:element ref="tns:listener"/>                                           <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>                   <!-- required -->
+        <xsd:attribute name="version" type="xsd:string" use="required"/>                <!-- required -->
+        <xsd:attribute name="library" type="xsd:boolean" default="false"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="targetNamespace" type="xsd:string" use="required"/>        <!-- required -->
+        <xsd:attribute name="client-package" type="xsd:boolean" default="false"
+            use="optional"/>                                                            <!-- optional -->
+
+    </xsd:complexType>
+
+    <xsd:simpleType name="instantiation-policy">
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="per-client"/>
+            <xsd:enumeration value="shared"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="service-instance" type="tns:service-instance"/>
+    <xsd:complexType name="service-instance">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element ref="tns:attributes"/>                                         <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+        <xsd:attribute name="max-instances" type="xsd:integer" use="optional"/>         <!-- optional -->
+        <xsd:attribute name="preload" type="xsd:boolean" default="false"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="instantiation-method" type="tns:instantiation-policy"
+            default="shared" use="optional"/>                                           <!-- optional -->
+        <xsd:attribute name="ttl" type="xsd:integer" use="optional"/>                   <!-- optional -->
+    </xsd:complexType>
+
+
+    <xsd:simpleType name="service-type">
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="java"/>
+            <xsd:enumeration value="xml"/>
+            <xsd:enumeration value="raw"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:element name="service-endpoint" type="tns:service-endpoint"/>
+    <xsd:complexType name="service-endpoint">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element ref="tns:wsdl"/>                                               <!-- optional -->
+            <xsd:element ref="tns:attributes"/>                                         <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attribute name="path" type="xsd:anyURI" use="required"/>                   <!-- required -->
+        <xsd:attribute name="url" type="xsd:anyURI" use="optional"/>                    <!-- optional -->
+        <xsd:attribute name="interface" type="xsd:string" use="optional"/>              <!-- optional -->
+        <xsd:attribute name="version" type="xsd:string" use="optional"/>                <!-- optional -->
+        <xsd:attribute name="service-type" type="tns:service-type" use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="service-instance" type="xsd:QName" use="required"/>        <!-- required -->
+        <xsd:attribute name="processing" type="xsd:QName"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="initiating-security-provider" type="xsd:NMTOKEN"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="accepting-security-providers" type="tns:nMTOKENList"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="listeners" type="tns:qNameList" use="optional"/>           <!-- optional -->
+    </xsd:complexType>
+
+
+    <xsd:element name="service-client" type="tns:service-client"/>
+    <xsd:complexType name="service-client">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element ref="tns:attributes"/>
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attribute name="url" type="xsd:anyURI"/>
+        <xsd:attribute name="port-name" type="xsd:QName"/>                              <!-- either url or port-name required -->
+        <xsd:attribute name="async-transport" type="xsd:string" use="optional"/>        <!-- optional -->
+        <xsd:attribute name="async-timeout" type="xsd:integer" use="optional"/>         <!-- optional -->
+        <xsd:attribute name="processing" type="xsd:QName" use="optional"/>              <!-- optional -->
+        <xsd:attribute name="initiating-security-provider" type="xsd:NMTOKEN"
+            use="optional"/>                                                            <!-- optional -->
+        <xsd:attribute name="listeners" type="tns:qNameList" use="optional"/>           <!-- optional -->
+    </xsd:complexType>
+
+
+    <xsd:element name="wsdl" type="tns:wsdl"/>
+    <xsd:complexType name="wsdl">
+        <xsd:attribute name="uri" type="xsd:anyURI" use="optional"/>                    <!-- optional -->
+        <xsd:attribute name="service" type="xsd:QName" use="optional"/>                 <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="export" type="tns:export"/>
+    <xsd:complexType name="export">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element ref="tns:use"/>                                                <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="push" type="xsd:boolean" default="false" use="optional"/>  <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="processing" type="tns:processing"/>
+    <xsd:complexType name="processing">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation"/>                                      <!-- optional -->
+            <xsd:element ref="tns:interceptor" />                                       <!-- optional -->
+            <xsd:element ref="tns:serialization"/>                                      <!-- optional -->
+            <xsd:element ref="tns:header-processor"/>                                   <!-- optional -->
+            <xsd:element ref="tns:fault-serialization"/>                                <!-- optional -->
+            <xsd:element ref="tns:type-mapping"/>                                       <!-- optional -->
+            <xsd:element ref="tns:schema"/>                                             <!-- optional -->
+            <xsd:element ref="tns:handler"/>                                            <!-- optional -->
+            <xsd:element ref="tns:use"/>                                                <!-- optional -->
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attribute name="ignore-pushed" type="xsd:boolean" default="false"
+             use="optional"/>                                                           <!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="type-mapping" type="tns:type-mapping"/>
+    <xsd:complexType name="type-mapping">
+        <xsd:choice minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="type">                                                   <!-- required -->
+                <xsd:complexType>
+                    <xsd:attribute name="name" type="xsd:QName" use="required"/>        <!-- required -->
+                    <xsd:attribute name="maps-to" type="xsd:string" use="required"/>    <!-- required -->
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named"/>                                           <!-- required -->
+        <xsd:attributeGroup ref="tns:ordered"/>                                         <!-- optional -->
+        <xsd:attribute name="language" type="xsd:string" default="java" use="optional"/><!-- optional -->
+    </xsd:complexType>
+
+    <xsd:element name="schema" type="tns:schema"/>
+    <xsd:complexType name="schema">
+        <xsd:attribute name="namespaceURI" type="xsd:anyURI" use="required"/>           <!-- required -->
+        <xsd:attribute name="location" type="xsd:anyURI" use="required"/>               <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="attributes" type="tns:attributes"/>
+    <xsd:complexType name="attributes">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:class"/>                                              <!-- optional -->
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:element name="class" type="tns:class"/>
+    <xsd:complexType name="class">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:attribute"/>                                          <!-- optional -->
+            <xsd:element ref="tns:field"/>                                              <!-- optional -->
+            <xsd:element ref="tns:method"/>                                             <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>                   <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="attribute" type="tns:attribute"/>
+    <xsd:complexType name="attribute">
+        <xsd:attribute name="key" type="xsd:string" use="required"/>                   <!-- required -->
+        <xsd:attribute name="value" type="xsd:string" use="optional"/>                 <!-- optional -->
+    </xsd:complexType>
+
+   <xsd:element name="field" type="tns:field"/>
+    <xsd:complexType name="field">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:attribute"/>                                          <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>                   <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="method" type="tns:method"/>
+    <xsd:complexType name="method">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:attribute"/>                                          <!-- optional -->
+            <xsd:element ref="tns:parameter"/>                                          <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>                   <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="parameter" type="tns:parameter"/>
+    <xsd:complexType name="parameter">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:attribute"/>                                           <!-- optional -->
+        </xsd:choice>
+        <xsd:attribute name="number" type="xsd:integer" use="required"/>                 <!-- required -->
+    </xsd:complexType>
+
+    <xsd:element name="listener" type="tns:listener"/>
+    <xsd:complexType name="listener">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="tns:documentation" minOccurs="0"/>                        <!-- optional -->
+            <xsd:sequence>
+                <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:choice>
+        <xsd:attributeGroup ref="tns:named-implementable"/>                             <!-- required -->
+    </xsd:complexType>
+
+</xsd:schema>

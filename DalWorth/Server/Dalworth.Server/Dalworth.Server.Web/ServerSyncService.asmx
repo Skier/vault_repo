@@ -1,0 +1,1 @@
+<%@ WebService Language="C#" CodeBehind="ServerSyncService.asmx.cs" Class="Dalworth.Server.Web.ServerSyncService" %>

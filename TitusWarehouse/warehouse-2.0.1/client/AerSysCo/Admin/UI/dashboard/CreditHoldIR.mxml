@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalAlign="center" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CustomerUI;
+		
+			private function onClick():void 
+			{
+				var item:CustomerUI = CustomerUI(data);
+				item.setMemento();
+				item.creditStatus = !item.creditStatus;
+				DashboardView(parentDocument).controller.saveCustomer(data as CustomerUI);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:CheckBox id="cbCredit" 
+		label="" 
+		selected="{!CustomerUI(data).creditStatus}"
+		click="onClick()"
+		enabled="{CustomerUI(data).enabled}"/>
+</mx:HBox>

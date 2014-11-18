@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:lm="com.llsvc.client.lm.*"
+    >
+    
+    <lm:LeaseManagerController id="controller" view="{this}"/>
+
+    <mx:ViewStack id="vsLM" width="100%" height="100%" creationPolicy="all">
+    	<lm:LeaseAssignmentListView id="cLMListAssignment" controller="{controller}"/>
+    	<lm:LeaseListView id="cLMList" controller="{controller}"/>
+        <mx:Canvas id="cLMDoc" width="100%" height="100%" horizontalScrollPolicy="off">
+            <mx:VBox height="100%" width="100%">
+                <lm:LeaseDocumentView id="cLMDocContent" width="100%"/>
+                <mx:HBox horizontalAlign="center" width="100%">
+                    <mx:Button label="Save" click="{controller.onSaveLPRClick()}"/>
+                    <mx:Button label="Cancel" click="{controller.onCancelLPRClick()}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:Canvas>
+    </mx:ViewStack>
+
+</mx:Canvas>

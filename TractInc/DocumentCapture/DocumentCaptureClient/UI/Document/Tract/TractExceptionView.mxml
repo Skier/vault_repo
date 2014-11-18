@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    close="OnClose(event);" 
+    creationComplete="OnCreationComplete();" 
+    title="Exception" 
+    showCloseButton="true"
+    width="400"
+    >
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        	import mx.managers.PopUpManager;
+        	import Domain.Tractexception;
+
+            [Bindable]
+            public var exception:Tractexception;
+            
+            public var parentCollection:ArrayCollection;
+            
+	        public function OnCreationComplete():void {
+	            PopUpManager.centerPopUp(this);
+	            focusManager.setFocus(refName);
+	        }
+	
+	        public function OnClose(event:Event):void {
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        public function OnOk(event:Event):void {
+	        	
+	        	if (!this.IsValid()) {
+	        		return;
+	        	}
+	        	
+	        	if (exception.isNew){
+	        		parentCollection.addItem(exception);
+	        		exception.isNew = false;
+	        	}
+
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        private function IsValid():Boolean {
+	        	return true;
+	        }
+            
+        ]]>
+    </mx:Script>
+
+	<mx:Form width="100%" height="100%">
+		<mx:FormItem label="Reference Name:">
+			<mx:TextInput id="refName" maxChars="50"
+				text="{exception.RefName}" 
+				change="(exception.RefName = refName.text.toUpperCase())"/>
+		</mx:FormItem>
+		<mx:FormItem label="Called AC">
+			<mx:TextInput id="calledAC" maxChars="50"
+				text="{exception.CalledAC}" 
+				change="(exception.CalledAC = calledAC.text.toUpperCase())"/>
+		</mx:FormItem>
+	</mx:Form>
+
+
+    <mx:ControlBar width="100%">
+        <mx:Spacer width="100%" height="10"/>
+        <mx:Button id="btnAdd" label="Ok" click="OnOk(event)" 
+        	enabled="{refName.text.length != 0 || calledAC.text.length != 0}"/>
+        <mx:Button id="btnCancel" label="Cancel" click="OnClose(event)"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

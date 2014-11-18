@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    width="100%" title="Server Settings" showCloseButton="true"
+    creationComplete="Controller.OnCreated()" 
+    close="Controller.OnClose()">
+
+    <mx:states>
+        <mx:State name="smtp_auth">
+            <mx:SetProperty target="{formitem1}" name="visible" value="true"/>
+            <mx:SetProperty target="{formitem1}" name="includeInLayout" value="true"/>
+            <mx:SetProperty target="{formitem2}" name="visible" value="true"/>
+            <mx:SetProperty target="{formitem2}" name="includeInLayout" value="true"/>
+            <mx:SetEventHandler target="{smtpAuthCheckBox}" name="change" handler="this.currentState = ''"/>
+        </mx:State>
+    </mx:states>
+                    
+    <mx:Script>
+        <![CDATA[
+            import UI.AppController;
+        
+            [Bindable]
+            private var Controller:SettingsController;
+            
+            public function set ParentController(controller:AppController):void{
+                Controller = new SettingsController(SettingsView(this), controller);
+            }
+                        
+        ]]>
+    </mx:Script>  
+
+    <mx:ArrayCollection id="ConnectionTypeList">
+        <mx:String>Regular</mx:String>
+        <mx:String>Secure to dedicated port (TLS)</mx:String>
+    </mx:ArrayCollection>
+
+    <mx:EmailValidator id="userEmailV" source="{userEmail}" property="text"/>
+    <mx:StringValidator id="smtpServerV"   source="{smtpServer}"   property="text"/>
+    <mx:StringValidator id="smtpPortV"     source="{smtpPort}"     property="text"/>
+    <mx:StringValidator id="smtpUserNameV" source="{smtpUserName}" property="text"/>
+    <mx:StringValidator id="smtpPasswordV" source="{smtpPassword}" property="text"/>
+    <mx:StringValidator id="popServerV"    source="{pop3Server}"   property="text"/>
+    <mx:StringValidator id="popPortV"      source="{pop3Port}"     property="text"/>
+    <mx:StringValidator id="pop3UserNameV" source="{pop3UserName}" property="text"/>
+    <mx:StringValidator id="pop3PasswordV" source="{pop3Password}" property="text"/>
+                                    
+    <mx:Form defaultButton="{okButton}">
+    
+        <mx:FormItem label="User Email:" required="true" width="100%">
+            <mx:TextInput id="userEmail" width="100%" text="{Controller.Model.Email}"/>
+        </mx:FormItem>
+        
+        <mx:FormHeading label="Send Mail"/>
+        <mx:FormItem label="SMTP Server:" required="true" width="100%">
+             <mx:TextInput id="smtpServer" width="100%" text="{Controller.Model.SmtpSettings.Host}"/>
+        </mx:FormItem>
+        <mx:FormItem label="SMTP Port:" required="true" width="100%">
+             <mx:TextInput id="smtpPort" width="50" text="{Controller.Model.SmtpSettings.Port}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Connection :" width="100%">
+            <mx:ComboBox id="smtpConnectionType" dataProvider="{ConnectionTypeList}" 
+                selectedIndex="{ (Controller.Model.SmtpSettings.IsRegularConnection) ? 0 : 1}" width="100%"/>
+        </mx:FormItem>
+        <mx:CheckBox label="Perform SMTP authentication" id="smtpAuthCheckBox"
+            selected="{Controller.Model.SmtpSettings.UserName.length > 0}"
+            change="this.currentState = 'smtp_auth'"/>
+        
+        <mx:FormItem label="User Name:" width="100%" id="formitem1" required="true"
+            visible="false" includeInLayout="false">
+             <mx:TextInput id="smtpUserName" width="100%" text="{Controller.Model.SmtpSettings.UserName}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Password:" width="100%" id="formitem2" required="true"
+            visible="false" includeInLayout="false">
+             <mx:TextInput id="smtpPassword" displayAsPassword="true" width="100%"
+                text="{Controller.Model.SmtpSettings.UserPassword}"/>
+        </mx:FormItem>
+    
+        <mx:FormHeading label="Receive Mail"/>
+        <mx:FormItem label="POP3 Server:" required="true" width="100%">
+             <mx:TextInput id="pop3Server" width="100%" text="{Controller.Model.Pop3Settings.Host}"/>
+        </mx:FormItem>
+        <mx:FormItem label="POP3 Port:" required="true">
+             <mx:TextInput id="pop3Port" text="{Controller.Model.Pop3Settings.Port}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Connection :" width="100%">
+            <mx:ComboBox id="pop3ConnectionType" dataProvider="{ConnectionTypeList}" 
+                selectedIndex="{ (Controller.Model.Pop3Settings.IsRegularConnection) ? 0 : 1}" width="100%"/>
+        </mx:FormItem>
+        <mx:FormItem label="User Name:" required="true" width="100%">
+             <mx:TextInput id="pop3UserName" width="100%"  text="{Controller.Model.Pop3Settings.UserName}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Password:" required="true" width="100%">
+             <mx:TextInput id="pop3Password" displayAsPassword="true" width="100%" text="{Controller.Model.Pop3Settings.UserPassword}"/>
+        </mx:FormItem>
+            
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" id="okButton" click="Controller.OnSave()"/>            
+        <mx:Button label="Cancel" id="cancelButton" click="Controller.OnClose()"/>
+    </mx:ControlBar>
+                
+</mx:TitleWindow>

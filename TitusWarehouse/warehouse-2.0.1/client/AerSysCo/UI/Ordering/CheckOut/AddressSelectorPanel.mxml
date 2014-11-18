@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    styleName="addressSelectorBox">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.events.ValidationResultEvent;
+            import AerSysCo.UI.Models.CustomerUI;
+            import AerSysCo.UI.Models.ShippingAddressUI;
+            import AerSysCo.Server.WarehouseService;
+            import AerSysCo.Service.WarehouseStorage;
+            import AerSysCo.Server.Context;
+            import AerSysCo.Server.ZipCheckResult;
+            import AerSysCo.UI.MainController;
+            import AerSysCo.UI.Models.RequestResultUI;
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.collections.ArrayCollection;
+            import mx.events.CollectionEventKind;
+            import mx.events.CollectionEvent;
+            import mx.rpc.Responder;
+            
+            [Bindable] public var currentCustomer:CustomerUI;
+
+            [Bindable] public var currentAddress:ShippingAddressUI;
+            
+            private const LABEL_WIDTH:int = 120;
+            private const cityList:ArrayCollection = new ArrayCollection();
+            
+            public function get address():ShippingAddressUI 
+            {
+            	var notPopulatedFields :String = "";
+                var isValid:Boolean = true;
+                
+                if (valCountry.validate().type == ValidationResultEvent.INVALID) {
+                    isValid = false;
+                    notPopulatedFields = notPopulatedFields + " 'Enter a Country'";
+                }
+                
+                if (valName.validate().type == ValidationResultEvent.INVALID) {
+                    isValid = false;
+                    notPopulatedFields = notPopulatedFields + " 'Enter a Recipient'";
+                } 
+                
+                if (valAddress1.validate().type == ValidationResultEvent.INVALID) {
+                    isValid = false;
+                    notPopulatedFields = notPopulatedFields + " 'Enter an Street Address 1'";
+                }
+                
+                if (valAddress2.validate().type == ValidationResultEvent.INVALID) {
+                    isValid = false;
+                    notPopulatedFields = notPopulatedFields + " 'Enter an Street Address 2'";
+                }
+
+                if ( "CA" != cbCountries.selectedLabel ) {
+                    if (valCity.validate().type == ValidationResultEvent.INVALID) {
+                       isValid = false;
+                       notPopulatedFields = notPopulatedFields + " 'Enter a City' ";
+                    }
+                } else if( 1 == vsCity.selectedIndex ) {
+                	if ( -1 == cbCity.selectedIndex ) {
+                        isValid = false;
+                        notPopulatedFields = notPopulatedFields + " 'Select a City'";
+                    }
+                }
+                
+                if (!isValid )  {
+                    Alert.show("All required fields ["+notPopulatedFields+"] must be populated to Calculate Shipping Charges.");
+                    return null;
+                }
+
+                var address:ShippingAddressUI = new ShippingAddressUI();
+                    address.customerId = currentCustomer.customerId;
+                    address.name = txtName.text;
+                    address.country = cbCountries.selectedLabel;
+                    address.address1 = txtAddress1.text;
+                    address.address2 = txtAddress2.text;
+                    if ( 0 == vsCity.selectedIndex ) {
+                        address.city = txtCity.text;
+                    } else if ( cbCity.visible ) {
+                        address.city = cbCity.selectedLabel;
+                    }                    
+                    address.state = txtState.text;
+                    address.zip = txtZip.text;
+                
+                for each (var addr:ShippingAddressUI in currentCustomer.shipmentAddresses) 
+                {
+                    if (address.isEqual(addr)) 
+                    {
+                        return addr;
+                    }
+                }
+
+                return address;
+            }
+            
+            public function reset():void 
+            {
+                currentAddress = currentCustomer.shoppingCart.shippingAddress;
+                setAddressCombo();
+            }
+            
+            private function setAddressCombo():void 
+            {
+                for (var i:int = 0; i < currentCustomer.shipmentAddresses.length; i++) 
+                {
+                    var sa:ShippingAddressUI = currentCustomer.shipmentAddresses[i] as ShippingAddressUI;
+                    if (sa.addressId == currentAddress.addressId) {
+                        cbAddresses.selectedIndex = i;
+                        return;
+                    }
+                }
+                
+                cbAddresses.selectedIndex = -1;
+                cityList.removeAll();
+   		        txtState.text = "";
+            }
+            
+            private function cbAddressesChangeHandler():void 
+            {
+                currentAddress = cbAddresses.selectedItem as ShippingAddressUI;
+   		        cityList.removeAll();
+                setCombos();
+                countryChangeHandler();
+                zipChangeHandler();
+            }
+            
+            private function setCombos():void 
+            {
+                cbCountries.selectedItem = countries.country.(@code == currentAddress.country);
+            }
+            
+            private function countryChangeHandler():void {
+                if ( "CA" == cbCountries.selectedLabel ) {
+                	vsCity.selectedIndex = 1;
+                } else {
+                	vsCity.selectedIndex = 0;
+                }
+   		        cityList.removeAll();
+   		        txtState.text = "";
+            }   
+            
+            private function zipChangeHandler():void {
+ 		        cbCity.enabled = false;
+ 		        cityList.removeAll();
+   		        txtState.text = "";
+            	if ( "CA" == cbCountries.selectedLabel ) {
+            		txtZip.text = txtZip.text.toUpperCase().replace(" ","");
+            		if ( 3 < txtZip.text.length ) {
+            			txtZip.text = txtZip.text.substr(0,3)+" "+txtZip.text.substr(3,txtZip.text.length-3);
+            		}
+            	}
+                
+                WarehouseStorage.getInstance().checkZipCode(
+                    MainController.getInstance().model.context, 
+                    txtZip.text, 
+                    cbCountries.selectedLabel, 
+                    new mx.rpc.Responder(
+                        function (event:ResultEvent):void  {
+                            var checkZipResult:ZipCheckResult = event.result as ZipCheckResult;
+                            if (checkZipResult.result.status == RequestResultUI.SUCCESS) {
+                                txtState.text = checkZipResult.state;
+                                if ( "CA" == cbCountries.selectedLabel ) {
+                                	cityList.removeAll();
+                                	for each (var city:String  in checkZipResult.cities ) {
+                                		cityList.addItem(city);
+                                	}
+                                	if ( 1 < checkZipResult.cities.length ) {
+                                		if ( null != currentAddress 
+                                		     && null != currentAddress.city 
+                                		     && cityList.contains(currentAddress.city)) 
+                                		{
+                            				cbCity.selectedItem = currentAddress.city;
+                            			} else {
+                               		        cbCity.selectedIndex = -1;
+                            			}
+                                		cbCity.enabled = true;
+                                	} else {
+                                		cbCity.selectedIndex = 0;
+                                	}
+                                } else {
+                                    txtCity.text = checkZipResult.cities[0];
+                                }    
+                            } else if (checkZipResult.result.status == RequestResultUI.ERROR) {
+                                txtState.text = "";
+                                txtCity.text = "";
+                                Alert.show("Check Zip. Error: " + checkZipResult.result.message, "Zip code is not valid.");
+                            } else  {
+                                txtState.text = "";
+                                txtCity.text = "";
+                                Alert.show("Server internal error. Please contact site Administrator.", "Internal Server Error.");
+                            }
+                        },
+                        function (event:FaultEvent):void {
+                            Alert.show("Check Zip code Fault: " + event.fault.message);
+                        }
+                    )
+                )
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:XML id="countries" source="/data/countries.xml" />
+
+    <mx:StringValidator id="valName" source="{txtName}" property="text" maxLength="30" minLength="2" required="true"/>
+    <mx:StringValidator id="valAddress1" source="{txtAddress1}" property="text" maxLength="30" minLength="2" required="true"/>
+    <mx:StringValidator id="valAddress2" source="{txtAddress2}" property="text" maxLength="30" required="false"/>
+    <mx:StringValidator id="valCity" source="{txtCity}" property="text" maxLength="27" minLength="2" required="true"/>
+<!--    <mx:StringValidator id="valZip" source="{txtZip}" property="text" maxLength="9" minLength="4" required="true"/> -->
+
+    <mx:StringValidator id="valCountry" source="{cbCountries}" property="selectedLabel" maxLength="2" minLength="2" required="true"/>
+
+    <mx:HBox width="100%">
+        <mx:Label width="{LABEL_WIDTH}" text="Ship To History:" textAlign="right" fontWeight="bold"/>
+
+        <mx:ComboBox id="cbAddresses"
+            width="100%"
+            prompt="Use Prior Ship To Address"
+            dataProvider="{currentCustomer.shipmentAddresses}"
+            labelField="addressLabel"
+            change="cbAddressesChangeHandler()"/>
+    </mx:HBox>
+    
+    <mx:VBox width="100%">
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="Country:" textAlign="right"/>
+            
+            <mx:ComboBox id="cbCountries"
+                dataProvider="{countries.country}"
+                labelField="@code"
+                change="countryChangeHandler()" />
+        </mx:HBox>
+        
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="Postal Code:" textAlign="right"/>
+
+            <mx:TextInput id="txtZip" text="{currentAddress.zip}" width="80" maxChars="9"
+                focusOut="zipChangeHandler()"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="Recipient:" textAlign="right"/>
+            
+            <mx:TextInput id="txtName" text="{currentAddress.name}" width="100%" maxChars="30"
+                focusOut="txtName.text = txtName.text.toUpperCase()"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="Street Address 1:" textAlign="right"/>
+            
+            <mx:TextInput id="txtAddress1" text="{currentAddress.address1}" width="100%" maxChars="30"
+                focusOut="txtAddress1.text = txtAddress1.text.toUpperCase()"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="Street Address 2:" textAlign="right"/>
+            
+            <mx:TextInput id="txtAddress2" text="{currentAddress.address2}" width="100%" maxChars="30"
+                focusOut="txtAddress2.text = txtAddress2.text.toUpperCase()"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:Label width="{LABEL_WIDTH}" text="City:" textAlign="right"/>
+
+		<mx:ViewStack id="vsCity" width="100%" creationPolicy="all">
+			<mx:Canvas width="100%"  >
+  			    <mx:TextInput id="txtCity" text="{currentAddress.city}"  width="100%" maxChars="17"
+			  		focusOut="txtCity.text = txtCity.text.toUpperCase()"
+                    includeInLayout="{'CA' != cbCountries.selectedLabel}"
+                    enabled="false"
+			  	/>
+			</mx:Canvas>
+<!--
+			  		enabled="{'MX' == cbCountries.selectedLabel}"
+			  		visible="{'CA' != cbCountries.selectedLabel}" 
+			  		enabled="{'CA' == cbCountries.selectedLabel}" 
+			  		visible="{'CA' == cbCountries.selectedLabel}" 
+-->
+			
+			<mx:Canvas width="100%" >
+			  	<mx:ComboBox id="cbCity" dataProvider="{cityList}"  width="100%"
+			  		prompt="Please select a city..."
+                    includeInLayout="{'CA' == cbCountries.selectedLabel}"
+                    enabled="false"
+                />
+			</mx:Canvas>
+		</mx:ViewStack>
+
+<!--            <mx:TextInput id="txtCity" text="{currentAddress.city}" width="100%" maxChars="17"
+                focusOut="txtCity.text = txtCity.text.toUpperCase()"/>
+-->
+            <mx:Label text=" State:"/>
+
+            <mx:TextInput id="txtState"
+			  	enabled="false"/>
+
+        </mx:HBox>
+    </mx:VBox>
+</mx:VBox>

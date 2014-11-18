@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service"
+    class="Weborb.V3Types.Core.RemotingHandler"
+    messageTypes="flex.messaging.messages.RemotingMessage">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+    
+    <destination id="computerinfo">
+        <properties>
+            <source>weborb.examples.quickstart.ComputerInfoService</source>
+        </properties>
+    </destination>
+    
+    <destination id="autoupdater">
+        <properties>
+            <source>Weborb.Service.AutoUpdater</source>
+        </properties>
+    </destination>
+    
+    <destination id="ApplicationManager">
+        <properties>
+            <source>FlexStore.ApplicationManager.ProductFetcher</source>
+        </properties>
+    </destination>      
+
+    <destination id="WeborbManagement">
+        <properties>
+            <source>Weborb.Management.ManagementService</source>
+        </properties>
+    </destination>      
+    
+    <destination id="SecureTest">
+        <properties>
+            <source>Weborb.Examples.InvocationTests.SecureTest</source>
+        </properties>
+        <security>
+          <security-constraint>
+  	    <auth-method>Custom</auth-method>
+	      <roles>
+	        <role>administrator</role>
+	      </roles>
+          </security-constraint>        
+        </security>        
+    </destination>      
+    
+    <destination id="AccountBalanceDestination">
+        <properties>
+            <source>Weborb.Examples.AccountBalance</source>
+        </properties>
+        <security>
+          <security-constraint>
+  	    <auth-method>Custom</auth-method>
+	      <roles>
+	        <role>examplesuser</role>
+	      </roles>
+          </security-constraint>        
+        </security>        
+    </destination>          
+
+    <destination id="GenericDestination">
+        <properties>
+            <source>*</source>
+        </properties>
+    </destination>      
+</service>

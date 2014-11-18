@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:document="tractIncClientApp.document.*"
+    borderColor="#666666" borderStyle="solid" backgroundColor="#ffffdd"
+    paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+    verticalGap="2">
+
+    <mx:Metadata>
+        [Event(name="openTract", type="mx.events.DynamicEvent")]
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import tractIncClientApp.services.DocumentService;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.AsyncToken;
+            import mx.core.Application;
+            import tractIncClientApp.document.DocumentReferenceEvent;
+            import tractIncClientApp.document.DocumentEvent;
+            import mx.events.CloseEvent;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import flash.net.navigateToURL;
+            import truetract.domain.*;
+            import mx.rpc.Responder;
+            
+            import mx.events.DynamicEvent;
+            import mx.controls.Alert;
+            
+            private var _docum:Document;
+            public function get docum():Document { return _docum; }
+            [Bindable] public function set docum(doc:Document):void
+            {
+                _docum = doc;
+            }
+            
+            public var caller:*;
+            
+            private function fileNameFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.FileName : "";
+            }
+
+            private function fileDescriptionFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.Description : "";
+            }
+            
+            public function openDocument(document:Document, mode:String = null):void 
+            {
+                var event:DocumentEvent = new DocumentEvent("openDocument", document, null, mode);
+                dispatchEvent(event);
+            }
+
+            private function openFile_clickHandler():void
+            {
+                var attach:DocumentAttachment = DocumentAttachment(fileList.selectedItem);
+                var urlRequest:URLRequest = new URLRequest(attach.FileRef.FileUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+
+            private function tractList_doubleClickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("openTract");
+                event.tract = Tract(tractList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+            private function dgReferenceDoubleClickHandler():void 
+            {
+                var reference:DocumentReference = dgReferences.selectedItem as DocumentReference;
+
+                if (reference != null) 
+                {
+                    dispatchEvent(new DocumentReferenceEvent(DocumentReferenceEvent.OPEN_REFERENCE, reference));
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <document:DocumentFieldsView width="100%" docum="{docum}"/>
+
+    <mx:TabNavigator id="tnDetails"
+        width="100%" height="100%" 
+        paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+        backgroundAlpha="0.52">
+
+        <mx:VBox id="tractsBox" label="Tracts" width="100%" height="100%">
+            <mx:DataGrid id="tractList"
+                borderThickness="0"
+                dataProvider="{docum.TractsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="tractList_doubleClickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+                        itemRenderer="tractIncClientApp.document.TractStatusIR" sortable="false"/>
+                    <mx:DataGridColumn headerText="Ref.Name" dataField="RefName"/>
+                    <mx:DataGridColumn headerText="Called" dataField="calledString" width="150"/>
+                </mx:columns>
+            </mx:DataGrid>
+        </mx:VBox>
+
+        <mx:VBox id="filesBox" label="Files" width="100%" height="100%">
+            <mx:DataGrid id="fileList"
+                borderThickness="0"
+                dataProvider="{docum.AttachmentsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="openFile_clickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="File Name" labelFunction="fileNameFunction"/>
+                    <mx:DataGridColumn headerText="Type" dataField="TypeName"/>
+                    <mx:DataGridColumn headerText="Description" labelFunction="fileDescriptionFunction"/>
+                </mx:columns>
+            </mx:DataGrid>
+        </mx:VBox>
+
+        <mx:VBox id="referencesBox" label="References" width="100%" height="100%">
+            <mx:DataGrid id="dgReferences"
+                borderThickness="0"
+                dataProvider="{docum.ReferencesList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="dgReferenceDoubleClickHandler()"
+                width="100%" height="100%" minWidth="300" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+                        itemRenderer="tractIncClientApp.document.ReferencedDocStatusIR" sortable="false"/>
+                    <mx:DataGridColumn headerText="Instrument" width="100" minWidth="100" dataField="DocumentTypeName"/>
+                    <mx:DataGridColumn headerText="Date Signed" width="70" minWidth="70" dataField="DateSigned"/>
+                    <mx:DataGridColumn headerText="Date Filed" width="70" minWidth="70" dataField="DateFiledDisplayValue"/>
+                    <mx:DataGridColumn headerText="Grantor" width="100" dataField="SellerName"/>
+                    <mx:DataGridColumn headerText="Grantee" width="100" dataField="BuyerName"/>
+                    <mx:DataGridColumn headerText="Description" dataField="Description"/>
+                    <mx:DataGridColumn headerText="status" width="74" minWidth="74" dataField="status"
+                        itemRenderer="tractIncClientApp.document.ReferencedDocStateIR" sortable="false"/>
+                </mx:columns>
+            </mx:DataGrid>
+        </mx:VBox>
+    </mx:TabNavigator>
+</mx:VBox>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.controller.SearchTreeDataDescriptor;
+			import com.titus.catalog.model.search.SearchResultPackage;
+			
+			[Bindable] public var searchResult:SearchResultPackage;
+			
+			private function btnSearchClickHandler():void 
+			{
+				searchResult = main.getStorage().search(txtSearch.text);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%">
+		<mx:TextInput id="txtSearch" width="100%"/>
+		<mx:Button id="btnSearch" label="Search" click="btnSearchClickHandler()"/>
+	</mx:HBox>
+    
+    <mx:Tree id="treeSearchResult"
+        dataProvider="{searchResult.sections}"
+        dataDescriptor="{new SearchTreeDataDescriptor}" 
+        labelField="name" 
+        width="100%" height="100%"/>
+</mx:VBox>

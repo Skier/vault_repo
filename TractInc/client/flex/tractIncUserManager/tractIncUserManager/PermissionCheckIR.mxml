@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle" horizontalGap="2">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.Permission;
+            
+            [Bindable]
+            override public function set data(value:Object):void{
+                super.data = value;
+                this.checkbox.selected=(data as Permission).Selected;
+            }
+            
+            private function checkPermissionOnClickHandler():void 
+            {
+                trace("PermissionCheckIR.checkPermissionOnClickHandler: data=" + data);
+                var perm:Permission = data as Permission;
+                perm.Selected = this.checkbox.selected;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:CheckBox id="checkbox" click="checkPermissionOnClickHandler()"/>
+
+</mx:HBox>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSourceTrackingPhone;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			
+			private function getLabel(obj:Object):String
+			{
+				if (obj is TrackingPhone)
+				{
+					if (TrackingPhone(obj).LeadSourceTrackingPhones == null || TrackingPhone(obj).LeadSourceTrackingPhones.length == 0)
+					{
+						return "[unassigned]";
+					}
+					else if (TrackingPhone(obj).LeadSourceTrackingPhones.length == 1)
+					{
+						var leadSourceId:int = LeadSourceTrackingPhone(TrackingPhone(obj).LeadSourceTrackingPhones[0]).LeadSourceId;
+						var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(leadSourceId) as LeadSource;
+						return ("exclusively to " + leadSource.Name);
+					}
+					else
+					{
+						return ("shared between " + TrackingPhone(obj).LeadSourceTrackingPhones.length.toString() + " Lead Sources");
+					} 
+				} else 
+				{
+					return "";
+				}
+			}
+			
+			private function getToolTip(obj:Object):String 
+			{
+				if (obj is TrackingPhone)
+				{
+					var leadSource:LeadSource;
+					
+					if (TrackingPhone(obj).LeadSourceTrackingPhones == null || TrackingPhone(obj).LeadSourceTrackingPhones.length == 0)
+					{
+						return "[unassigned]";
+					}
+					else if (TrackingPhone(obj).LeadSourceTrackingPhones.length == 1)
+					{
+						var leadSourceId:int = LeadSourceTrackingPhone(TrackingPhone(obj).LeadSourceTrackingPhones[0]).LeadSourceId;
+						leadSource = LeadSourceRegistry.getInstance().getLocal(leadSourceId) as LeadSource;
+						return ("exclusively to " + leadSource.Name);
+					}
+					else
+					{
+						var result:String = "shared betweeen:";
+						for each (var item:LeadSourceTrackingPhone in TrackingPhone(obj).LeadSourceTrackingPhones) 
+						{
+							result += "\n";
+							leadSource = LeadSourceRegistry.getInstance().getLocal(item.LeadSourceId) as LeadSource;
+							result += leadSource.Name;
+						}
+						return result;
+					} 
+				} else 
+				{
+					return "";
+				}
+			}
+
+			private function getColor(obj:Object):int
+			{
+				if (obj is TrackingPhone)
+				{
+					if (TrackingPhone(obj).LeadSourceTrackingPhones == null || TrackingPhone(obj).LeadSourceTrackingPhones.length == 0)
+						return 0x009900;
+					else if (TrackingPhone(obj).LeadSourceTrackingPhones.length == 1)
+						return 0x000099;
+					else 
+						return 0x990000;
+				} else 
+				{
+					return 0x000000;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{getLabel(data)}" color="{getColor(data)}" width="100%" textAlign="left" toolTip="{getToolTip(data)}"/>
+</mx:Canvas>

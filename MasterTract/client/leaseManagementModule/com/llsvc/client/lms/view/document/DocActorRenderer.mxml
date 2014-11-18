@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#eeeeee" borderStyle="solid" cornerRadius="2"
+	mouseDown="mouseDownHandler(event)" mouseMove="mouseMoveHandler(event)" mouseUp="mouseUpHandler(event)" xmlns:document="com.llsvc.client.lms.view.document.*">
+
+    <mx:Metadata>
+        [Event(name="editActorRequest", type="flash.events.Event")]
+        [Event(name="deleteActorRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DragEvent;
+			import mx.managers.DragManager;
+			import com.llsvc.domain.DocumentActorPhone;
+			import mx.events.ItemClickEvent;
+			import com.llsvc.domain.DocumentActor;
+			
+            [Embed(source="assets/icons16/arrow_down.png")]
+            [Bindable]
+            private var imgDown:Class;
+			
+            [Embed(source="assets/icons16/arrow_right.png")]
+            [Bindable]
+            private var imgRight:Class;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _actor:DocumentActor;
+			[Bindable]
+			public function get actor():DocumentActor {return _actor;}
+			public function set actor(value:DocumentActor):void 
+			{
+				_actor = value;
+			}
+			
+			[Bindable] private var expanded:Boolean = false;
+			
+			private function actorClickHandler():void 
+			{
+				toggleState();
+			}
+			
+			public function collapse():void 
+			{
+				expanded = false;
+			}
+			
+			public function expand():void 
+			{
+				expanded = true;
+			}
+			
+			public function toggleState():void 
+			{
+				expanded = !expanded;
+			}
+			
+	        private function buttonBarClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                	dispatchEvent(new Event("editActorRequest"));
+	                    break;
+	                case 1:
+	                	dispatchEvent(new Event("deleteActorRequest"));
+	                    break;
+	            }
+	        }
+
+// drag-n-drop functionality --------------------	        
+        
+            private var dragStartPoint:Point;
+
+            public function mouseDownHandler(event:MouseEvent):void
+            {
+                dragStartPoint = new Point(event.stageX, event.stageY);
+                dragStartPoint = globalToLocal(dragStartPoint);
+            }
+    
+            public function mouseMoveHandler(event:MouseEvent):void
+            {
+                if (dragStartPoint != null)
+                {
+                    var dragEvent:DragEvent = new DragEvent(DragEvent.DRAG_START, true);
+                    dragEvent.localX = dragStartPoint.x;
+                    dragEvent.localY = dragStartPoint.y;
+                    dragEvent.buttonDown = true;
+                    dispatchEvent(dragEvent);
+    
+                    dragStartPoint = null;
+                }
+            }
+    
+            public function mouseUpHandler(event:MouseEvent):void
+            {
+                if (dragStartPoint != null)
+                {
+                    dragStartPoint = null;
+                }
+            }
+            
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#f8f8f8">
+		<mx:Button width="20" height="20" icon="{expanded ? imgDown : imgRight}" click="actorClickHandler()"/>
+
+		<mx:Label text="{actor.name}" click="actorClickHandler()" fontWeight="bold" minWidth="130" width="100%"/>
+		
+        <mx:ButtonBar id="bbUtil" right="10" itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="28" buttonHeight="20"
+        	visible="{editable}" includeInLayout="{editable}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/pencil.png')" toolTip="Edit actor"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')" toolTip="Delete actor"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+	</mx:HBox>
+	
+	<document:DocActorDetailRenderer width="100%" actor="{actor}" visible="{expanded}" includeInLayout="{expanded}"/>	
+</mx:VBox>

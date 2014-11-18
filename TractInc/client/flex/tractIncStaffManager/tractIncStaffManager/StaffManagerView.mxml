@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center" verticalAlign="top"
+	width="100%" height="100%"
+	xmlns:staffManager="tractIncStaffManager.*"
+	xmlns:smAsset="tractIncStaffManager.asset.*"
+	xmlns:smTeam="tractIncStaffManager.team.*"
+	visible="{null != controller.model.staffManagerPackage}">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.User;
+			import TractInc.Domain.Role;
+			
+			public function init(user:User):void 
+			{
+				controller.init(user);
+			}
+			
+			public function logout():Boolean 
+			{
+				return controller.logout();
+			}
+		]]>
+	</mx:Script>
+
+	<staffManager:StaffManagerController id="controller" view="{this}"/>
+ 
+    <mx:VBox width="100%" height="100%">
+    	<mx:TabBar id="tabBar" 
+    	    dataProvider="{controller.tabData}"
+    	    itemClick="{controller.tabChanged(event);}"/>
+		
+		<mx:ViewStack id="tabStack" creationPolicy="all" minHeight="300" minWidth="550" width="100%" height="100%">
+		    <smAsset:AssetView id="assetTabView"/>
+		    <smTeam:TeamView id="teamTabView"/>
+		</mx:ViewStack>
+    </mx:VBox>
+</mx:VBox>

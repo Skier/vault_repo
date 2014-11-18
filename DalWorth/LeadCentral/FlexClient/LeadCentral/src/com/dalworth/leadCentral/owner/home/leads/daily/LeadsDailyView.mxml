@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.charts.series.ColumnSet;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.Stroke;
+			import mx.graphics.SolidColor;
+			import com.affilia.util.ColorArray;
+			import mx.charts.series.ColumnSeries;
+			import mx.events.CollectionEvent;
+			
+			private static const COLUMN_LEAD_SOURCE:String = "columnLeadSource";
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_NOTES:String = "columnNotes";
+			private static const COLUMN_DATE_CREATED:String = "columnDateCreated";
+			private static const COLUMN_DATE_UPDATED:String = "columnDateUpdated";
+			
+			private var controller:LeadsDailyController;
+			
+			[Bindable] 
+			private var model:LeadsDailyModel;
+			
+			public function set startDate(value:Date):void 
+			{
+				model.startDate = value;
+			}
+			
+			public function set endDate(value:Date):void 
+			{
+				model.endDate = value;
+			}
+			
+			private function onInit():void 
+			{
+				controller = new LeadsDailyController(this);
+				model = LeadsDailyModel.getInstance();
+			}
+			
+			public function setLeads(value:ArrayCollection):void 
+			{
+				controller.setLeads(value);
+			}
+			
+			private function getXLabel(cat:Object, pcat:Object, ax:CategoryAxis, obj:Object):String 
+			{
+				var date:Date = obj["date"] as Date;
+				if (date != null)
+					return((date.month + 1).toString() + "/" + date.date.toString());
+				else 
+					return "";
+			}
+		]]>
+	</mx:Script>
+	
+    <!-- Define custom colors for use as fills. -->
+    <mx:SolidColor id="sc1" color="yellow" alpha=".8"/>
+    <mx:SolidColor id="sc2" color="0xCCCCCC" alpha=".6"/>
+    <mx:SolidColor id="sc3" color="0xFFCC66" alpha=".6"/>
+
+    <!-- Define custom Strokes for the columns. -->
+    <mx:Stroke id="s1" color="yellow" weight="1"/>
+    <mx:Stroke id="s2" color="0xCCCCCC" weight="1"/>
+    <mx:Stroke id="s3" color="0xFFCC66" weight="1"/>
+
+	<mx:SeriesInterpolate duration="1000" id="seriesInterpolate"/>
+	
+    <mx:AreaChart id="columnChart" 
+    	showDataTips="true" width="100%" height="100%" dataProvider="{model.dailyCollection}">
+        <mx:horizontalAxis>
+            <mx:CategoryAxis id="dayAxis" title="Date" categoryField="dateStr" labelFunction="getXLabel"/>
+        </mx:horizontalAxis>
+        <mx:verticalAxis>
+            <mx:LinearAxis id="countAxis" title="Leads" autoAdjust="true" interval="1"/>
+        </mx:verticalAxis>
+        <mx:horizontalAxisRenderers>
+            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" showLine="true" axisTitleStyleName="chartTitle" axis="{dayAxis}"/>
+        </mx:horizontalAxisRenderers>
+        <mx:verticalAxisRenderers>
+            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" verticalAxisTitleAlignment="vertical"
+                             showLine="true" axisTitleStyleName="chartTitle" axis="{countAxis}"/>
+        </mx:verticalAxisRenderers>
+
+        <mx:series>
+            <mx:AreaSeries xField="dateStr" yField="total" displayName="Total Leads"
+                showDataEffect="{seriesInterpolate}" fill="{sc2}" stroke="{s2}"/>
+            <mx:AreaSeries xField="dateStr" yField="converted" displayName="Converted Leads"
+                showDataEffect="{seriesInterpolate}" fill="{sc3}" stroke="{s3}"/>
+        </mx:series>
+
+        <mx:backgroundElements> 
+        	<mx:Grid styleName="myLineChart" borderStyle="solid"/>
+            <mx:GridLines horizontalShowOrigin="true" verticalShowOrigin="false" y="0" horizontalStroke="{new Stroke(0x666666,1,1)}"/>
+        </mx:backgroundElements>
+    </mx:AreaChart>
+</mx:Canvas>

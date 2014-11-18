@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:web="truetract.web.*"
+    minWidth="490" minHeight="330"
+    backgroundGradientColors="[#ffffff, #ffffff]" 
+    pageTitle="True Tract" layout="absolute">
+    
+    <mx:Script>
+    	<![CDATA[
+    		import com.flexspy.FlexSpy;
+    		
+    		private function runSpy():void 
+    		{
+    			FlexSpy.show();
+    		}
+    		
+    	]]>
+    </mx:Script>
+    
+    <mx:Style source="/css/style.css"/>
+            
+    <web:AppView right="2" bottom="2" top="2" left="2"/>
+    
+	<mx:Box width="100%" horizontalAlign="right">
+		<mx:Button label="Spy" click="runSpy()"/>
+	</mx:Box>
+
+</mx:Application>

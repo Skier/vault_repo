@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" change="onChange()">
+	<mx:Script>
+		<![CDATA[
+			private function onChange():void 
+			{
+				this.text = this.text.toUpperCase();
+			}
+		]]>
+	</mx:Script>
+</mx:TextInput>

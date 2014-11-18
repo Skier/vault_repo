@@ -1,0 +1,109 @@
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"  horizontalScrollPolicy="off" width="100%"  >
+	<mx:Script> 
+    <![CDATA[
+    	import mx.rpc.xml.DataType;
+    	import mx.core.Container;
+    	import UI.Management.ServiceBrowser.*;
+    
+    	[Bindable]
+    	private var DataType:ServiceDataType;
+    	
+    	private function OnChange(value:Object):void
+    	{
+			 TreeGridNode(data).Data = value;										
+    	}
+    	
+    	private function OnAddArrayItem(event:Event):void
+    	{
+    		event.preventDefault();
+    		event.stopPropagation();
+    		
+    		var treeGridNode:TreeGridNode = TreeGridNode(data);
+    		var controller:TestDriveController = TestDriveView(this.parentDocument).Controller;
+    		var serviceDataTypeContainer:ServiceDataTypeContainer = ServiceDataTypeContainer(treeGridNode.Value);
+    		var serviceDataTypeField:ServiceDataTypeField = new ServiceDataTypeField();
+    			
+    		serviceDataTypeField.DataType = serviceDataTypeContainer.DataType.ElementType;
+    		serviceDataTypeField.Parent = serviceDataTypeContainer.DataType;
+    		serviceDataTypeField.Name = "Item: " + (treeGridNode.Items.length + 1).toString();
+
+    		var newNode:TreeGridNode = new TreeGridNode(serviceDataTypeField,treeGridNode);
+    			newNode.IsNew = true;
+    			
+    		controller.Model.TreeGridAdapter.loadBranch(treeGridNode);
+    	}
+    	
+    	public function OnDeleteArrayItem(event:Event):void	
+    	{
+    		event.preventDefault();
+    		event.stopPropagation();
+    		
+    		var treeGridNode:TreeGridNode = TreeGridNode(data);
+    		var controller:TestDriveController = TestDriveView(this.parentDocument).Controller;
+    		controller.Model.TreeGridAdapter.deleteItem(treeGridNode);
+    	}
+    	
+        override public function set data(data:Object):void
+        {
+            super.data = data;
+            
+            if(data != null)
+            {
+            	var treeGridNode:TreeGridNode = TreeGridNode(data);
+				DataType = ServiceDataTypeContainer(treeGridNode.Value).DataType;
+            	
+            	if(DataType.IsDate())
+            	{
+            		if(treeGridNode.Data == null)
+            			treeGridNode.Data = new Date();
+					
+					m_editorDate.selectedDate = treeGridNode.Data as Date;
+            	}
+            	else if(DataType.IsBoolean())
+            	{
+					if(treeGridNode.Data == null)
+            			treeGridNode.Data = false;
+            			
+            		m_editorBool.selected = treeGridNode.Data as Boolean;
+            	}
+            	else if(!DataType.IsComplexType())
+            	{
+            		if(treeGridNode.Data == null)
+            		{
+            			if(DataType.IsNumeric())
+            				treeGridNode.Data = 0;
+            			else
+            				treeGridNode.Data = "";
+            		}
+            			
+            		m_editorText.text = treeGridNode.Data.toString();
+            	}
+
+            }
+        }
+    ]]>
+    </mx:Script>
+    	<mx:HBox visible="{DataType.IsString() || DataType.IsNumeric()}" 
+    		includeInLayout="false" 
+    		paddingLeft="2" paddingTop="0" paddingRight="2" paddingBottom="2" 
+    		verticalAlign="middle"
+    		width="100%"
+    		height="100%">
+    		<mx:TextInput width="100%" textAlign="left" id="m_editorText" change="{OnChange(m_editorText.text)}"  />
+    	</mx:HBox>
+    	<mx:HBox visible="{DataType.IsDate()}"
+    		includeInLayout="false" 
+    		paddingLeft="2" paddingTop="0" paddingRight="2" paddingBottom="2" 
+    		verticalAlign="middle"
+    		width="100%"
+    		height="100%">
+		<mx:DateField width="100%" id="m_editorDate" change="{OnChange(m_editorDate.selectedDate)}" />
+		</mx:HBox>
+		<mx:HBox visible="{DataType.IsArray()}" width="100%" horizontalAlign="center" includeInLayout="false">
+			<mx:Button label="add item" height="16" click="{OnAddArrayItem(event)}" />
+		</mx:HBox>
+		<mx:Button includeInLayout="false" visible="false" label="delete" height="16" click="{OnDeleteArrayItem(event)}" />
+		<mx:HBox visible="{DataType.IsBoolean()}" width="100%" horizontalAlign="center" includeInLayout="false">
+			<mx:CheckBox includeInLayout="false" id="m_editorBool" change="{OnChange(m_editorBool.selected)}"/>			
+		</mx:HBox>
+</mx:Canvas>

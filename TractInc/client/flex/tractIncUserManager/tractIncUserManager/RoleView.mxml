@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Role" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import TractInc.Domain.Module;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+        	import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Role;
+        	import TractInc.Domain.Permission;
+
+            [Bindable]
+            private var canEdit:Boolean = false;
+
+            public var controller:UserManagerController = null;
+            public var currentRole:Role = null;
+            public var moduleToPermissionList:Object = new Object();
+            
+//            private var checkBoxes:Array = new Array();
+                
+            public static function open(ctrl:UserManagerController, role:Role, modal:Boolean):RoleView
+            {
+                var popup:RoleView = new RoleView();
+                popup.controller = ctrl;
+                popup.currentRole = role
+                
+                PopUpManager.addPopUp(popup, ctrl.view, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function init():void
+            {
+                canEdit = controller.model.userManagerPackage.canManageRoles;
+                
+                controller.model.userManagerPackage.ModuleList.sortOn("ModuleId");
+                this.moduleGrid.dataProvider = controller.model.userManagerPackage.ModuleList;
+                
+                if ( null != currentRole ) {
+                    this.nameTxt.text = currentRole.Name;
+                    for each (var mod:Module in controller.model.userManagerPackage.ModuleList) {
+                        for each (var perm:Permission in mod.PermissionList) {
+                            perm.Selected = isPermissionSelected(perm);
+                        }
+                    }
+                }
+            }
+            
+            public function getRole():Role 
+            {
+                if ( null == currentRole ) {
+                    currentRole = new Role();
+                }
+                currentRole.Name = this.nameTxt.text;
+                currentRole.PermissionList = new Array();
+                for each (var mod:Module in controller.model.userManagerPackage.ModuleList) {
+                    for each (var perm:Permission in mod.PermissionList) {
+                        if ( perm.Selected  ) {
+                            currentRole.PermissionList.push(perm);
+                        }
+                    }
+                }
+/*                    
+                for each (var box:CheckBox in checkBoxes) {
+                    if ( box.selected ) {
+                        currentRole.PermissionList.push(box.data);
+                    }
+                }
+*/                
+                return currentRole;
+            }
+
+            private function isPermissionSelected(perm:Permission):Boolean
+            {
+                if ( null != currentRole ) {
+                    for each (var p:Permission in currentRole.PermissionList) {
+                        if ( perm.PermissionId == p.PermissionId ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }    
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveRole(getRole())
+            }
+            
+            private function moduleGridOnClickHandler(event:Event):void
+            {
+                var module:Module = moduleGrid.selectedItem as Module;
+                this.permissionGrid.dataProvider = module.PermissionList;
+            }
+            
+/*            
+            private function checkAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = true;
+                }
+                checkAllBox.selected = false;
+            }
+            
+            private function uncheckAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = false;
+                }
+                uncheckAllBox.selected = false;
+            }
+*/            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{nameTxt}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form enabled="{canEdit}"
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        minWidth="600" minHeight="400"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="Name" width="100%" required="true">
+            <mx:TextInput id="nameTxt" width="100%"/>
+        </mx:FormItem>
+
+		<mx:FormHeading label="Permission Assigned"/>
+        <mx:HBox width="100%" height="100%">
+		    <mx:DataGrid id="moduleGrid" click="moduleGridOnClickHandler(event)" 
+		            width="100%" height="100%" minHeight="350">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="Module" width="200" dataField="Description"/>
+                </mx:columns>
+            </mx:DataGrid>
+		    <mx:DataGrid id="permissionGrid" 
+		            width="100%" height="100%" minHeight="350">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="" dataField="Selected" width="16" minWidth="16"
+                            itemRenderer="tractIncUserManager.PermissionCheckIR"/>
+                    <mx:DataGridColumn headerText="Permission" width="200" dataField="Description"/>
+                </mx:columns>
+            </mx:DataGrid>
+        </mx:HBox>
+<!--	
+        <mx:VBox>
+            <mx:HBox width="100%" horizontalAlign="center">
+                <mx:CheckBox id="checkAllBox" label="Check All" click="checkAllBoxOnClickHandler(event)"/>    
+                <mx:CheckBox id="uncheckAllBox" label="Uncheck All" click="uncheckAllBoxOnClickHandler(event)"/>    
+            </mx:HBox>
+            <mx:VBox id="permissionCheckList">
+            </mx:VBox>
+        </mx:VBox>
+-->        
+    </mx:Form>
+
+        
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

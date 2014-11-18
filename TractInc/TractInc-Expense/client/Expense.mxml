@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+    pageTitle="Expense"
+    backgroundGradientColors="[#ffffff, #ffffff]" xmlns:App="app.*" xmlns:local="*"
+    initialize="application_initializeHandler()">
+
+    <mx:Script>
+        <![CDATA[
+            private function application_initializeHandler():void {
+                // mdm.Application.init(this);
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Style source="css/Expense.css" />
+
+    <local:AppView width="100%" height="100%" horizontalCenter="0"/>
+
+</mx:Application>

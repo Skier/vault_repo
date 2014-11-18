@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	xmlns:client="UI.manager.admin.client.*" 
+	xmlns:asset="UI.manager.admin.asset.*">
+
+	<mx:Script>
+		<![CDATA[
+			import UI.manager.ManagerController;
+			
+			[Bindable]
+			private var controller:AdminController;
+			
+			public function set parentController(parent:ManagerController):void 
+			{
+				controller = new AdminController(this, parent);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator id="tnAdmin" width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		>
+		<client:ClientsView id="viewClients" label="Clients/AFE/SubAFE" parentController="{controller}"/>
+		<asset:AssetsView id="viewAssets" label="Assets/AssetAssignments" parentController="{controller}"/>
+	</mx:TabNavigator>
+	
+</mx:VBox>

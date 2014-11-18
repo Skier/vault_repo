@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" title="Wellcome {_appController.CurrentEmployee.FirstName} !" height="90%" width="90%" 
+        paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" xmlns:Main="UI.DashBoard.Main.*" xmlns:Tech="UI.DashBoard.Tech.*" xmlns:Truck="UI.DashBoard.Truck.*" xmlns:Dispatch="UI.DashBoard.Dispatch.*" xmlns:Accounting="UI.DashBoard.Accounting.*" xmlns:Reports="UI.DashBoard.Reports.*" xmlns:Tools="UI.DashBoard.Tools.*" xmlns:Van="UI.DashBoard.Van.*" xmlns:Customer="UI.DashBoard.Customer.*" xmlns:Dash="UI.DashBoard.Dash.*" xmlns:Executive="UI.DashBoard.Executive.*">
+        
+ <mx:Script>
+ 		<![CDATA[
+ 			import mx.events.IndexChangedEvent;
+ 			import mx.controls.Alert;
+ 		
+ 			import mx.events.ItemClickEvent;
+ 			[Bindable]
+ 			private  var controller:MainController;
+ 			[Bindable]
+ 			public  var _appController:AppController;
+ 			
+ 			
+ 			public function set appController(controller:AppController):void {
+ 				_appController = controller;
+ 			    this.controller = new  MainController(this, controller);
+ 			}
+ 		
+ 		]]>
+ 	</mx:Script>
+        
+       <mx:LinkBar color="#0000FF" fontWeight="bold" dataProvider="{dashViewStack}"/>       
+         
+        <mx:ViewStack id="dashViewStack" borderStyle="solid" width="100%" height="100%"   >
+      
+            <!-- Define each panel using a VBox container. -->
+
+			<Executive:ExecView id="execView" label="Executive" />
+			<Dispatch:MainDispatchView id="dispatchView" label = "Dispatch" mainController="{controller}" />
+			<Customer:MainCustomerView id="CustomerView" label ="Customer" mainController="{controller}"/>
+            <Tech:TechView id="techView" label="Techs"/>
+			<Van:VanView id="truckView" label = "Van"/>
+			<Accounting:AccountingView id="AcctView" label = "Acconting"/>
+			<Reports:ReportView id="reportsView" label = "Reports"/>
+			<Tools:ToolsView id="toolsView" label="Tools"/>
+			
+		</mx:ViewStack>          
+     
+    </mx:Panel>

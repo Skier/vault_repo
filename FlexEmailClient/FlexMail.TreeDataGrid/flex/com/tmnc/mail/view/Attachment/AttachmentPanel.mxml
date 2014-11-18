@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+    horizontalAlign="left"
+    paddingTop="8" paddingBottom="8" paddingRight="4" paddingLeft="4"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+    xmlns:view="com.tmnc.mail.view.*" 
+    xmlns:Attachment="com.tmnc.mail.view.Attachment.*"
+    title="Attachments" backgroundAlpha="1.0">
+	<mx:titleIcon>@Embed('/assets/attachment_icon.gif')</mx:titleIcon>
+    
+	<mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="true"/>
+
+    <Attachment:AttachmentList id="attachmentList" height="100%" width="100%"
+        newItemStartX="-100" newItemStartY="-100"/>
+
+    <mx:ControlBar>
+        <mx:VBox horizontalAlign="right">
+        
+            <mx:Form paddingRight="0" verticalGap="0">
+                <mx:FormItem label="Total Size:" fontWeight="bold" horizontalAlign="right">
+                    <mx:Label width="70" text="{nf.format(attachmentList.totalSize/1024)} Kb" textAlign="right"/>
+                </mx:FormItem>
+            </mx:Form>
+        
+            <mx:Button label="Add attachment"  click="attachmentList.addAttachment()"/>
+        </mx:VBox>    
+    </mx:ControlBar>
+
+</mx:Panel>

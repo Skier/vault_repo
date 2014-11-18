@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:login="AerSysCo.Admin.UI.login.*" 
+	xmlns:dashboard="AerSysCo.Admin.UI.dashboard.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.Events.LoginEvent;
+			import mx.rpc.events.FaultEvent;
+			
+			[Bindable] private var controller:AdminController;
+			
+			public function run():void 
+			{
+				controller = new AdminController();
+				controller.init(this);
+			}
+			
+			private function loginRequestHandler(event:LoginEvent):void 
+			{
+				controller.login(event.user);
+			}
+			
+			private function logoutRequestHandler():void 
+			{
+				controller.logout();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="mainViewStack" width="100%" height="100%" 
+		selectedIndex="{controller.model.loggedOut ? 0 : 1}">
+		<login:LoginView id="viewLogin" enabled="{!controller.model.loginInProcess}"
+			width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
+			loginRequest="loginRequestHandler(event)"/>
+		
+		<dashboard:DashboardView id="viewDashboard" 
+			width="100%" height="100%"
+			logoutRequest="logoutRequestHandler()"/>
+	</mx:ViewStack>
+
+</mx:Canvas>

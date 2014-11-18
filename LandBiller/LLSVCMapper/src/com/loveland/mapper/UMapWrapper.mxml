@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="creationCompleteHandler(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.afcomponents.umap.events.MapEvent;
+			import mx.events.ResizeEvent;
+			import com.loveland.mapper.tools.PolygonTool;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.events.DynamicEvent;
+			import com.afcomponents.umap.styles.GeometryStyle;
+			import mx.rpc.events.ResultEvent;
+			import com.afcomponents.umap.events.OverlayEvent;
+			import com.afcomponents.umap.interfaces.IOverlay;
+			import com.afcomponents.umap.overlays.TileLayerOverlay;
+			import com.afcomponents.umap.providers.TileLayer;
+			import com.afcomponents.umap.styles.StrokeStyle;
+			import com.afcomponents.umap.types.LatLngBounds;
+			import com.afcomponents.umap.overlays.Layer;
+			import com.loveland.mapper.tracts.EditablePolygon;
+			import mx.collections.ArrayCollection;
+			import com.afcomponents.umap.types.Bounds;
+			import fl.events.ComponentEvent;
+			import com.afcomponents.umap.gui.PositionControl;
+			import com.afcomponents.umap.gui.MapTypeControl;
+			import com.afcomponents.umap.gui.ZoomControl;
+			import mx.core.UIComponent;
+			import com.afcomponents.umap.core.UMap;
+			
+			private var _mainMap:UMap;
+			public function get mainMap():UMap { return _mainMap; }
+			
+			[Bindable] 
+			public var currentTracts:ArrayCollection = new ArrayCollection();
+			[Bindable] 
+			public var deletedTracts:ArrayCollection = new ArrayCollection();
+			[Bindable] 
+			public var addedTracts:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var groundLayer:TileLayerOverlay;
+			
+			[Bindable]
+			public var activeTract:EditablePolygon;
+			
+			[Bindable]
+			public var activeLayer:Layer;
+			
+			[Bindable]
+			public var mapMode:String;
+			
+			private var defaultLineStyle:StrokeStyle = 
+				new StrokeStyle({pixelHinting:true, noScale:LineScaleMode.NORMAL, capsStyle:CapsStyle.ROUND, jointStyle:JointStyle.ROUND, miterLimit:3});
+
+			private var _lineStyle:StrokeStyle;
+			public function set lineStyle(value:StrokeStyle):void { _lineStyle = value; }
+			public function get lineStyle():StrokeStyle 
+			{
+				if (_lineStyle == null)
+					_lineStyle = defaultLineStyle;
+				
+				return _lineStyle;		
+			}
+			
+			private	var defaultTractStyle:GeometryStyle = 
+				new GeometryStyle({fill:GeometryStyle.RGB, fillRGB:250250000, fillAlpha:0.3, fillGradient:null, fillBitmap:null, 
+					stroke:GeometryStyle.RGB, strokeRGB:000000, strokeAlpha:1, strokeThickness:.5, strokeGradient:null, 
+					strokeStyle:lineStyle});
+
+			private var _tractStyle:GeometryStyle;
+			public function set tractStyle(value:GeometryStyle):void { _tractStyle = value; }
+			public function get tractStyle():GeometryStyle 
+			{
+				if (_tractStyle == null)
+					_tractStyle = defaultTractStyle;
+				
+				return _tractStyle;		
+			}
+			
+			private	var defaultChangedTractStyle:GeometryStyle = 
+				new GeometryStyle({fill:GeometryStyle.RGB, fillRGB:150150000, fillAlpha:0.5, fillGradient:null, fillBitmap:null, 
+					stroke:GeometryStyle.RGB, strokeRGB:000000, strokeAlpha:1, strokeThickness:1, strokeGradient:null, 
+					strokeStyle:lineStyle});
+			
+			private var _changedTractStyle:GeometryStyle;
+			public function set changedTractStyle(value:GeometryStyle):void { _changedTractStyle = value; }
+			public function get changedTractStyle():GeometryStyle 
+			{
+				if (_changedTractStyle == null)
+					_changedTractStyle = defaultTractStyle;
+				
+				return _changedTractStyle;		
+			}
+			
+			private function initMap():void 
+			{
+				this.removeAllChildren();
+				
+				var mapContainer:UIComponent = new UIComponent();
+				
+				_mainMap = new UMap();
+				_mainMap.setSize(this.width, this.height);
+				_mainMap.addControl(new ZoomControl());
+				_mainMap.addControl(new MapTypeControl());
+				_mainMap.addControl(new PositionControl());
+				_mainMap.addEventListener(MapEvent.READY, mapReadyHandler);
+				
+				mapContainer.addChild(_mainMap);
+				
+				this.addChild(mapContainer);
+
+				this.addEventListener(ResizeEvent.RESIZE, resizeHandler);
+			}
+			
+			private function resetTractCollections():void 
+			{
+				if (currentTracts == null)
+					currentTracts = new ArrayCollection();
+				else 
+					currentTracts.removeAll();
+				
+				if (deletedTracts == null)
+					deletedTracts = new ArrayCollection();
+				else 
+					deletedTracts.removeAll();
+				
+				if (addedTracts == null)
+					addedTracts = new ArrayCollection();
+				else 
+					addedTracts.removeAll();
+			}
+			
+			public function clearMap():void 
+			{
+				for each (var obj:IOverlay in mainMap.getOverlays())
+				{
+					obj.remove();
+				}
+			}
+			
+			public function loadRasterLayer():void
+			{
+				clearMap();
+				
+				var mapWidth:String = this.width.toString();
+				var mapHeight:String = this.height.toString();
+				
+				var baseURL:String = "http://llsvc.net:8080/geoserver/wms";
+				var layer:String = "topp:tad_parcles";
+				var format:String = "image/png";
+				
+				var myWms:TileLayer = new WMSTileLayer(baseURL, layer, format, "", "", "WMS", "getMap", "1.1.1", "256", "256");
+	         	
+	         	groundLayer = new TileLayerOverlay({tileLayer:myWms});
+
+				mainMap.display.overlayManager.ground.addOverlay(groundLayer);
+				mainMap.addOverlay(groundLayer);
+			}
+			
+			public function loadTracts(bounds:LatLngBounds = null):void
+			{
+				resetTractCollections();
+
+				if (activeTract != null) 
+				{
+					activeTract.editable = false;
+					activeTract = null;
+				} 
+
+				if (activeLayer != null) 
+				{
+					activeLayer.remove();
+					activeLayer = null;
+				}
+				
+				if (bounds == null)
+					bounds = _mainMap.getBoundsLatLng(); 
+				
+				geoServ.getTractsByExtent(bounds.southWest.lat.toString(),
+										  bounds.southWest.lng.toString(),
+										  bounds.northEast.lat.toString(),
+										  bounds.northEast.lng.toString());
+			}
+			
+			private function initActiveLayer():void 
+			{
+				if (activeLayer == null)
+				{
+					activeLayer = new Layer();
+					mainMap.addOverlay(activeLayer);
+				}
+			}
+			
+			public function setPolygonMode():void 
+			{
+				mapMode = MapMode.POLYGON_MODE;
+				
+				initActiveLayer();
+
+				var tool:PolygonTool = new PolygonTool(mainMap, activeLayer);
+					tool.activate();
+				
+				var container:Canvas = this;
+				container.addEventListener(MouseEvent.MOUSE_MOVE, tool.mouseMoveHandler);
+
+				tool.addEventListener("closePolygon", 
+					function(event:DynamicEvent):void 
+					{
+						container.removeEventListener(MouseEvent.MOUSE_MOVE, tool.mouseMoveHandler);
+						tool.deactivate();
+						
+						var tract:EditablePolygon = event.polygon as EditablePolygon;
+						//setActiveTract(tract);
+						addedTracts.addItem(tract);
+						
+						tract.autoInfo = false;
+						tract.addEventListener(OverlayEvent.MOUSE_UP, onTractMouseUp);
+						tract.addEventListener("removeRequest", removePolygonHandler);
+						tract.addEventListener("polygonChange", polygonChangeHandler);
+						
+						//editMode = true;
+					});
+			}
+			
+			public function removeSelectedPolygon():void 
+			{
+				if (activeTract != null) 
+					removePolygon(activeTract);
+			}
+			
+			private function removePolygon(polygon:EditablePolygon):void 
+			{
+				var idx:int;
+				if (currentTracts.contains(polygon))
+				{
+					idx = currentTracts.getItemIndex(polygon);
+					currentTracts.removeItemAt(idx);
+					deletedTracts.addItem(polygon);
+				} else if (addedTracts.contains(polygon))
+				{
+					idx = addedTracts.getItemIndex(polygon);
+					addedTracts.removeItemAt(idx);
+				}
+				
+				polygon.editable = false;
+				polygon.remove();
+			}
+			
+			private function setActiveTract(tract:EditablePolygon):void 
+			{
+				if (activeTract != null)
+					activeTract.editable = false;
+				
+				tract.editable = true;
+				activeTract = tract;
+			}
+			
+			private function getChangedTracts():Array
+			{
+				var result:Array = new Array();
+				
+				for each (var polygon:EditablePolygon in currentTracts) 
+				{
+					if (polygon.isDirty)
+					{
+						var tract:Object = new Object();
+							tract.gid = polygon.gid;
+							tract.taxpin = polygon.taxpin;
+							tract.acres = polygon.acres;
+							tract.calculated = polygon.calculated;
+							tract.parceltype = polygon.parceltype;
+							tract.area = polygon.area;
+							tract.len = polygon.len;
+							tract.pidn = polygon.pidn;
+
+							tract.the_geom = polygon.pointsString;
+						
+						result.push(tract);
+					}
+				}
+				
+				return result;
+			}
+ 
+			private function getDeletedTracts():Array
+			{
+				var result:Array = new Array();
+				
+				for each (var polygon:EditablePolygon in deletedTracts) 
+				{
+					var tract:Object = new Object();
+						tract.gid = polygon.gid;
+						tract.taxpin = polygon.taxpin;
+						tract.acres = polygon.acres;
+						tract.calculated = polygon.calculated;
+						tract.parceltype = polygon.parceltype;
+						tract.area = polygon.area;
+						tract.len = polygon.len;
+						tract.pidn = polygon.pidn;
+
+						tract.the_geom = polygon.pointsString;
+					
+					result.push(tract);
+				}
+				
+				return result;
+			}
+ 
+			private function getAddedTracts():Array
+			{
+				var result:Array = new Array();
+				
+				for each (var polygon:EditablePolygon in addedTracts) 
+				{
+					var tract:Object = new Object();
+						tract.gid = polygon.gid;
+						tract.taxpin = polygon.taxpin;
+						tract.acres = polygon.acres;
+						tract.calculated = polygon.calculated;
+						tract.parceltype = polygon.parceltype;
+						tract.area = polygon.area;
+						tract.len = polygon.len;
+						tract.pidn = polygon.pidn;
+
+						tract.the_geom = polygon.pointsString;
+					
+					result.push(tract);
+				}
+				
+				return result;
+			}
+ 
+			public function commitChanges():void 
+			{
+				if (activeTract != null) 
+				{
+					activeTract.editable = false;
+					activeTract = null;
+				}
+										
+				this.enabled = false;
+				geoServ.updateTracts(getChangedTracts());
+			}
+			
+			//handlers
+			
+			private function creationCompleteHandler(event:*):void 
+			{
+				initMap();
+				resetTractCollections();
+			}
+			
+			private function resizeHandler(event:ResizeEvent):void 
+			{
+				callLater(this.mainMap.setSize, [this.width, this.height]);
+			}
+			
+			private function polygonChangeHandler(event:Event):void 
+			{
+				var tract:EditablePolygon = event.target as EditablePolygon;
+				if (!addedTracts.contains(tract))
+					tract.setStyle(changedTractStyle);
+			}
+			
+			private function removePolygonHandler(event:Event):void 
+			{
+				var tract:EditablePolygon = event.target as EditablePolygon;
+				removePolygon(tract);
+			}
+			
+			private function loadTractsResultHandler(event:ResultEvent):void
+			{
+				var resultCollection:ArrayCollection = event.result as ArrayCollection;
+				
+				if (activeLayer != null) 
+					activeLayer.remove();
+
+				activeLayer = new Layer();
+				
+				for each (var tractObj:Object in resultCollection)
+				{
+					var tract:EditablePolygon = EditablePolygon.parse(tractObj);
+					
+					tract.map = mainMap;
+					tract.setStyle(tractStyle);
+					tract.autoInfo = false;
+						
+					tract.addEventListener(OverlayEvent.MOUSE_UP, onTractMouseUp);
+					tract.addEventListener("removeRequest", removePolygonHandler);
+					tract.addEventListener("polygonChange", polygonChangeHandler);
+					
+					currentTracts.addItem(tract);
+					activeLayer.addOverlay(tract);
+				}
+
+				mainMap.addOverlay(activeLayer);
+			}
+			
+			private function onTractMouseUp(event:OverlayEvent):void 
+			{
+				var tract:EditablePolygon = event.target as EditablePolygon;
+				setActiveTract(tract);
+			}
+
+			private function updateTractsResultHandler(event:ResultEvent):void 
+			{
+				this.enabled = false;
+				geoServ.createTracts(getAddedTracts());
+			}
+			
+			private function createTractsResultHandler(event:ResultEvent):void 
+			{
+				this.enabled = false;
+				geoServ.deleteTracts(getDeletedTracts());
+			}
+			
+			private function deleteTractsResultHandler(event:ResultEvent):void 
+			{
+				mainMap.removeOverlay(activeLayer);
+				this.enabled = true;
+			}
+			
+			private function commitFaultHandler(event:FaultEvent):void 
+			{
+				this.enabled = true;
+				Alert.show(event.fault.message);
+			}
+			
+			private function loadTractsFaultHandler(event:FaultEvent):void 
+			{
+				this.enabled = true;
+				Alert.show(event.fault.message);
+			}
+			
+			private function btnDeleteTractClickHandler():void 
+			{
+				if (activeTract != null)
+					removePolygon(activeTract);
+			}
+			
+			private function mapReadyHandler(event:*):void 
+			{
+				dispatchEvent(event);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Metadata>
+        [Event(name="modeChange", type="flash.events.Event")]
+        [Event(name="mapReady", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:RemoteObject id="geoServ" destination="ColdFusion" source="cfc.tractsTest">
+		<mx:method name="getTractsByExtent" result="loadTractsResultHandler(event)" fault="loadTractsFaultHandler(event)"/>
+		<mx:method name="updateTracts" result="updateTractsResultHandler(event)" fault="commitFaultHandler(event)"/>
+		<mx:method name="createTracts" result="createTractsResultHandler(event)" fault="commitFaultHandler(event)"/>
+		<mx:method name="deleteTracts" result="deleteTractsResultHandler(event)" fault="commitFaultHandler(event)"/>
+	</mx:RemoteObject>
+
+</mx:Canvas>

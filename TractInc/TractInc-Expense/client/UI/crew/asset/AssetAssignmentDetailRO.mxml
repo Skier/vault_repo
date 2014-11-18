@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	creationComplete="onCreationComplete()"
+    title="Assignment Info"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.AssetAssignmentDataObject;
+        	import common.TypesRegistry;
+        	import mx.events.PropertyChangeEvent;
+        	import mx.events.DynamicEvent;
+        	import mx.events.CollectionEvent;
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+
+			[Bindable] 
+			private var _types:ArrayCollection = TypesRegistry.instance.getAllInvoiceItemTypes;
+			
+            [Bindable]
+            public var assetAssignment:AssetAssignmentDataObject;
+            
+            public static function Open(assetAssignment:AssetAssignmentDataObject, parent:DisplayObject, modal:Boolean = true):AssetAssignmentDetailRO 
+            {
+                var popup:AssetAssignmentDetailRO = new AssetAssignmentDetailRO();
+                popup.assetAssignment = assetAssignment;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function onCreationComplete():void {
+           		PopUpManager.centerPopUp(this);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%">
+        <mx:HBox>
+            <mx:Label text="Status:" width="100" textAlign="right" fontWeight="bold"/>
+            <mx:Label text="{assetAssignment.ProjectStatus}" color="{('ISSUED' == assetAssignment.ProjectStatus &amp;&amp; 'ISSUED' == assetAssignment.ProjectStatus)? 0x000000: 0xFF0000}"/>
+        </mx:HBox>
+        <mx:HRule width="100%"/>
+        <mx:HBox>
+            <mx:Label text="Client:" width="100" textAlign="right" fontWeight="bold"/>
+            <mx:Label text="{assetAssignment.ClientName}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="AFE:" width="100" textAlign="right" fontWeight="bold"/>
+            <mx:Label text="{assetAssignment.AFE}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Project:" width="100" textAlign="right" fontWeight="bold"/>
+            <mx:Label text="{assetAssignment.SubAFE}"/>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="center">
+        <mx:Button id="btnCancel" label="Close"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

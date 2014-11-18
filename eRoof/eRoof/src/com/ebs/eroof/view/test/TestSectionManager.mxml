@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:test="com.ebs.eroof.view.test.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.effects.Resize;
+			
+			public function init():void 
+			{
+				viewGrid.init();
+			}
+			
+			private function onStartEditSection():void 
+			{
+				boxGrid.enabled = false;
+			}
+			
+			private function onEndEditSection():void 
+			{
+				boxGrid.enabled = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HDividedBox width="100%" height="100%">
+	
+		<mx:VBox id="boxGrid" width="500" height="100%"
+			backgroundColor="#ffffff">
+			<mx:Label text="Sample paged datagrid" fontSize="14"/>
+			<test:PagedDataGrid id="viewGrid" width="100%" height="100%"/>
+		</mx:VBox>
+		
+		<mx:VBox id="boxDetail" width="100%" height="100%"
+			backgroundColor="#ffffff">
+			<mx:Label text="Selected Section Detail" fontSize="14"/>
+			<test:TestSectionDetailCustom width="100%" height="100%" section="{viewGrid.selectedSection}"
+				startEditSection="onStartEditSection()" endEditSection="onEndEditSection()"/>
+		</mx:VBox>
+		
+	</mx:HDividedBox>
+</mx:Canvas>

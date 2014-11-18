@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:SWFLoader xmlns:mx="http://www.adobe.com/2006/mxml" init="LoadedInt=setInterval(CheckLoaded,1);" scaleContent="false">
+
+    <mx:Metadata>
+        [Event(name="onPageChanged", type="Print2Flash.PageChangedEvent")]
+        [Event(name="onVisibleAreaChanged", type="Print2Flash.VisibleAreaEvent")]
+        [Event(name="onZoomChanged", type="Print2Flash.ZoomChangedEvent")]
+        [Event(name="onToolChanged", type="Print2Flash.ToolChangedEvent")]
+        [Event(name="onSelection", type="Print2Flash.Selection")]
+        [Event(name="onLoaded", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.*;
+			import mx.controls.*;
+			
+			private var connstr:String;
+			private var APILC:LocalConnection;
+			private var LoadedInt:Number;
+			private var Loaded:Boolean=false;
+			
+			override public function get source():Object {
+				return super.source;
+			}
+			
+			override public function set source(value:Object):void {
+				connstr="_"+UIDUtil.createUID();
+				APILC = new LocalConnection();
+				value+="?connstr="+connstr+"&conndomain="+APILC.domain;
+				super.source=value;
+				
+				APILC.client=this;
+				APILC.allowDomain("*");
+				APILC.addEventListener(StatusEvent.STATUS,OnAPILCStatus);
+				APILC.connect(connstr+"_Events");				
+			}
+						
+			private function OnAPILCStatus(E:StatusEvent):void {
+//				trace(E)
+				if (!Loaded) Loaded = E.level=="status";
+			}
+			
+			private var CBNum:Number=1;
+			private var CBArray:Object=new Object()
+			private function RegisterCBFunc(CBFunc:Function):String {
+				var ID:String=(CBNum++).toString()
+				CBArray[ID]=CBFunc
+				return ID;
+			}
+
+			private function CallCBFunc(ID:String,Param:Object):void {
+				CBArray[ID](Param);
+				delete CBArray[ID];
+			}
+
+			public function CallBack(CBID:String,Param:Object):void {
+				CallCBFunc(CBID,Param)
+			}			
+
+			private function CheckLoaded():void {
+				if (!Loaded) 
+					this.Init();
+				else {
+					clearInterval(LoadedInt);
+					dispatchEvent(new Event("onLoaded"));
+				}
+			}
+			
+			private function Init():void {
+				APILC.send(connstr,"init",width,height);
+			}
+			
+			// API Functions
+			public function setCurrentPage(page:Number):void {
+				APILC.send(connstr,"setCurrentPage",page);
+			}
+
+			public function getCurrentPage(CBFunc:Function):void {
+				APILC.send(connstr,"getCurrentPage",RegisterCBFunc(CBFunc));
+			}
+			
+			public function setSize(width:Number, height:Number):void {
+				APILC.send(connstr,"setSize",width,height);
+				this.width=width
+				this.height=height
+			}
+
+			public function setScrollPosition(pos:Print2Flash.Point):void {
+				APILC.send(connstr,"setScrollPosition",pos);
+			}			
+
+			public function getMaxScrollPosition(CBFunc:Function):void {
+				APILC.send(connstr,"getMaxScrollPosition",RegisterCBFunc(CBFunc));
+			}			
+
+			public function getScrollPosition(CBFunc:Function):void {
+				APILC.send(connstr,"getScrollPosition",RegisterCBFunc(CBFunc));
+			}			
+
+			public function PreviousPage():void {
+				APILC.send(connstr,"PreviousPage");				
+			}
+
+			public function NextPage():void {
+				APILC.send(connstr,"NextPage");				
+			}			
+
+			public function getVisibleArea(CBFunc:Function):void {
+				APILC.send(connstr,"getVisibleArea",RegisterCBFunc(CBFunc));
+			}			
+
+			public function setVisibleArea(area:Object):void {
+				APILC.send(connstr,"setVisibleArea",area);
+			}			
+			
+			public function setCurrentZoom(zoom:Object):void {
+				APILC.send(connstr,"setCurrentZoom",zoom);
+			}			
+
+			public function getCurrentZoom(CBFunc:Function):void {
+				APILC.send(connstr,"getCurrentZoom",RegisterCBFunc(CBFunc));
+			}			
+			
+			public function setCurrentTool(tool:String):void {
+				APILC.send(connstr,"setCurrentTool",tool);
+			}			
+
+			public function getCurrentTool(CBFunc:Function):void {
+				APILC.send(connstr,"getCurrentTool",RegisterCBFunc(CBFunc));
+			}			
+			
+			public function setControlVisibility(mask:Number):void {
+				APILC.send(connstr,"setControlVisibility",mask);
+			}						
+
+			public function SearchText(text:String,CBFunc:Function):void {
+				APILC.send(connstr,"SearchText",RegisterCBFunc(CBFunc),text);
+			}			
+			
+			public function findNext(CBFunc:Function):void {
+				APILC.send(connstr,"findNext",RegisterCBFunc(CBFunc));
+			}			
+			
+			public function ResetTextSearch():void {
+				APILC.send(connstr,"ResetTextSearch");
+			}						
+			
+			public function setFindText(text:String):void {
+				APILC.send(connstr,"setFindText",text);
+			}						
+
+			public function getFindText(CBFunc:Function):void {
+				APILC.send(connstr,"getFindText",RegisterCBFunc(CBFunc));
+			}						
+			
+			public function setTextSelectionRange(sel:Object):void {
+				APILC.send(connstr,"setTextSelectionRange",sel);
+			}						
+
+			public function getTextSelectionRange(CBFunc:Function):void {
+				APILC.send(connstr,"getTextSelectionRange",RegisterCBFunc(CBFunc));
+			}						
+
+			public function getNumberOfPages(CBFunc:Function):void {
+				APILC.send(connstr,"getNumberOfPages",RegisterCBFunc(CBFunc));
+			}						
+			
+			public function OpenHelpPage():void {
+				APILC.send(connstr,"OpenHelpPage");
+			}						
+			
+			public function OpenInNewWindow():void {
+				APILC.send(connstr,"OpenInNewWindow");
+			}						
+			
+			public function printTheDocument():void {
+				APILC.send(connstr,"printTheDocument");
+			}						
+			
+			public function Rotate():void {
+				APILC.send(connstr,"Rotate");
+			}						
+			
+			public function getLoadedPages(CBFunc:Function):void {
+				APILC.send(connstr,"getLoadedPages",RegisterCBFunc(CBFunc));
+			}						
+			
+			public function setLanguage(lang:String):void {
+				APILC.send(connstr,"setLanguage",lang);
+			}						
+			
+			public function adjustToolbarColor(hue:Number,saturation:Number,brightness:Number,contrast:Number):void {
+				APILC.send(connstr,"adjustToolbarColor",hue,saturation,brightness,contrast);
+			}						
+			
+			public function enableScrolling(enable:Boolean):void {
+				APILC.send(connstr,"enableScrolling",enable);
+			}						
+			
+			public function getSelectedText(CBFunc:Function):void {
+				APILC.send(connstr,"getSelectedText",RegisterCBFunc(CBFunc));
+			}						
+			
+			// API Events
+			public function onPageChanged(page:Number):void {
+				dispatchEvent(new PageChangedEvent(page));
+			}			
+						
+			public function onVisibleAreaChanged(area:Object):void {
+				dispatchEvent(new VisibleAreaEvent(area));				
+			}
+			
+			public function onZoomChanged(zoom:Number):void {
+				dispatchEvent(new ZoomChangedEvent(zoom));
+			}			
+
+			public function onToolChanged(tool:String):void {
+				dispatchEvent(new ToolChangedEvent(tool));
+			}			
+
+			public function onSelection(sel:Object):void {
+				dispatchEvent(new Selection(sel));
+			}																					
+		]]>
+	</mx:Script>
+	
+</mx:SWFLoader>

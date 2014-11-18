@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*"
+	creationComplete="onCreate()" xmlns:bp="com.dalworth.servman.main.bp.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import mx.core.Application;
+			import com.dalworth.servman.main.bp.BusinessPartnerCreatePopup;
+			import com.dalworth.servman.events.BusinessPartnerEvent;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_EMAIL:String = "columnEmail";
+			private static const COLUMN_PHONE:String = "columnPhone";
+			
+			[Bindable]
+			public var isEditMode:Boolean = false;
+			
+			[Bindable]
+			private var model:BusinessPartnersModel = BusinessPartnersModel.getInstance();
+			
+			[Bindable]
+			private var controller:BusinessPartnersController;
+			
+			public function init():void 
+			{
+				isEditMode = false;
+				
+				controller = new BusinessPartnersController(this);
+				controller.initModel();
+				if (vsBusinessPartners != null)
+					vsBusinessPartners.selectedIndex = 0;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Business Partners";
+			}
+			
+			private function set selectedBusinessPartner(value:BusinessPartner):void
+			{
+				if (value)
+					controller.initLeads(value);
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is BusinessPartner) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return BusinessPartner(item).ShowAs;
+						
+						case COLUMN_EMAIL :
+							return BusinessPartner(item).RelatedUser != null ? BusinessPartner(item).RelatedUser.Email : "";
+						
+						case COLUMN_PHONE :
+							return BusinessPartner(item).RelatedUser != null ? BusinessPartner(item).RelatedUser.Phone : "";
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onCreate():void 
+			{
+				viewBusinessPartner.addEventListener(BusinessPartnerEvent.BUSINESS_PARTNER_SAVE, onBusinessPartnerSave);
+				viewBusinessPartner.addEventListener("closeBusinessPartnerEditor",
+					function(event:*):void 
+					{
+						isEditMode = false;
+						vsBusinessPartners.selectedChild = viewBusinessPartnersList;
+						BreadCrumbModel.getInstance().breadCrumbString = "Settings > Business Partners";
+						viewBusinessPartner.setBusinessPartner(null);
+					});  
+			}
+			
+			private function onBusinessPartnerSave(event:BusinessPartnerEvent):void 
+			{
+				var partner:BusinessPartner = event.businessPartner;
+				if(!model.businessPartners.contains(partner))
+					model.businessPartners.addItem(partner);
+				var idx:int = model.businessPartners.getItemIndex(partner);
+				dgBusinessPartners.selectedIndex = idx;
+				dgBusinessPartners.scrollToIndex(idx);
+			}
+			
+			private function onNewClick():void 
+			{
+				var businessPartner:BusinessPartner = new BusinessPartner();
+				var popup:BusinessPartnerCreatePopup = BusinessPartnerCreatePopup.open(Application.application as DisplayObject, businessPartner);
+				popup.addEventListener(BusinessPartnerEvent.BUSINESS_PARTNER_SAVE, onBusinessPartnerSave);
+			}
+			
+			private function onBusinessPartnersDoubleClick():void 
+			{
+				var businessPartner:BusinessPartner = dgBusinessPartners.selectedItem as BusinessPartner;
+				vsBusinessPartners.selectedChild = viewBusinessPartner;
+				viewBusinessPartner.setBusinessPartner(businessPartner);
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Business Partners > Edit Business Partner [" + businessPartner.ShowAs + "]";
+
+				isEditMode = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsBusinessPartners" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewBusinessPartnersList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:DataGrid id="dgBusinessPartners" dataProvider="{model.businessPartners}" width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="onBusinessPartnersDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" labelFunction="getLabel" dataField="{COLUMN_NAME}" minWidth="100"/>
+						<mx:DataGridColumn headerText="Email" labelFunction="getLabel" dataField="{COLUMN_EMAIL}" width="150" minWidth="100"/>
+						<mx:DataGridColumn headerText="Phone" labelFunction="getLabel" dataField="{COLUMN_PHONE}" width="150" minWidth="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<mx:VBox height="100%" width="150">
+				<mx:Button width="100%" height="35" label="Create New" click="onNewClick()"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<bp:BusinessPartnerEditView id="viewBusinessPartner" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:HBox>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:voice="com.affilia.voice.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.InvoiceLine;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.leadCentral.service.QbInvoiceService;
+			import com.dalworth.leadCentral.domain.QbInvoice;
+			import mx.events.CloseEvent;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.domain.LeadAmountSummary;
+			import com.dalworth.leadCentral.domain.AmountSummary;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import Intuit.Sb.Cdm.vo.CustomerType;
+			
+			import mx.rpc.Responder;
+			
+			[Bindable] private var lead:Lead;
+			[Bindable] private var qbInvoice:QbInvoice;
+
+			[Bindable] private var lines:ArrayCollection = new ArrayCollection();
+
+			[Bindable] private var isBusy:Boolean;
+			
+			[Bindable] private var replaceCustomerType:Boolean = false;
+			
+			[Bindable] private var summary:AmountSummary;
+
+			public function setLead(value:Lead):void 
+			{
+				lead = value;
+			}
+			
+			public function setQbInvoice(value:QbInvoice):void 
+			{
+				qbInvoice = value;
+				updateLines();
+				//checkCustomerType();
+				//getJobSummary();
+			}
+			
+			public function setSuccess():void 
+			{
+				boxContext.enabled = false;
+				boxSuccess.visible = true;
+			}
+			
+			private function updateLines():void 
+			{
+				lines.removeAll();
+				for each (var line:InvoiceLine in qbInvoice.RelatedIdsInvoice.Line)
+				{
+					lines.addItem(line);
+				}
+				return;
+			}
+			
+			public function commitQbInvoice():void 
+			{
+				isBusy = true;
+				QbInvoiceService.getInstance().matchToLead(qbInvoice.prepareToSend(), lead.prepareToSend(), 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							isBusy = false;
+							dispatchEvent(new Event("jobMatchComplete"));
+						},
+						function (event:FaultEvent):void 
+						{
+							isBusy = false;
+							Alert.show(event.fault.message);
+						}
+					));
+				
+			} 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:VBox id="boxContext" width="100%" height="100%" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:Label text="Please verify you selection" fontSize="14" color="#666666" fontWeight="bold"/>
+
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="Current Lead:" fontSize="13" fontWeight="bold"/>
+				
+				<mx:VBox paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+					borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#F8F8F8" 
+					width="100%" height="100%">
+					<mx:Grid width="100%" height="100%">
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="First Name:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{lead.FirstName}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Last Name:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{lead.LastName}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Phone:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{lead.Phone}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Date Created:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{DateUtil.getDateTimeStr(lead.DateCreated)}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="top">
+								<mx:Label text="Customer Notes:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="top" height="100%">
+								<mx:Text text="{lead.CustomerNotes}" fontSize="12" fontWeight="bold" color="#666666" width="100%" height="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle" colSpan="2">
+								<voice:VoicePlayer width="100%" layout="vertical" showHeader="false"
+									voiceFileUrl="{lead.RelatedPhoneCall.RecordingUrl == null ? null : lead.RelatedPhoneCall.RecordingUrl + '.mp3'}"
+									visible="{lead.RelatedPhoneCall != null &amp;&amp; lead.RelatedPhoneCall.RecordingUrl != null}"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+				</mx:VBox>
+			</mx:VBox>
+			
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="Selected Invoice:" fontSize="13" fontWeight="bold"/>
+				
+				<mx:VBox paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+					borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#F8F8F8" 
+					width="100%" height="100%">
+					<mx:Grid width="100%" height="100%">
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Customer Name:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle" colSpan="2">
+								<mx:Label text="{qbInvoice.RelatedIdsCustomer.Name}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%">
+							<mx:GridItem width="100%" colSpan="3">
+								<mx:HRule width="100%" height="1" strokeColor="#CCCCCC"/>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<mx:GridRow width="100%">
+							<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Date Created:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle" colSpan="2">
+								<mx:Label text="{DateUtil.getDateTimeStr(qbInvoice.RelatedIdsInvoice.MetaData.CreateTime)}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" height="100%" colSpan="3">
+								<mx:DataGrid width="100%" height="100%" dataProvider="{lines}" editable="false" selectable="false" sortableColumns="false">
+									<mx:columns>
+										<mx:DataGridColumn headerText="Description" dataField="Desc"/>
+										<mx:DataGridColumn headerText="Amount" textAlign="right" dataField="Amount" width="100"/>
+									</mx:columns>
+								</mx:DataGrid>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<mx:GridRow width="100%">
+							<mx:GridItem width="100%" colSpan="3">
+								<mx:HRule width="100%" height="1" strokeColor="#CCCCCC"/>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<mx:GridRow width="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" verticalAlign="middle" colSpan="2">
+								<mx:Label text="SubTotal Amount:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{cf.format(qbInvoice.Amount)}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<mx:GridRow width="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" verticalAlign="middle" colSpan="2">
+								<mx:Label text="Tax Amount:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" verticalAlign="middle">
+								<mx:Label text="{cf.format(qbInvoice.TaxAmount)}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<mx:GridRow width="100%">
+							<mx:GridItem width="100%" horizontalAlign="right" verticalAlign="middle" colSpan="2">
+								<mx:Label text="Total Amount:" fontSize="12"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="{cf.format(qbInvoice.TotalAmount)}" fontSize="12" fontWeight="bold" color="#666666"
+									width="100%"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox id="boxSuccess" width="100%" height="100%" visible="false" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" 
+		verticalAlign="middle" horizontalAlign="center">
+		<mx:HBox paddingLeft="55" paddingRight="55" paddingTop="5" paddingBottom="5" 
+			backgroundColor="#CCFFCC" 
+			borderColor="#FFFFFF" borderStyle="solid" borderThickness="2" cornerRadius="3"
+			dropShadowEnabled="true" shadowDirection="center" shadowDistance="1">
+			<mx:Label text="SUCCESS" fontSize="24" color="#666666"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

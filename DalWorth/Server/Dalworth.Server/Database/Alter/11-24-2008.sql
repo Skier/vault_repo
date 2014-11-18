@@ -1,0 +1,1 @@
+ALTER TABLE `Task` ADD COLUMN `IsRugCleaningDepartment` TINYINT(1) NOT NULL AFTER `LastFailDate`;

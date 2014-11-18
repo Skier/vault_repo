@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0" xmlns:view="com.llsvc.client.lms.view.*" xmlns:controls="com.llsvc.controls.*" xmlns:document="com.llsvc.client.lms.view.document.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.client.lms.view.document.DocRecordEditView;
+			import mx.core.Application;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import com.llsvc.client.lms.view.document.DocRecordBox;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.domain.LeaseAssignment;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _assignment:LeaseAssignment;
+			[Bindable]
+			public function get assignment():LeaseAssignment {return _assignment;}
+			public function set assignment(value:LeaseAssignment):void 
+			{
+				_assignment = value;
+			}
+			
+			private function btnAddClickHandler():void 
+			{
+				var docRecord:DocumentRecord = new DocumentRecord();
+				docRecord.isPublic = true;
+				openRecord(docRecord);
+			}
+			
+			private function openRecord(docRecord:DocumentRecord):void 
+			{
+				var popup:DocRecordEditView = DocRecordEditView.open(Application.application as DisplayObject, true);
+				popup.docRecord = docRecord;
+				popup.addEventListener("commitRequest", 
+					function (event:Event):void
+					{
+						if (!assignment.document.records.contains(popup.docRecord))
+							assignment.document.records.addItem(popup.docRecord);
+
+						popup.close();
+						
+						assignment.document.publicRecords.refresh();
+						assignment.document.privateRecords.refresh();
+					}
+				);
+			}
+			
+			private function deleteRecordRequestHandler(evt:Event):void 
+			{
+				var docRecord:DocumentRecord = DocRecordBox(evt.currentTarget).docRecord;
+				
+                Alert.show("Do you really want to delete Record ?", 
+                   "Delete Record", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                        	var i:int = assignment.document.records.getItemIndex(docRecord);
+                        	if (i != -1)
+                        		assignment.document.records.removeItemAt(i);
+                        }
+                    });
+			}
+			
+			private function editRecordRequestHandler(evt:Event):void 
+			{
+				var docRecord:DocumentRecord = DocRecordBox(evt.currentTarget).docRecord;
+				openRecord(docRecord);
+			}
+
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="Recording Info"/>
+	</mx:HBox>
+	
+	<mx:VBox width="100%" paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+		<mx:VBox width="100%" verticalGap="-1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Assignment Filed of Record"/>
+				
+				<mx:Spacer width="100%"/>
+				
+		        <mx:Button toolTip="Add Record"
+		        	includeInLayout="{editable}" visible="{editable}"
+		        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+		        	icon="@Embed('assets/icon_plus.png')"
+		        	click="btnAddClickHandler()"/>
+			</mx:HBox>
+			<mx:VBox width="100%" verticalGap="-1">
+				<mx:Repeater id="rptRecords" dataProvider="{assignment.document.records}">
+					<document:DocRecordBox width="100%" 
+						docRecord="{rptRecords.currentItem as DocumentRecord}"
+						editable="{editable}"
+						editRecordRequest="editRecordRequestHandler(event)" 
+						deleteRecordRequest="deleteRecordRequestHandler(event)"/>
+				</mx:Repeater>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:VBox>

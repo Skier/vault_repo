@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CollectionEvent;
+		
+			import  mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import flash.events.MouseEvent;
+			import mx.managers.CursorManager;
+			
+			import weborb.data.DynamicLoadEvent;
+			
+			import App.AppController;
+			import App.Domain.State;
+			import App.Domain.Lease;
+			import App.Domain.ActiveRecords;
+			
+			
+	
+			public var parentController:AppController;
+			private var _usStates:XMLList;
+			private var _usCounties:XMLList;
+			
+			private var _leaseToBeSetInFocus:Lease;
+			
+			[Bindable]
+			private var _todaysDocs:ArrayCollection;
+			
+			public function init(lease:App.Domain.Lease):void{
+				_usStates = parentController.statesAndCounties.state;
+				comboStates.dataProvider = _usStates.attribute('Name');
+				comboCounties.dataProvider = null;
+				this._leaseToBeSetInFocus = lease;
+				onFind();
+			}
+			
+			private function onStateChanged():void {
+				txtDocNumber.text = "";
+				txtVolume.text = "";
+				txtPage.text = "";
+				_usCounties = parentController.statesAndCounties.state.(@StateId == _usStates[comboStates.selectedIndex].@StateId).county;
+				comboCounties.dataProvider = _usCounties.attribute('Name');
+				onFind();
+			}
+			
+			private function onCountyChanged():void {
+				onFind();
+			}
+			
+			private function onResetFilter():void {
+				comboStates.selectedIndex = 0;
+				onStateChanged();
+				onFind();
+			}
+			
+			private function onFind():void{
+				pannel.enabled = false;
+				CursorManager.setBusyCursor();
+				_todaysDocs = ActiveRecords.Lease.findBySql(getFilterSql(comboCounties.selectedIndex, txtDocNumber.text, txtVolume.text, txtPage.text));
+				_todaysDocs.addEventListener("loaded", onTodaysDocsFound);
+			}
+			
+			private function onTodaysDocsFound(event:DynamicLoadEvent):void {
+				
+				if( _leaseToBeSetInFocus != null){
+					var i:int = 0;
+					for (i == 0; i < _todaysDocs.length; i++){
+						var lease:Lease = Lease(_todaysDocs[i]);
+						if (lease.LeaseId == _leaseToBeSetInFocus.LeaseId){
+							dgTodaysDocs.selectedItem = _todaysDocs.getItemAt(i);
+							break;
+						}
+					}
+				}
+				_leaseToBeSetInFocus  = null;
+				CursorManager.removeBusyCursor();
+				pannel.enabled = true;
+			}
+			private function getFilterSql(selectedItem:int, documentNumber:String, volume:String, page:String):String {
+
+				var result:String = 
+		             " Select distinct l.* From [Lease] l " + 
+		             " inner join [LeaseEditHistory] h on h.LeaseId = l.LeaseId " + 
+		             " where convert(varchar(10), h.DateEdited, 104) = convert(varchar(10), getdate(), 104) " + 
+		             " and l.[Status] <> 'DELETED' and [Author] = " + parentController.CurrentUser.UserId.toString();
+		  			
+	  			if (comboStates.selectedIndex > 0) {
+	  				result += " and  [StateFips] = '";
+	  				result += _usCounties[selectedItem].@StateFips;
+	  				result += "'";
+	  			}
+	  			
+	  			if (comboCounties.selectedIndex > 0) {
+	  				result += " and [CountyFips] = '";
+	  				result += _usCounties[selectedItem].@CountyFips;
+	  				result += "'";
+	  			}
+
+				if (documentNumber.length > 0) {
+					result += " and [DocumentNumber] = '";
+					result += documentNumber;
+					result += "' ";
+					
+				} else {
+
+					if (volume.length > 0) {
+						result += " and [Volume] = '";
+						result += volume;
+						result += "'";
+					}
+					
+					if (page.length > 0) {
+						result += " and [PAGE] = '";
+						result += page;
+						result += "'";
+					}
+					
+				}
+			
+				return result;
+			
+			}
+			
+			private function getStateName(item:Lease, column:DataGridColumn):String {
+				var str:String = _usStates.(@StateFips == item.StateFips).@Name;
+				return str;
+			}
+			
+			private function getCountyName(item:Lease, column:DataGridColumn):String {
+				return parentController.statesAndCounties.state.(@StateFips == item.StateFips).county.(@CountyFips == item.CountyFips).@Name;
+			}
+			
+			private function createNewLease():void {
+				parentController.showLeaseDetail(new Lease());
+			}
+			
+			private function editSelectedLease():void{
+				var lease:Lease = dgTodaysDocs.selectedItem as Lease;
+				if (lease != null){
+					parentController.showLeaseDetail(lease);
+				}
+				else{
+					Alert.show("Please select a document");
+				}
+			}
+			
+			private function onGridDoubleClick():void{
+				// TODO: Not working
+				var lease:Lease = dgTodaysDocs.selectedItem as Lease;
+				if (lease != null){
+					parentController.showLeaseDetail(lease);
+				}
+			} 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Panel id="pannel" width="100%" height="100%" title="Todays Documents" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+		<mx:HBox width="100%" horizontalAlign="left" 
+			backgroundColor="#eeeeee" borderColor="#999999" borderStyle="solid" cornerRadius="3"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+			>
+			<mx:Button label="Create New" click ="createNewLease()"/>
+			<mx:Button label="Edit Document" click="editSelectedLease()"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Spacer width="252"/>
+			<mx:ComboBox id="comboStates" 
+				change="onStateChanged()"
+				width="110" labelField="Name"/>
+			<mx:ComboBox id="comboCounties"  
+				change="onCountyChanged()"
+				width="150" labelField="Name"/>
+			<mx:TextInput id="txtDocNumber" width="80"/>
+			<mx:TextInput id="txtVolume" width="60"/>
+			<mx:TextInput id="txtPage" width="60"/>
+			<mx:Spacer width="10"/>
+			<mx:Button label="Find" click="onFind()"/>
+			<mx:Button label="Reset Filter" click="onResetFilter()"/>
+		</mx:HBox>
+		<mx:DataGrid id="dgTodaysDocs" 
+			left="10" right="10" top="0" bottom="10" width="100%" height="100%" 
+			dataProvider="{_todaysDocs}" doubleClick="onGridDoubleClick()" doubleClickEnabled="true">
+			<mx:columns>
+				<mx:DataGridColumn id="columnLeassorName" headerText="Leassor Name" dataField="LeassorName" width="130" resizable="false"/>
+				<mx:DataGridColumn id="columnLeaseeName" headerText="Leasee Name" dataField="LeaseeName" width="130" resizable="false"/>
+				<mx:DataGridColumn id="columnState" headerText="State"  dataField="StateFips" labelFunction="getStateName" width="110" resizable="false"/>
+				<mx:DataGridColumn id="columnCounty" headerText="County"  dataField="CountyFips" labelFunction="getCountyName" width="158" resizable="false"/>
+				<mx:DataGridColumn id="columnDocNumber" headerText="Document No" dataField="DocumentNumber" width="88" resizable="false"/>
+				<mx:DataGridColumn id="columnVolume" headerText="Volume" dataField="Volume" width="68" resizable="false"/>
+				<mx:DataGridColumn id="columnPage" dataField="PAGE" headerText="Page" width="68" resizable="false"/>
+				<mx:DataGridColumn id="columnLCN" headerText="LCN" dataField="LCN"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:Panel>
+
+</mx:VBox>

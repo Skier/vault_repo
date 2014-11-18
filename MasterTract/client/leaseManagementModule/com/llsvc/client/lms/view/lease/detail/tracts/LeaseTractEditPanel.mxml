@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:component="com.llsvc.component.*"
+	verticalGap="1">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.llsvc.domain.LeaseTract;
+			
+			private var _tract:LeaseTract;
+			[Bindable]
+			public function get tract():LeaseTract { return _tract; }
+			public function set tract(value:LeaseTract):void 
+			{
+				_tract = value;
+			}
+			
+			private function editTractHandler():void 
+			{
+				var popup:TractEditView = TractEditView.open(Application.application as DisplayObject, tract, true);
+				popup.addEventListener("commitRequest", 
+					function (event:*):void 
+					{
+						tract.lease.isDirty = true;
+						popup.close();
+					}
+				);
+			}
+			
+			private function checkInPercentField(ti:TextInput):void 
+			{
+				var percentInput:String = ti.text;
+				var value:Number;
+				
+				if ( percentInput.length > 0 && percentInput.indexOf("%") > 0 ) 
+				{
+					var p1:String = percentInput.substr(0, percentInput.indexOf("%"));
+					if ( !isNaN(Number(p1)) ) {
+						value = new Number(p1)/100;
+					} else {
+						value = 0.00;
+					}
+				} else if ( !isNaN(Number(percentInput)) ) 
+				{
+					value = new Number(percentInput);
+				} else 
+				{
+					value = 0.00;
+				}
+				
+				if (value > 1) {
+					value = 1.00;
+				} else if (value < 0) {
+					value = 0.00;
+				}
+				
+				ti.text = value.toString();
+			}
+
+			private function txtGrossAcresChangeHandler():void 
+			{
+				if (!isNaN(Number(txtGrossAcres.text))) 
+				{
+					var ga:Number = Number(txtGrossAcres.text);
+					tract.grossAcres = ga;
+					if (ga > 0) {
+						tract.leaseInterest = tract.netAcres / ga;
+					} else {
+						tract.leaseInterest = 0;
+					}
+					this.executeChildBindings(true);
+				} else {
+					txtGrossAcres.text = tract.grossAcres.toString();
+				}
+			}
+			
+			private function txtNetAcresChangeHandler():void 
+			{
+				if (!isNaN(Number(txtNetAcres.text))) 
+				{
+					var na:Number = Number(txtNetAcres.text);
+					if (na > tract.grossAcres) {
+						na = tract.grossAcres;
+					}
+					if (tract.grossAcres > 0) {
+						tract.leaseInterest = na / tract.grossAcres;  
+					} else {
+						tract.leaseInterest = 0;
+					}
+					tract.netAcres = na;
+					this.executeChildBindings(true);
+				} else {
+					txtNetAcres.text = tract.netAcres.toString();
+				}
+			}
+			
+			private function txtInterestChangeHandler():void 
+			{
+				checkInPercentField(txtInterest);
+				tract.leaseInterest = Number(txtInterest.text);
+				tract.netAcres = tract.grossAcres * tract.leaseInterest;
+				this.executeChildBindings(true);
+			}
+			
+			private function txtCwiChangeHandler():void 
+			{
+				checkInPercentField(txtCwi);
+				tract.cwi = Number(txtCwi.text);
+				this.executeChildBindings(true);
+			}
+			
+			private function txtBurdenChangeHandler():void 
+			{
+				checkInPercentField(txtBurden);
+				tract.burden = Number(txtBurden.text);
+				this.executeChildBindings(true);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#ffffdd">
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="ID:" fontWeight="bold"/>
+			<mx:Label text="{tract.id}"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle" width="100%">
+			<mx:Label text="Tract:" fontWeight="bold"/>
+			<mx:Label text="{tract.townshipRangeStr}"/>
+			<mx:VRule height="16" width="1"/>
+			<mx:Label text="Sec.{tract.sectionStr}"/>
+			<mx:VRule height="16" width="1"/>
+			<mx:Label text="{tract.tract}" width="100%" minWidth="100" toolTip="{tract.tract}"/>
+		</mx:HBox>
+        <mx:Button width="28" height="20"  
+            icon="@Embed('assets/icons16/pencil.png')" 
+            toolTip="Edit Tract description" 
+            click="editTractHandler()"/> 
+	</mx:HBox>
+	<mx:HBox width="100%" verticalAlign="middle">
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="Gross AC:" fontWeight="bold"/>
+			<mx:TextInput id="txtGrossAcres" 
+				width="50" textAlign="right" restrict="0-9,."
+				text="{tract.grossAcres}" focusOut="txtGrossAcresChangeHandler()"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="Net AC:" fontWeight="bold"/>
+			<mx:TextInput id="txtNetAcres" 
+				width="50" textAlign="right" restrict="0-9,."
+				text="{tract.netAcres}" focusOut="txtNetAcresChangeHandler()"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="Interest:" fontWeight="bold"/>
+			<mx:TextInput id="txtInterest" 
+				width="50" textAlign="right" restrict="0-9,.%"
+				text="{tract.leaseInterestStr}" focusOut="txtInterestChangeHandler()"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="Burden:" fontWeight="bold"/>
+			<mx:Label text="{tract.leaseBurdenStr}" maxWidth="50"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="NRI:" fontWeight="bold"/>
+			<mx:Label text="{tract.nriStr}" maxWidth="50"/>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:HBox width="100%" verticalAlign="middle">
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="FCR WI:" fontWeight="bold"/>
+			<mx:TextInput id="txtCwi" 
+				width="50" textAlign="right" restrict="0-9,.%"
+				text="{tract.cwiStr}" focusOut="txtCwiChangeHandler()"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="Add.Burden:" fontWeight="bold"/>
+			<mx:TextInput id="txtBurden" 
+				width="50" textAlign="right" restrict="0-9,.%"
+				text="{tract.burdenStr}" focusOut="txtBurdenChangeHandler()"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="FCR NRI:" fontWeight="bold"/>
+			<mx:Label text="{tract.cnriStr}" maxWidth="50"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="-1" verticalAlign="middle">
+			<mx:Label text="FCR Net AC:" fontWeight="bold"/>
+			<mx:Label text="{tract.cNetAcres}" maxWidth="50"/>
+		</mx:HBox>
+	</mx:HBox>
+</mx:VBox>

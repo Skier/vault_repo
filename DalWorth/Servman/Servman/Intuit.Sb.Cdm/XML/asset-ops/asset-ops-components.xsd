@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ============================================================================== -->
+<!-- Reference -->
+<!-- ============================================================================== -->
+<!-- xsd data types: http://www.w3.org/TR/xmlschema-2/#built-in-datatypes -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/ao" xmlns:bt="http://www.intuit.com/sb/cdm/basetypes" targetNamespace="http://www.intuit.com/sb/cdm/ao" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.intuit.com/sb/cdm/basetypes" schemaLocation="../common/IntuitCdmBaseTypes.xsd" />
+	<!-- ============================================================================== -->
+	<!-- General Components -->
+	<!-- ============================================================================== -->
+	<xs:simpleType name="idType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used to refer an Intuit object by Id</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+		<!-- would liike to see this in BaseTypes -->
+		<!--should this be xs:normalizedString (WS chars changed to spaces), xs:token (multiple WS chars collapsed to one space), or xs:NMTOKEN (no spaces) instead?-->
+	</xs:simpleType>
+	<xs:simpleType name="qtyType">
+		<xs:restriction base="xs:decimal" />
+	</xs:simpleType>
+	<xs:element name="Qty" type="qtyType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the ratio between two quantities or amounts</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="ratioType">
+		<xs:restriction base="xs:decimal" />
+	</xs:simpleType>
+	<xs:element name="Ratio" type="ratioType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the ratio between two quantities or amounts</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ============================================================================== -->
+	<!-- Item Components -->
+	<!-- ============================================================================== -->
+	<xs:complexType name="ItemRef">
+		<xs:annotation>
+			<xs:documentation>A reference to an Item Object, with optional tags for key time-sensitive information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ItemId" type="idType" minOccurs="0" />
+			<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="Description" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:group name="ItemUomGroup">
+		<xs:sequence>
+			<xs:element name="UomConvSet" type="UomConvSetRef" minOccurs="0" />
+			<xs:element name="BaseUom" type="UomConv" minOccurs="0" />
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemSvcGroup">
+		<xs:sequence>
+			<xs:element name="Service" type="xs:boolean" minOccurs="0" />
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemPurchGroup">
+		<xs:sequence>
+			<xs:element name="Purchased" type="xs:boolean" minOccurs="0" />
+			<xs:element name="PurchUom" type="UomConv" minOccurs="0" />
+			<xs:element name="ManufPartNum" type="xs:string" minOccurs="0" />
+			<xs:element name="PrefVendor" type="idType" minOccurs="0" />
+			<xs:element name="Cost" type="bt:Money" minOccurs="0" />
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemInvGroup">
+		<xs:sequence>
+			<xs:element name="TrackedInv" type="xs:boolean" minOccurs="0" />
+			<xs:element name="LastCountTime" type="xs:dateTime" minOccurs="0" />
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemMfgGroup">
+		<xs:sequence>
+			<xs:element name="Manufactured" type="xs:boolean" minOccurs="0" />
+			<xs:element name="BomRef" type="BomRef" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemProdGroup">
+		<xs:sequence>
+			<xs:element name="Sellable" type="xs:boolean" minOccurs="0" />
+			<xs:element name="SalesUom" type="UomConv" minOccurs="0" />
+			<xs:element name="ShipUom" type="UomConv" minOccurs="0" />
+			<xs:element name="ProdDesc" type="xs:string" minOccurs="0" />
+			<xs:element name="Taxable" type="xs:boolean" minOccurs="0" />
+			<xs:element name="Price" type="bt:Money" minOccurs="0" />
+		</xs:sequence>
+	</xs:group>
+	<!-- ============================================================================== -->
+	<!-- Bill of Materials Components -->
+	<!-- ============================================================================== -->
+	<xs:complexType name="BomRef">
+		<xs:annotation>
+			<xs:documentation>A reference to an BomRef Object, with optional tags for key time-sensitive information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BomId" type="idType" minOccurs="0" />
+			<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="Description" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BomLine">
+		<xs:annotation>
+			<xs:documentation>A component of a BOM</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ChildRef" type="ItemRef" minOccurs="0" />
+			<xs:element name="Qty" type="qtyType" minOccurs="0" />
+			<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="Description" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ============================================================================== -->
+	<!-- ItemBundle Components -->
+	<!-- ============================================================================== -->
+	<xs:complexType name="ItemBundleRef">
+		<xs:annotation>
+			<xs:documentation>A reference to an ItemBundle Object, with optional tags for key time-sensitive information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ItemBundleId" type="idType" minOccurs="0" />
+			<xs:element name="Name" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="Description" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ============================================================================== -->
+	<!-- UnitOfMeasure Components -->
+	<!-- ============================================================================== -->
+	<xs:complexType name="UomConvSetRef">
+		<xs:annotation>
+			<xs:documentation>A reference to an UomConvSet Object, with optional tags for key time-sensitive information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="uomConvSetId" type="idType" minOccurs="0" />
+			<xs:element name="Name" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UomConv">
+		<xs:annotation>
+			<xs:documentation>The a unit of measure, relative to some base unit </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0" />
+			<xs:element name="Abbr" type="xs:string" minOccurs="0" />
+			<xs:element name="ConvRatio" type="ratioType" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="uomTypeEnum">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">enumeration of ways to measure, weight, length, time, etc...</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Area" />
+			<xs:enumeration value="Count" />
+			<xs:enumeration value="Length" />
+			<xs:enumeration value="Time" />
+			<xs:enumeration value="Volume" />
+			<xs:enumeration value="Weight" />
+			<xs:enumeration value="Other" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

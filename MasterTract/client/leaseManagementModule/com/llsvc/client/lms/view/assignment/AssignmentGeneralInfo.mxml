@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0" xmlns:component="com.llsvc.component.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseAssignment;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _assignment:LeaseAssignment;
+			[Bindable]
+			public function get assignment():LeaseAssignment {return _assignment;}
+			public function set assignment(value:LeaseAssignment):void 
+			{
+				_assignment = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				return isValid();
+			}
+			
+			private function isValid():Boolean
+			{
+				return validator.validate();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<component:ValidatorsGroup id="validator">
+		<mx:NumberValidator source="{txtORRI}" property="text" required="true"/>
+		<mx:DateValidator source="{dateAssignment}" property="selectedDate" required="true"/>
+		<mx:DateValidator source="{dateEffective}" property="selectedDate" required="true"/>
+	</component:ValidatorsGroup>
+	
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="General Info"/>
+	</mx:HBox>
+	
+    <mx:Form width="100%" backgroundColor="#FFFFFF"
+    	labelWidth="80" 
+    	paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+        <mx:FormItem label="ORRI">
+            <mx:TextInput id="txtORRI" 
+            	width="35" editable="{editable}" 
+            	change="assignment.royalty = isNaN(Number(txtORRI.text)) ? 0 : Number(txtORRI.text)" />
+        </mx:FormItem>
+
+        <mx:FormItem label="Assignment" color="#000000">
+            <mx:DateField id="dateAssignment" 
+            	width="100" yearNavigationEnabled="true" enabled="{editable}"
+            	change="assignment.assignDate = dateAssignment.selectedDate"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Effective">
+            <mx:DateField id="dateEffective" 
+            	width="100" yearNavigationEnabled="true" enabled="{editable}"
+            	change="assignment.effectiveDate = dateEffective.selectedDate"/>
+        </mx:FormItem>
+    </mx:Form>
+	
+</mx:VBox>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:maps="com.ebs.eroof.view.maps.*" xmlns:tools="com.ebs.eroof.view.maps.tools.*" xmlns:mapping="com.ebs.eroof.mapping.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.afcomponents.umap.providers.microsoft.MicrosoftProvider;
+			import com.ebs.eroof.mapping.mapClasses.SectionPolygon;
+			import com.afcomponents.umap.interfaces.IOverlay;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.afcomponents.umap.overlays.Polygon;
+			import com.afcomponents.umap.types.LatLng;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			private var mapIsReady:Boolean = false;
+			
+			private var _model:Section;
+			[Bindable]
+			public function get model():Section { return _model; }
+			public function set model(value:Section):void 
+			{
+				if (_model)
+					updateModel();
+					
+				_model = value;
+				
+				refreshContent();
+			}
+			
+			public function getCenter():LatLng
+			{
+				if (mapContainer)
+					return mapContainer.getMapCenter();
+				else 
+					return null;
+			}
+			
+			private function refreshContent():void 
+			{
+				if (!model || !mapIsReady)
+					return;
+				
+				mapContainer.clearMap();
+				
+				for each (var roof:SectionPolygon in model.getRoofs()) 
+				{
+					addPolygonToMap(roof);
+				}
+
+				setMapView();
+			}
+			
+			private function addPolygonToMap(polygon:SectionPolygon):void 
+			{
+				mapContainer.addPolygon(polygon);
+			}
+			
+			private function setMapView():void 
+			{
+				if (model)
+				{
+					mapContainer.setMapZoom(model.facility.facilityDTO.MapZoom);
+					mapContainer.setMapCenter(model.facility.getPosition());
+					mapContainer.setMapType(MicrosoftProvider.AERIAL);
+				}
+			}
+			
+			private function mapIsReadyHandler(event:Event):void 
+			{
+				mapIsReady = true;
+				refreshContent();
+				
+				toolBar.setContainer(mapContainer);
+			}
+			
+			private function updateModel():void 
+			{
+				var overlays:Array = mapContainer.getPolygonLayer().getOverlays();
+				var polygons:Array = new Array();
+				for each (var overlay:IOverlay in overlays) 
+				{
+					if (overlay is SectionPolygon)
+						polygons.push(overlay);
+				}
+
+				model.updateGeometry(polygons);
+			}
+
+			private function saveRoofClickHandler():void 
+			{
+				updateModel();
+				saveSection();
+			}
+
+            private function saveSection():void 
+            {
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onSaveSection, model.sectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(model.sectionDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onSaveSection(storedSection:Sections_DTO):void 
+            {
+            	model.sectionDTO = storedSection;
+            }
+            
+
+		]]>
+	</mx:Script>
+
+
+	<mapping:MapContainer id="mapContainer" left="0" right="0" top="0" bottom="24"
+		mapIsReady="mapIsReadyHandler(event)"/>
+	<mapping:ToolBarView id="toolBar" left="10" top="10"/>
+	<mx:HBox width="100%" bottom="0" horizontalAlign="right">
+		<mx:Button label="Save Roof Plan" click="saveRoofClickHandler()"/>
+	</mx:HBox>
+</mx:Canvas>

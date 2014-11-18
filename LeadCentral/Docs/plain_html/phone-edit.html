@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Phone</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+</head>
+<body>
+<div id="header">
+  <div class="div1"><img src="image/logo.png" title="Home" onclick="location='home.html'" /></div>
+  <div class="div2">
+    <select>
+      <option value="1">Lead</option>
+      <option value="2">Campaign</option>
+      <option value="3">User</option>
+    </select>
+    <input type="text"/>
+    <a class="button search" style="height:12px;">Search</a>
+  </div>
+</div>
+<div id="menu">
+  <ul class="nav left">
+    <li id="home"><a href="home.html" class="top">Home</a></li>
+    <li id="leads"><a href="leads.html" class="top">Leads</a></li>
+    <li id="campaigns"><a href="campaigns.html" class="top">Campaigns</a></li>
+    <li id="partners"><a href="partners.html" class="top">Partners</a></li>
+    <li id="users"><a href="users.html" class="top">Users</a></li>
+    <li id="phones" class="selected"><a href="phones.html" class="top">Phones</a></li>
+    <li id="billing"><a href="billing.html" class="top">Billing</a></li>
+    <li id="profile"><a href="profile.html" class="top">Company Profile</a></li>
+  </ul>
+  <ul class="nav right">
+    <li id="store"><a class="top" onclick="window.open('http://www.theleadcentral.com');">Help</a></li>
+  </ul>
+</div>
+<div id="content">
+
+<div class="breadcrumb" style="height:15px;">
+  <div style="float:left;">
+    <a href="home.html">Home</a>&gt;
+    <a href="phones.html">Phones</a>&gt;
+    <a href="phone.html">Edit Phone</a>
+  </div>
+  <div style="float:right;">
+    <a href="http://www.theleadcentral.com/"><img src="image/question-frame.png"/> Context Help</a>
+  </div>
+</div>
+
+  <div class="info-panel">
+    This is information message
+  </div>
+
+  <div class="attention-panel">
+    This is attention message
+  </div>
+
+  <div class="error-panel">
+    This is error message
+  </div>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;"><a href="phone.html" class="button primary">Save</a>&nbsp;<a href="phone.html" class="button">Cancel</a></div>
+      <h1 style="background-image: url('image/home.png');">Lead [Boris Furman]</h1>
+    </div>
+    <div class="content">
+      <form action="" method="post" enctype="multipart/form-data" id="form">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Phone Number</td>
+              <td><b>+1(214)335-2222</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Friendly Number</td>
+              <td><input type="text" name="txt_name" value="+1(214)GOTOWEB"/></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span>Redirect Number</td>
+              <td><input type="text" value="+1(214)335-2222"/><span class="error">Redirect Phone is required</span></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Description</td>
+              <td><textarea cols="40" rows="5">assigned to multiple business partners</textarea></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required"></span> Campaign</td>
+              <td><select name="filter_status">
+                    <option value="0"></option>
+                    <option value="1">Affilia Inc.</option>
+                    <option value="2">Exceleron Software</option>
+                    <option value="3">Plumbing</option>
+                  </select></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">&nbsp;</td>
+              <td>
+                <div style="float:right;">
+                  <a onclick="javascript:alert('to be continued')" class="button">Suspend this number</a>
+                  <a onclick="javascript:alert('to be continued')" class="button">Release Number</a>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br/>
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Phone Calls</div>
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <table class="list">
+            <thead>
+              <tr>
+                <td class="left">From Phone number</td>
+                <td class="left">To Phone Number</td>
+                <td class="left">Caller ID</td>
+                <td class="left">Date</td>
+                <td class="left">Duration</td>
+                <td class="right">Cost</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+              <tr>
+                <td class="left">(214)335-1212</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">Customer Name</td>
+                <td class="left">01/01/2011</td>
+                <td class="left">2:23</td>
+                <td class="right">$0.06</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <br/>
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">SMS</div>
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>No SMS are found</h3>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+<div id="footer">
+  Footer text. Copyright
+</div>
+</body></html>

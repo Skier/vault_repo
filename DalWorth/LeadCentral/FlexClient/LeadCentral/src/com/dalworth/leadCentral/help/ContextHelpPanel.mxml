@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+            [Embed(source="/assets/icons16/question-button.png")]
+            [Bindable]
+            private var imgQuestion:Class;
+            
+            [Bindable]
+            public var contextHelpUrl:String;
+
+			private function onBtnClick():void 
+			{
+				if (contextHelpUrl != null && contextHelpUrl != "")
+					navigateToURL(new URLRequest(contextHelpUrl));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="btnHelp" width="16" height="16" right="0" top="0" click="onBtnClick()"
+		source="{imgQuestion}" visible="{contextHelpUrl != null &amp;&amp; contextHelpUrl != ''}"/>
+
+	<mx:Label text="CONTEXT HELP" bottom="0" right="16" fontSize="8" visible="{contextHelpUrl != null &amp;&amp; contextHelpUrl != ''}"/>
+
+	<mx:HRule width="100%" height="1" strokeColor="#CCCCCC" right="0" left="0" bottom="0" visible="{contextHelpUrl != null &amp;&amp; contextHelpUrl != ''}"/>
+</mx:Canvas>

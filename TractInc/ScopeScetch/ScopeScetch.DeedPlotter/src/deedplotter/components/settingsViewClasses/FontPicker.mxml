@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="370"
+    xmlns:components="src.deedplotter.components.settingsViewClasses.*" 
+    xmlns:components1="src.deedplotter.components.*" paddingTop="0">
+    
+	<mx:Form width="100%" paddingTop="0" paddingRight="0" paddingLeft="0"
+	    paddingBottom="0" verticalGap="3">
+		
+		<mx:FormItem label="Text Color">
+		    <components1:ExtendedColorPicker id="textColorChooser" 
+		        selectedColor="0xFFFFFF"/>
+		</mx:FormItem>
+
+		<components:FontFamilyPicker id="fontFamilyChooser" formItemLabel="Font Family"/>
+	
+		<components:FontSizePicker id="fontSizeChooser" formItemLabel="Font Size"/>
+	
+		<components:TextFormattingPicker id="textFormatChooser" formItemLabel="Text Format"/>
+		
+	</mx:Form>
+				
+</mx:Box>

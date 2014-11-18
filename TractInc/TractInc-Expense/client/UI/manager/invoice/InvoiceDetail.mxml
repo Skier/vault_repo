@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%"
+	minHeight="500"
+	minWidth="800"
+	backgroundColor="#dddddd"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingTop="5"
+	paddingBottom="5"
+	verticalGap="5"
+	xmlns:notes="common.notes.*"
+	xmlns:components="components.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ListCollectionView;
+			import App.Entity.AssetDataObject;
+			import App.Entity.AssetAssignmentDataObject;
+			import App.Entity.InvoiceItemStatusDataObject;
+			import App.Entity.AFEDataObject;
+			import App.Service.ManagerService;
+			import App.Entity.InvoiceStatusDataObject;
+			import common.TypesRegistry;
+			import App.Entity.InvoiceItemDataObject;
+			import App.Entity.InvoiceDataObject;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
+			import mx.validators.Validator;
+			import mx.managers.FocusManager;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.managers.CursorManagerPriority;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import flash.net.navigateToURL;
+			import mx.rpc.remoting.RemoteObject;
+			import util.NumberUtil;
+			import mx.collections.ArrayCollection;
+			import util.DateUtil;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.Responder;
+			
+			[Bindable] private var _parentController:InvoiceManagerController;
+			
+			[Bindable] private var _currentInvoice:InvoiceStructure;
+			[Bindable] private var _afeGroups:ArrayCollection = new ArrayCollection();
+
+			public function init(invoice:InvoiceDataObject, parent:InvoiceManagerController):void 
+			{
+				_parentController = parent;
+				_currentInvoice = new InvoiceStructure(parent);
+
+				_currentInvoice.init(invoice);
+				_currentInvoice.addEventListener("invoice_structure_loaded", onInvoiceItemsLoaded);
+				_currentInvoice.addEventListener(FaultEvent.FAULT, onFault);
+
+				CursorManager.setBusyCursor();
+			}
+			
+			private function onClickSave():void 
+			{
+				saveInvoice(new mx.rpc.Responder(
+					function (event:*):void {
+						CursorManager.removeBusyCursor();
+						invoicePanel.enabled = true;
+						onClickClose();
+					},
+					onFault
+				));
+			}
+			
+			private function onInvoiceItemsLoaded(event:Event):void 
+			{
+				CursorManager.removeBusyCursor();
+				_parentController.setInvoicesState(InvoiceManagerModel.VIEW_STATE_INVOICE_DETAIL);
+			}
+			
+			private function onClickClose():void 
+			{
+				if (0 == _currentInvoice.invoice.InvoiceItems.length) {
+					ManagerService.getInstance().removeInvoice(_currentInvoice.invoice.InvoiceId);
+				}
+				_currentInvoice = null;
+				_parentController.setInvoicesState(InvoiceManagerModel.VIEW_STATE_INVOICE_LIST);
+				_parentController.init();
+			}
+			
+			private function onClickVoid():void 
+			{
+				_currentInvoice.setStatus(InvoiceStatusDataObject.INVOICE_STATUS_VOID);
+				saveInvoice();
+			}
+			
+			private function onClickSubmit():void 
+			{
+				_currentInvoice.setStatus(InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED);
+				saveInvoice();
+			}
+			
+			private function onClickPaid():void 
+			{
+				_currentInvoice.setStatus(InvoiceStatusDataObject.INVOICE_STATUS_PAID);
+				saveInvoice();
+			}
+			
+			private function onClickNewItem():void 
+			{
+				var invoiceItem:InvoiceItemDataObject = new InvoiceItemDataObject();
+				invoiceItem.isNew = true;
+				openInvoiceItem(invoiceItem);
+			}
+			
+			private function onClickChangeItem():void 
+			{
+				var invoiceItem:InvoiceItemDataObject = dgAddedItems.selectedItem as InvoiceItemDataObject;
+				if (invoiceItem != null) {
+					openInvoiceItem(invoiceItem);
+				}
+			}
+			
+			private function onClickRemoveItem():void
+			{
+				var invoiceItem:InvoiceItemDataObject = dgAddedItems.selectedItem as InvoiceItemDataObject;
+				if (invoiceItem != null) {
+					_currentInvoice.removeItem(invoiceItem);
+				}
+			}
+			
+			private function openInvoiceItem(invoiceItem:InvoiceItemDataObject):void 
+			{
+				var popup:EditInvoiceItem = PopUpManager.createPopUp(this, EditInvoiceItem, true) as EditInvoiceItem;
+				PopUpManager.centerPopUp(popup);
+				popup.init(_currentInvoice, invoiceItem);
+			}
+			
+			private function onAddedItemsDoubleClick():void 
+			{
+				var invoiceItem:InvoiceItemDataObject = dgAddedItems.selectedItem as InvoiceItemDataObject;
+				if (invoiceItem != null) {
+					openInvoiceItem(invoiceItem);
+				}
+			}
+			
+			private function onClickGetCoverPdf():void 
+			{
+	            var service:RemoteObject = new RemoteObject("GenericDestination");
+	            service.source = "TractInc.Expense.BaseService";
+	            service.GetCoverPDFUrl.addEventListener(ResultEvent.RESULT, onGetPdf);
+	            service.GetCoverPDFUrl.addEventListener(FaultEvent.FAULT, onFault);
+				
+				saveInvoice(new mx.rpc.Responder(
+					function (event:*):void {
+						service.GetCoverPDFUrl(_currentInvoice.invoice.InvoiceId);
+					},
+					onFault
+				));
+			}
+			
+			private function onClickGetInvoicePdf():void 
+			{
+	            var service:RemoteObject = new RemoteObject("GenericDestination");
+	            service.source = "TractInc.Expense.BaseService";
+	            service.GetInvoicePDFUrl.addEventListener(ResultEvent.RESULT, onGetPdf);
+	            service.GetInvoicePDFUrl.addEventListener(FaultEvent.FAULT, onFault);
+
+				saveInvoice(new mx.rpc.Responder(
+					function (event:*):void {
+						service.GetInvoicePDFUrl(_currentInvoice.invoice.InvoiceId);
+					},
+					onFault
+				));
+			}
+			
+			private function onClickGetWorkLogPdf():void 
+			{
+	            var service:RemoteObject = new RemoteObject("GenericDestination");
+	            service.source = "TractInc.Expense.BaseService";
+	            service.GetWorkLogPDFUrl.addEventListener(ResultEvent.RESULT, onGetPdf);
+	            service.GetWorkLogPDFUrl.addEventListener(FaultEvent.FAULT, onFault);
+
+				saveInvoice(new mx.rpc.Responder(
+					function (event:*):void {
+						service.GetWorkLogPDFUrl(_currentInvoice.invoice.InvoiceId);
+					},
+					onFault
+				));
+			}
+			
+			private function onClickGetAttachmentsPdf():void 
+			{
+	            var service:RemoteObject = new RemoteObject("GenericDestination");
+	            service.source = "TractInc.Expense.BaseService";
+	            service.GetAttachmentsPDFUrl.addEventListener(ResultEvent.RESULT, onGetPdf);
+	            service.GetAttachmentsPDFUrl.addEventListener(FaultEvent.FAULT, onFault);
+
+				saveInvoice(new mx.rpc.Responder(
+					function (event:*):void {
+						service.GetAttachmentsPDFUrl(_currentInvoice.invoice.InvoiceId);
+					},
+					onFault
+				));
+			}
+			
+	        private function onGetPdf(event:ResultEvent):void 
+	        {
+				CursorManager.removeBusyCursor();
+				
+				if (null == event.result) {
+					invoicePanel.enabled = true;
+					return;
+				}
+				
+				var url:URLRequest = new URLRequest(event.result as String);
+				navigateToURL(url, "_blank");
+				invoicePanel.enabled = true;
+	        }
+
+			private function saveInvoice(responder:mx.rpc.Responder = null):void 
+			{
+				var vResult:ValidationResultEvent = validator_txtInvoiceNo.validate();
+				if (vResult.type == ValidationResultEvent.INVALID) {
+					return;
+				}
+				
+				invoicePanel.enabled = false;
+				
+				ManagerService.getInstance().checkInvoiceNumber(_currentInvoice.invoice.InvoiceId, txtInvoiceNo.text, ManagerService.getResponder(
+					function(event:ResultEvent):void 
+					{
+						if (Boolean(event.result)) {
+							Alert.show("Invoice with current InvoiceNumber already exists in database. Please change it.", "", 4, null, 
+								function (e:*):void {
+									txtInvoiceNo.setFocus();
+									invoicePanel.enabled = true;
+								});
+							return;
+						}
+						
+						_currentInvoice.invoice.isNew = false;
+		
+						_currentInvoice.invoice.InvoiceNumber = txtInvoiceNo.text;
+						_currentInvoice.invoice.ClientName = txtClientName.text;
+						_currentInvoice.invoice.ClientAddress = txtClientAddress.text;
+						_currentInvoice.invoice.StartDate = DateUtil.format(dateInvoiceDate.selectedDate);
+						_currentInvoice.invoice.TotalDailyAmt = _currentInvoice.totalDays;
+						_currentInvoice.invoice.DailyInvoiceAmt = _currentInvoice.dailyAmount;
+						_currentInvoice.invoice.OtherInvoiceAmt = _currentInvoice.otherAmount;
+						_currentInvoice.invoice.TotalInvoiceAmt = _currentInvoice.totalAmount;
+						
+						if (responder == null) {
+							responder = ManagerService.getResponder(onSave, onFault);
+						}
+						
+						CursorManager.setBusyCursor();
+						_currentInvoice.save(responder);
+						
+					}, 
+					onFault
+				));
+			}
+			
+			private function onSave(event:*):void 
+			{
+				CursorManager.removeBusyCursor();
+				invoicePanel.enabled = true;
+			}
+			
+			private function onFault(event:FaultEvent):void 
+			{
+				CursorManager.removeBusyCursor();
+				invoicePanel.enabled = true;
+				Alert.show(event.fault.message);
+			}
+			
+			private function setItemLabel(item:InvoiceItemDataObject, column:DataGridColumn):String {
+				if (column.dataField == "afe") {
+					return AssetAssignmentDataObject(_currentInvoice.assignmentsHash[item.AssetAssignmentId]).AFE;
+				} else if (column.dataField == "asset") {
+					return AssetDataObject(_parentController.parentController.model.assetsHash[AssetAssignmentDataObject(_parentController.model.assignmentsHash[item.AssetAssignmentId]).AssetId]).BusinessName;
+				} else if (column.dataField == "date") {
+					return item.InvoiceDate;
+				} else if (column.dataField == "type") {
+					return TypesRegistry.instance.getInvoiceItemTypeById(item.InvoiceItemTypeId).Name;
+				} else if (column.dataField == "rate") {
+					return item.InvoiceRate.toFixed(3);
+				} else if (column.dataField == "qty") {
+					return item.Qty.toString();
+				} else if (column.dataField == "amount") {
+					return (Math.round(Number(item.InvoiceRate * item.Qty * 100)) / 100).toFixed(2);
+				} else if (column.dataField == "status") {
+					return item.Status;
+				} else if (column.dataField == "notes") {
+					return ""; // item.Notes;
+				} else {
+					return "";
+				}
+			}
+
+            private function setAfeGroupLabels(group:InvoiceItemGroupByAfe, column:DataGridColumn):String{
+                if (column.dataField == "afeNo") {
+                    return group.afe;
+                } else if (column.dataField == "afeName") {
+                    return AFEDataObject(_parentController.parentController.appController.Model.afesHash[group.afe]).AFEName;
+                } else if (column.dataField == "totalDays") {
+                    return NumberUtil.fraction(group.totalDays, 8)
+                } else if (column.dataField == "dailyAmt") {
+                    return (Math.round(group.dailyAmount * 100) / 100).toFixed(2);
+                } else if (column.dataField == "otherAmt") {
+                    return (Math.round(group.otherAmount * 100) / 100).toFixed(2);
+                } else if (column.dataField == "totalAmt") {
+                    return (Math.round(group.totalAmount * 100) / 100).toFixed(2);
+                } else {
+                    return "";
+                }
+            }
+            
+            private function selectGroupColor(item:InvoiceItemGroupByAfe, color:uint):uint 
+            {
+                return color;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="validator_txtInvoiceNo" source="{txtInvoiceNo}" property="text" required="true"/>
+	
+	<mx:VBox id="invoicePanel" width="100%" height="100%">
+		
+		<mx:HBox width="100%">
+			
+			<mx:VBox width="100%" height="{boxTotal.height}"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" 
+				borderColor="#999999" borderStyle="solid" cornerRadius="2">
+				
+			   	<mx:HBox width="100%">
+			   		<mx:Label text="Invoice No:" width="100" textAlign="right"/>
+			   		<mx:TextInput id="txtInvoiceNo" width="120" maxChars="20"
+			   			text="{_currentInvoice.invoice.InvoiceNumber}"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+			   			/>
+			   		<mx:Label id="lblInvoiceNo" fontWeight="bold" width="120"
+			   			text="{_currentInvoice.invoice.InvoiceNumber}"
+			   			includeInLayout="{lblCanNotBeChanged.visible}"
+			   			visible="{lblCanNotBeChanged.visible}"
+			   			/>
+			   		<mx:Label text="Invoice Date:" width="100" textAlign="right"/>
+			   		<mx:DateField id="dateInvoiceDate"  width="120"
+			   			selectedDate="{isNaN(Date.parse(_currentInvoice.invoice.StartDate)) ? new Date() : new Date(Date.parse(_currentInvoice.invoice.StartDate))}"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+			   			/>
+			   		<mx:Label text="{_currentInvoice.invoice.StartDate}" fontWeight="bold"  width="120"
+			   			includeInLayout="{lblCanNotBeChanged.visible}"
+			   			visible="{lblCanNotBeChanged.visible}"
+			   			/>
+			   		<mx:Spacer width="100%"/>
+			   		<mx:Label text="Current status:" color="#0000dd" width="100" textAlign="right"/>
+			   		<mx:Label text="{_currentInvoice.invoice.Status}" fontWeight="bold" color="#0000dd"/>
+			   	</mx:HBox>
+	
+			   	<mx:HBox width="100%">
+			   		<mx:Label text="Client Name:" width="100" textAlign="right"/>
+			   		<mx:TextInput
+			   			id="txtClientName" 
+			   			text="{_currentInvoice.invoice.ClientName}" 
+			   			maxChars="45"
+			   			width="120"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+			   			editable="false"
+			   			/>
+			   		<mx:Label
+			   			text="{_currentInvoice.invoice.ClientName}"
+			   			fontWeight="bold"
+			   			width="120"
+			   			includeInLayout="{lblCanNotBeChanged.visible}"
+			   			visible="{lblCanNotBeChanged.visible}"
+			   			/>
+			   		<mx:Label text="Client Address:" width="100" textAlign="right"/>
+			   		<mx:TextArea id="txtClientAddress"
+			   			text="{_currentInvoice.invoice.ClientAddress}" 
+			   			maxChars="250"
+			   			width="170"
+			   			height="100%"
+			   			editable="false"
+			   			/>
+			   		<mx:Spacer width="100%"/>
+			   		<notes:NotesRenderer id="notesRenderer" data="{_currentInvoice.invoice}"/>
+			   	</mx:HBox>
+	
+			</mx:VBox>
+			
+			<mx:VBox id="boxTotal"
+				width="220" backgroundColor="#eeeeee" verticalGap="1"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4" 
+				borderColor="#999999" borderStyle="solid" cornerRadius="2">
+			   	<mx:HBox>
+			   		<mx:Label text="Total Days:" width="120" textAlign="right"/>
+			   		<mx:Label text="{NumberUtil.fraction(_currentInvoice.totalDays, 8)}" fontWeight="bold"/>
+			   	</mx:HBox>
+			   	<mx:HBox>
+			   		<mx:Label text="Daily Amount:" width="120" textAlign="right"/>
+			   		<mx:Label text="{(Math.round(_currentInvoice.dailyAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+			   	</mx:HBox>
+			   	<mx:HBox>
+			   		<mx:Label text="Other Amount:" width="120" textAlign="right"/>
+			   		<mx:Label text="{(Math.round(_currentInvoice.otherAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+			   	</mx:HBox>
+			   	<mx:HBox width="100%">
+			   		<mx:Label text="Total:" width="120" textAlign="right"/>
+			   		<mx:Label text="{(Math.round(_currentInvoice.totalAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+			   	</mx:HBox>
+			</mx:VBox>
+	
+		</mx:HBox>
+		
+		<mx:VDividedBox width="100%" height="100%">
+			
+			<mx:VBox width="100%" height="100%" 
+				visible="{_currentInvoice.afeGroups.length > 0}"
+				includeInLayout="{_currentInvoice.afeGroups.length > 0}"
+				>
+
+				<mx:Label text="InvoiceItems, BillItem based:" fontWeight="bold"/>
+				
+				<mx:HDividedBox width="100%" height="100%">
+			        <components:ColoredDataGrid id="dgAfes" 
+			        	dataProvider="{_currentInvoice.afeGroups}"
+			            width="100%" height="100%" minWidth="415"
+			            borderThickness="1"
+			            rowColorFunction="selectGroupColor"
+			            backgroundColor="#FFFFCC"
+			            sortableColumns="false">
+			            <components:columns>
+			                <mx:DataGridColumn headerText="AFE" dataField="afeNo" labelFunction="setAfeGroupLabels" width="90"/>
+			                <mx:DataGridColumn headerText="Days" dataField="totalDays" labelFunction="setAfeGroupLabels" textAlign="right" width="60"/>
+			                <mx:DataGridColumn headerText="Daily Amt" dataField="dailyAmt" labelFunction="setAfeGroupLabels" textAlign="right" width="75"/>
+			                <mx:DataGridColumn headerText="Other Amt" dataField="otherAmt" labelFunction="setAfeGroupLabels" textAlign="right" width="75"/>
+			                <mx:DataGridColumn headerText="Total Amt" dataField="totalAmt" labelFunction="setAfeGroupLabels" textAlign="right" width="75"/>
+			                <mx:DataGridColumn headerText=" " dataField="IsSelected" itemRenderer="UI.manager.invoice.IsSelectedRenderer" width="26" textAlign="center"/>
+			            </components:columns>
+			        </components:ColoredDataGrid>
+    
+	                <mx:VBox width="100%" height="100%" verticalGap="-2" >
+	                    <mx:HBox width="100%" horizontalGap="0">
+	                        <mx:DataGrid width="100%" height="26" enabled="false" borderThickness="1" minWidth="450">
+	                            <mx:columns>
+	                                <mx:DataGridColumn headerText="Project"/>
+	                                <mx:DataGridColumn headerText="Days" width="60"/>
+	                                <mx:DataGridColumn headerText="Daily Amt" width="75" />
+	                                <mx:DataGridColumn headerText="Other Amt" width="75"/>
+	                                <mx:DataGridColumn headerText="Total Amt" width="75"/>
+	                                <mx:DataGridColumn headerText=" " width="26"/>
+	                            </mx:columns>
+	                        </mx:DataGrid>
+	                        <mx:Spacer width="1"/>
+	                    </mx:HBox>
+                        <mx:List id="lstSubAfe" width="100%" height="100%"
+                            paddingBottom="0" paddingTop="0" paddingLeft="0" paddingRight="0"
+                            selectable="false"
+                            columnCount="1"
+                            variableRowHeight="true"
+                            dataProvider="{InvoiceItemGroupByAfe(dgAfes.selectedItem).subAfeGroups}"
+                            itemRenderer="UI.manager.invoice.SubAfeItemRenderer"/>
+	                </mx:VBox>
+				</mx:HDividedBox>
+				
+			</mx:VBox>
+				
+			<mx:VBox width="100%" height="100%" 
+				borderColor="#999999" borderStyle="solid"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" cornerRadius="2"
+				>
+				
+				<mx:Label text="Additional Items:" fontWeight="bold"/>
+				
+			    <mx:DataGrid
+			    	id="dgAddedItems"
+			    	width="100%"
+			    	height="100%"
+			    	borderThickness="1"
+			    	minWidth="700"
+			    	dataProvider="{_currentInvoice.additionalItems}"
+			    	doubleClickEnabled="{!lblCanNotBeChanged.visible}"
+			    	itemDoubleClick="onAddedItemsDoubleClick()"
+			    	sortableColumns="false"
+			    	>
+			        <mx:columns>
+						<mx:DataGridColumn headerText="AFE" dataField="afe" labelFunction="setItemLabel" width="150"/>
+						<mx:DataGridColumn headerText="Asset" dataField="asset" labelFunction="setItemLabel" width="150"/>
+						<mx:DataGridColumn headerText="Date" dataField="date" labelFunction="setItemLabel" width="100"/>
+						<mx:DataGridColumn headerText="Type" dataField="type" labelFunction="setItemLabel" width="120"/>
+						<mx:DataGridColumn headerText="Rate" dataField="rate" labelFunction="setItemLabel" width="80" textAlign="right"/>
+						<mx:DataGridColumn headerText="Qty" dataField="qty" labelFunction="setItemLabel" width="80" textAlign="right"/>
+						<mx:DataGridColumn headerText="Amount" dataField="amount" labelFunction="setItemLabel" width="80" textAlign="right"/>
+						<mx:DataGridColumn headerText="Status" dataField="status" labelFunction="setItemLabel" width="80" textAlign="right"/>
+	 					<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+	
+				<mx:HBox width="100%" horizontalAlign="right" 
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" 
+					>
+					
+					<mx:Button label="New item" click="onClickNewItem()"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+			   			enabled="{0 &lt; _currentInvoice.items.length}"
+						/>
+					<mx:Button label="Change item" click="onClickChangeItem()" enabled="{dgAddedItems.selectedItem != null}"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+						/>
+					<mx:Button label="Remove item" click="onClickRemoveItem()" enabled="{dgAddedItems.selectedItem != null}"
+			   			includeInLayout="{!lblCanNotBeChanged.visible}"
+			   			visible="{!lblCanNotBeChanged.visible}"
+						/>
+					
+				</mx:HBox>
+		
+			</mx:VBox>
+	
+		</mx:VDividedBox>
+
+	</mx:VBox>
+	
+	<mx:HBox width="100%" horizontalAlign="right" backgroundColor="#eeeeee"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" cornerRadius="2"
+		enabled="{invoicePanel.enabled}">
+		<mx:Label
+			id="lblCanNotBeChanged"
+			text="Void, paid or submitted invoices cannot be modified"
+   			includeInLayout="{_currentInvoice.invoice.Status != InvoiceStatusDataObject.INVOICE_STATUS_NEW}"
+   			visible="{_currentInvoice.invoice.Status != InvoiceStatusDataObject.INVOICE_STATUS_NEW}"
+   			/>
+   		<mx:Spacer width="100%"/>
+		<mx:Button
+			label="Submit"
+			click="onClickSubmit()" 
+			enabled="{_currentInvoice.isLoaded &amp;&amp; _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_NEW}"
+   			includeInLayout="{!lblCanNotBeChanged.visible}"
+   			visible="{!lblCanNotBeChanged.visible}"
+			/>
+		<mx:Button
+			label="Set Void"
+			click="onClickVoid()" 
+			enabled="{_currentInvoice.isLoaded &amp;&amp; (_currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_NEW || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED)}"
+   			includeInLayout="{!lblCanNotBeChanged.visible || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED}"
+   			visible="{!lblCanNotBeChanged.visible || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED}"
+			/>
+		<mx:Button
+			label="Set Paid"
+			click="onClickPaid()" 
+			enabled="{_currentInvoice.isLoaded &amp;&amp; (_currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_NEW || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED)}"
+   			includeInLayout="{!lblCanNotBeChanged.visible || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED}"
+   			visible="{!lblCanNotBeChanged.visible || _currentInvoice.invoice.Status == InvoiceStatusDataObject.INVOICE_STATUS_SUBMITTED}"
+			/>
+		<mx:Spacer width="15"/>
+		<mx:Button label="Get Cover Letter" click="onClickGetCoverPdf()" enabled="{_currentInvoice.isLoaded &amp;&amp; !_currentInvoice.invoice.isNew}"/>
+		<mx:Button label="Get Invoice" click="onClickGetInvoicePdf()" enabled="{_currentInvoice.isLoaded &amp;&amp; !_currentInvoice.invoice.isNew}"/>
+		<mx:Button label="Get Work Log" click="onClickGetWorkLogPdf()" enabled="{_currentInvoice.isLoaded &amp;&amp; !_currentInvoice.invoice.isNew}"/>
+		<mx:Button label="Get Attachments" click="onClickGetAttachmentsPdf()" enabled="{_currentInvoice.isLoaded &amp;&amp; !_currentInvoice.invoice.isNew}"/>
+		<mx:Spacer width="15"/>
+		<mx:Button label="Save" click="onClickSave()" enabled="{_currentInvoice.isLoaded}"
+   			includeInLayout="{!lblCanNotBeChanged.visible}"
+   			visible="{!lblCanNotBeChanged.visible}"
+			/>
+		<mx:Button label="{_currentInvoice.invoice.isNew ? 'Cancel' : 'Close'}" click="onClickClose()"/>
+	</mx:HBox>
+
+</mx:VBox>

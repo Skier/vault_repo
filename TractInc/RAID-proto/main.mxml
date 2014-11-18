@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	backgroundGradientColors="[#c0c0c0, #808080]" xmlns:UI="UI.*"
+	width="100%" height="100%"
+	xmlns:components="components.*"
+	creationComplete="onCreate()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DynamicEvent;
+			
+			private function onCreate():void 
+			{
+				tnBill.selectedIndex = 0;
+				var e:DynamicEvent = new DynamicEvent("toggleCalendarState");
+				e.isComposedMode = false;
+				Application.application.dispatchEvent(e);
+			}
+			
+			private function onTNChanged():void 
+			{
+				var evt:DynamicEvent = new DynamicEvent("toggleDayState");
+				Application.application.dispatchEvent(evt);
+
+				var e:DynamicEvent = new DynamicEvent("toggleCalendarState");
+				e.isComposedMode = tnBill.selectedIndex == 0 ? false : true;
+				Application.application.dispatchEvent(e);
+			}
+			
+		]]>
+	</mx:Script>
+
+    <mx:Style source="css/promo.css" />
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		>
+
+		<mx:HBox width="100%" backgroundColor="#eeeeee" borderColor="#ffffff" borderStyle="solid" borderThickness="2"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			>
+			<mx:Label text="Prototype for new Calendar layout" fontWeight="bold" fontSize="16" color="#660000"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" height="100%">
+
+			<mx:VBox width="200" height="100%"
+				borderColor="#999999" borderStyle="solid" backgroundColor="#eeeeee"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				>
+				
+				<mx:Label text="Bills:" fontWeight="bold"/>
+				
+				<components:ColoredDataGrid width="100%" height="100%">
+					<components:columns>
+						<mx:DataGridColumn headerText="Date"/>
+						<mx:DataGridColumn headerText="Amount" width="80"/>
+					</components:columns>
+				</components:ColoredDataGrid>
+	
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%">
+			
+				<mx:TabNavigator id="tnBill" width="100%" change="onTNChanged()"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+					>
+					
+					<mx:VBox id="boxBillInfo" width="100%" label="Bill Information"
+						backgroundColor="#eeeeee"
+						paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+						>
+						
+						<mx:HBox>
+							<mx:Label text="Start date:" width="150" textAlign="right"/>
+							<mx:Label text="08/01/2001" fontWeight="bold"/>
+							<mx:Label text="End date:" width="150" textAlign="right"/>
+							<mx:Label text="08/15/2001" fontWeight="bold"/>
+						</mx:HBox>
+			
+						<mx:HBox>
+							<mx:Label text="Total Days:" width="150" textAlign="right"/>
+							<mx:Label text="8 3/4" fontWeight="bold"/>
+							<mx:Label text="Daily Bill Amount:" width="150" textAlign="right"/>
+							<mx:Label text="456.12" fontWeight="bold"/>
+						</mx:HBox>
+			
+						<mx:HBox>
+							<mx:Label text="Other Bill Amount:" width="150" textAlign="right"/>
+							<mx:Label text="1456.12" fontWeight="bold"/>
+							<mx:Label text="Total Amount:" width="150" textAlign="right"/>
+							<mx:Label text="1845.12" fontWeight="bold"/>
+						</mx:HBox>
+			
+						<mx:HBox>
+							<mx:Label text="Status:" width="150" textAlign="right"/>
+							<mx:Label text="REJECTED" fontWeight="bold"/>
+							<mx:Label text="Notes:" width="150" textAlign="right"/>
+							<mx:Label text="" fontWeight="bold"/>
+						</mx:HBox>
+			
+					</mx:VBox>
+	
+					<mx:HBox width="100%" height="{boxBillInfo.height}" label="Multidays Bill Items"
+						>
+						
+						<components:ColoredDataGrid width="100%" height="100%">
+							<components:columns>
+								<mx:DataGridColumn headerText="BillItemType" width="120"/>
+								<mx:DataGridColumn headerText="Description"/>
+								<mx:DataGridColumn headerText="Amount" width="80" textAlign="right"/>
+							</components:columns>
+						</components:ColoredDataGrid>
+						
+						<mx:VBox height="100%" verticalAlign="bottom">
+							<mx:Button label="New" width="100"/>
+							<mx:Button label="Remove" width="100"/>
+						</mx:VBox>
+			
+					</mx:HBox>
+	
+				</mx:TabNavigator>
+
+				<UI:Calendar width="100%" height="100%"/>
+
+			</mx:VBox>
+
+		</mx:HBox>
+
+	</mx:VBox>
+	
+</mx:Application>

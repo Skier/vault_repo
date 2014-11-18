@@ -1,0 +1,78 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ assembly Name="System.Xml" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections" #> 
+<#@ import namespace="System.Collections.Generic" #> 
+<#+
+  
+	const string ProjectFileName = "Intuit.Platform.Client.Core.IDS.csproj";
+	/// <summary>
+	/// Saves the filename specified to the disk.
+	/// </summary>
+	/// <param name="outputFileName">Name of the file to be written to disk</param>
+    void SaveOutput(string outputFileName)
+    {
+        string templateDirectory = Path.GetDirectoryName(Host.TemplateFile);
+		if(! string.IsNullOrEmpty(templateDirectory ))
+		{
+        	string outputFilePath = Path.Combine(templateDirectory, outputFileName);
+			if(!string.IsNullOrEmpty(outputFilePath))
+			{
+				File.WriteAllText(outputFilePath, this.GenerationEnvironment.ToString());
+			}
+			this.GenerationEnvironment = new StringBuilder();
+		}
+    }
+	
+	/// <summary>
+	/// Modify the project file, add the file to project.
+	/// </summary>
+	/// <param name="fileName">Name of file to be added to project</param>
+	void ModifyProjectFile(string fileName)
+	{
+		string templateDirectory = Path.GetDirectoryName(Host.TemplateFile);
+		
+        string outputFilePath = Path.Combine(templateDirectory, ProjectFileName);
+		System.Xml.XmlDocument xDoc = new System.Xml.XmlDocument();
+        xDoc.Load(outputFilePath);
+		XmlNodeList compileElements = xDoc.GetElementsByTagName("Compile");
+		
+		if(compileElements.Count > 0)
+		{
+			XmlNode root = compileElements[0].ParentNode;
+			//Create a new node.    
+			XmlElement element = xDoc.CreateElement("Compile",xDoc.DocumentElement.NamespaceURI);
+					
+			element.SetAttribute("Include", fileName);
+					
+			bool addNode = true;
+			foreach (XmlNode node in root.ChildNodes)
+			{
+				foreach (XmlAttribute attr in node.Attributes)
+				{
+					if ( string.Compare(attr.Name,"Include") == 0 && string.Compare(attr.Value ,fileName) == 0)
+					{
+						addNode = false;
+						break;
+					}
+				}
+				if (addNode == false)
+				{
+					break;
+				}
+			}
+			if (addNode == true)
+			{
+				//Add the node to the document.
+				root.AppendChild(element);
+			}
+
+			xDoc.Save(outputFilePath);
+		}
+	}
+    
+#>

@@ -1,0 +1,1458 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A31055DC-9BAD-45DA-A966-F61955E50C12}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.MainForm</RootNamespace>
+    <AssemblyName>Dalworth.Server.MainForm</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="AccountingCreditMemo\CreditMemoController.cs" />
+    <Compile Include="AccountingCreditMemo\CreditMemoModel.cs" />
+    <Compile Include="AccountingCreditMemo\CreditMemoView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AccountingCreditMemo\CreditMemoView.Designer.cs">
+      <DependentUpon>CreditMemoView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AccountingInvoiceEdit\InvoiceEditController.cs" />
+    <Compile Include="AccountingInvoiceEdit\InvoiceEditModel.cs" />
+    <Compile Include="AccountingInvoiceEdit\InvoiceEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AccountingInvoiceEdit\InvoiceEditView.Designer.cs">
+      <DependentUpon>InvoiceEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AccountingPayment\AccountingPaymentController.cs" />
+    <Compile Include="AccountingPayment\AccountingPaymentModel.cs" />
+    <Compile Include="AccountingPayment\AccountingPaymentView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AccountingPayment\AccountingPaymentView.Designer.cs">
+      <DependentUpon>AccountingPaymentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\AccountingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\AccountingView.Designer.cs">
+      <DependentUpon>AccountingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\AccountingController.cs" />
+    <Compile Include="Accounting\AccountingModel.cs" />
+    <Compile Include="Accounting\CustomerInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\CustomerInfo.Designer.cs">
+      <DependentUpon>CustomerInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\ProjectInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\ProjectInfo.Designer.cs">
+      <DependentUpon>ProjectInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\QbAddress.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\QbAddress.Designer.cs">
+      <DependentUpon>QbAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\CustomerRequest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\CustomerRequest.Designer.cs">
+      <DependentUpon>CustomerRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\InvoiceRequest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\InvoiceRequest.Designer.cs">
+      <DependentUpon>InvoiceRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Accounting\JobRequest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Accounting\JobRequest.Designer.cs">
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddressEdit\AddressEditController.cs" />
+    <Compile Include="AddressEdit\AddressEditModel.cs" />
+    <Compile Include="AddressEdit\AddressEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddressEdit\AddressEditView.Designer.cs">
+      <DependentUpon>AddressEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddressEdit\AddressSelectController.cs" />
+    <Compile Include="AddressEdit\AddressSelectModel.cs" />
+    <Compile Include="AddressEdit\AddressSelectView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddressEdit\AddressSelectView.Designer.cs">
+      <DependentUpon>AddressSelectView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ArriveVisit\ArriveVisitController.cs" />
+    <Compile Include="ArriveVisit\ArriveVisitModel.cs" />
+    <Compile Include="ArriveVisit\ArriveVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ArriveVisit\ArriveVisitView.Designer.cs">
+      <DependentUpon>ArriveVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\AddressEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\AddressEdit.Designer.cs">
+      <DependentUpon>AddressEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\AddressViewEditClear.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\AddressViewEditClear.Designer.cs">
+      <DependentUpon>AddressViewEditClear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\AdSourceSalesRep.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\AdSourceSalesRep.Designer.cs">
+      <DependentUpon>AdSourceSalesRep.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DalworthTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\DateEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\DefloodEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\DefloodEdit.Designer.cs">
+      <DependentUpon>DefloodEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CustomerViewEditLookup.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\CustomerViewEditLookup.Designer.cs">
+      <DependentUpon>CustomerViewEditLookup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\EquipmentQuantityTextEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\MonitoringEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MonitoringEdit.Designer.cs">
+      <DependentUpon>MonitoringEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProjectEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProjectEdit.Designer.cs">
+      <DependentUpon>ProjectEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProjectInsuranceEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProjectInsuranceEdit.Designer.cs">
+      <DependentUpon>ProjectInsuranceEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProjectViewEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProjectViewEdit.Designer.cs">
+      <DependentUpon>ProjectViewEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Scheduler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\TabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\TaskEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TaskEdit.Designer.cs">
+      <DependentUpon>TaskEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TaskEditComplete.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TaskEditComplete.Designer.cs">
+      <DependentUpon>TaskEditComplete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimeEditEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\VisitHeaderEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\VisitHeaderEdit.Designer.cs">
+      <DependentUpon>VisitHeaderEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateProjectBillPay\CreateProjectBillPayController.cs" />
+    <Compile Include="CreateProjectBillPay\CreateProjectBillPayView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateProjectBillPay\CreateProjectBillPayView.Designer.cs">
+      <DependentUpon>CreateProjectBillPayView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateProjectBillPay\CreateProjectBillPayModel.cs" />
+    <Compile Include="CreateProjectScope\CreateProjectScopeController.cs" />
+    <Compile Include="CreateProjectScope\CreateProjectScopeModel.cs" />
+    <Compile Include="CreateProjectScope\CreateProjectScopeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateProjectScope\CreateProjectScopeView.Designer.cs">
+      <DependentUpon>CreateProjectScopeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateProject\CreateProjectController.cs" />
+    <Compile Include="CreateProject\CreateProjectModel.cs" />
+    <Compile Include="CreateProject\CreateProjectView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateProject\CreateProjectView.Designer.cs">
+      <DependentUpon>CreateProjectView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateVisit\CreateVisitController.cs" />
+    <Compile Include="CreateVisit\CreateVisitModel.cs" />
+    <Compile Include="CreateVisit\CreateVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateVisit\CreateVisitView.Designer.cs">
+      <DependentUpon>CreateVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerLookup\CustomerLookupController.cs" />
+    <Compile Include="CustomerLookup\CustomerLookupModel.cs" />
+    <Compile Include="CustomerLookup\CustomerLookupView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomerLookup\CustomerLookupView.Designer.cs">
+      <DependentUpon>CustomerLookupView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DashboardCustomize\DashboardCustomizeController.cs" />
+    <Compile Include="DashboardCustomize\DashboardCustomizeModel.cs" />
+    <Compile Include="DashboardCustomize\DashboardCustomizeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DashboardCustomize\DashboardCustomizeView.Designer.cs">
+      <DependentUpon>DashboardCustomizeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DispatchVisit\DispatchVisitController.cs" />
+    <Compile Include="DispatchVisit\DispatchVisitModel.cs" />
+    <Compile Include="DispatchVisit\DispatchVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DispatchVisit\DispatchVisitView.Designer.cs">
+      <DependentUpon>DispatchVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EndDay\EndDayController.cs" />
+    <Compile Include="EndDay\EndDayModel.cs" />
+    <Compile Include="EndDay\EndDayView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EndDay\EndDayView.Designer.cs">
+      <DependentUpon>EndDayView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FeedbackEdit\FeedbackEditController.cs" />
+    <Compile Include="FeedbackEdit\FeedbackEditModel.cs" />
+    <Compile Include="FeedbackEdit\FeedbackEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FeedbackEdit\FeedbackEditView.Designer.cs">
+      <DependentUpon>FeedbackEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Feedbacks\FeedbacksController.cs" />
+    <Compile Include="Feedbacks\FeedbacksModel.cs" />
+    <Compile Include="Feedbacks\FeedbacksView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Feedbacks\FeedbacksView.Designer.cs">
+      <DependentUpon>FeedbacksView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LeadEdit\LeadEditController.cs" />
+    <Compile Include="LeadEdit\LeadEditModel.cs" />
+    <Compile Include="LeadEdit\LeadEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LeadEdit\LeadEditView.Designer.cs">
+      <DependentUpon>LeadEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LeadLookup\LeadLookupController.cs" />
+    <Compile Include="LeadLookup\LeadLookupModel.cs" />
+    <Compile Include="LeadLookup\LeadLookupView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LeadLookup\LeadLookupView.Designer.cs">
+      <DependentUpon>LeadLookupView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Leads\LeadsController.cs" />
+    <Compile Include="Leads\LeadsModel.cs" />
+    <Compile Include="Leads\LeadsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Leads\LeadsView.Designer.cs">
+      <DependentUpon>LeadsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MapscoLookup\MapscoLookupController.cs" />
+    <Compile Include="MapscoLookup\MapscoLookupModel.cs" />
+    <Compile Include="MapscoLookup\MapscoLookupView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapscoLookup\MapscoLookupView.Designer.cs">
+      <DependentUpon>MapscoLookupView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonitoringReadingEdit\MonitoringReadingEditController.cs" />
+    <Compile Include="MonitoringReadingEdit\MonitoringReadingEditModel.cs" />
+    <Compile Include="MonitoringReadingEdit\MonitoringReadingEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MonitoringReadingEdit\MonitoringReadingEditView.Designer.cs">
+      <DependentUpon>MonitoringReadingEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonitoringReadings\MonitoringReadingsController.cs" />
+    <Compile Include="MonitoringReadings\MonitoringReadingsModel.cs" />
+    <Compile Include="MonitoringReadings\MonitoringReadinsView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MonitoringReadings\MonitoringReadinsView.Designer.cs">
+      <DependentUpon>MonitoringReadinsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectCustomerHistory\ProjectCustomerHistoryController.cs" />
+    <Compile Include="ProjectCustomerHistory\ProjectCustomerHistoryModel.cs" />
+    <Compile Include="ProjectCustomerHistory\ProjectCustomerHistoryView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProjectCustomerHistory\ProjectCustomerHistoryView.Designer.cs">
+      <DependentUpon>ProjectCustomerHistoryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectInfo.Designer.cs">
+      <DependentUpon>ProjectInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Projects\LeadSheet.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LeadSheet.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYear.cs">
+      <DependentUpon>ReportAdSourceByYear.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYearController.cs" />
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYearModel.cs" />
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYearView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYearView.Designer.cs">
+      <DependentUpon>ReportAdSourceByYearView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportAdSourceByYear\ReportAdSourceByYearXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportAdSourceByYearXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportBooking\ReportBooking.cs">
+      <DependentUpon>ReportBooking.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportBooking\ReportBookingController.cs" />
+    <Compile Include="ReportBooking\ReportBookingModel.cs" />
+    <Compile Include="ReportBooking\ReportBookingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportBooking\ReportBookingView.Designer.cs">
+      <DependentUpon>ReportBookingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummary.cs">
+      <DependentUpon>ReportConstructionSummary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummaryController.cs" />
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummaryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummaryView.Designer.cs">
+      <DependentUpon>ReportConstructionSummaryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummaryModel.cs" />
+    <Compile Include="ReportConstructionLead\ReportConstructionLeadController.cs" />
+    <Compile Include="ReportConstructionLead\ReportConstructionLeadModel.cs" />
+    <Compile Include="ReportConstructionLead\ReportConstructionLeadView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionLead\ReportConstructionLeadView.Designer.cs">
+      <DependentUpon>ReportConstructionLeadView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportConstructionLead\ReportConstructionLead.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionLead.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionLead\ReportConstructionLeadXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionLeadXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionManager\ReportConstructionManagerController.cs" />
+    <Compile Include="ReportConstructionManager\ReportConstructionManagerModel.cs" />
+    <Compile Include="ReportConstructionManager\ReportConstructionManagerView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionManager\ReportConstructionManagerView.Designer.cs">
+      <DependentUpon>ReportConstructionManagerView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportConstructionManager\ReportConstructionManager.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionManager.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionManager\ReportConstructionManagerXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionManagerXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionSummary\ReportConstructionSummaryXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionSummaryXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLineController.cs" />
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLineModel.cs" />
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLineView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLineView.Designer.cs">
+      <DependentUpon>ReportConstructionTimeLineView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLine.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionTimeLine.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportConstructionTimeLine\ReportConstructionTimeLineXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportConstructionTimeLineXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportEquipmentSummary\ReportEquipmentSummary.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportEquipmentSummary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MakePayment\MakePaymentController.cs" />
+    <Compile Include="MakePayment\MakePaymentModel.cs" />
+    <Compile Include="MakePayment\MakePaymentView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MakePayment\MakePaymentView.Designer.cs">
+      <DependentUpon>MakePaymentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CompleteVisit\CompleteVisitController.cs" />
+    <Compile Include="CompleteVisit\CompleteVisitModel.cs" />
+    <Compile Include="CompleteVisit\CompleteVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CompleteVisit\CompleteVisitView.Designer.cs">
+      <DependentUpon>CompleteVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\AddressViewEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\AddressViewEdit.Designer.cs">
+      <DependentUpon>AddressViewEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CustomerViewEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\CustomerViewEdit.Designer.cs">
+      <DependentUpon>CustomerViewEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DateRange.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\DateRange.Designer.cs">
+      <DependentUpon>DateRange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Messages.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\Messages.Designer.cs">
+      <DependentUpon>Messages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConfirmVisit\ConfirmVisitController.cs" />
+    <Compile Include="ConfirmVisit\ConfirmVisitModel.cs" />
+    <Compile Include="ConfirmVisit\ConfirmVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfirmVisit\ConfirmVisitView.Designer.cs">
+      <DependentUpon>ConfirmVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreateWork\CreateWorkController.cs" />
+    <Compile Include="CreateWork\CreateWorkModel.cs" />
+    <Compile Include="CreateWork\CreateWorkView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateWork\CreateWorkView.Designer.cs">
+      <DependentUpon>CreateWorkView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerEdit\CustomerEditController.cs" />
+    <Compile Include="CustomerEdit\CustomerEditModel.cs" />
+    <Compile Include="CustomerEdit\CustomerEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomerEdit\CustomerEditView.Designer.cs">
+      <DependentUpon>CustomerEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\DashboardController.cs" />
+    <Compile Include="Dashboard\DashboardModel.cs" />
+    <Compile Include="Dashboard\DashboardView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dashboard\DashboardView.Designer.cs">
+      <DependentUpon>DashboardView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\DateNavigatorToolbox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\DateNavigatorToolbox.Designer.cs">
+      <DependentUpon>DateNavigatorToolbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeclineVisit\DeclineVisitController.cs" />
+    <Compile Include="DeclineVisit\DeclineVisitModel.cs" />
+    <Compile Include="DeclineVisit\DeclineVisitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeclineVisit\DeclineVisitView.Designer.cs">
+      <DependentUpon>DeclineVisitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\LoginController.cs" />
+    <Compile Include="Login\LoginModel.cs" />
+    <Compile Include="Login\LoginView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login\LoginView.Designer.cs">
+      <DependentUpon>LoginView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm\MainFormController.cs" />
+    <Compile Include="MainForm\MainFormModel.cs" />
+    <Compile Include="MainForm\MainFormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm\MainFormView.Designer.cs">
+      <DependentUpon>MainFormView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Projects\ProjectsController.cs" />
+    <Compile Include="Projects\ProjectsModel.cs" />
+    <Compile Include="Projects\ProjectsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Projects\ProjectsView.Designer.cs">
+      <DependentUpon>ProjectsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Components\RugsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\RugsView.Designer.cs">
+      <DependentUpon>RugsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportEquipmentSummary\ReportEquipmentSummaryController.cs" />
+    <Compile Include="ReportEquipmentSummary\ReportEquipmentSummaryModel.cs" />
+    <Compile Include="ReportEquipmentSummary\ReportEquipmentSummaryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportEquipmentSummary\ReportEquipmentSummaryView.Designer.cs">
+      <DependentUpon>ReportEquipmentSummaryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFloodProduction\ReportFloodProduction.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportFloodProduction.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportFloodProduction\ReportFloodProductionController.cs" />
+    <Compile Include="ReportFloodProduction\ReportFloodProductionModel.cs" />
+    <Compile Include="ReportFloodProduction\ReportFloodProductionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportFloodProduction\ReportFloodProductionView.Designer.cs">
+      <DependentUpon>ReportFloodProductionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFloodProduction\ReportFloodProductionXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportFloodProductionXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportInvoice\ReportInvoice.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportInvoice.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportInvoice\ReportInvoiceController.cs" />
+    <Compile Include="ReportInvoice\ReportInvoiceModel.cs" />
+    <Compile Include="ReportInvoice\ReportInvoiceView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportInvoice\ReportInvoiceView.Designer.cs">
+      <DependentUpon>ReportInvoiceView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportInvoice\ReportInvoiceXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportInvoiceXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportPreview\ReportPreviewController.cs" />
+    <Compile Include="ReportPreview\ReportPreviewModel.cs" />
+    <Compile Include="ReportPreview\ReportPreviewView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportPreview\ReportPreviewView.Designer.cs">
+      <DependentUpon>ReportPreviewView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRevenue\ReportRevenue.cs">
+      <DependentUpon>ReportRevenue.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportRevenue\ReportRevenueController.cs" />
+    <Compile Include="ReportRevenue\ReportRevenueModel.cs" />
+    <Compile Include="ReportRevenue\ReportRevenueView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportRevenue\ReportRevenueView.Designer.cs">
+      <DependentUpon>ReportRevenueView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRevenue\ReportRevenueXls.cs">
+      <DependentUpon>ReportRevenueXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportRugPending\ReportRugPending.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportRugPending.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportRugPending\ReportRugPendingController.cs" />
+    <Compile Include="ReportRugPending\ReportRugPendingModel.cs" />
+    <Compile Include="ReportRugPending\ReportRugPendingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportRugPending\ReportRugPendingView.Designer.cs">
+      <DependentUpon>ReportRugPendingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRugProduction\ReportRugProduction.cs">
+      <DependentUpon>ReportRugProduction.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ReportRugProduction\ReportRugProductionController.cs" />
+    <Compile Include="ReportRugProduction\ReportRugProductionModel.cs" />
+    <Compile Include="ReportRugProduction\ReportRugProductionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportRugProduction\ReportRugProductionView.Designer.cs">
+      <DependentUpon>ReportRugProductionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportRugProduction\ReportRugProductionXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportRugProductionXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportRugReadyAging\ReportRugReadyAging.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportRugReadyAging.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportRugReadyAging\ReportRugReadyAgingController.cs" />
+    <Compile Include="ReportRugReadyAging\ReportRugReadyAgingModel.cs" />
+    <Compile Include="ReportRugReadyAging\ReportRugReadyAgingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportRugReadyAging\ReportRugReadyAgingView.Designer.cs">
+      <DependentUpon>ReportRugReadyAgingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\NestedReportController.cs" />
+    <Compile Include="Reports\ReportsController.cs" />
+    <Compile Include="Reports\ReportsModel.cs" />
+    <Compile Include="Reports\ReportsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Reports\ReportsView.Designer.cs">
+      <DependentUpon>ReportsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProduction.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportTechnicianProduction.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProductionXls.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportTechnicianProductionXls.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProductionController.cs" />
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProductionModel.cs" />
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProductionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ReportTechnicianProduction\ReportTechnicianProductionView.Designer.cs">
+      <DependentUpon>ReportTechnicianProductionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SendMessage\SendMessageController.cs" />
+    <Compile Include="SendMessage\SendMessageModel.cs" />
+    <Compile Include="SendMessage\SendMessageView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SendMessage\SendMessageView.Designer.cs">
+      <DependentUpon>SendMessageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StartDay\StartDayController.cs" />
+    <Compile Include="StartDay\StartDayModel.cs" />
+    <Compile Include="StartDay\StartDayView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StartDay\StartDayView.Designer.cs">
+      <DependentUpon>StartDayView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SubmitEtc\SubmitEtcController.cs" />
+    <Compile Include="SubmitEtc\SubmitEtcModel.cs" />
+    <Compile Include="SubmitEtc\SubmitEtcView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubmitEtc\SubmitEtcView.Designer.cs">
+      <DependentUpon>SubmitEtcView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TaskEdit\TaskEditController.cs" />
+    <Compile Include="TaskEdit\TaskEditModel.cs" />
+    <Compile Include="TaskEdit\TaskEditView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TaskEdit\TaskEditView.Designer.cs">
+      <DependentUpon>TaskEditView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisitMerge\VisitMergeController.cs" />
+    <Compile Include="VisitMerge\VisitMergeModel.cs" />
+    <Compile Include="VisitMerge\VisitMergeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VisitMerge\VisitMergeView.Designer.cs">
+      <DependentUpon>VisitMergeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisitSplit\VisitSplitController.cs" />
+    <Compile Include="VisitSplit\VisitSplitModel.cs" />
+    <Compile Include="VisitSplit\VisitSplitView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VisitSplit\VisitSplitView.Designer.cs">
+      <DependentUpon>VisitSplitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Visits\VisitsController.cs" />
+    <Compile Include="Visits\VisitsModel.cs" />
+    <Compile Include="Visits\VisitsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Visits\VisitsView.Designer.cs">
+      <DependentUpon>VisitsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Works\WorksController.cs" />
+    <Compile Include="Works\WorksModel.cs" />
+    <Compile Include="Works\WorksView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Works\WorksView.Designer.cs">
+      <DependentUpon>WorksView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Enterprise.Framework, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Enterprise.InfoStore, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Shared, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Windows.Forms, Version=10.2.3600.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="DevExpress.Data.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.Data.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.Utils.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraBars.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v7.2.Design, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1" />
+    <Reference Include="DevExpress.XtraEditors.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraEditors.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v7.2.Design, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1" />
+    <Reference Include="DevExpress.XtraGrid.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraGrid.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraLayout.v7.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraNavBar.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraNavBar.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraScheduler.v7.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraScheduler.v7.2.Core, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\DevExpress.XtraScheduler.v7.2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraTreeList.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1" />
+    <Reference Include="DevExpress.XtraVerticalGrid.v7.2, Version=7.2.2.0, Culture=neutral, PublicKeyToken=9b171c9fd64da1d1" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Server.Controls\Dalworth.Server.Controls.csproj">
+      <Project>{34F9196C-160E-4F28-9FB4-17E97753F4E4}</Project>
+      <Name>Dalworth.Server.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server.Domain\Dalworth.Server.Domain.csproj">
+      <Project>{5E8A7EFF-721F-401F-993E-D464C4EFFDEA}</Project>
+      <Name>Dalworth.Server.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server.QuickBooks\Dalworth.Server.QuickBooks.csproj">
+      <Project>{F5CCBF28-C09C-428B-BA4A-F2EB311D3780}</Project>
+      <Name>Dalworth.Server.QuickBooks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server.Windows\Dalworth.Server.Windows.csproj">
+      <Project>{EAABCA14-4095-40BF-8191-52C9FA31B35F}</Project>
+      <Name>Dalworth.Server.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{FA543470-1332-48A2-A600-0BEE5BC1CF86}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AccountingCreditMemo\CreditMemoView.resx">
+      <DependentUpon>CreditMemoView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AccountingInvoiceEdit\InvoiceEditView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InvoiceEditView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AccountingPayment\AccountingPaymentView.resx">
+      <DependentUpon>AccountingPaymentView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\AccountingView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AccountingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\CustomerInfo.resx">
+      <DependentUpon>CustomerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\ProjectInfo.resx">
+      <DependentUpon>ProjectInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\QbAddress.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>QbAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\CustomerRequest.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CustomerRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\InvoiceRequest.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InvoiceRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Accounting\JobRequest.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddressEdit\AddressEditView.resx">
+      <DependentUpon>AddressEditView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddressEdit\AddressSelectView.resx">
+      <DependentUpon>AddressSelectView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ArriveVisit\ArriveVisitView.resx">
+      <DependentUpon>ArriveVisitView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\AddressEdit.resx">
+      <DependentUpon>AddressEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\AddressViewEditClear.resx">
+      <DependentUpon>AddressViewEditClear.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\AdSourceSalesRep.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AdSourceSalesRep.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\DefloodEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DefloodEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\CustomerViewEditLookup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CustomerViewEditLookup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MonitoringEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MonitoringEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProjectEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProjectEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProjectInsuranceEdit.resx">
+      <DependentUpon>ProjectInsuranceEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProjectViewEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProjectViewEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TaskEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TaskEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TaskEditComplete.resx">
+      <DependentUpon>TaskEditComplete.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\VisitHeaderEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>VisitHeaderEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateProjectBillPay\CreateProjectBillPayView.resx">
+      <DependentUpon>CreateProjectBillPayView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateProjectScope\CreateProjectScopeView.resx">
+      <DependentUpon>CreateProjectScopeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateProject\CreateProjectView.resx">
+      <DependentUpon>CreateProjectView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateVisit\CreateVisitView.resx">
+      <DependentUpon>CreateVisitView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomerLookup\CustomerLookupView.resx">
+      <DependentUpon>CustomerLookupView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DashboardCustomize\DashboardCustomizeView.resx">
+      <DependentUpon>DashboardCustomizeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DispatchVisit\DispatchVisitView.resx">
+      <DependentUpon>DispatchVisitView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EndDay\EndDayView.resx">
+      <DependentUpon>EndDayView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FeedbackEdit\FeedbackEditView.resx">
+      <DependentUpon>FeedbackEditView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Feedbacks\FeedbacksView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FeedbacksView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LeadEdit\LeadEditView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LeadEditView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LeadLookup\LeadLookupView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LeadLookupView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Leads\LeadsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LeadsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapscoLookup\MapscoLookupView.resx">
+      <DependentUpon>MapscoLookupView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonitoringReadingEdit\MonitoringReadingEditView.resx">
+      <DependentUpon>MonitoringReadingEditView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonitoringReadings\MonitoringReadinsView.resx">
+      <DependentUpon>MonitoringReadinsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectCustomerHistory\ProjectCustomerHistoryView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProjectCustomerHistoryView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInfo.resx">
+      <DependentUpon>ProjectInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Projects\LeadSheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>LeadSheet.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportAdSourceByYear\ReportAdSourceByYear.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportAdSourceByYear.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportAdSourceByYear\ReportAdSourceByYearView.resx">
+      <DependentUpon>ReportAdSourceByYearView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportAdSourceByYear\ReportAdSourceByYearXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportAdSourceByYearXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportBooking\ReportBooking.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportBooking.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportBooking\ReportBookingView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ReportBookingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionLead\ReportConstructionLeadView.resx">
+      <DependentUpon>ReportConstructionLeadView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionLead\ReportConstructionLead.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionLead.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionLead\ReportConstructionLeadXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionLeadXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionManager\ReportConstructionManagerView.resx">
+      <DependentUpon>ReportConstructionManagerView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionManager\ReportConstructionManager.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionManager.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionManager\ReportConstructionManagerXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionManagerXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionSummary\ReportConstructionSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionSummary.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionSummary\ReportConstructionSummaryView.resx">
+      <DependentUpon>ReportConstructionSummaryView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionSummary\ReportConstructionSummaryXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionSummaryXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionTimeLine\ReportConstructionTimeLineView.resx">
+      <DependentUpon>ReportConstructionTimeLineView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionTimeLine\ReportConstructionTimeLine.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionTimeLine.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportConstructionTimeLine\ReportConstructionTimeLineXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportConstructionTimeLineXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportEquipmentSummary\ReportEquipmentSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportEquipmentSummary.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MakePayment\MakePaymentView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MakePaymentView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CompleteVisit\CompleteVisitView.resx">
+      <DependentUpon>CompleteVisitView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\AddressViewEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AddressViewEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\CustomerViewEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CustomerViewEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\DateRange.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DateRange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\Messages.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Messages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfirmVisit\ConfirmVisitView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ConfirmVisitView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateWork\CreateWorkView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CreateWorkView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomerEdit\CustomerEditView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CustomerEditView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\DashboardView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DashboardView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\DateNavigatorToolbox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DateNavigatorToolbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeclineVisit\DeclineVisitView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DeclineVisitView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\LoginView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LoginView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm\MainFormView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainFormView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Projects\ProjectsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProjectsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\RugsView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RugsView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportEquipmentSummary\ReportEquipmentSummaryView.resx">
+      <DependentUpon>ReportEquipmentSummaryView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFloodProduction\ReportFloodProduction.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportFloodProduction.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFloodProduction\ReportFloodProductionView.resx">
+      <DependentUpon>ReportFloodProductionView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFloodProduction\ReportFloodProductionXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportFloodProductionXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportInvoice\ReportInvoice.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportInvoice.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportInvoice\ReportInvoiceView.resx">
+      <DependentUpon>ReportInvoiceView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportInvoice\ReportInvoiceXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportInvoiceXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportPreview\ReportPreviewView.resx">
+      <DependentUpon>ReportPreviewView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRevenue\ReportRevenue.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRevenue.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRevenue\ReportRevenueView.resx">
+      <DependentUpon>ReportRevenueView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRevenue\ReportRevenueXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRevenueXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugPending\ReportRugPending.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRugPending.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugPending\ReportRugPendingView.resx">
+      <DependentUpon>ReportRugPendingView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugProduction\ReportRugProduction.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRugProduction.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugProduction\ReportRugProductionView.resx">
+      <DependentUpon>ReportRugProductionView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugProduction\ReportRugProductionXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRugProductionXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugReadyAging\ReportRugReadyAging.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportRugReadyAging.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportRugReadyAging\ReportRugReadyAgingView.resx">
+      <DependentUpon>ReportRugReadyAgingView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ReportsView.resx">
+      <DependentUpon>ReportsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportTechnicianProduction\ReportTechnicianProduction.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportTechnicianProduction.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportTechnicianProduction\ReportTechnicianProductionXls.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ReportTechnicianProductionXls.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportTechnicianProduction\ReportTechnicianProductionView.resx">
+      <DependentUpon>ReportTechnicianProductionView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SendMessage\SendMessageView.resx">
+      <DependentUpon>SendMessageView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StartDay\StartDayView.resx">
+      <DependentUpon>StartDayView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SubmitEtc\SubmitEtcView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SubmitEtcView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TaskEdit\TaskEditView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TaskEditView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisitMerge\VisitMergeView.resx">
+      <DependentUpon>VisitMergeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisitSplit\VisitSplitView.resx">
+      <DependentUpon>VisitSplitView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Visits\VisitsView.resx">
+      <DependentUpon>VisitsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Works\WorksView.resx">
+      <DependentUpon>WorksView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\Dalworth.Server.Domain.Item.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dashboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\projects.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\visits.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\works.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tools.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\reports.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{967B4E0D-AD0C-4609-AB67-0FA40C0206D8}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cropped.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lead.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\reply.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\invoice.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\customer1.png" />
+  </ItemGroup>
+</Project>

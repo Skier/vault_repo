@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.QbItem;
+			import com.dalworth.servman.domain.Project;
+			import com.dalworth.servman.domain.ProjectType;
+			
+			[Bindable]
+			private var model:ProjectTypeEditModel;
+			private var controller:ProjectTypeEditController;
+			
+			public function setProjectType(value:ProjectType):void 
+			{
+				model.projectType = value;
+				controller.initItems();
+			}
+			
+			private function onInit():void 
+			{
+				model = ProjectTypeEditModel.getInstance();
+				controller = new ProjectTypeEditController(this);
+			}
+			
+			private function addItem():void 
+			{
+				var item:QbItem;
+				if (lstAvailable.selectedItems != null && lstAvailable.selectedItems.length > 0) 
+				{
+					for each (item in lstAvailable.selectedItems)
+					{
+						model.availableQbItems.removeItemAt(model.availableQbItems.getItemIndex(item));
+						model.selectedQbItems.addItem(item);
+					}
+				} else if (lstAvailable.selectedItem != null)
+				{
+					item = lstAvailable.selectedItem as QbItem;
+					model.availableQbItems.removeItemAt(model.availableQbItems.getItemIndex(item));
+					model.selectedQbItems.addItem(item);
+				}
+			}
+			
+			private function removeItem():void 
+			{
+				var item:QbItem;
+				if (lstSelected.selectedItems != null && lstSelected.selectedItems.length > 0) 
+				{
+					for each (item in lstSelected.selectedItems)
+					{
+						model.selectedQbItems.removeItemAt(model.selectedQbItems.getItemIndex(item));
+						model.availableQbItems.addItem(item);
+					}
+				} else if (lstSelected.selectedItem != null)
+				{
+					item = lstSelected.selectedItem as QbItem;
+					model.selectedQbItems.removeItemAt(model.selectedQbItems.getItemIndex(item));
+					model.availableQbItems.addItem(item);
+				}
+			}
+			
+			private function onClose():void 
+			{
+				dispatchEvent(new Event("projectTypeEditClose"));
+			}
+			
+			private function onSave():void 
+			{
+				var newProjectType:ProjectType = model.projectType.prepareToSend();
+				newProjectType.Name = txtShowAs.text;
+				controller.updateProjectType(newProjectType);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox width="100%" height="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="Project Type:"/>
+				<mx:TextInput id="txtShowAs" width="100%" text="{model.projectType.Name}"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%" height="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:Label text="Selected Items:"/>
+					<mx:List id="lstSelected" width="100%" height="100%" dataProvider="{model.selectedQbItems}" labelField="Name"
+						allowMultipleSelection="true" dragEnabled="true" dropEnabled="true"/>
+				</mx:VBox>
+
+				<mx:VBox height="100%" verticalAlign="middle" horizontalAlign="center">
+					<mx:Button width="40" height="30" cornerRadius="2" label="&lt;" click="addItem()" 
+						enabled="{lstAvailable.selectedItem || lstAvailable.selectedItems}"/>
+					<mx:Button width="40" height="30" cornerRadius="2" label="&gt;" click="removeItem()" 
+						enabled="{lstSelected.selectedItem || lstSelected.selectedItems}"/>
+				</mx:VBox>
+	
+				<mx:VBox width="100%" height="100%">
+					<mx:Label text="Available Items:"/>
+					<mx:List id="lstAvailable" width="100%" height="100%" dataProvider="{model.availableQbItems}" labelField="Name"
+						allowMultipleSelection="true" dragEnabled="true" dropEnabled="true"/>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:VBox width="150" height="100%">
+			<mx:Button width="100%" height="35" label="Save" fontSize="12" click="onSave()"/>
+			<mx:Button width="100%" height="35" label="Close" fontSize="12" click="onClose()"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+
+</mx:Canvas>

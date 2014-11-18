@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:UI="UI.*"
+    layout="absolute" width="100%" height="100%"
+    creationComplete="init();">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.utils.Base64Decoder;
+            
+            private function decodeSession(session:String):String
+            {
+                var bd:Base64Decoder = new Base64Decoder();
+                bd.decode(session);
+                var decodedData:ByteArray = bd.drain();
+                return decodedData.toString();            
+            }
+            
+            private function init():void
+            {
+                for (var i:String in Application.application.parameters) {
+                    this.board.text += i + ":" + Application.application.parameters[i] + "\n";
+                }
+                
+                this.decoded.text = decodeSession(Application.application.parameters.sessionId);
+            }
+        ]]>
+    </mx:Script>
+
+    
+    <mx:VBox>
+        <mx:Label text="Hello from External Module"/>
+        <mx:Label text="Application parameters are:"/>
+        <mx:Label id="board"/>
+        <mx:Label id="decoded"/>
+    </mx:VBox>
+</mx:Application>

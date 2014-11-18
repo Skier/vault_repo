@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSourceTrackingPhone;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			
+			private function getLabel(obj:Object):String
+			{
+				if (obj is LeadSourceTrackingPhone)
+				{
+					var lp:LeadSourceTrackingPhone = obj as LeadSourceTrackingPhone;
+					var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(lp.LeadSourceId) as LeadSource;
+
+					return leadSource.Name;
+				} else 
+				{
+					return "";
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%">
+		<mx:Label fontSize="14" text="{getLabel(data)}"/>
+		<mx:HRule width="100%" height="1" strokeColor="#CCCCCC"/>
+	</mx:VBox>
+</mx:Canvas>

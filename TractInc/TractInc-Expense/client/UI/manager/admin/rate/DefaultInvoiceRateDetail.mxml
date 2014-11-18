@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	creationComplete="onCreationComplete()"
+    title="Edit Default Invoice Rate"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.InvoiceItemTypeDataObject;
+        	import App.Entity.DefaultInvoiceRateDataObject;
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.events.CollectionEvent;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+        	import common.TypesRegistry;
+			
+            [Bindable]
+            public var defaultRate:DefaultInvoiceRateDataObject;
+            
+			[Bindable]
+			private var _types:ArrayCollection = new ArrayCollection();
+			
+            public static function Open(invoiceRate:DefaultInvoiceRateDataObject, parent:DisplayObject, modal:Boolean = true):DefaultInvoiceRateDetail {
+                var popup:DefaultInvoiceRateDetail = new DefaultInvoiceRateDetail();
+                popup.defaultRate = invoiceRate;
+				
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+				
+                return popup;
+            }
+            
+            private function onCreationComplete():void {
+            	initTypes();
+            	cbInvoiceItemTypes.selectedIndex = _types.getItemIndex(getTypeById(defaultRate.InvoiceItemTypeId));
+            }
+            
+            private function initTypes():void 
+            {
+            	_types = TypesRegistry.instance.getAllInvoiceItemTypes;
+            }
+            
+            private function getTypeById(id:int):InvoiceItemTypeDataObject
+            {
+            	for each (var type:InvoiceItemTypeDataObject in _types) {
+            		if (type.InvoiceItemTypeId == id) {
+            			return type;
+            		}
+            	}
+            	return null;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%">
+        <mx:HBox>
+            <mx:Label text="Invoice Item Type:" width="120" textAlign="right" />
+            <mx:ComboBox
+            	id="cbInvoiceItemTypes"
+            	width="120"
+                dataProvider="{_types}"
+                labelField="Name"
+                enabled="false"
+                />
+        </mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Invoice Rate:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtInvoiceRate" text="{(1 == defaultRate.InvoiceItemTypeId)? (defaultRate.InvoiceRate * 8).toFixed(3) : defaultRate.InvoiceRate.toFixed(3)}" width="150" maxChars="15"/>
+		</mx:HBox>
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button id="btnSubmit" label="Ok"
+            enabled="{cbInvoiceItemTypes.selectedItem != null &amp;&amp; !isNaN(Number(txtInvoiceRate.text)) &amp;&amp; ((0 == Number(txtInvoiceRate.text))? !defaultRate.IsPresetRate: true)}"/>
+        <mx:Button id="btnCancel" label="Cancel"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

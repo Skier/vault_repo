@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	xmlns:component="com.llsvc.component.*"
+	title="Filter Criterias">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			public var filterEditor:FilterEditor;
+
+            public static function open(parent:DisplayObject, filterEditor:FilterEditor, modal:Boolean):FilterPopup
+            {
+                var popup:FilterPopup = new FilterPopup();
+                popup.filterEditor = filterEditor;
+                
+				popup.addContent();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+            	content.removeAllChildren();
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function addContent():void 
+            {
+            	if (content == null)
+            	{
+            		callLater(addContent);
+            		return;
+            	}
+            	
+            	content.addChild(filterEditor);
+            	PopUpManager.centerPopUp(this);
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	filterEditor.submitFields();
+
+            	dispatchEvent(new Event("submitRequest"));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="content"/>	
+
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button height="28" width="100" label="Ok" click="btnSubmitClickHandler()"/>
+		<mx:Button height="28" width="100" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

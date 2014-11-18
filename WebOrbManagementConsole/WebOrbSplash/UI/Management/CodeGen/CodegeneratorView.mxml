@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	 width="720" height="550"
+	 creationComplete="{Controller = new CodegeneratorController(ParentController,CodegeneratorView(this))}" >
+<mx:Script>
+    <![CDATA[
+    	import UI.AppSettings;
+    import UI.Management.CodeGen.CodeItem;
+    import UI.Management.CodeGen.CodeTreeDataDescriptor;
+    import UI.Management.CodeGen.CodeFormat;
+    import UI.Management.ManagementController;
+    
+	[Bindable]
+	public var Controller:CodegeneratorController;
+	
+	[Bindable]
+	public var ParentController:ManagementController;
+	
+    ]]>
+</mx:Script>
+	<mx:HBox height="100%" width="100%">
+		<mx:VBox height="100%" width="80%">
+			<mx:Label text="Client code preview"/>
+			<mx:TextArea editable="false" id="m_code" width="100%" height="100%" text="{Controller.Model.Code}" textAlign="left"/>
+			<mx:CheckBox id="m_showInstructions" label="Show code instructions" selected="{AppSettings.Instance.ShowCodegenInstructions}" change="{AppSettings.Instance.ShowCodegenInstructions = m_showInstructions.selected}" />
+		</mx:VBox>
+		<mx:VBox height="100%" width="200">
+			<mx:Label text="Code format / style"/>
+			<mx:RadioButtonGroup id="m_rbgCodeFormat" change="Controller.OnCodeTypeChanged(CodeFormat(m_rbgCodeFormat.selectedValue).Type)" />
+			<mx:Repeater id="rp" dataProvider="{Controller.Parent.Model.CodeFormats}">
+				<mx:RadioButton value="{rp.currentItem}" selected="{rp.currentIndex==0}" label="{rp.currentItem.Name}" groupName="m_rbgCodeFormat"/>				
+			</mx:Repeater>
+			<mx:Tree 
+				id="m_tree" 
+				showRoot="false" 
+				textAlign="left" 
+				height="100%" 
+				width="100%" 
+				click="ManagementController.expandTreeNode(m_tree)"
+				dataDescriptor="{new CodeTreeDataDescriptor()}" 
+				change="Controller.OnCodeNodeChanged(event)" 
+				labelField="Name" 
+				dataProvider="{Controller.Model.RootCodeItem}">
+			</mx:Tree>
+			<mx:Button width="100%" label="Download Code" click="Controller.OnDownloadCodeClick()" />
+		</mx:VBox>
+	</mx:HBox>
+	
+</mx:Canvas>

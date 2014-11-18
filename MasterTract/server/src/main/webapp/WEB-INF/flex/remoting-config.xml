@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service"
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+
+    <destination id="framework">
+        <properties>
+            <source>com.llsvc.server.framework.Service</source>
+        </properties>
+    </destination>
+
+    <destination id="documentService">
+        <properties>
+            <source>com.llsvc.server.doc.DocumentService</source>
+        </properties>
+        <channels> 
+            <channel ref="my-amf"/>
+        </channels>
+    </destination>
+
+    <destination id="surfaceService">
+        <properties>
+            <source>com.llsvc.server.doc.SurfaceDocumentService</source>
+        </properties>
+        <channels> 
+            <channel ref="my-amf"/>
+        </channels>
+    </destination>
+
+    <destination id="geoService">
+        <properties>
+            <source>com.llsvc.server.geo.GeoService</source>
+        </properties>
+        <channels> 
+            <channel ref="my-amf"/>
+        </channels>
+    </destination>
+
+    <destination id="coverageService">
+        <properties>
+            <source>com.llsvc.server.coverage.CoverageService</source>
+        </properties>
+        <channels> 
+            <channel ref="my-amf"/>
+        </channels>
+    </destination>
+
+</service>

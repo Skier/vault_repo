@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application layout="absolute"
+				xmlns:mx="http://www.adobe.com/2006/mxml" backgroundGradientAlphas="[1.0, 1.0]" backgroundGradientColors="[#2F2F2F, #2F2F2F]" xmlns:mapper="com.loveland.mapper.*">
+				
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DynamicEvent;
+			import com.loveland.mapper.tools.PolygonTool;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import com.afcomponents.umap.events.OverlayEvent;
+			import com.loveland.mapper.tracts.EditablePolygon;
+			import fl.transitions.easing.Strong;
+			import com.afcomponents.umap.providers.TileLayer;
+			import com.afcomponents.umap.interfaces.IOverlay;
+			import com.afcomponents.umap.overlays.Layer;
+			import com.afcomponents.umap.styles.GeometryStyle;
+			import com.afcomponents.umap.styles.StrokeStyle;
+			import fl.transitions.easing.Regular;
+			import com.afcomponents.umap.overlays.Polygon;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.ResultEvent;
+			import com.afcomponents.umap.providers.MapType;
+			import com.afcomponents.umap.providers.DefaultProvider;
+			import com.afcomponents.umap.overlays.TileLayerOverlay;
+			import com.afcomponents.umap.overlays.Overlay;
+			import com.afcomponents.umap.events.MapEvent;
+			import com.afcomponents.umap.types.LatLng;
+			import com.afcomponents.umap.gui.PositionControl;
+			import com.afcomponents.umap.gui.MapTypeControl;
+			import com.afcomponents.umap.gui.ZoomControl;
+			import mx.core.UIComponent;
+			import com.afcomponents.umap.core.UMap;
+			
+			private function btnDeleteTractClickHandler():void 
+			{
+				mapWrapper.removeSelectedPolygon();
+			}
+			
+			private function btnAddTractClickHandler():void 
+			{
+				mapWrapper.setPolygonMode();
+			}
+
+			private function loadRasterLayerClickHandler():void 
+			{
+				mapWrapper.loadRasterLayer();
+			}
+			
+			private function removeLayersHandler():void 
+			{
+				mapWrapper.clearMap();
+			}
+			
+			private function loadTractsClickHandler():void 
+			{
+				mapWrapper.loadTracts();
+			}
+			
+			private function btnCommitClickHandler():void 
+			{
+				mapWrapper.commitChanges();
+			}
+			
+			private function mapReadyHandler(event:Event):void 
+			{
+				mapWrapper.mainMap.setCenter(new LatLng(32.587078,-97.435565),17);
+			}
+			 
+		]]>
+	</mx:Script>
+
+	<mapper:UMapWrapper id="mapWrapper" left="10" right="10" top="70" bottom="10"
+		mapReady="mapReadyHandler(event)"/> 
+
+	<mx:Button label="Add Groserver Raster Tract Tileds" right="10" top="10" click="loadRasterLayerClickHandler()"/>
+	
+	<mx:Button label="Get Vector Tracts" right="10" top="40" click="loadTractsClickHandler()"/>
+	<mx:Button label="Remove Layers" click="removeLayersHandler()" top="40" left="10" width="128"/>
+	
+	<mx:Button x="224" y="40" label="Add new tract" id="btnAddTract" width="106"
+		click="btnAddTractClickHandler()"/>
+	<mx:Button x="338" y="40" label="Delete selected" id="btnDeleteTract" width="115"
+		enabled="{mapWrapper.activeTract != null}" 
+		click="btnDeleteTractClickHandler()"/>
+	<mx:Button x="461" y="40" label="Commit changes" width="128" id="btnCommit" 
+		click="btnCommitClickHandler()"/>
+</mx:Application>

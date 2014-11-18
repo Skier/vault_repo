@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="5"
+    paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+    backgroundColor="#c0c0c0" xmlns:components="components.*" xmlns:messages="common.messages.*">
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Domain.Message;
+        	import App.Domain.Asset;
+        	import mx.controls.Alert;
+        	import common.StatusesRegistry;
+        	import App.Domain.BillItem;
+        	import App.Domain.BillStatus;
+        	import util.NumberUtil;
+        	import util.DateUtil;
+        	import mx.events.DataGridEvent;
+        	import App.Domain.Bill;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            
+            [Bindable]
+            public var Controller: SummaryController;
+
+            public function set Parent(controller: InvoiceController): void {
+                this.Controller = new SummaryController(this, controller);
+            }
+            
+            private function setBillsLabel(item:Bill, column:DataGridColumn):String {
+
+				if (column.dataField == "startDate") {
+					return DateUtil.format(new Date(Date.parse(item.StartDate)));
+				} else if (column.dataField == "totalDailyBill") {
+					return NumberUtil.fraction(item.TotalDailyBill, 8);
+				} else if (column.dataField == "dailyBillAmt") {
+					return item.DailyBillAmt.toFixed(2);
+				} else if (column.dataField == "otherBillAmt") {
+					return item.OtherBillAmt.toFixed(2);
+				} else if (column.dataField == "totalBillAmt") {
+					return item.TotalBillAmt.toFixed(2);
+				} else if (column.dataField == "landman") {
+					return item.RelatedAsset.FirstName + " " + item.RelatedAsset.LastName;
+				} else if (column.dataField == "statusTemp") {
+					return item.statusTemp.Status;
+				} else if (column.dataField == "isloaded") {
+					return item.RelatedBillItem.IsLoaded ? "yes" : "no";
+				} else {
+					return "";
+				}
+
+            }
+        
+            private function selectBillColor(item:Bill, color:uint):uint {
+            	if (item.statusTemp.Status == BillStatus.BILL_STATUS_REJECTED) {
+            		return StatusesRegistry.getInstance().getColorByName(BillStatus.BILL_STATUS_REJECTED);
+            	} else if (item.statusTemp.Status == BillStatus.BILL_STATUS_APPROVED) {
+            		return StatusesRegistry.getInstance().getColorByName(BillStatus.BILL_STATUS_APPROVED);
+            	} else if (item.statusTemp.Status == BillStatus.BILL_STATUS_CORRECTED) {
+            		return StatusesRegistry.getInstance().getColorByName(BillStatus.BILL_STATUS_CORRECTED);
+            	} else if (item.statusTemp.Status == BillStatus.BILL_STATUS_DECLINED) {
+            		return StatusesRegistry.getInstance().getColorByName(BillStatus.BILL_STATUS_DECLINED);
+            	} else {
+            		return color;
+            	}
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <messages:MessagePanelView id="msgPanel"
+    	title="Messages"
+        width="100%" height="250"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+
+    <mx:Panel title="Bills Review" enabled="{Controller.model.notBusy}"
+        width="100%" height="100%"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        
+        <mx:TabNavigator id="tnBills" width="100%" height="100%" historyManagementEnabled="false" 
+	        paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+        	
+	        <mx:VBox width="100%" height="100%" label="Current bills" id="viewCurrentBills" >
+		        <components:ColoredDataGrid
+		        	focusEnabled="false"
+		        	width="100%" height="100%" minWidth="800"
+		        	editable="false" resizableColumns="false" sortableColumns="false"
+		        	itemDoubleClick="Controller.showDetails(event)"
+					rowColorFunction="selectBillColor"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{Controller.model.currentBills}">
+		        	<components:columns>
+	        	        <mx:DataGridColumn dataField="landman" labelFunction="setBillsLabel"
+	            	    	headerText="Asset" width="100" minWidth="100"/>
+	                	<mx:DataGridColumn dataField="startDate" labelFunction="setBillsLabel"
+		                	headerText="Start Date" width="80" minWidth="80"/>
+	    	            <mx:DataGridColumn dataField="totalDailyBill" labelFunction="setBillsLabel"
+	        	        	headerText="Days" textAlign="right" width="70"/>
+	            	    <mx:DataGridColumn dataField="dailyBillAmt" labelFunction="setBillsLabel"
+	                		headerText="Daily Amt" textAlign="right" width="80"/>
+		                <mx:DataGridColumn dataField="otherBillAmt" labelFunction="setBillsLabel"
+	    	            	headerText="Other Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="totalBillAmt" labelFunction="setBillsLabel"
+	            	    	headerText="Total Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="statusTemp" labelFunction="setBillsLabel"
+	            	    	headerText="Status" textAlign="center" width="90"/>
+						<mx:DataGridColumn headerText="" width="170" minWidth="170"  
+							itemRenderer="UI.crew.BillStatusRenderer"/>
+						<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+		        	</components:columns>
+	    	    </components:ColoredDataGrid>
+
+		        <mx:HBox width="100%" horizontalAlign="center" 
+		        	backgroundColor="#dddddd" borderColor="#999999" borderStyle="solid" cornerRadius="2"
+			        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+					<mx:Button id="btnSubmit" label="Submit" click="Controller.submit()" />
+		        </mx:HBox>
+        
+	        </mx:VBox>
+	        
+	        <mx:VBox width="100%" height="100%" label="Rejected">
+		        <mx:DataGrid 
+		        	width="100%" height="100%" minWidth="800"
+		        	itemDoubleClick="Controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{Controller.model.rejectedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn dataField="landman" labelFunction="setBillsLabel" headerText="Asset" width="100"/>
+	                	<mx:DataGridColumn dataField="startDate" labelFunction="setBillsLabel" headerText="Start Date" width="80"/>
+	    	            <mx:DataGridColumn dataField="totalDailyBill" labelFunction="setBillsLabel" headerText="Days" textAlign="right" width="70"/>
+	            	    <mx:DataGridColumn dataField="dailyBillAmt" labelFunction="setBillsLabel" headerText="Daily Amt" textAlign="right" width="80"/>
+		                <mx:DataGridColumn dataField="otherBillAmt" labelFunction="setBillsLabel" headerText="Other Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="totalBillAmt" labelFunction="setBillsLabel" headerText="Total Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="statusTemp" labelFunction="setBillsLabel" headerText="Status" textAlign="center" width="90"/>
+						<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox width="100%" height="100%" label="Approved">
+		        <mx:DataGrid 
+		        	width="100%" height="100%" minWidth="800"
+		        	itemDoubleClick="Controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{Controller.model.approvedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn dataField="landman" labelFunction="setBillsLabel" headerText="Asset" width="100"/>
+	                	<mx:DataGridColumn dataField="startDate" labelFunction="setBillsLabel" headerText="Start Date" width="80"/>
+	    	            <mx:DataGridColumn dataField="totalDailyBill" labelFunction="setBillsLabel" headerText="Days" textAlign="right" width="70"/>
+	            	    <mx:DataGridColumn dataField="dailyBillAmt" labelFunction="setBillsLabel" headerText="Daily Amt" textAlign="right" width="80"/>
+		                <mx:DataGridColumn dataField="otherBillAmt" labelFunction="setBillsLabel" headerText="Other Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="totalBillAmt" labelFunction="setBillsLabel" headerText="Total Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="statusTemp" labelFunction="setBillsLabel" headerText="Status" textAlign="center" width="90"/>
+						<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox width="100%" height="100%" label="Confirmed">
+		        <mx:DataGrid 
+		        	width="100%" height="100%" minWidth="800"
+		        	itemDoubleClick="Controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{Controller.model.confirmedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn dataField="landman" labelFunction="setBillsLabel" headerText="Asset" width="100"/>
+	                	<mx:DataGridColumn dataField="startDate" labelFunction="setBillsLabel" headerText="Start Date" width="80"/>
+	    	            <mx:DataGridColumn dataField="totalDailyBill" labelFunction="setBillsLabel" headerText="Days" textAlign="right" width="70"/>
+	            	    <mx:DataGridColumn dataField="dailyBillAmt" labelFunction="setBillsLabel" headerText="Daily Amt" textAlign="right" width="80"/>
+		                <mx:DataGridColumn dataField="otherBillAmt" labelFunction="setBillsLabel" headerText="Other Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="totalBillAmt" labelFunction="setBillsLabel" headerText="Total Amt" textAlign="right" width="80"/>
+	        	        <mx:DataGridColumn dataField="statusTemp" labelFunction="setBillsLabel" headerText="Status" textAlign="center" width="90"/>
+						<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+        </mx:TabNavigator>
+        
+    </mx:Panel>
+
+</mx:VDividedBox>

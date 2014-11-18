@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/asset-ops-shared" xmlns:bt="http://www.intuit.com/sb/cdm/basetypes" targetNamespace="http://www.intuit.com/sb/cdm/asset-ops-shared" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="ItemTypeEnum">
+		<xs:annotation>
+			<xs:documentation>enumeration of sellable item types (product, service, etc...)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Product" />
+			<xs:enumeration value="Service" />
+			<xs:enumeration value="Other" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

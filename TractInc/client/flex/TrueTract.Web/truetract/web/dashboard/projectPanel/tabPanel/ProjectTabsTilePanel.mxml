@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:tabPanel="truetract.web.dashboard.projectPanel.tabPanel.*" 
+	xmlns:containers="truetract.web.containers.*">
+	
+    <mx:Metadata>
+        [Event(name="openProjectTab", type="mx.events.DynamicEvent")]
+        [Event(name="deleteProjectTab", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.DragSource;
+			import mx.managers.DragManager;
+			import mx.events.DynamicEvent;
+			import mx.controls.Alert;
+			import truetract.domain.ProjectTab;
+			import truetract.web.dashboard.projectPanel.tabPanel.IProjectTabUI;
+			import truetract.domain.Project;
+			
+			[Bindable] public var project:Project;
+			[Bindable] public var readOnly:Boolean = false;
+
+			[Bindable] private var currentProjectTab:ProjectTab;
+			
+			public function openProjectTab(projectTab:ProjectTab):void 
+			{
+				var event:DynamicEvent = new DynamicEvent("openProjectTab");
+				event.projectTab = currentProjectTab;
+				
+				dispatchEvent(event);
+			}
+			
+			public function setSelected(projectTab:ProjectTab):void 
+			{
+				for each (var item:IProjectTabUI in tabTile as Array) 
+				{
+					if (item.projectTab == projectTab) 
+						item.selected = true;
+					else 
+						item.selected = false;
+				}
+
+				currentProjectTab = projectTab;
+			}
+			
+			private function tabMouseOverHandler(event:MouseEvent):void 
+			{
+				var target:IProjectTabUI = event.currentTarget as IProjectTabUI;
+			}
+			
+			private function tabClickHandler(event:MouseEvent):void 
+			{
+				var target:IProjectTabUI = event.currentTarget as IProjectTabUI;
+				
+				if (event.ctrlKey && target.selected) 
+				{
+					setSelected(null);
+				} else {
+					setSelected(target.projectTab);
+				}
+			}
+			
+			private function tabDoubleClickHandler(event:MouseEvent):void 
+			{
+				var target:IProjectTabUI = event.currentTarget as IProjectTabUI;
+
+				setSelected(target.projectTab);
+
+				openProjectTab(currentProjectTab);
+			}
+			
+			private function tabDeleteClickHandler(event:DynamicEvent):void 
+			{
+				var newEvent:DynamicEvent = new DynamicEvent("deleteProjectTab");
+				newEvent.projectTab = event.projectTab as ProjectTab;
+
+				dispatchEvent(newEvent);
+			}
+			
+	        private function tabTileDragStartHandler(event:MouseEvent):void
+	        {
+	            if (DragManager.isDragging == false)
+	            {
+	                var tabTile:ProjectTabTile = event.target as ProjectTabTile;
+	                var ds:DragSource = new DragSource();
+	                ds.addData(tabTile.projectTab, "projectTab");
+	
+	                var di:ProjectTabTile = new ProjectTabTile();
+	                di.projectTab = tabTile.projectTab;
+	                
+	                DragManager.doDrag(flowTabs, ds, event, di, -tabTile.x, 
+	                                   -tabTile.y + flowTabs.verticalScrollPosition, 
+	                                   0.5, false);
+	            }    
+	        }
+	        
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:VBox width="100%" height="100%">
+			<containers:FlowContainer id="flowTabs" width="100%" height="100%" 
+				horizontalGap="4" verticalGap="4">
+			    <mx:Repeater id="tabRepeater" dataProvider="{project.TabsList}">
+			        <tabPanel:ProjectTabTile id="tabTile" 
+			            projectTab="{tabRepeater.currentItem}"
+			            readOnly="{readOnly}"
+			            mouseOver="tabMouseOverHandler(event)"
+			            click="tabClickHandler(event)"
+			            doubleClickEnabled="true"
+			            doubleClick="tabDoubleClickHandler(event)"
+			            deleteProjectTab="tabDeleteClickHandler(event)"
+			            dragStart="tabTileDragStartHandler(event)"
+			            />
+			    </mx:Repeater>
+			</containers:FlowContainer>
+		</mx:VBox>
+
+		<tabPanel:ProjectTabQuickDetail width="100%"
+			visible="{currentProjectTab != null}" includeInLayout="{currentProjectTab != null}"
+			projectTab="{currentProjectTab}"/>
+	</mx:VBox>
+</mx:Canvas>

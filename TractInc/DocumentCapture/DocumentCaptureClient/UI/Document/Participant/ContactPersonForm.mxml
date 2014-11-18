@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	label="Sellers"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+			public function IsValid():Boolean {
+
+				var isValid:Boolean = true;
+
+				if (firstNameV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(firstName);
+					}
+					isValid = false;
+				}
+
+				if (lastNameV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(lastName);
+					}
+					isValid = false;
+				}
+				
+				return isValid;
+
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="firstNameV" source="{firstName}" property="text" maxLength="50"
+		required="{firstName.text.length > 0 || middleName.text.length > 0 || lastName.text.length > 0 || contactPosition.text.length > 0}" 
+		/>
+	<mx:StringValidator id="lastNameV" source="{lastName}" property="text" maxLength="50"
+		required="{firstName.text.length > 0 || middleName.text.length > 0 || lastName.text.length > 0 || contactPosition.text.length > 0}" 
+		/>
+
+	<mx:HBox backgroundColor="#cccccc" width="100%">
+		<mx:Label text="Main Contact" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		
+		<mx:FormItem label="FirstName:">
+			<mx:TextInput id="firstName" maxChars="50"
+				text="{controller.Model.participant.FirstName}" 
+				change="(controller.Model.participant.FirstName = firstName.text.toUpperCase())"
+				width="150"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="MidName:">
+			<mx:TextInput id="middleName" maxChars="50"
+				text="{controller.Model.participant.MiddleName}" 
+				change="(controller.Model.participant.MiddleName = middleName.text.toUpperCase())"
+				width="150"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="LastName:">
+			<mx:TextInput id="lastName" maxChars="50"
+				text="{controller.Model.participant.LastName}" 
+				change="(controller.Model.participant.LastName = lastName.text.toUpperCase())"
+				width="150"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Contact Position:">
+			<mx:TextInput id="contactPosition" maxChars="50"
+				text="{controller.Model.participant.ContactPosition}" 
+				change="(controller.Model.participant.ContactPosition = contactPosition.text.toUpperCase())"
+				width="150"/>
+		</mx:FormItem>
+	
+	</mx:HBox>
+	
+</mx:VBox>

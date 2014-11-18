@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    resize="callLater( moveIFrame )"
+    move="callLater( moveIFrame )">
+
+    <mx:Script>
+    	import flash.net.navigateToURL;
+
+        private var __source: String;
+
+        public function moveIFrame(): void {
+            var pt:flash.geom.Point= new Point(0,0);
+            pt = this.localToGlobal(pt);            
+            ExternalInterface.call( "moveIFrame", pt.x, pt.y, this.width, this.height );
+            //fscommand("moveIFrame", pt.x+","+pt.y+","+this.width+","+this.height);
+        }
+
+        public function set source(source: String): void {
+            if (source) {
+                __source = source;                
+            }
+        }
+
+        public function get source(): String {
+            return __source;
+        }
+
+        override public function  set visible(visible: Boolean): void {
+            super.visible=visible;
+            if (visible) 
+            {
+            	ExternalInterface.call( "setIFrameContent", source );
+                ExternalInterface.call( "showIFrame");
+            }
+            else
+            {
+            	ExternalInterface.call( "setIFrameContent", "about:blank" );       	
+            	ExternalInterface.call( "hideIFrame" );
+            }
+        }
+
+    </mx:Script>
+
+</mx:Canvas>

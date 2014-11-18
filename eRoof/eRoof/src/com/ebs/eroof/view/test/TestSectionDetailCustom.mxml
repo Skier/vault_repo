@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" height="720" width="867"
+	backgroundColor="#ffffff">
+	
+    <mx:Metadata>
+        [Event(name="startEditSection", type="flash.events.Event")]
+        [Event(name="endEditSection", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			[Bindable]
+			private var sectionDTO:Sections_DTO;
+			
+			[Bindable]
+			private var roofSystems:ArrayCollection;
+			
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				if (section != null)
+				{
+					sectionDTO = section.sectionDTO;
+					roofSystems = sectionDTO.RoofSystem_Info.choiceArray;
+					comboRoofSystem.selectedItem = sectionDTO.RoofSystem;
+				} else 
+				{
+					sectionDTO = null;
+					roofSystems = null;
+					comboRoofSystem.selectedItem = null;
+				}
+			}
+			
+			private function updateTotalCost():void 
+			{
+				lblCost.text = cf.format(numSqFt.value * Number(currEstCostPerSF.currency));
+			}
+			
+			private function onCostChange():void 
+			{
+				updateTotalCost();
+			}
+			
+			private function onSqFtChange():void 
+			{
+				updateTotalCost();
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vDesignation.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+			
+			private function populateSection():void 
+			{
+				sectionDTO.RoofName = txtRoofName.text;
+				sectionDTO.Designation = txtDesignation.text;
+				sectionDTO.SensitivityDetails = txtSencitivityDetail.text;
+				sectionDTO.ConditionDetails = txtConditionDetail.text;
+
+				sectionDTO.SqFt = numSqFt.value;
+				sectionDTO.EstCostPerSqFt = Number(currEstCostPerSF.currency);
+
+				sectionDTO.YearInstalled = dateDateInstalled.selectedDate ? dateDateInstalled.selectedDate.getFullYear() : NaN;
+				sectionDTO.RoofSystem = comboRoofSystem.selectedItem.toString();
+
+				sectionDTO.LeakDetails = rtfNotes.htmlText;
+			}
+			
+			private function updateSection():void 
+			{
+				Application.application.enabled = false;
+				
+				populateSection();
+				
+				isBusy = true;
+				
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreSection, sectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(sectionDTO, callBackEvent);
+            	ev.dispatch();
+			}
+			
+            private function onStoreSection(storedObject:Sections_DTO):void 
+            {
+            	sectionDTO = storedObject;
+				Application.application.enabled = true;
+
+				isBusy = false;
+
+				isEditable = false;
+				dispatchEvent(new Event("endEditSection"));
+            }
+			
+			private function onClickSave():void 
+			{
+				if (isFormValid()) 
+					updateSection();
+			}
+			
+			private function onClickCancel():void 
+			{
+				isEditable = false;
+				dispatchEvent(new Event("endEditSection"));
+			}
+			
+			private function onClickEdit():void 
+			{
+				isEditable = true;
+				dispatchEvent(new Event("startEditSection"));
+			}
+			
+			[Bindable]
+			private var isEditable:Boolean = false;
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	<mx:StringValidator id="vDesignation" source="{txtDesignation}" property="text" required="{sectionDTO.Designation_Info.required}"/>
+	
+	<mx:Label x="10" y="12" text="Roof Name" fontSize="14" width="97" textAlign="right"/>
+	<mx:Label x="115" y="12" fontSize="14" width="436" text="{sectionDTO.RoofName}" visible="{!isEditable}"/>
+	<mx:TextInput id="txtRoofName" y="10" fontSize="14" text="{sectionDTO.RoofName}" visible="{isEditable}" right="226" left="115"/>
+
+	<mx:Label x="10" y="55" text="Designation" textAlign="right" width="97"/>
+	<mx:Label x="115" y="53" width="80" text="{sectionDTO.Designation}" fontSize="12" visible="{!isEditable}"/>
+	<mx:TextInput x="115" y="53" id="txtDesignation" maxChars="10" width="80" text="{sectionDTO.Designation}" visible="{isEditable}"/>
+	
+	<mx:Label x="194" y="56" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14" visible="{isEditable}"/>
+
+	<mx:HRule right="10" y="43" left="10"/>
+
+	<mx:Label x="10" y="84" text="Sensitivity Detail" textAlign="right"/>
+	<mx:TextArea x="115" y="83" id="txtSencitivityDetail" width="464" text="{sectionDTO.SensitivityDetails}" editable="{isEditable}"/>
+
+	<mx:Label x="10" y="136" text="Condition Detail" textAlign="right" width="97"/>
+	<mx:TextArea x="115" y="135" id="txtConditionDetail" height="81" width="464" text="{sectionDTO.ConditionDetails}" editable="{isEditable}"/>
+
+	<mx:Label x="10" y="226" text="Sq Ft" textAlign="right" width="97"/>
+	<mx:Label fontSize="12" x="115" y="224" width="102" textAlign="right" text="{sectionDTO.SqFt.toString()}" visible="{!isEditable}"/>
+	<mx:NumericStepper x="115" y="224" width="102" stepSize="1" minimum="1" maximum="1000000" textAlign="right" id="numSqFt" value="{sectionDTO.SqFt}"
+		change="onSqFtChange()" visible="{isEditable}"/>
+
+	<mx:Label x="225" y="226" text="Est.Cost per SqFt" textAlign="right"/>
+	<mx:Label fontSize="12" x="333" y="224" width="80" 
+		textAlign="right" text="{sectionDTO.EstCostPerSqFt.toString()}" visible="{!isEditable}"/>
+	<controls:CurrencyInput x="333" y="224" id="currEstCostPerSF" width="80" 
+		textAlign="right" text="" restrict="0-9,." currency="{sectionDTO.EstCostPerSqFt.toString()}"
+		change="onCostChange()" visible="{isEditable}"/>
+
+	<mx:HRule x="10" width="403" y="252"/>
+
+	<mx:Label x="10" y="266" text="Est.Cost" textAlign="right" width="97"/>
+	<mx:Label id="lblCost" x="115" y="262" text="{cf.format(sectionDTO.EstCost)}"
+		textAlign="right" fontWeight="bold" width="298" fontSize="14"/>
+
+	<mx:Label x="10" y="295" text="Date Installed" textAlign="right" width="97"/>
+	<mx:Label fontSize="12" visible="{!isEditable}" x="115" y="293" text="{sectionDTO.YearInstalled.toString()}"/>
+	<mx:DateField x="115" y="293" id="dateDateInstalled" selectedDate="{new Date(31536000000 * sectionDTO.YearInstalled)}" visible="{isEditable}"/>
+
+	<mx:Label x="249" y="295" text="Roof System" textAlign="right"/>
+	<mx:Label fontSize="12" visible="{!isEditable}" x="333" y="293" width="218"	text="{sectionDTO.RoofSystem}"/>
+	<mx:ComboBox x="333" y="293" id="comboRoofSystem" width="218"
+		dataProvider="{roofSystems}" visible="{isEditable}"/>
+
+	<mx:Panel title="Leak Details" bottom="50" top="321" left="10" right="0" visible="{!isEditable}">
+		<mx:TextArea width="100%" height="100%" htmlText="{sectionDTO.LeakDetails}"/>
+	</mx:Panel>
+	<mx:RichTextEditor id="rtfNotes" title="Leak Details" bottom="10" top="321" left="10" right="10" htmlText="{sectionDTO.LeakDetails}" visible="{isEditable}"/>
+
+	<mx:Button label="Edit" click="onClickEdit()" visible="{!isEditable}" right="10" top="12" width="100" height="22"/>
+
+	<mx:Button label="Save" width="100" right="118" click="onClickSave()" visible="{isEditable}" enabled="{!isBusy}" top="12" height="22"/>
+	<mx:Button label="Cancel" width="100" right="10" click="onClickCancel()" visible="{isEditable}" enabled="{!isBusy}" top="12" height="22"/>
+
+</mx:Canvas>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.File;
+		
+			[Bindable]
+			public var imageFile:File;
+			
+			private function onUpload():void 
+			{
+                var fileRef:FileReference = new FileReference();
+                var imgFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png;*.jpeg");
+
+                fileRef.addEventListener(Event.SELECT, 
+                    function (event:Event):void 
+                    {
+                        uploadFile(fileRef);
+                    });
+                     
+                fileRef.browse([imgFilter]);
+			}
+			
+			private function uploadFile(fileRef:FileReference):void 
+			{
+				var file:File = new File();
+				file.FileSize = fileRef.size;
+				file.FileType = fileRef.type;
+				file.OriginalFileName = fileRef.name;
+				
+				pbUpload.source = fileRef;
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox verticalGap="2">
+		<mx:Box width="70" height="90"
+			x="10" y="5" 
+			backgroundColor="#FFFFFF" borderColor="#999999" borderStyle="solid" 
+			shadowDirection="center" shadowDistance="0" dropShadowEnabled="true">
+			<mx:Canvas width="100%" height="100%">
+				<mx:Image width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" source="{imageFile.StorageKey}"/>
+				<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+					<mx:ProgressBar id="pbUpload" width="100%" labelPlacement="top" label="upload"/>
+				</mx:VBox>
+			</mx:Canvas>
+		</mx:Box>
+		<mx:Button id="btnUpload" width="100%" label="Upload" click="onUpload()"/>
+	</mx:VBox>
+</mx:VBox>

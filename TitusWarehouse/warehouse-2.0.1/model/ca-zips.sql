@@ -1,0 +1,1 @@
+insert into zips ( country, zip, state, city) values  ('CA','P3L1H9','ON','Garson');

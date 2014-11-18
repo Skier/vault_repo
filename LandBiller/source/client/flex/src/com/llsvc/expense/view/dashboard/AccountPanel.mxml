@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" xmlns:dashboard="com.llsvc.expense.view.dashboard.*"> 
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.domain.events.CompanyEvent;
+			import com.llsvc.domain.events.ClientEvent;
+			import com.llsvc.domain.events.ProjectEvent;
+			import com.llsvc.expense.view.project.ProjectsDataTreeDescriptor;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.CollectionEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import com.llsvc.expense.view.company.CompanyEditView;
+			import com.llsvc.services.CompanyService;
+			import com.llsvc.domain.Company;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.expense.view.project.ProjectEditView;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.services.ClientService;
+			import com.llsvc.expense.view.client.ClientEditView;
+			import com.llsvc.services.ProjectService;
+			import com.llsvc.services.ExpenceTypeService;
+			import com.llsvc.domain.Project;
+			import com.llsvc.expense.view.expenses.ExpenseTypeEditView;
+			import com.llsvc.expense.view.expenses.ExpenceItemEditView;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import com.llsvc.domain.ExpenceType;
+			import com.llsvc.domain.Client;
+			import com.llsvc.domain.User;
+			import mx.rpc.Responder;
+			
+            [Embed(source="assets/icons16/error.png")]
+            [Bindable]
+            private var imgError:Class;
+
+            [Embed(source="assets/icons16/building.png")]
+            [Bindable]
+            private var iconCompany:Class;
+
+            [Embed(source="assets/icons16/user.png")]
+            [Bindable]
+            private var iconClient:Class;
+
+            [Embed(source="assets/icons16/report.png")]
+            [Bindable]
+            private var iconProject:Class;
+
+			private var _user:User;
+			[Bindable] 
+			public function get user():User { return _user; }
+			public function set user(value:User):void 
+			{
+				_user = value;
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function openProject(project:Project):void 
+			{
+				var projectView:ProjectEditView = ProjectEditView.open(this, project, true);
+				projectView.addEventListener("projectSavingComplete",
+					function (event:Event):void 
+					{
+						if (!project.client.projects.contains(projectView.project))
+							project.client.projects.addItem(projectView.project);
+
+						if (!user.projects.contains(projectView.project))
+							user.projects.addItem(projectView.project);
+
+						selectNode(project);
+
+						projectView.close();
+					});
+				projectView.addEventListener("cancelRequest",
+					function (event:Event):void 
+					{
+						projectView.close();
+					});
+			}
+			
+			private function deleteProject(project:Project):void 
+			{
+				startRemoting();
+				ProjectService.instance.deleteProject(project.projectid).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							project.client.projects.removeItemAt(project.client.projects.getItemIndex(project));
+
+							if (user.projects.contains(project))
+								user.projects.removeItemAt(user.projects.getItemIndex(project));
+
+							selectNode(project.client);
+
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private function openClient(client:Client):void 
+			{
+				var clientView:ClientEditView = ClientEditView.open(this, client, true);
+				clientView.addEventListener("clientSavingComplete",
+					function (event:Event):void 
+					{
+						if (!user.clients.contains(clientView.client))
+							user.clients.addItem(clientView.client);
+						
+						if (!client.company.clients.contains(clientView.client))
+							client.company.clients.addItem(clientView.client);
+
+						selectNode(client);
+
+						clientView.close();
+					});
+				clientView.addEventListener("cancelRequest",
+					function (event:Event):void 
+					{
+						clientView.close();
+					});
+			}
+			
+			private function deleteClient(client:Client):void 
+			{
+				startRemoting();
+				ClientService.instance.deleteClient(client.clientid).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							user.clients.removeItemAt(user.clients.getItemIndex(client));
+							client.company.clients.removeItemAt(client.company.clients.getItemIndex(client));
+
+							selectNode(client.company);
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private function openCompany(company:Company):void 
+			{
+				var companyView:CompanyEditView = CompanyEditView.open(this, company, true);
+				companyView.addEventListener("companySavingComplete",
+					function (event:Event):void 
+					{
+						if (!user.companies.contains(companyView.company))
+							user.companies.addItem(companyView.company);
+
+						selectNode(company);
+
+						companyView.close();
+					});
+				companyView.addEventListener("cancelRequest",
+					function (event:Event):void 
+					{
+						companyView.close();
+					});
+			}
+			
+			private function deleteCompany(company:Company):void 
+			{
+				startRemoting();
+				CompanyService.instance.deleteCompany(company.companyid).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							user.companies.removeItemAt(user.companies.getItemIndex(company));
+
+							selectNode(user);
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private function selectNode(node:Object):void 
+			{
+				if (node is Company) 
+				{
+					treeCompanies.expandItem(Company(node), true);
+				} else if (node is Client) 
+				{
+					treeCompanies.expandItem(Client(node).company, true);
+					treeCompanies.expandItem(Client(node), true);
+				} else if (node is Project) 
+				{
+					treeCompanies.expandItem(Project(node).client.company, true);
+					treeCompanies.expandItem(Project(node).client, true);
+				}
+
+				treeCompanies.selectedItem = node;
+				var idx:int = treeCompanies.selectedIndex;
+				if (idx != -1)
+					treeCompanies.scrollToIndex(idx);
+			}
+			
+			private function openExpenseType(expenseType:ExpenceType):void 
+			{
+				var expenseTypeView:ExpenseTypeEditView = ExpenseTypeEditView.open(this, expenseType, true);
+				expenseTypeView.addEventListener("expenseTypeSavingComplete",
+					function (event:Event):void 
+					{
+						if (!expenseType.user.expenceTypes.contains(expenseTypeView.expenseType))
+							expenseType.user.expenceTypes.addItem(expenseTypeView.expenseType);
+
+						expenseTypeView.close();
+					});
+				expenseTypeView.addEventListener("cancelRequest",
+					function (event:Event):void 
+					{
+						expenseTypeView.close();
+					});
+			}
+			
+			private function deleteExpenseType(expenseType:ExpenceType):void 
+			{
+				startRemoting()
+				ExpenceTypeService.instance.deleteExpenceType(expenseType.expencetypeid).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							user.expenceTypes.removeItemAt(user.expenceTypes.getItemIndex(expenseType));
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private function  setExpenseTypeLabel(obj:Object, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				if (obj is ExpenceType) 
+				{
+					var type:ExpenceType = obj as ExpenceType;
+					
+					if (column.dataField == "defaultrate") {
+						result = "$" + type.defaultrate.toFixed(2);
+					}
+				}
+				
+				return result;
+			}
+			
+			private function btnNewExpenseClickHandler():void 
+			{
+				var expenseType:ExpenceType = new ExpenceType();
+				expenseType.user = user;
+				expenseType.userid = user.userid;
+			
+				openExpenseType(expenseType);	
+			}
+			
+			private function btnOpenExpenseClickHandler():void 
+			{
+				var expenseType:ExpenceType = dgExpenseTypes.selectedItem as ExpenceType;
+				expenseType.user = user;
+				expenseType.userid = user.userid;
+			
+				openExpenseType(expenseType);	
+			}
+			
+			private function btnDeleteExpenseClickHandler():void 
+			{
+				var expenseType:ExpenceType = dgExpenseTypes.selectedItem as ExpenceType;
+				if (expenseType == null)
+					return;
+
+                Alert.show("Do you really want to delete this Expense Type?", 
+                   "Delete Expense Type Item", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES)
+                        {
+							deleteExpenseType(expenseType);	
+                        }
+                    });
+			}
+			
+			private function editClientRequestHandler(event:ClientEvent):void 
+			{
+				var client:Client = event.client;
+				openClient(client);	
+			}
+			
+			private function deleteClientRequestHandler(event:ClientEvent):void 
+			{
+				var client:Client = event.client;
+
+				if (client.projects.length > 0) 
+				{
+					Alert.show("You cannot delete current Company.\nIt already has projects");
+					return;
+				} else 
+				{
+	                Alert.show("Do you really want to delete this Client?", 
+	                   "Delete Client", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+	                   function (e:CloseEvent):void 
+	                   {
+	                        if (e.detail == Alert.YES)
+	                        {
+								deleteClient(client);	
+	                        }
+	                    });
+				}
+			}
+			
+			private function addProjectRequestHandler(event:ClientEvent):void 
+			{
+				var project:Project = new Project();
+				
+				project.client = event.client;
+				project.clientid = event.client.clientid;
+			
+				openProject(project);	
+			}
+			
+			private function editProjectRequestHandler(event:ProjectEvent):void 
+			{
+				var project:Project = event.project;
+			
+				openProject(project);	
+			}
+			
+			private function deleteProjectRequestHandler(event:ProjectEvent):void 
+			{
+				var project:Project = event.project;
+
+				if (project.expenceItems.length > 0) 
+				{
+					Alert.show("You cannot delete current Project.\nThis item already has expenses");
+					return;
+				} else 
+				{
+	                Alert.show("Do you really want to delete this Project?", 
+	                   "Delete Project", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+	                   function (e:CloseEvent):void 
+	                   {
+	                        if (e.detail == Alert.YES)
+	                        {
+								deleteProject(project);	
+	                        }
+	                    });
+	   			}
+			}
+			
+			private function addClientRequestHandler(event:CompanyEvent):void 
+			{
+				var client:Client = new Client();
+				
+				client.user = user;
+				client.userid = user.userid;
+				
+				client.company = event.company;
+				client.companyid = event.company.companyid;
+			
+				openClient(client);	
+			}
+			
+			private function addCompanyRequestHandler(event:UserEvent):void 
+			{
+				var company:Company = new Company();
+				
+				company.user = user;
+				company.userid = user.userid;
+			
+				openCompany(company);	
+			}
+			
+			private function editCompanyRequestHandler(event:CompanyEvent):void 
+			{
+				var company:Company = event.company;
+				
+				openCompany(company);	
+			}
+			
+			private function deleteCompanyRequestHandler(event:CompanyEvent):void 
+			{
+				var company:Company = event.company;
+
+				if (company.clients.length > 0) 
+				{
+					Alert.show("You cannot delete current Company.\nIt already has related clients");
+					return;
+				} else 
+				{
+	                Alert.show("Do you really want to delete this Company?", 
+	                   "Delete Company", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+	                   function (e:CloseEvent):void 
+	                   {
+	                        if (e.detail == Alert.YES)
+	                        {
+								deleteCompany(company);	
+	                        }
+	                    });
+				}
+			}
+			
+			private function selectCompanyRequest(event:CompanyEvent):void 
+			{
+				selectNode(event.company);
+			}
+			
+			private function selectClientRequestHandler(event:ClientEvent):void 
+			{
+				selectNode(event.client);
+			}
+			
+			private function selectProjectRequestHandler(event:ProjectEvent):void 
+			{
+				selectNode(event.project);
+			}
+
+			private function getIcon(item:Object):Class 
+			{
+				if (item is User) 
+				{
+					return null;
+				} else if (item is Company) 
+				{
+					return iconCompany;
+				} else if (item is Client) 
+				{
+					return iconClient;
+				} else if (item is Project) 
+				{
+					return iconProject;
+				} else 
+				{
+					return null;
+				}
+			}
+			
+			private function getLabel(item:Object):String 
+			{
+				if (item is User) 
+				{
+					return "My account summary";
+				} else if (item is Company) 
+				{
+					return Company(item).name;
+				} else if (item is Client) 
+				{
+					return Client(item).name;
+				} else if (item is Project) 
+				{
+					return Project(item).projectname;
+				} else 
+				{
+					return "";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#ffffcc" 
+		borderColor="#990000" borderStyle="solid" borderThickness="2" cornerRadius="2" 
+		verticalAlign="top" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		includeInLayout="{txtWarnCompany.visible || txtWarnClient.visible || txtWarnProject.visible || txtWarnExpenseType.visible}"
+		visible="{txtWarnCompany.visible || txtWarnClient.visible || txtWarnProject.visible || txtWarnExpenseType.visible}">
+		<mx:Image source="{imgError}"/>
+		<mx:VBox width="100%">
+			<mx:Text id="txtWarnCompany" width="100%" text="You should add companies to send him Invoices"
+				visible="{user.companies.length == 0}" includeInLayout="{user.companies.length == 0}"/>
+			<mx:Text id="txtWarnClient" width="100%" text="You should create contact persons to send him Invoices"
+				visible="{user.clients.length == 0}" includeInLayout="{user.clients.length == 0}"/>
+			<mx:Text id="txtWarnProject" width="100%" text="You should create projects to create Invoices"
+				visible="{user.projects.length == 0}" includeInLayout="{user.projects.length == 0}"/>
+			<mx:Text id="txtWarnExpenseType" width="100%" text="You should add Expense types to create expense items"
+				visible="{user.expenceTypes.length == 0}" includeInLayout="{user.expenceTypes.length == 0}"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+		<mx:Panel width="100%" height="100%" layout="horizontal" title="Companies"
+			backgroundColor="#eeeeee"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+				<mx:Tree id="treeCompanies"
+					width="250" height="100%" 
+					iconFunction="getIcon" labelFunction="getLabel" showRoot="true"
+					dataProvider="{user}" 
+					dataDescriptor="{new ProjectsDataTreeDescriptor()}"/>
+
+				<dashboard:ContentPanel id="panelContent" 
+					width="100%" height="100%"
+					user="{user}"
+					content="{treeCompanies.selectedItem}"
+					selectCompanyRequest="selectCompanyRequest(event)"
+					selectClientRequest="selectClientRequestHandler(event)"
+					selectProjectRequest="selectProjectRequestHandler(event)"
+					addCompanyRequest="addCompanyRequestHandler(event)"
+					editCompanyRequest="editCompanyRequestHandler(event)"
+					deleteCompanyRequest="deleteCompanyRequestHandler(event)"
+					addClientRequest="addClientRequestHandler(event)"
+					editClientRequest="editClientRequestHandler(event)"
+					deleteClientRequest="deleteClientRequestHandler(event)"
+					addProjectRequest="addProjectRequestHandler(event)"
+					editProjectRequest="editProjectRequestHandler(event)"
+					deleteProjectRequest="deleteProjectRequestHandler(event)"/>
+			</mx:HDividedBox>
+		</mx:Panel>
+		
+<!--
+		<mx:Panel width="100" height="100%" layout="horizontal" title="Companies / Projects"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox width="200" height="100%">
+				<mx:Label text="Companies" fontWeight="bold"/>
+				<mx:DataGrid id="dgCompanies" width="100%" height="100%" dataProvider="{user.companies}">
+					<mx:columns>
+						<mx:DataGridColumn dataField="name" headerText="Company Name"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button height="24" label="New" click="btnNewCompanyClickHandler()"/>
+					<mx:Button height="24" label="Open" click="btnOpenCompanyClickHandler()" enabled="{dgCompanies.selectedItem != null}"/>
+					<mx:Button height="24" label="Delete" click="btnDeleteCompanyClickHandler()" enabled="{dgCompanies.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="Subdivisions(Personal)" fontWeight="bold"/>
+				<mx:DataGrid id="dgClients" width="100%" height="100%" dataProvider="{Company(dgCompanies.selectedItem).clients}">
+					<mx:columns>
+						<mx:DataGridColumn dataField="name" headerText="Client Name"/>
+						<mx:DataGridColumn dataField="personStr" headerText="Contact person"/>
+						<mx:DataGridColumn dataField="phoneStr" headerText="Phones"/>
+						<mx:DataGridColumn dataField="addressStr" headerText="Address"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button height="24" label="New" click="btnNewClientClickHandler()" enabled="{dgCompanies.selectedItem != null}"/>
+					<mx:Button height="24" label="Open" click="btnOpenClientClickHandler()" enabled="{dgClients.selectedItem != null}"/>
+					<mx:Button height="24" label="Delete" click="btnDeleteClientClickHandler()" enabled="{dgClients.selectedItem != null}"/>
+				</mx:HBox>
+				<mx:Label text="Projects:" fontWeight="bold"/>
+				<mx:DataGrid id="dgProjects" width="100%" height="100%" dataProvider="{Client(dgClients.selectedItem).projects}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" dataField="projectname"/>
+						<mx:DataGridColumn headerText="AFE" dataField="afe"/>
+						<mx:DataGridColumn headerText="Status" dataField="status"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button height="24" label="New" click="btnNewProjectClickHandler()" enabled="{dgClients.selectedItem != null}"/>
+					<mx:Button height="24" label="Open" click="btnOpenProjectClickHandler()" enabled="{dgProjects.selectedItem != null}"/>
+					<mx:Button height="24" label="Delete" click="btnDeleteProjectClickHandler()" enabled="{dgProjects.selectedItem != null}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:Panel>
+-->
+		<mx:Panel width="300" height="100%" layout="vertical" title="Expense Types"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:Label text="Expense Types" fontWeight="bold"/>
+			<mx:DataGrid id="dgExpenseTypes" width="100%" height="100%" dataProvider="{user.expenceTypes}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="itemname" headerText="Type Name"/>
+					<mx:DataGridColumn dataField="defaultrate" headerText="Rate" textAlign="right" labelFunction="setExpenseTypeLabel"/>
+					<mx:DataGridColumn dataField="defaultItemStr" headerText="Based On"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button height="24" label="New" click="btnNewExpenseClickHandler()"/>
+				<mx:Button height="24" label="Open" click="btnOpenExpenseClickHandler()" enabled="{dgExpenseTypes.selectedItem != null}"/>
+				<mx:Button height="24" label="Delete" click="btnDeleteExpenseClickHandler()" enabled="{dgExpenseTypes.selectedItem != null}"/>
+			</mx:HBox>
+		</mx:Panel>
+	</mx:HDividedBox>
+</mx:VBox>

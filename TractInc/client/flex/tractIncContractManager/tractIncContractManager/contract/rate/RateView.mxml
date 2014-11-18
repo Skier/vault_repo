@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	xmlns:cmContractRate="tractIncContractManager.contract.rate.*">
+	
+	<mx:Script>
+		<![CDATA[
+		]]>
+	</mx:Script>
+
+	<cmContractRate:RateController id="controller" view="{this}"/>
+	
+    <mx:Label text="Countable rates"/>
+    <mx:DataGrid id="countableDataGrid" width="100%" height="100%"
+             editable="true" itemEditEnd="controller.itemOnEditEndHandler(event)">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Item Type" width="85" labelFunction="controller.itemTypeLabelFunction" editable="false"/>
+            <mx:DataGridColumn headerText="Rate" width="85" dataField="Rate"/>
+        </mx:columns>
+    </mx:DataGrid>
+    <mx:Label text="Not to exceed rates"/>
+    <mx:DataGrid id="uncountableDataGrid" width="100%" height="100%"
+             editable="true" itemEditEnd="controller.itemOnEditEndHandler(event)">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Item Type" width="85" labelFunction="controller.itemTypeLabelFunction" editable="false"/>
+            <mx:DataGridColumn headerText="Rate" width="85" dataField="Rate"/>
+        </mx:columns>
+    </mx:DataGrid>
+    
+</mx:VBox>

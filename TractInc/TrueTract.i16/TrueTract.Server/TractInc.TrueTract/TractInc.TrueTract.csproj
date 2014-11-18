@@ -1,0 +1,96 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{733D1062-A55A-472C-9DBA-22BCF31CC63B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.TrueTract</RootNamespace>
+    <AssemblyName>TractInc.TrueTract</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=4.0.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\GroupItemsDataMapper.cs" />
+    <Compile Include="Data\GroupUsersDataMapper.cs" />
+    <Compile Include="Data\GroupDataMapper.cs" />
+    <Compile Include="Data\ModuleDataMapper.cs" />
+    <Compile Include="Data\ParticipantDataMapper.cs" />
+    <Compile Include="Data\RoleDataMapper.cs" />
+    <Compile Include="Entity\DateRange.cs" />
+    <Compile Include="Entity\DocumentFilterInfo.cs" />
+    <Compile Include="Entity\RoleInfo.cs" />
+    <Compile Include="Data\UserRoleDataMapper.cs" />
+    <Compile Include="Entity\ModuleInfo.cs" />
+    <Compile Include="Entity\UserGroupInfo.cs" />
+    <Compile Include="Entity\UserRoleInfo.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="TrueTractService.cs" />
+    <Compile Include="Entity\ParticipantInfo.cs" />
+    <Compile Include="TractConverter.cs" />
+    <Compile Include="Data\DocDataMapper.cs" />
+    <Compile Include="Data\TractTODataMapper.cs" />
+    <Compile Include="Data\TractCallDataMapper.cs" />
+    <Compile Include="Data\TractDataMapper.cs" />
+    <Compile Include="Data\SQLHelper.cs" />
+    <Compile Include="Data\UserDataMapper.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="Entity\DocumentInfo.cs" />
+    <Compile Include="Entity\UserInfo.cs" />
+    <Compile Include="Tract.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="Entity\TractInfo.cs" />
+    <Compile Include="Entity\TractCallInfo.cs" />
+    <Compile Include="Entity\TractTextObjectInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="WebConfig.part.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Entity\app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TractInc.Walt\TractInc.Walt.csproj">
+      <Project>{25ED133F-6D67-4E90-8130-DAEBD7773A73}</Project>
+      <Name>TractInc.Walt</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

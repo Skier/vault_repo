@@ -1,0 +1,134 @@
+﻿<#@ template language="C#" hostspecific="True" debug="True"#>
+<#@ include file="GenerateServiceClasses.tt" #>
+<#@ include file="GenerateIDSResource.tt" #>
+<#@ include file="Save.tt" #>
+<#@ include file="HelperFunctions.tt" #>
+<#@ include file="GenerateReportClasses.tt" #>
+<#@ assembly name = "System.Core" #>
+<#@ assembly name = "System.Xml" #>
+<#@ assembly name = "System.Data" #>
+<#@ import namespace = "System.Data" #>
+<#@ import namespace = "System" #>
+<#@ import namespace = "System.Xml" #>
+<#@ import namespace = "System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Diagnostics" #>
+
+<#  //read the model into memory
+			//Debugger.Break();
+			
+			List<string> resourceList = new List<string>();
+
+            string xmlMetaDataFilePath = Path.GetDirectoryName(this.Host.TemplateFile) + "\\EntityDistribution.xml";
+
+			XmlDocument xDoc = new XmlDocument();
+			
+			xDoc.Load(xmlMetaDataFilePath);
+			
+			string xpathForPaltforms = string.Format("/Model/Platforms/Platform");
+			XmlNodeList platformNodeForSDK = xDoc.SelectNodes(xpathForPaltforms);
+//
+//			//Create Enum for Platform values
+//			foreach(XmlNode paltform in platformNodeForSDK)
+//			{
+//				
+//			}
+			//Read the Classes node and create service classes for objects...
+			string xpathForNamespace = string.Format("/Model/Classes/Namespace");
+			XmlNodeList namespaceNodes = xDoc.SelectNodes(xpathForNamespace);
+			
+            foreach (XmlNode classNameSpace in namespaceNodes)
+            {
+				string namespaceValue = classNameSpace.Attributes["Name"].Value;
+				if(namespaceValue == "Common" || namespaceValue == "QBO")
+				{
+					if(!resourceList.Exists(ContainsUserString))
+					{
+						resourceList.Add("user");
+					}
+				}
+				
+				string xpathForClasses = string.Format("Class");
+
+				XmlNodeList classNodes = classNameSpace.SelectNodes(xpathForClasses);
+				
+               				
+                foreach (XmlNode aClass in classNodes)
+                {
+					
+					string className = aClass.Attributes["Name"].Value;
+					
+					Dictionary<string, List<string>> operationList = GetOperationListForClass(aClass);
+
+					resourceList.Add(className.ToLower());
+					
+					if(namespaceValue == "Common" || namespaceValue == "QBO")
+					{
+						resourceList.Add(className.ToLower() + "s");
+					}
+					
+					string xpathForFilters = string.Format("Query/Filters/Filter");
+					XmlNodeList filterNodes = aClass.SelectNodes(xpathForFilters);
+					
+					DataTable filterMetaData = GetFilters(filterNodes);
+					
+					GenerateServiceClasses(className, operationList,namespaceValue, filterMetaData);
+					
+					string outputFileName = className + "Service.cs";
+					SaveOutput(outputFileName);
+					ModifyProjectFile(outputFileName);
+                }
+            }
+			
+			//Debugger.Break();
+			//Read the reports node and create Report service classes...
+			xpathForNamespace = string.Format("/Model/Reports/Namespace");
+			namespaceNodes = xDoc.SelectNodes(xpathForNamespace);
+			
+            foreach (XmlNode reportInNameSpace in namespaceNodes)
+            {
+				string namespaceValue = reportInNameSpace.Attributes["Name"].Value;
+				
+				string xpathForClasses = string.Format("Report");
+
+				XmlNodeList reportNodes = reportInNameSpace.SelectNodes(xpathForClasses);
+		
+                foreach (XmlNode report in reportNodes)
+                {
+					
+					string reportName = report.Attributes["Name"].Value;
+					
+					Dictionary<string, List<string>> operationList = GetOperationListForClass(report);
+					if(reportName == "CustomTxnDetail")
+					{
+						resourceList.Add("advancedreport");
+					}
+					else
+						resourceList.Add(reportName.ToLower());
+					
+					string xpathForFilters = string.Format("Query/Filters/Filter");
+					XmlNodeList filterNodes = report.SelectNodes(xpathForFilters);
+					
+					DataTable filterMetaData = GetFilters(filterNodes);
+					
+					GenerateReportClasses(reportName, operationList,namespaceValue, filterMetaData);
+					string outputFileName = reportName + "Service.cs";
+					SaveOutput(outputFileName);
+					ModifyProjectFile(outputFileName);
+                }
+
+				
+			}
+			//Create the IDSResource Enum class.
+			resourceList.Add("none");
+
+			if(!resourceList.Exists(ContainsCompanyString))
+			{
+				resourceList.Add("company");
+			}
+			GenerateIDSResourceClass(resourceList);
+			SaveOutput("IDSResource.cs");
+			ModifyProjectFile("IDSResource.cs");
+
+	
+#>					

@@ -1,0 +1,108 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Domain.TrackingPhone
+
+@{
+    ViewBag.Title = "Details";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+<script type="text/javascript">
+    function confirmSubmit() {
+        var agree = confirm("Are you sure you want to release phone number?\nYou cannot undo this action.");
+        if (agree)
+            return true;
+        else
+            return false;
+    }
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      @if (!currentUser.IsAccounter())
+      {
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Edit", "Edit", "Phones", new { id = Model.Id }, new { @class = "button primary" })</div>
+      }
+      <h1>Tracking Phone [@Model.FriendlyNumber]</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Phone Number</td>
+              <td><b>@Model.PhoneNumber</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Friendly Number</td>
+              <td>@Model.FriendlyNumber</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Redirect Number</td>
+              <td>@Model.RedirectPhoneNumber</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Description</td>
+              <td>@Model.Description</td>
+            </tr>
+             
+            <tr>
+              <td style="text-align:right;">Assigned to campaign</td>
+                @if (Model.AssignedCampaign != null)
+                {
+                <td>@Html.ActionLink(Model.AssignedCampaign.CampaignName, "Details", new { controller = "Campaigns", id = Model.AssignedCampaign.Id })</td>
+                }
+                else
+                {
+                <td></td>
+                }
+            </tr>
+            
+            <tr>
+              <td style="text-align:right;">Allow Caller ID Lookup</td>
+              <td>@if (Model.CallerIdLookup)
+                  {
+                      <span style="color: #0C0; font-weight:bold;">Yes</span>
+                  }
+                  else
+                  {
+                      <span style="color: #C00; font-weight:bold;">No</span>
+                  }</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Transcribe Voice to Text</td>
+              <td>@if (Model.TranscribeCalls)
+                  {
+                      <span style="color: #0C0; font-weight:bold;">Yes</span>
+                  }
+                  else
+                  {
+                      <span style="color: #C00; font-weight:bold;">No</span>
+                  }</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">&nbsp;</td>
+              <td style="text-align:right;">
+              @if (!currentUser.IsAccounter())
+              {
+                  if (Model.IsSuspended)
+                  {
+                    <span>@Html.ActionLink("Activate Number", "Activate", new { controller = "Phones", id = Model.Id }, new { @class = "button" })</span>
+                  }
+                  else
+                  {
+                    <span>@Html.ActionLink("Suspend Number", "Suspend", new { controller = "Phones", id = Model.Id }, new { @class = "button" })</span>
+                  }
+                <span>@Html.ActionLink("Release Number", "Release", new { controller = "Phones", id = Model.Id }, new { @class = "button", @onclick = "return confirmSubmit()" })</span>
+              }
+              else
+              {
+                  <span>&nbsp;</span>
+              }
+              </td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>

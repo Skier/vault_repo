@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:controls="com.llsvc.controls.*"
+	width="100%" verticalAlign="middle"
+ 	borderColor="#cccccc" borderStyle="solid"
+ 	dataChange="dataChangeHandler()"
+	enabled="{!(BaseLayer(data).currentZoomLevel &gt; BaseLayer(data).maxZoomLevel || BaseLayer(data).currentZoomLevel &lt; BaseLayer(data).minZoomLevel)}">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.SliderEvent;
+			import mx.events.ListEvent;
+			import com.llsvc.maps.layers.BaseLayer;
+
+            [Embed(source="assets/icons16/arrow_right.png")]
+            [Bindable]
+            private var imgRight:Class;
+            
+            [Embed(source="assets/icons16/arrow_down.png")]
+            [Bindable]
+            private var imgDown:Class;
+            
+            [Embed(source="assets/icons16/bullet_green.png")]
+            [Bindable]
+            private var imgGreen:Class;
+            
+            [Embed(source="assets/icons16/bullet_red.png")]
+            [Bindable]
+            private var imgRed:Class;
+            
+            [Embed(source="assets/icons16/bullet_yellow.png")]
+            [Bindable]
+            private var imgYellow:Class;
+            
+            [Bindable]
+            private var isExpanded:Boolean = false;
+            
+            private function comboBlendModeChangeHandler(event:ListEvent):void 
+            {
+            	BaseLayer(data).blendMode = comboBlendMode.selectedLabel;
+            }
+            
+            private function sliderAlphaChangeHandler(event:SliderEvent):void 
+            {
+            	BaseLayer(data).alpha = sliderAlpha.value;
+            }
+            
+            private function updateFields():void 
+            {
+            	if (BaseLayer(data) == null)
+            		return;
+            		
+            	cbVisible.selected = BaseLayer(data).visible;
+            	lblLayerName.text = BaseLayer(data).layerGroup + ":" + BaseLayer(data).layerName; 
+            	sliderAlpha.value = BaseLayer(data).alpha;
+            	
+            	//isExpanded = false;
+            	
+            	var array:ArrayCollection = comboBlendMode.dataProvider as ArrayCollection;
+            	for (var i:int = 0; i < array.length; i++) 
+            	{
+            		if ( array[i] == BaseLayer(data).blendMode) {
+            			comboBlendMode.selectedIndex = i;
+            			return;
+            		}
+            	} 
+            }
+            
+            private function dataChangeHandler():void 
+            {
+            	updateFields();
+            } 
+            
+            private function switchState():void 
+            {
+            	this.isExpanded = !this.isExpanded;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" verticalAlign="middle">
+		<mx:Image source="{isExpanded ? imgDown : imgRight}" click="switchState()"/>
+
+		<mx:CheckBox id="cbVisible" width="20" height="20" 
+			change="BaseLayer(data).visible = cbVisible.selected"/>
+			
+		<mx:Label id="lblLayerName" width="100%"/>
+
+		<controls:Spinner size="20" tickColor="#ff0000" visible="{BaseLayer(data).isLoading}"/>
+	
+	</mx:HBox>
+
+	<mx:HBox width="100%" backgroundColor="#ffffdd" backgroundAlpha="0.3" 
+		visible="{isExpanded}" includeInLayout="{isExpanded}"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		>
+		<mx:Spacer width="30"/>
+		
+		<controls:ComboBox id="comboBlendMode" 
+			dataProvider="{['add','alpha','darken','difference','erase','hardlight','invert','layer','lighten','multiply','normal','overlay','screen','subtract']}"
+			change="comboBlendModeChangeHandler(event)"/>
+		
+		<mx:HSlider id="sliderAlpha" width="70" minimum="0" maximum="1" liveDragging="true" 
+			 change="sliderAlphaChangeHandler(event)"/>
+
+		<mx:Button width="20" height="20" 
+			visible="{!BaseLayer(data).isLoading}" 
+			icon="@Embed(source='assets/icons16/arrow_refresh_small.png')"
+			enabled="{BaseLayer(data).currentUrl != null}" 
+			click="BaseLayer(data).reload()"/>
+	</mx:HBox>
+</mx:VBox>

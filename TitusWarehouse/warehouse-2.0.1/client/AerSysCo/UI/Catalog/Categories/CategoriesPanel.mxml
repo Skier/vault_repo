@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:sephiroth="http://www.sephiroth.it/2006/mxml"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="categoryOrModelSelected", type="AerSysCo.Events.CategoryEvent")]
+    </mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.Events.CategoryEvent;
+			import AerSysCo.UI.Catalog.Categories.CategoryTreeDataDescriptor;
+			import AerSysCo.UI.Models.CategoryUI;
+			import mx.controls.Alert;
+			import mx.events.PropertyChangeEvent;
+			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] public var rootCategory:CategoryUI;
+			
+			public function collapseAllCategories():void 
+			{
+				var category:CategoryUI = ArrayCollection(treeCategories.dataProvider)[0] as CategoryUI;
+				for each (var obj:Object in category.children) 
+				{
+					treeCategories.expandChildrenOf(obj, false);
+				}
+				treeCategories.selectedIndex = -1;
+			}
+		
+			private function onCreate():void 
+			{
+				if (rootCategory == null) 
+				{
+					rootCategory = new CategoryUI();
+					rootCategory.name = "loading categories";
+				}
+				treeCategories.dataProvider = rootCategory;
+			}
+
+			private function treeCategoriesClickHandler(e:MouseEvent):void 
+			{
+				return;
+				var item:Object = treeCategories.selectedItem;
+				var isOpen:Boolean = treeCategories.isItemOpen(item);
+				treeCategories.expandChildrenOf(item, false);
+				treeCategories.expandItem(item, !isOpen);
+			}
+			
+			private function treeCategoriesItemClickHandler(e:ListEvent):void 
+			{
+				var item:Object = treeCategories.selectedItem;
+				var isOpen:Boolean = treeCategories.isItemOpen(item);
+				treeCategories.expandChildrenOf(item, false);
+				treeCategories.expandItem(item, !isOpen);
+			}
+			
+			private function treeCategoriesChangeHandler(e:ListEvent):void 
+			{
+				var initiator:Object = treeCategories.selectedItem;
+
+				var event:CategoryEvent = new CategoryEvent(CategoryEvent.CATEGORY_OR_MODEL_SELECTED, initiator);
+				dispatchEvent(event);
+			}
+			
+			private function treeCategoriesItemOpenHandler(e:TreeEvent):void 
+			{
+				treeCategories.selectedItem = e.item;
+				treeCategories.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+			}
+			
+			private function treeCategoriesItemCloseHandler(e:TreeEvent):void 
+			{
+				treeCategories.selectedItem = e.item;
+				treeCategories.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Tree
+        x="10" 
+        y="10" 
+        width="100%" 
+        height="100%" 
+        id="treeCategories"
+        dataDescriptor="{new CategoryTreeDataDescriptor()}"
+        labelField="name" 
+        liveScrolling="true"
+        showRoot="false"
+        dataProvider="{rootCategory}"
+        openItems="{rootCategory}"
+        styleName="categoriesTree"
+        click="treeCategoriesClickHandler(event)"
+        itemClick="treeCategoriesItemClickHandler(event)"
+        change="treeCategoriesChangeHandler(event)"
+        itemOpen="treeCategoriesItemOpenHandler(event)"
+        itemClose="treeCategoriesItemCloseHandler(event)"/>
+</mx:Panel>

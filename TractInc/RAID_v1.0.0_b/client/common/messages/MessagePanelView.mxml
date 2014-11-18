@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:components="components.*">
+
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.ActiveRecords;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import App.Domain.User;
+			import App.Domain.Message;
+			
+			[Bindable]
+			private var controller:MessagePanelController = new MessagePanelController(this as MessagePanelView);
+			
+			public function init(user:User):void 
+			{
+				controller.init(user);
+			}
+			
+			private function setLabels(message:Message, column:DataGridColumn):String 
+			{
+            	if (column.dataField == "from") {
+            		return message.RelatedUser1.Login;
+            	} else if (column.dataField == "to") {
+            		return message.RelatedUser.Login;
+            	} else if (column.dataField == "sent") {
+            		return message.Posted.toDateString();
+            	} else if (column.dataField == "subject") {
+            		return message.Subject;
+            	} else {
+            		return "";
+            	}
+			}
+			
+            private function selectRowColor(message:Message, color:uint):uint 
+            {
+            	if (!message.IsRead) {
+            		return 0xFFFFCC;
+            	} else {
+            		return color;
+            	}
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsMessages" width="100%" height="100%">
+	
+		<mx:TabNavigator id="msgLists" width="100%" height="100%">
+			
+			<mx:VBox id="msgInbox" label="Inbox" width="100%" height="100%">
+				
+			    <mx:HDividedBox width="100%" height="100%">
+			        
+			        <components:ColoredDataGrid id="dgInboxMessages" 
+			        	dataProvider="{controller.model.inboxMessages}" 
+			        	width="100%" height="100%" minWidth="400"
+			        	rowColorFunction="selectRowColor"
+			        	change="controller.onDgMessagesChanged()"
+			        	>
+			            <components:columns>
+			                <mx:DataGridColumn headerText="From" width="120" dataField="from" labelFunction="setLabels"/>
+			                <mx:DataGridColumn headerText="Sent" width="120" dataField="sent" labelFunction="setLabels"/>
+			                <mx:DataGridColumn headerText="Subject" dataField="subject" labelFunction="setLabels"/>
+			            </components:columns>
+			        </components:ColoredDataGrid>
+			        
+			        <mx:TextArea width="100%" height="100%" text="{Message(dgInboxMessages.selectedItem).Body}" editable="false"/>
+			        
+			    </mx:HDividedBox>
+			    
+		    	<mx:HBox width="100%" horizontalAlign="right"
+		    		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		    		backgroundColor="#eeeeee" borderColor="#999999" cornerRadius="2">
+		    		
+		    		<mx:Button label="Check messages"
+		    			click="controller.loadMessages()"/>
+	
+		    		<mx:Spacer width="100%"/>
+	
+		    		<mx:Button label="Delete" 
+		    			enabled="{dgInboxMessages.selectedItem != null}"
+		    			click="controller.onClickDelete()"/>
+		    		<mx:Button label="Create New"
+		    			click="controller.onClickCreate()"/>
+		    		
+		    	</mx:HBox>
+		    	
+			</mx:VBox>
+	
+			<mx:VBox id="msgSent" label="Sent" width="100%" height="100%">
+				
+			    <mx:HDividedBox width="100%" height="100%">
+			        
+			        <components:ColoredDataGrid id="dgSentMessages" 
+			        	dataProvider="{controller.model.sentMessages}" 
+			        	width="100%" height="100%" minWidth="400"
+			        	rowColorFunction="selectRowColor"
+			        	>
+			            <components:columns>
+			                <mx:DataGridColumn headerText="From" width="100" dataField="from" labelFunction="setLabels"/>
+			                <mx:DataGridColumn headerText="To" width="100" dataField="to" labelFunction="setLabels"/>
+			                <mx:DataGridColumn headerText="Sent" width="120" dataField="sent" labelFunction="setLabels"/>
+			                <mx:DataGridColumn headerText="Subject" dataField="subject" labelFunction="setLabels"/>
+			            </components:columns>
+			        </components:ColoredDataGrid>
+			        
+			        <mx:TextArea width="100%" height="100%" text="{Message(dgSentMessages.selectedItem).Body}" editable="false"/>
+			        
+			    </mx:HDividedBox>
+			    
+			</mx:VBox>
+	
+		</mx:TabNavigator>
+
+	    <mx:VBox id="msgDetail" width="100%" height="100%">
+	    	
+	    	<mx:HBox width="100%">
+	    		<mx:Label text=" To:"/>
+	    		<mx:ComboBox id="cbUsers" width="150" dataProvider="{ActiveRecords.User.findAll()}" labelField="Login"/>
+	    		<mx:Label text=" Subject:"/>
+	    		<mx:TextInput id="txtSubject" width="100%" maxChars="250"
+	    			text="{controller.model.currentMessage.Subject}"/>
+	    		
+	    	</mx:HBox>
+	    	
+    		<mx:Label text="Message:"/>
+	    	<mx:TextArea id="txtBody" width="100%" height="100%" maxChars="1000"
+	    		text="{controller.model.currentMessage.Body}"/>
+	    	
+	    	<mx:HBox width="100%" horizontalAlign="right"
+	    		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	    		backgroundColor="#eeeeee" borderColor="#999999" cornerRadius="2">
+	    		
+	    		<mx:Button label="Send" 
+	    			enabled="{cbUsers.selectedItem != null &amp;&amp; txtSubject.text.length > 0 &amp;&amp; txtBody.text.length > 0}"
+	    			click="controller.onClickSend()"/>
+	    		<mx:Button label="Cancel"
+	    			click="controller.onClickCancel()"/>
+	    		
+	    	</mx:HBox>
+	    	
+	    </mx:VBox>
+	
+	</mx:ViewStack>
+
+</mx:Panel>

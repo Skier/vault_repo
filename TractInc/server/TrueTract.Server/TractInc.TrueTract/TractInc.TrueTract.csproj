@@ -1,0 +1,118 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{733D1062-A55A-472C-9DBA-22BCF31CC63B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.TrueTract</RootNamespace>
+    <AssemblyName>TractInc.TrueTract</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=4.0.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="weborb, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Inetpub\wwwroot\weborb\bin\weborb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\ClientDataMapper.cs" />
+    <Compile Include="Data\AddressDataMapper.cs" />
+    <Compile Include="Data\DocumentLeaseDataMapper.cs" />
+    <Compile Include="Data\ProjectTabDocumentTractDataMapper.cs" />
+    <Compile Include="Data\DocumentReferenceDataMapper.cs" />
+    <Compile Include="Data\ProjectTabContactDataMapper.cs" />
+    <Compile Include="Data\ProjectTabDocumentDataMapper.cs" />
+    <Compile Include="Data\ProjectAttachmentDataMapper.cs" />
+    <Compile Include="Data\FileDataMapper.cs" />
+    <Compile Include="Data\ProjectTabDataMapper.cs" />
+    <Compile Include="Data\ProjectDataMapper.cs" />
+    <Compile Include="Data\DocumentAttachmentDataMapper.cs" />
+    <Compile Include="Data\GroupItemDataMapper.cs" />
+    <Compile Include="Data\GroupUserDataMapper.cs" />
+    <Compile Include="Data\GroupDataMapper.cs" />
+    <Compile Include="Data\ParticipantDataMapper.cs" />
+    <Compile Include="Data\SearchItemDataMapper.cs" />
+    <Compile Include="Entity\ClientInfo.cs" />
+    <Compile Include="Entity\AddressInfo.cs" />
+    <Compile Include="Entity\DocumentLeaseInfo.cs" />
+    <Compile Include="Entity\ProjectTabDocumentTractInfo.cs" />
+    <Compile Include="Entity\DocumentReferenceInfo.cs" />
+    <Compile Include="Entity\ProjectTabContactInfo.cs" />
+    <Compile Include="Entity\ProjectAttachmentInfo.cs" />
+    <Compile Include="Entity\FileInfo.cs" />
+    <Compile Include="Entity\ProjectInfo.cs" />
+    <Compile Include="Entity\ProjectTabDocumentInfo.cs" />
+    <Compile Include="Entity\ProjectTabInfo.cs" />
+    <Compile Include="Entity\SearchItemInfo.cs" />
+    <Compile Include="Entity\TractsFilterInfo.cs" />
+    <Compile Include="Entity\DateRange.cs" />
+    <Compile Include="Entity\DocumentAttachmentInfo.cs" />
+    <Compile Include="Entity\DocumentsFilterInfo.cs" />
+    <Compile Include="Entity\RoleInfo.cs" />
+    <Compile Include="Entity\ModuleInfo.cs" />
+    <Compile Include="Entity\UserGroupInfo.cs" />
+    <Compile Include="Entity\UserRoleInfo.cs" />
+    <Compile Include="Entity\XmlString.cs" />
+    <Compile Include="ExcelConverter.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="TrueTractConfig.cs" />
+    <Compile Include="TrueTractService.cs" />
+    <Compile Include="Entity\ParticipantInfo.cs" />
+    <Compile Include="TractConverter.cs" />
+    <Compile Include="Data\DocDataMapper.cs" />
+    <Compile Include="Data\TractTODataMapper.cs" />
+    <Compile Include="Data\TractCallDataMapper.cs" />
+    <Compile Include="Data\TractDataMapper.cs" />
+    <Compile Include="Data\SQLHelper.cs" />
+    <Compile Include="Data\UserDataMapper.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="Entity\DocumentInfo.cs" />
+    <Compile Include="Entity\UserInfo.cs" />
+    <Compile Include="Tract.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="Entity\TractInfo.cs" />
+    <Compile Include="Entity\TractCallInfo.cs" />
+    <Compile Include="Entity\TractTextObjectInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="WebConfig.part.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

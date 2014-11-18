@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentType;
+			import mx.managers.PopUpManager;
+			
+            public static function open(parent:DisplayObject, modal:Boolean):DocumentEditView
+            {
+                var popup:DocumentEditView = new DocumentEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private var _documentType:DocumentType;
+            public function get documentType():DocumentType { return _documentType; }
+            public function set documentType(value:DocumentType):void 
+            {
+            	_documentType = value;
+            	updateUI();
+            }
+            
+            private function updateUI():void 
+            {
+            
+            }
+
+		]]>
+	</mx:Script>
+	
+	
+
+</mx:TitleWindow>

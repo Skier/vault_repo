@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()" creationComplete="onCreate()" xmlns:voice="com.affilia.voice.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.charts.series.ColumnSet;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.Stroke;
+			import mx.graphics.SolidColor;
+			import com.affilia.util.ColorArray;
+			import mx.charts.series.ColumnSeries;
+			import mx.events.CollectionEvent;
+			
+			private static const COLUMN_LEAD_SOURCE:String = "Lead Source";
+			private static const COLUMN_CUSTOMER:String = "Customer";
+			private static const COLUMN_DATE_CREATED:String = "Created";
+			private static const COLUMN_LEAD_STATUS:String = "Lead Status";
+			private static const COLUMN_INVOICE_STATUS:String = "Invoice Status";
+			private static const COLUMN_INVOICE_AMOUNT:String = "Closed Amount";
+			
+			private var controller:DashboardLeadsController;
+			
+			[Bindable] 
+			private var model:DashboardLeadsModel;
+			
+			public function set startDate(value:Date):void 
+			{
+				model.startDate = value;
+			}
+			
+			public function set endDate(value:Date):void 
+			{
+				model.endDate = value;
+			}
+			
+			private function onInit():void 
+			{
+				controller = new DashboardLeadsController(this);
+				model = DashboardLeadsModel.getInstance();
+			}
+			
+			private function onCreate():void 
+			{
+				ChangeWatcher.watch(dgLeads, "selectedItem", onSelectLead);
+			}
+			
+			private function onSelectLead(e:*):void 
+			{
+				voicePlayer.stopPlaying();
+				
+				var lead:Lead = dgLeads.selectedItem as Lead;
+				if (lead == null || lead.RelatedPhoneCall == null || lead.RelatedPhoneCall.RecordingUrl == null)
+				{
+					voicePlayer.visible = voicePlayer.includeInLayout = false;
+					voicePlayer.voiceFileUrl = null;
+				} else 
+				{
+					voicePlayer.visible = voicePlayer.includeInLayout = true;
+					voicePlayer.voiceFileUrl = lead.RelatedPhoneCall.RecordingUrl + ".mp3";
+				}
+			}
+			
+			public function setLeads(value:ArrayCollection):void 
+			{
+				controller.setLeads(value);
+				model.leads = value;
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is Lead) 
+				{
+					switch (column.headerText) 
+					{
+						case COLUMN_LEAD_SOURCE :
+							var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(Lead(item).LeadSourceId) as LeadSource;
+							if (leadSource)
+								return leadSource.Name;
+							else 
+								return "[undefined]";
+						
+						case COLUMN_CUSTOMER :
+							return (Lead(item).FirstName + " " + Lead(item).LastName);
+						
+						case COLUMN_DATE_CREATED :
+							return DateUtil.getDateTimeStr(Lead(item).DateCreated);
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <!-- Define custom colors for use as fills. -->
+    <mx:SolidColor id="sc1" color="yellow" alpha=".8"/>
+    <mx:SolidColor id="sc2" color="0xCCCCCC" alpha=".6"/>
+    <mx:SolidColor id="sc3" color="0xFFCC66" alpha=".6"/>
+
+    <!-- Define custom Strokes for the columns. -->
+    <mx:Stroke id="s1" color="yellow" weight="1"/>
+    <mx:Stroke id="s2" color="0xCCCCCC" weight="1"/>
+    <mx:Stroke id="s3" color="0xFFCC66" weight="1"/>
+
+	<mx:SeriesInterpolate duration="1000" id="seriesInterpolate"/>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:VBox label="Leads Graph" width="100%" height="100%">
+		    <mx:AreaChart id="columnChart" 
+		    	showDataTips="true" width="100%" height="100%" dataProvider="{model.dailyCollection}">
+		        <mx:horizontalAxis>
+		            <mx:CategoryAxis id="dayAxis" title="Date" categoryField="dateStr"/>
+		        </mx:horizontalAxis>
+		        <mx:verticalAxis>
+		            <mx:LinearAxis id="countAxis" title="Leads" autoAdjust="true" interval="1"/>
+		        </mx:verticalAxis>
+		        <mx:horizontalAxisRenderers>
+		            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" showLine="true" axisTitleStyleName="chartTitle" axis="{dayAxis}"/>
+		        </mx:horizontalAxisRenderers>
+		        <mx:verticalAxisRenderers>
+		            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" verticalAxisTitleAlignment="vertical"
+		                             showLine="true" axisTitleStyleName="chartTitle" axis="{countAxis}"/>
+		        </mx:verticalAxisRenderers>
+
+		        <mx:series>
+	                <mx:AreaSeries xField="dateStr" yField="total" displayName="Total Leads"
+	                    showDataEffect="{seriesInterpolate}" fill="{sc2}" stroke="{s2}"/>
+	                <mx:AreaSeries xField="dateStr" yField="converted" displayName="Converted Leads"
+	                    showDataEffect="{seriesInterpolate}" fill="{sc3}" stroke="{s3}"/>
+		        </mx:series>
+		
+		        <mx:backgroundElements> 
+		        	<mx:Grid styleName="myLineChart" borderStyle="solid"/>
+		            <mx:GridLines horizontalShowOrigin="true" verticalShowOrigin="false" y="0" horizontalStroke="{new Stroke(0x666666,1,1)}"/>
+		        </mx:backgroundElements>
+		    </mx:AreaChart>
+		</mx:VBox>
+
+		<mx:VBox label="Leads Grid" width="100%" height="100%">
+			<mx:DataGrid id="dgLeads" dataProvider="{model.leads}" width="100%" height="100%" minWidth="300"
+				sortableColumns="false" draggableColumns="false" editable="false">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.leadCentral.lead.LeadTransportIR"/>
+					<mx:DataGridColumn headerText="{COLUMN_LEAD_SOURCE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="200" minWidth="50"/>
+					<mx:DataGridColumn headerText="{COLUMN_CUSTOMER}" itemRenderer="mx.controls.Label" labelFunction="getLabel"/>
+					<mx:DataGridColumn headerText="{COLUMN_DATE_CREATED}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="150" minWidth="50"/>
+					<mx:DataGridColumn headerText="{COLUMN_LEAD_STATUS}" textAlign="center" width="100" minWidth="50" itemRenderer="com.dalworth.leadCentral.lead.LeadStatusIR"/>
+					<mx:DataGridColumn headerText="{COLUMN_INVOICE_AMOUNT}" textAlign="center" width="100" minWidth="120" itemRenderer="com.dalworth.leadCentral.lead.InvoiceAmountIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+
+			<voice:VoicePlayer id="voicePlayer" width="100%" layout="horizontal" showHeader="true" visible="false" includeInLayout="false"/>
+		</mx:VBox>
+	</mx:VBox>
+
+	<mx:VBox width="100%" height="100%">
+
+	</mx:VBox>
+</mx:Canvas>

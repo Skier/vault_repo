@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="622" height="516" xmlns:steps="testLayouts.steps.*">
+
+	<mx:ViewStack id="vsStep" width="100%" height="100%" creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<mx:LinkButton label="Video" click="vsStep.selectedIndex = 1" x="555" y="10" fontSize="12" color="#003399"/>
+			<mx:Label x="10" y="10" text="Phone Rules and Workflows Review" fontSize="14" fontWeight="bold"/>
+			<mx:DataGrid x="10" y="73" width="207" height="247" fontSize="12">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Phone Number" dataField="col1" width="150"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:DataGrid x="225" y="73" width="387" height="215" fontSize="12">
+				<mx:columns>
+					<mx:DataGridColumn headerText="From Phone" dataField="col1"/>
+					<mx:DataGridColumn headerText="Days" dataField="col2" width="80"/>
+					<mx:DataGridColumn headerText="Time" dataField="col3" width="80"/>
+					<mx:DataGridColumn headerText="Workflow" dataField="col3" width="90"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HRule x="10" y="328" width="602" strokeWidth="1"/>
+			<mx:Label x="10" y="337" text="Phone Workflows" fontSize="12"/>
+			<mx:TabNavigator x="10" y="365" width="602" height="141" historyManagementEnabled="false" paddingTop="0" fontSize="12">
+				<mx:VBox width="100%" height="100%" label="Voice mail">
+					<mx:Form width="100%" height="100%">
+						<mx:FormItem label="Welcome message:" fontSize="12" width="100%">
+							<mx:TextInput text="Welcome to Dalworth restoration" width="100%"/>
+						</mx:FormItem>
+						<mx:FormItem label="Message:" fontSize="12" width="100%">
+							<mx:TextInput text="Please leave your message after the tone" width="100%"/>
+						</mx:FormItem>
+					</mx:Form>
+				</mx:VBox>
+				<mx:VBox width="100%" height="100%" label="Redirect call">
+					<mx:Form width="100%" height="100%">
+						<mx:FormItem label="Redirect phone number:" fontSize="12" width="100%">
+							<mx:TextInput text="+12143354143"/>
+						</mx:FormItem>
+					</mx:Form>
+				</mx:VBox>
+				<mx:VBox width="100%" height="100%" label="Queue Calls">
+					<mx:Form width="100%" height="100%">
+						<mx:FormItem label="Message 1:" fontSize="12" width="100%">
+							<mx:TextInput text="Welcome to Dalworth restoration" width="100%"/>
+						</mx:FormItem>
+						<mx:FormItem label="Message 2:" fontSize="12" width="100%">
+							<mx:TextInput text="Please wait for dispatcher" width="100%"/>
+						</mx:FormItem>
+						<mx:FormItem label="Sound URL:" fontSize="12" width="100%">
+							<mx:TextInput text="chopin.mp3" width="100%"/>
+						</mx:FormItem>
+					</mx:Form>
+				</mx:VBox>
+			</mx:TabNavigator>
+			<mx:Button x="528" y="296" label="Add Rule" fontSize="12"/>
+			<mx:HBox x="10" y="41" width="602" verticalAlign="middle">
+				<mx:Label text="Phone Numbers Rules" fontSize="12"/>
+				<mx:Button label="Purchase New Phone Number" fontSize="12"/>
+				<mx:Spacer width="100%" height="20"/>
+				<mx:Label text="Your Balance:" fontSize="13" textAlign="center" fontWeight="normal"/>
+				<mx:Label textAlign="center" fontSize="16" fontWeight="bold" text="$34.56" color="#752121"/>
+			</mx:HBox>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<steps:VideoTutorial label="Video Tutorial" width="622" height="516"/>
+			<mx:LinkButton label="Back to Wizard" click="vsStep.selectedIndex = 0" fontSize="12" color="#003399" right="10" top="10"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+</mx:Canvas>

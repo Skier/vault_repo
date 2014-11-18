@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsEndOfDayReport" targetNamespace="http://tempuri.org/dsEndOfDayReport.xsd"
+	elementFormDefault="qualified" attributeFormDefault="qualified" xmlns="http://tempuri.org/dsEndOfDayReport.xsd"
+	xmlns:mstns="http://tempuri.org/dsEndOfDayReport.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="dsEndOfDayReport" msdata:IsDataSet="true">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="EndOfDayReport">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="StoreCode" type="xs:string" minOccurs="0" />
+							<xs:element name="Date" type="xs:date" minOccurs="0" />
+							<xs:element name="LocalRevenue" type="xs:decimal" minOccurs="0" />
+							<xs:element name="OtherRevenue" type="xs:decimal" minOccurs="0" />
+							<xs:element name="LocalCommission" type="xs:decimal" minOccurs="0" />
+							<xs:element name="OtherCommission" type="xs:decimal" minOccurs="0" />
+							<xs:element name="CreditReceipts" type="xs:decimal" minOccurs="0" />
+							<xs:element name="OtherReceipts" type="xs:decimal" minOccurs="0" />
+							<xs:element name="ControlNumber" type="xs:int" minOccurs="0" />
+							<xs:element name="StoreNumber" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:BarCode="BarCode.*" creationComplete="onCreationComplete()">
+<mx:Script>
+    <![CDATA[
+        import mx.managers.PopUpManager;
+        import mx.containers.TitleWindow;
+    
+        import mx.managers.CursorManager;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.Responder;
+        import mx.controls.Alert;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.validators.Validator;
+/*      
+        import BarCode.Code39;
+        
+        import weborb.data.DynamicLoadEvent;
+        import App.AppController;
+        import App.Domain.Lease;
+        import App.Domain.LeaseEditHistory;
+        import App.Domain.ActiveRecords;
+*/      
+        
+        private static const LEASE_STATUS_EDIT:String = "EDIT";
+        private static const LEASE_STATUS_COMPLETE:String = "COMPLETE";
+        
+        public static const WORKFLOW_STATE_LEASE_GRID:int = 1;
+        public static const WORKFLOW_STATE_LEASE_DETAIL:int = 2;
+        public static const WORKFLOW_STATE_INIT:int = 3;
+        
+    
+        
+        private var _usStates:XMLList;
+        private var _usCounties:XMLList;
+        [Bindable]
+        private var _lease:Lease;
+        [Bindable]
+        private var _usStateName:String;
+        [Bindable]
+        private var _countyName:String;
+        
+        private var _validators:Array;
+        private var _keyFieldsValidators:Array;
+        
+        private var _defaultStateFips:String;
+        private var _defaultCountyFips:String;
+        
+/*      
+        private var _printPreview:PrintPreview;
+        
+        public var parentController:AppController;
+*/      
+        
+        
+        public function init(lease:Lease):void{
+                
+                txtDocNumber.text = "";
+                txtVolume.text = "";
+                txtPage.text = "";
+                
+                _lease = lease;
+/*              
+                _usStates = parentController.statesAndCounties.state;
+*/              
+                comboStates.dataProvider = _usStates.attribute('Name');
+                comboCounties.dataProvider = null;
+                if (lease.LeaseId == 0) {
+                    setNewMode();
+                } else {
+                    setEditMode();
+                }
+                
+                
+            }
+            
+        private function onCreationComplete():void{
+                _validators = new Array();
+                _validators.push(valLeaseeName);
+                _validators.push(valLeassorName);
+                _validators.push(valMinimumPayment);
+                _validators.push(valTerm);
+                _validators.push(valTermUnit);
+        
+                _keyFieldsValidators = new Array();
+                _keyFieldsValidators.push(valDocNumber);
+                _keyFieldsValidators.push(valVolume);
+                _keyFieldsValidators.push(valPage);
+        
+        }
+            
+        private function setNewMode():void {
+                comboStates.selectedIndex = 0;
+                //onStateChanged();
+
+                setDefaultStateCounty();
+
+                keyFieldsPanel.visible = false;
+                keyFieldsPanel.includeInLayout = false;
+
+                keyFieldsForm.visible = true;
+                keyFieldsForm.includeInLayout = true;
+                
+                detailPanel.enabled = false;
+            }
+            
+        private function setEditMode():void {
+
+                if (_lease.LCN == null || _lease.LCN.length == 0) {
+                    _lease.LCN = "13-" + _lease.StateFips + "-" + _lease.CountyFips + "-" + _lease.LeaseId.toString();
+                }
+
+            
+                //BackupLease.FillIn(CurrentLease);
+
+                createBarCode(_lease.LCN);
+                
+                keyFieldsForm.visible = false;
+                keyFieldsForm.includeInLayout = false;
+                
+                keyFieldsPanel.visible = true;
+                keyFieldsPanel.includeInLayout = true;
+
+                detailPanel.enabled = true;
+                
+                _usStateName = _usStates.(@StateFips == _lease.StateFips).@Name;
+//              _countyName  = parentController.statesAndCounties.state.(@StateFips == _lease.StateFips).county.(@CountyFips == _lease.CountyFips).@Name;
+                
+                
+                //FormatMinimumPayment();
+            
+            }
+        
+        private function setDefaultStateCounty():void {
+            if (_defaultStateFips) {
+                comboStates.selectedItem = _usStates.(@StateFips == _defaultStateFips).@Name;
+                onStateChanged();
+            }
+            if (_defaultCountyFips) {
+                comboCounties.selectedItem = _usCounties.(@CountyFips == _defaultCountyFips).@Name;
+            }
+        }
+        
+        private function onStateChanged():void {
+                txtDocNumber.text = "";
+                txtVolume.text = "";
+                txtPage.text = "";
+/*              
+                _usCounties = parentController.statesAndCounties.state.(@StateId == _usStates[comboStates.selectedIndex].@StateId).county;
+                comboCounties.dataProvider = _usCounties.attribute('Name');
+*/              
+        }
+        
+        private function onCreateNew():void {
+
+                var results:Array = Validator.validateAll(_keyFieldsValidators);
+                if (results.length > 0){
+                    Alert.show("Please correct errors");
+                    return;
+                }
+            
+                if (cbSetDefault.selected) {
+                    _defaultStateFips = _usStates[comboStates.selectedIndex].@StateFips;
+                    _defaultCountyFips = _usCounties[comboCounties.selectedIndex].@CountyFips;
+                } else {
+                    _defaultStateFips = null;
+                    _defaultCountyFips = null;
+                }
+            
+//              _lease.Author = parentController.CurrentUser.UserId;
+                _lease.Status = LEASE_STATUS_EDIT;
+                
+                _lease.StateFips = _usStates[comboStates.selectedIndex].@StateFips;
+                _usStateName = _usStates[comboStates.selectedIndex].@Name;
+                _lease.CountyFips = _usCounties[comboCounties.selectedIndex].@CountyFips;
+                _countyName = _usCounties[comboCounties.selectedIndex].@Name
+                _lease.DocumentNumber = txtDocNumber.text;
+                _lease.Volume = txtVolume.text;
+                _lease.PAGE = txtPage.text;
+                
+                CursorManager.setBusyCursor();
+                
+                
+                var foundList:ArrayCollection;
+/*              
+                if (_lease.DocumentNumber != null && _lease.DocumentNumber.length > 0) {
+                    foundList = ActiveRecords.Lease.findByStateFipsAndCountyFipsAndDocumentNumber(_lease.StateFips, _lease.CountyFips, _lease.DocumentNumber);
+                    foundList.addEventListener("loaded", onDocFound);
+                } else {
+                    foundList = ActiveRecords.Lease.findByStateFipsAndCountyFipsAndVolumeAndPAGE(_lease.StateFips, _lease.CountyFips, _lease.Volume, _lease.PAGE);
+                    foundList.addEventListener("loaded", onDocFound);
+                }
+*/              
+
+        }
+/*      
+        private function onDocFound(event:DynamicLoadEvent):void {
+                var foundList:ArrayCollection = event.data as ArrayCollection;
+                if (foundList.length > 0) {
+                    Alert.show("This document already found.\nYou can continue editing it.");
+                    init(foundList.getItemAt(0) as Lease);
+                    CursorManager.removeBusyCursor();
+                } else {
+                    _lease.save(false, new mx.rpc.Responder(onLeaseSaved, onFault));
+                }
+        }
+*/          
+        
+        private function onLeaseSaved(lease:Lease):void {
+/*          
+                var history:LeaseEditHistory = new LeaseEditHistory();
+                history.LeaseId = _lease.LeaseId;
+                history.UserId = parentController.CurrentUser.UserId;
+                history.DateEdited = new Date();
+                history.Status = _lease.Status;
+                history.save(false, new mx.rpc.Responder(onHistorySaved, onFault));
+*/              
+        }
+/*      
+        private function onHistorySaved(history:LeaseEditHistory):void{
+                CursorManager.removeBusyCursor();
+                setEditMode();
+        }
+*/      
+            
+        private function onFault(event:FaultEvent):void {
+                CursorManager.removeBusyCursor();
+                detailPanel.enabled = true;
+                Alert.show(event.fault.message);
+        }
+            
+        private function createBarCode(lcn:String):void {
+/*              
+                barCodePanel.removeAllChildren();
+                
+                var barCode:Code39 = new Code39();
+                barCode.addLabel = true;
+                if (lcn) {
+                    barCode.barCodeText = lcn;
+                } else {
+                    barCode.barCodeText = "";
+                }
+                
+                barCodePanel.addChild(barCode);
+*/              
+        }
+        
+        private function printBarCode():void {
+            
+                var pj:PrintJob = new PrintJob();
+
+                try {
+                    if (pj.start())
+                    {
+                        pj.addPage(barCodePanel);
+                        pj.send();
+                    }
+                } 
+                catch (error:Error) {
+                    Alert.show(error.message, error.name);
+                }
+
+                txtLeaseeName.setFocus();
+
+        }
+        
+        private function printSummaryPage():void {
+/*          
+            _printPreview = PopUpManager.createPopUp(this, PrintPreview, true) as PrintPreview;
+            _printPreview.init(_lease, _usStateName, _countyName, onPrintSummaryClickSubmit, onPrintSummaryClickCancel);
+            PopUpManager.centerPopUp(_printPreview);
+*/          
+        }
+        
+        private function onPrintSummaryClickSubmit(event:*):void {
+/*      
+            var printJob:PrintJob = new PrintJob();
+            
+                try {
+                    if (printJob.start())
+                    {
+                        printJob.addPage(_printPreview.printArea);
+                        printJob.send();
+                    }
+                } 
+                catch (error:Error) {
+                    Alert.show(error.message, error.name);
+                }
+                
+                PopUpManager.removePopUp(_printPreview);
+                txtLeaseeName.setFocus();
+*/          
+        }
+        
+        private function onPrintSummaryClickCancel(event:*):void {
+/*          
+            PopUpManager.removePopUp(_printPreview);
+            txtLeaseeName.setFocus();
+*/          
+        }
+            
+        private function onSaveDocument():void {
+            
+            var results:Array = Validator.validateAll(_validators);
+            if (results.length > 0){
+                Alert.show("Please correct errors");
+                return;
+            }
+            
+            detailPanel.enabled = false;
+
+            _lease.Status = LEASE_STATUS_COMPLETE;
+/*          
+            var history:LeaseEditHistory = new LeaseEditHistory();
+            history.LeaseId = _lease.LeaseId;
+            history.UserId = parentController.CurrentUser.UserId;
+            history.DateEdited = new Date();
+            history.Status = _lease.Status;
+            CursorManager.setBusyCursor();
+            history.save(false, new mx.rpc.Responder(onHistorySaved1, onFault));
+*/              
+        }
+        
+/*      
+        private function onHistorySaved1(history:LeaseEditHistory):void{
+            
+            _lease.save(false, new mx.rpc.Responder(onLeaseSaved1, onFault));
+        
+        }
+*/      
+        private function onLeaseSaved1(lease:Lease):void{
+            CursorManager.removeBusyCursor();
+            detailPanel.enabled = true;
+//          parentController.showLeaseList(lease);
+        }
+        
+        
+        
+        private function onTermUnitChanged():void {
+/*          
+            _lease.TermUnitId = int(this.termUnits.TermUnit[this.comboTermUnit.selectedIndex].@TermUnitId);
+*/          
+        }
+        
+        private function onCancelDocument():void{
+            Alert.show  ("All changes will be lost.  Do you want to continue?", 
+            "Warning", Alert.YES | Alert.NO, this,alertListener);
+            
+        }
+        
+        private function alertListener(eventObj:CloseEvent):void {
+/*          
+             if (eventObj.detail==Alert.YES){
+                parentController.showLeaseList(_lease);
+             }
+*/           
+        }
+        
+        private function onCancelHeader():void{
+/*          
+            parentController.showLeaseList();
+*/          
+        }
+
+    ]]>
+</mx:Script>
+
+<!-- mx:XML id="termUnits" source="../Assets/TermUnits.xml" / -->
+
+
+<mx:Binding source="_lease.LCN" destination="lblLCN.text"/>
+<mx:Binding source ="_usStateName" destination="lblState.text"/>
+<mx:Binding source ="_countyName" destination="lblCountyName.text"/>
+<mx:Binding source ="_lease.DocumentNumber" destination="lblDocumentNumber.text"/>
+<mx:Binding source ="_lease.Volume" destination="this.lblVolue.text"/>
+<mx:Binding source="_lease.PAGE" destination="this.lblPage.text"/>
+
+<mx:Binding source="_lease.LeaseeName"  destination="txtLeaseeName.text"/>
+<mx:Binding source="txtLeaseeName.text"  destination="_lease.LeaseeName"/>
+
+<mx:Binding source="txtAssigneeName.text" destination="_lease.AssigneeName"/>
+<mx:Binding source="_lease.AssigneeName" destination="txtAssigneeName.text"/>
+
+<mx:Binding source ="txtLeassorName.text" destination="_lease.LeassorName"/>
+<mx:Binding source ="_lease.LeassorName" destination="txtLeassorName.text"/>
+
+<mx:Binding source ="txtAssignorName.text" destination="_lease.AssignorName"/>
+<mx:Binding source ="_lease.AssignorName" destination="txtAssignorName.text"/>
+
+<mx:Binding source ="int(txtUnitDepth.text)" destination="_lease.UnitDepth"/>
+<mx:Binding source ="_lease.UnitDepth.toString()" destination="txtUnitDepth.text"/>
+
+<mx:Binding source = "int(txtFromDepth.text)" destination="_lease.FromDepth"/>
+<mx:Binding source = "_lease.FromDepth.toString()" destination="txtFromDepth.text"/>
+
+<mx:Binding source = "int(txtFromFrom.text)" destination="_lease.FromFrom"/>
+<mx:Binding source = "_lease.FromFrom.toString()" destination="txtFromFrom.text"/>
+
+<mx:Binding source = "int(txtToDepth.text)" destination="_lease.ToDepth"/>
+<mx:Binding source = "_lease.ToDepth.toString()" destination="txtToDepth.text"/>
+
+<mx:Binding source = "int(txtToFrom.text)" destination="_lease.ToFrom"/>
+<mx:Binding source = "_lease.ToFrom.toString()" destination="txtToFrom.text"/>
+
+<mx:Binding source ="txtWorkInt.text" destination="_lease.WorkInt"/>
+<mx:Binding source ="_lease.WorkInt" destination="txtWorkInt.text"/>
+
+<mx:Binding source ="txtOrrInt.text" destination="_lease.OrrInt"/>
+<mx:Binding source ="_lease.OrrInt" destination="txtOrrInt.text"/>
+
+<mx:Binding source = "txtNriAssign.text" destination="_lease.NriAssign"/>
+<mx:Binding source = "_lease.NriAssign" destination="txtNriAssign.text"/>
+
+<mx:Binding source ="int(txtNetAcres.text)" destination="_lease.NetAcres" />
+<mx:Binding source ="_lease.NetAcres.toString()" destination="txtNetAcres.text" />
+
+<mx:Binding source = "int(txtGrossAcres.text)" destination="_lease.GrossAcres"/>
+<mx:Binding source = "_lease.GrossAcres.toString()" destination="txtGrossAcres.text"/>
+
+<mx:Binding source = "int(txtTerm.text)" destination= "_lease.Term"/>
+<mx:Binding source = "_lease.Term.toString()" destination= "txtTerm.text"/>
+
+<mx:Binding source="dateRcdDate.selectedDate" destination="_lease.RcdDate"/>
+<mx:Binding source="_lease.RcdDate" destination="dateRcdDate.selectedDate"/>
+
+<mx:Binding source="dateEffDate.selectedDate" destination="_lease.EffDate"/>
+<mx:Binding source="_lease.EffDate" destination="dateEffDate.selectedDate"/>
+
+<mx:Binding source ="checkHBR.selected" destination="_lease.HBR"/>
+<mx:Binding source ="_lease.HBR" destination="checkHBR.selected"/>
+
+<mx:Binding source = "checkEncumbrances.selected" destination="_lease.Encumbrances"/>
+<mx:Binding source = "_lease.Encumbrances" destination="checkEncumbrances.selected"/>
+
+<mx:Binding source = "checkDepthLimitation.selected" destination="_lease.DepthLimitation"/>
+<mx:Binding source = "_lease.DepthLimitation" destination="checkDepthLimitation.selected"/>
+
+<mx:Binding source ="checkPughClause.selected" destination="_lease.PughClause"/>
+<mx:Binding source ="_lease.PughClause" destination="checkPughClause.selected"/>
+
+<mx:Binding source = "checkShutInClau.selected" destination="_lease.ShutInClau"/>
+<mx:Binding source = "_lease.ShutInClau" destination="checkShutInClau.selected"/>
+
+<mx:Binding source = "checkPoolingClau.selected" destination="_lease.PoolingClau"/>
+<mx:Binding source = "_lease.PoolingClau" destination="checkPoolingClau.selected"/>
+
+<mx:Binding source ="int(txtMinimumPmt.text)" destination="_lease.MinimumPmt"/>
+<mx:Binding source ="_lease.MinimumPmt.toString()" destination="txtMinimumPmt.text"/>
+
+<mx:StringValidator id="valLeaseeName" source="{txtLeaseeName}" property="text"  maxLength="50" required="true" />
+<mx:StringValidator id="valLeassorName" source="{txtLeassorName}" property="text" maxLength="50"  required="true"/>
+<mx:CurrencyValidator id="valMinimumPayment" source="{txtMinimumPmt}" property="text" alignSymbol="left"/>
+<mx:NumberValidator id="valTerm" source="{txtTerm}" property="text" minValue="0" maxValue="1000"/>
+<mx:StringValidator id="valTermUnit" source="{comboTermUnit}" property="text" required="{int(txtTerm.text) > 0}"/>
+<mx:NumberValidator id="valFromDepth" source="{txtFromDepth}" property="text" maxValue="{int(txtToDepth.text)}" required="false"/>
+<mx:NumberValidator id="valToDepth" source="{txtToDepth}" property="text" minValue="{int(txtFromDepth.text)}" required="false"/>
+        
+<mx:NumberValidator id="valDocNumber" source="{txtDocNumber}" property="text" minValue="0" required="false"/>
+<mx:NumberValidator id="valVolume" source="{txtVolume}" property="text" minValue="0" required="false"/>
+<mx:NumberValidator id="valPage" source="{txtPage}" property="text" minValue="0" required="false"/>
+
+    <mx:Panel width="100%" headerHeight="10" 
+        paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+        >
+        
+        <mx:VBox borderColor="#999999" borderStyle="solid" cornerRadius="4"
+            paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4"
+            backgroundColor="#eeeeee" width="100%">
+            <mx:HBox width="100%" verticalAlign="middle" height="110">
+                <mx:HBox id="keyFieldsForm" width="100%">
+                    <mx:VBox horizontalAlign="right">
+                        <mx:HBox width="100%">
+                            <mx:Label text="State:" textAlign="right" width="100"/>
+                            <mx:ComboBox id="comboStates" width="170" change="onStateChanged()" />
+                        </mx:HBox>
+                        <mx:HBox width="100%">
+                            <mx:Label text="County:" textAlign="right" width="100"/>
+                            <mx:ComboBox id="comboCounties" width="230"/>
+                            <mx:CheckBox id="cbSetDefault" label="set as default"/>
+                        </mx:HBox>
+                        <mx:HBox width="100%">
+                            <mx:Label text="Doc Num:" textAlign="right" width="100" />
+                            <mx:TextInput id="txtDocNumber" width="130" enabled="{!(comboStates.selectedIndex == 0 || comboCounties.selectedIndex == 0)}"/>
+                        </mx:HBox>
+                        <mx:HBox width="100%">
+                            <mx:Label text="Volume:" textAlign="right" width="100"/>
+                            <mx:TextInput id="txtVolume" width="90" enabled="{!(comboStates.selectedIndex == 0 || comboCounties.selectedIndex == 0)}"/>
+                            <mx:Spacer width="10"/>
+                            <mx:Label text="Page:" textAlign="right"/>
+                            <mx:TextInput id="txtPage" width="90" enabled="{!(comboStates.selectedIndex == 0 || comboCounties.selectedIndex == 0)}"/>
+                        </mx:HBox>
+                    </mx:VBox>
+                    <mx:Spacer width="15"/>
+                    <mx:VBox height="100%" verticalAlign="bottom">
+                        <mx:Button label="Create New" width="120"  click="onCreateNew()" enabled="{(txtDocNumber.text != '' || (txtVolume.text != '' &amp;&amp; txtPage.text != ''))}"/>
+                        <mx:Button label="Cancel" width="120" click="onCancelHeader()" enabled="{_lease.LeaseId == 0}"/>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:HBox id="keyFieldsPanel" includeInLayout="false" visible="false" width="100%">
+                    <mx:VBox horizontalAlign="right">
+                        <mx:HBox width="100%" verticalAlign="bottom">
+                            <mx:Label text="LCN:" textAlign="right" width="100"/>
+                            <mx:Label id="lblLCN" fontWeight="bold" fontSize="13"/>
+                        </mx:HBox>
+                        <mx:HBox width="100%" verticalAlign="bottom">
+                            <mx:Label text="State:" textAlign="right" width="100"/>
+                            <mx:Label id="lblState" fontWeight="bold" fontSize="11"/>
+                        </mx:HBox>
+                        <mx:HBox width="100%" verticalAlign="bottom">
+                            <mx:Label text="County:" textAlign="right" width="100"/>
+                            <mx:Label id ="lblCountyName" fontWeight="bold" fontSize="11"/>
+                        </mx:HBox>
+                        <mx:HBox width="100%" verticalAlign="bottom">
+                            <mx:Label text="Doc Num:" textAlign="right" width="100"/>
+                            <mx:Label id="lblDocumentNumber" fontWeight="bold" fontSize="11"/>
+                            <mx:Spacer width="10"/>
+                            <mx:Label text="Volume:" textAlign="right"/>
+                            <mx:Label id="lblVolue"  fontWeight="bold" fontSize="11"/>
+                            <mx:Spacer width="10"/>
+                            <mx:Label text="Page:" textAlign="right"/>
+                            <mx:Label id="lblPage"  fontWeight="bold" fontSize="11"/>
+                        </mx:HBox>
+                    </mx:VBox>
+                    <mx:Spacer width="100%"/>
+                    <mx:VBox height="100%" verticalAlign="bottom">
+                        <mx:Button id="btnPrintSummary" label="Print Summary Page" textAlign="center" width="140" click="printSummaryPage()"/>
+                        <mx:Button id="btnPrintBarCode" label="Print BarCode" textAlign="center" width="140" click="printBarCode()"/>
+                    </mx:VBox>
+                    <mx:Panel headerHeight="8" height="110" minWidth="300">
+                        <mx:VBox id="barCodePanel" width="100%" height="100%" 
+                            horizontalAlign="center" verticalAlign="middle" cornerRadius="0"
+                            borderColor="#000000" borderStyle="solid" backgroundColor="#ffffff"
+                            >
+                            <mx:Label text="No BarCode yet..." fontSize="14" fontWeight="bold" color="#999999"/>
+                        </mx:VBox>
+                    </mx:Panel>
+                </mx:HBox>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:VBox id="detailPanel" borderColor="#999999" borderStyle="solid" cornerRadius="4"
+            paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4"
+            width="100%" height="100%"
+            enabled="false">
+
+            <mx:Spacer height="5"/>
+
+            <mx:VBox width="100%">
+                
+                <mx:HBox width="100%">
+                    
+                    <mx:Label text="Lessee Name:" width="100" textAlign="right"/>
+                    <mx:TextInput id="txtLeaseeName" maxChars="50" width="200"/>
+                    <mx:Spacer width="5"/>
+    
+                    <mx:Label text="Assignee Name:" width="100" textAlign="right"/>
+                    <mx:TextInput id="txtAssigneeName"  maxChars="50" width="200"/>
+                    <mx:Spacer width="5"/>
+
+                </mx:HBox>
+
+                <mx:HBox width="100%">
+                    
+                    <mx:Label text="Leassor Name:" width="100" textAlign="right"/>
+                    <mx:TextInput id="txtLeassorName" maxChars="50" width="200"/>
+                    <mx:Spacer width="5"/>
+    
+                    <mx:Label text="Assignor Name:" width="100" textAlign="right"/>
+                    <mx:TextInput id="txtAssignorName" maxChars="50" width="200"/>
+                    <mx:Spacer width="5"/>
+
+                </mx:HBox>
+
+            </mx:VBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="Unit Depth:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtUnitDepth" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="From Depth:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtFromDepth" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="From Formation:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtFromFrom" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="To Depth:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtToDepth"  maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="To Formation:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtToFrom" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="Work Int:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtWorkInt" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="ORR Int:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtOrrInt" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+                <mx:Label text="NRA Assign:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtNriAssign" maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="Net Acres:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtNetAcres"  maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="Gross Acres:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtGrossAcres"  maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:HBox width="100%">
+
+                <mx:Label text="Term:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtTerm"   maxChars="10" width="50"/>
+<!--                
+                <mx:ComboBox id="comboTermUnit"  width="90"  labelField="Name" change = "onTermUnitChanged()"  dataProvider="{termUnits.TermUnit.@Name}"/>
+-->             
+                <mx:ComboBox id="comboTermUnit"  width="90"  labelField="Name" change = "onTermUnitChanged()"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="Rcd Date:" width="100" textAlign="right"/>
+                <mx:DateField id="dateRcdDate" 
+                     yearNavigationEnabled="true"/>
+                <mx:Spacer width="5"/>
+
+                <mx:Label text="Eff Date:" width="100" textAlign="right"/>
+                <mx:DateField id="dateEffDate"
+                     yearNavigationEnabled="true"/>
+                <mx:Spacer width="5"/>
+
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+                
+                <mx:Spacer width="100"/>
+                
+                <mx:VBox>
+                    
+                    <mx:CheckBox id="checkHBR" label="HBP"/>
+                    <mx:Spacer width="5"/>
+    
+                    <mx:CheckBox id="checkEncumbrances" label="Encumbrances" />
+                    <mx:Spacer width="5"/>
+    
+                    <mx:CheckBox id="checkDepthLimitation" label="Depth Limitation"/>
+                    <mx:Spacer width="5"/>
+
+                </mx:VBox>
+
+                <mx:VBox>
+                    
+                    <mx:CheckBox id="checkPughClause" label="Pugh Clause"/>
+                    <mx:Spacer width="5"/>
+    
+                    <mx:CheckBox id="checkShutInClau" label="Shut In Clause" />
+                    <mx:Spacer width="5"/>
+    
+                    <mx:CheckBox id="checkPoolingClau" label="Pooling Clause" />
+                    <mx:Spacer width="5"/>
+
+                </mx:VBox>
+
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+                <mx:Label text="Minimum Pmt:" width="100" textAlign="right"/>
+                <mx:TextInput id="txtMinimumPmt"  maxChars="50" width="50"/>
+                <mx:Spacer width="5"/>
+            </mx:HBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:ControlBar width="100%">
+                <mx:HBox width="100%" 
+                    backgroundColor="#cccccc" borderColor="#999999" borderStyle="solid" cornerRadius="4" 
+                    paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+                    horizontalAlign="right">
+                    <mx:Button label="Save"  click="onSaveDocument()"/>
+                    <mx:Button label="Cancel" click="onCancelDocument()"/>
+                </mx:HBox>
+            </mx:ControlBar>
+
+        </mx:VBox>
+
+    </mx:Panel>
+    
+</mx:VBox>

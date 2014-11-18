@@ -1,0 +1,116 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Web.Models.Dashboard.DashboardModel
+
+@{
+    ViewBag.Title = "Home Page";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+@using (Html.BeginForm())
+{
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Dashboard</h1>
+    @if (currentUser.IsAdmin())
+    {
+    <div style="float: right; font-size:16px; padding:8px;">Active Campaigns <b>@Model.ActiveCampaigns</b>&nbsp;&nbsp;
+        Current Balance @if (Model.CurrentBalance > 0)
+                        {<b>@string.Format("{0:C}", Model.CurrentBalance)</b>}
+                        else
+                        {<b style="color:#D00;">@string.Format("{0:C}", Model.CurrentBalance)</b>
+                        }
+        @Html.ActionLink(" Add Funds ", "AddFunds", new { controller = "Profile" }, new { @class = "button primary" })
+    </div>
+    }
+  </div>
+  <div class="content">
+    <div style="display: block; width: 100%; margin-bottom: 15px; clear: both; overflow: hidden; border: 1px solid #8EAEC3;">
+      <div class="details" style="overflow: hidden; padding: 10px;">
+          <table class="form" style="float: left; width:49%;">
+            <tr>
+              <td style="font-size: 14px; font-weight:bold; background: #EEE;" colspan="2" >
+                <span style="float: right;">Period:
+                @Html.DropDownList("SelectedRange", new SelectList(Model.Ranges, "Key", "Label", Model.SelectedRange))
+                <button type="submit" class="primary">Select &gt;</button></span>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size: 15px;">Total Leads</td>
+              <td style="text-align: right; font-size: 15px;"><b>@Model.TotalLeads</b></td>
+            </tr>
+            <tr>
+              <td style="font-size: 15px;">Converted Leads</td>
+              <td style="text-align: right; font-size: 15px;"><b>@Model.ConvertedLeads</b></td>
+            </tr>
+            <tr>
+              <td style="font-size: 15px;">Total Amount</td>
+              <td style="text-align: right; font-size: 15px;"><b>@string.Format("{0:C}", Model.Amount)</b></td>
+            </tr>
+          </table>
+
+          <div style="float: right; width: 49%;">
+            <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px; height: 49%;">
+              <div id="report" style="width: 400px; height: 180px; margin: auto;"></div>
+            </div>
+          </div>
+      </div>
+    </div>
+@if (!currentUser.IsBusinessPartner && Model.LastActivities != null && Model.LastActivities.Count > 0)
+{
+    <h2>Last 10 Activities</h2>
+      <table class="list">
+        <thead>
+          <tr>
+            <td class="left">Activity</td>
+            <td class="left">Time</td>
+            <td class="left">User</td>
+          </tr>
+        </thead>
+        <tbody>
+        @foreach (var activity in Model.LastActivities)
+        {
+          <tr>
+            <td class="left">@activity.ActivityNotes</td>
+            <td class="left" style="white-space: nowrap;">@String.Format("{0:g}", activity.DateCreated)</td>
+            <td class="left" style="white-space: nowrap;">@(activity.RelatedUser != null ? activity.RelatedUser.ScreenName : string.Empty)</td>
+          </tr>
+        }
+        </tbody>
+      </table>
+}
+
+  </div>
+</div>
+<!--[if IE]>
+<script type="text/javascript" src="../../Scripts/flot/excanvas.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../../Scripts/flot/jquery.flot.js"></script>
+<script type="text/javascript"><!--
+
+    var axis = @Html.Raw(Model.ChartAxisStr);
+    var totalLeads = @Html.Raw(Model.ChartTotalLeadsStr);
+    var completedLeads = @Html.Raw(Model.ChartCompletedLeadsStr);
+
+    var option = {
+        shadowSize: 0,
+        lines: {
+            show: true,
+            fill: true,
+            lineWidth: 1
+        },
+        grid: {
+            backgroundColor: '#FFFFFF'
+        },
+        xaxis: {
+            ticks: axis
+        }
+    };
+
+    $.plot($('#report'), [totalLeads, completedLeads], option);
+
+//--></script>
+
+}
+

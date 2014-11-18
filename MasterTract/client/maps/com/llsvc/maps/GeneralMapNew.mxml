@@ -1,0 +1,1288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:lease="com.llsvc.client.lms.view.lease.*"
+    xmlns:degrafa="com.degrafa.*"
+    xmlns:geometry="com.degrafa.geometry.*"
+    xmlns:paint="com.degrafa.paint.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.binding.utils.ChangeWatcher;
+            import com.llsvc.domain.LeaseTractQQ;
+            import mx.collections.ArrayCollection;
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.HTTPService;
+            import mx.controls.Alert;
+            import mx.controls.Image;
+            import mx.managers.CursorManager;
+        
+            import com.yahoo.maps.api.core.location.BoundingBox;
+            import com.yahoo.maps.api.YahooMap;
+            import com.yahoo.maps.api.YahooMapEvent;
+            import com.yahoo.maps.webservices.geocoder.Geocoder;
+            import com.yahoo.maps.webservices.geocoder.GeocoderResultSet;
+            import com.yahoo.maps.webservices.geocoder.GeocoderResult;
+            import com.yahoo.maps.webservices.geocoder.events.GeocoderEvent;
+            import com.yahoo.maps.api.core.location.LatLon;
+            import com.yahoo.maps.api.core.location.BoundingBox;
+    
+            import com.afcomponents.umap.gui.MapTypeControl;
+            import com.afcomponents.umap.overlays.KMLLayer;
+            import com.afcomponents.umap.core.UMap;
+            import com.afcomponents.umap.gui.ZoomControl;
+            import com.afcomponents.umap.gui.MapTypeControl;
+            import com.afcomponents.umap.types.LatLng;
+            import com.afcomponents.umap.events.DisplayEvent;
+            import com.afcomponents.umap.events.MapEvent;
+            import com.afcomponents.umap.providers.TileLayer;
+            import com.afcomponents.umap.types.LatLngBounds;
+            
+            //import com.google.maps.MapEvent;
+            import com.google.maps.MapMoveEvent;
+            import com.google.maps.MapZoomEvent;
+            import com.google.maps.Map;
+            import com.google.maps.MapType;
+            import com.google.maps.LatLng;
+            import com.google.maps.InfoWindowOptions;
+            import com.google.maps.overlays.Marker;
+            import com.google.maps.controls.MapTypeControl;
+            import com.google.maps.controls.ZoomControl;
+            import com.google.maps.controls.PositionControl;
+            
+            import com.degrafa.GeometryComposition;
+            import com.degrafa.core.collections.GeometryCollection;
+            import com.degrafa.paint.SolidStroke;
+            import com.degrafa.core.collections.StrokeCollection;
+            import com.degrafa.paint.SolidFill;
+            import com.degrafa.core.collections.FillCollection;
+            import com.degrafa.geometry.Path;
+            import com.degrafa.geometry.Polygon;
+            
+            import com.llsvc.domain.Tract;
+            import com.llsvc.domain.Lease;
+            import com.llsvc.domain.LeaseTract;
+            import com.llsvc.util.TractDescriptionUtil;
+            import com.llsvc.framework.storage.Storage;
+            
+            private static const YAHOO_APP_ID:String = "2SSffdjV34HQnJzB3YV4eNzGj2lmN4HJneSsiW0LgkxXLOYzK2fXx981FM.UWzUtbbjO0kD7fA--";
+            
+            private var _tractGraphics:Graphics = null;            
+            protected var _yahooMap:YahooMap = null;
+            private var _umap:UMap = null;
+            private var _gmap:Map = null;
+            
+            private var tractCount:int = 0;
+            private var tractCountDown:int = 0;
+            private var selectedTracts:ArrayCollection = new ArrayCollection();
+            private var geoServerUrlPrefix:String = null;
+
+            private var fileRef:FileReference = null;
+                        
+            protected function getGeoServerUrlPrefix():String {
+//              return "http://llsvc.demo.logicland.com.ua/geoserver/";
+                return geoServerUrlPrefix;  
+            }
+            
+            private function init():void {
+                var responder:mx.rpc.Responder = new mx.rpc.Responder(onGetGeoServerUrlResultHandler, 
+                        onGetGeoServerUrlFaultHandler);
+                Storage.instance.getGeoServerUrl(responder);
+
+                ChangeWatcher.watch(yahooContainer, "width", yahooContainerSizeChangeHandler);
+                ChangeWatcher.watch(yahooContainer, "height", yahooContainerSizeChangeHandler);
+            }
+            
+            private function yahooContainerSizeChangeHandler(event:*):void {
+                _yahooMap.setSize(yahooContainer.width, yahooContainer.height);
+            }
+            
+            private function onGetGeoServerUrlResultHandler(event:ResultEvent):void {
+                geoServerUrlPrefix = event.result.toString();
+                init2();
+            }
+    
+            private function onGetGeoServerUrlFaultHandler(event:FaultEvent):void {
+                Alert.show(event.fault.message);
+            }
+            
+            private function init2():void
+            {
+                _yahooMap = new YahooMap(); 
+                _yahooMap.addEventListener(YahooMapEvent.MAP_INITIALIZE, handleYahooInitialize, false, 0, true);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_ZOOM, handleYahooZoom);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_DRAG_START, handleYahooDragStart);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_DRAG_STOP, handleYahooDragStop);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_TYPE_CHANGED, handleYahooMapTypeChanged);
+//                _yahooMap.addEventListener(YahooMapEvent.MAP_CLICK, handleYahooDoubleClick);
+                _yahooMap.addEventListener(MouseEvent.CLICK, handleYahooDoubleClick);
+                _yahooMap.addEventListener(MouseEvent.MOUSE_MOVE, handleYahooMouseMove);
+                
+                _yahooMap.init(YAHOO_APP_ID, yahooContainer.width, yahooContainer.height);
+/*                
+                _yahooMap.addEventListener(YahooMapEvent.MAP_DRAG_START, handleMapDragStart);
+//                _yahooMap.addEventListener(MouseEvent.CLICK, handleMouseDoubleClick);
+*/                
+                
+                _yahooMap.addScaleBar();
+                _yahooMap.addPanControl(); // adds ability to pan and click on the map.
+                _yahooMap.doubleClickEnabled = false;
+//                _yahooMap.addZoomWidget(); // adds a zoom control widget to the map.
+//                _yahooMap.addTypeWidget(); // adds a map type control widget to the map.
+                _yahooMap.alpha = 1;
+//                _yahooMap.alpha = 0.1;
+//                _yahooMap.blendMode = BlendMode.DIFFERENCE;
+                this.yahooContainer.addChild(_yahooMap); // adds the yahoomap object to the display list.
+
+/*
+                _umap = new UMap();
+                _umap.alpha = 0.4;
+                _umap.setSize(umapContainer.width, umapContainer.height);
+                umapContainer.addChild(_umap);
+                _umap.addEventListener(MapEvent.READY, handleUmapReady);
+*/                
+/*                
+                _umap.addEventListener(MapEvent.ZOOM_STOP, handleVEZoom);
+                _umap.addEventListener("dragStart", handleMapDragStart);
+                _umap.addEventListener("dragStop", handleMapDragStop);
+*/                
+/*
+                _gmap = new Map();
+                _gmap.key = "ABQIAAAAJ6Rar5WlFPCijGheORRzuxQhaumIq7volme6zJnHwPPRj9JQAxRrZiqnVU4szTsneiwfoSOgTd5rVw";
+                _gmap.setSize(new Point(gmapContainer.width, gmapContainer.height));
+                _gmap.addEventListener(com.google.maps.MapEvent.MAP_READY, handleGMapReady);
+                _gmap.addEventListener(MapMoveEvent.MOVE_END, handleGMapMoveEnd);
+                _gmap.addEventListener(MapZoomEvent.ZOOM_END, handleGMapMoveEnd);
+                _gmap.alpha = 0.5;
+
+                gmapContainer.addChild(_gmap);
+                
+                _gmap.addControl(new com.google.maps.controls.ZoomControl());
+                _gmap.addControl(new com.google.maps.controls.PositionControl());
+                _gmap.addControl(new com.google.maps.controls.MapTypeControl());
+*/                
+//              _tractGraphics = _gmap.graphics;
+//              _tractGraphics = this.mapCanvas.graphics;
+                _tractGraphics = this._yahooMap.graphics;
+
+            }
+            
+            private function handleYahooInitialize(event:YahooMapEvent):void {
+                _yahooMap.zoomLevel = 9; 
+                _yahooMap.centerLatLon = new LatLon(43.13, -105.15);
+/*                
+                if (_lease) {
+                    _lease.tracts.addEventListener("tractsReloaded", onTractsReloaded);
+                }
+                if ( _lease && 0 != _lease.tracts.length ) {
+                    reloadTracts();
+                } else {
+                    reflectMap();
+                }
+*/                
+                reflectMap();
+
+                this.zbwContainer.addEventListener(MouseEvent.MOUSE_DOWN, handleZBWMouseClick);
+                this.zbwContainer.addEventListener(MouseEvent.MOUSE_UP, handleZBWMouseClick);
+                this.zbwContainer.addEventListener(MouseEvent.MOUSE_MOVE, handleZBWMouseMove);
+            }
+
+            private function handleYahooZoom(event:YahooMapEvent):void {
+                this.mapStatus.text = "handleYahooZoom: " + this._yahooMap.zoomLevel;
+                this.cbQuickZoom.selectedIndex = _yahooMap.zoomLevel - 1;
+                reflectMap();
+            }
+            
+            private function handleYahooDragStart(event:YahooMapEvent):void {
+                this.mapStatus.text = "handleYahooDragStart";
+                this.wmsContainer.visible = false;
+            }
+            
+            private function handleYahooDragStop(event:YahooMapEvent):void {
+                this.mapStatus.text = "handleYahooDragStop";
+                reflectMap();
+            }
+            
+            private function handleYahooMapTypeChanged(event:YahooMapEvent):void {
+                mapStatus.text = "handleYahooMapTypeChanged: " + _yahooMap.mapType; 
+            }
+            
+            private function handleYahooDoubleClick(event:MouseEvent):void {
+                if ( event.ctrlKey ) {
+                    var pl:Point = new Point(_yahooMap.mouseX, _yahooMap.mouseY);
+                    //var pg:Point = _yahooMap.localToGlobal(pl);
+                    var url:String = this.getBaseWMSUrl("GetFeatureInfo") +
+                        "&query_layers=topp:doc_lease_tract_qq_view" +
+                        "&info_format=application/vnd.ogc.gml" +
+                        "&feature_count=1" +
+                        "&x=" + pl.x +
+                        "&y=" + pl.y;
+            
+                    var loader:URLLoader = new URLLoader();
+                    loader.dataFormat = URLLoaderDataFormat.TEXT;
+                    loader.addEventListener(Event.COMPLETE, handleFeatureInfoComplete);
+                    loader.addEventListener(IOErrorEvent.IO_ERROR, handleFeatureInfoIOError);
+                    CursorManager.setBusyCursor();
+                    loader.load(new URLRequest(url));
+                }
+                //reflectMap();
+            }
+            
+            private function handleFeatureInfoComplete(event:Event):void {
+                CursorManager.removeBusyCursor();
+                var loader:URLLoader = URLLoader(event.target);
+                
+                var rsp:XML = new XML(loader.data);
+                this.mapStatus.text = rsp.toString();
+
+                var wfs:Namespace = rsp.namespace('wfs');
+                var gml:Namespace = rsp.namespace('gml');
+                var topp:Namespace = rsp.namespace('topp');
+
+                if ( "" != rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::lease_id.text().toString() ) {                
+                    var description:String = "";
+                    description += "ID: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::lease_id.text();
+                    description += "\nLease Num: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::lease_num.text();
+                    description += "\nLessor: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::lessor.text();
+                    description += "\nLessee: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::lessee.text();
+                    description += "\nDescription: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::description.text();
+                    description += "\nEffective Date: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::eff_date.text();
+                    description += "\nExpiration Date: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::exp_date.text();
+                    description += "\nTerm: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::term.text();
+                    description += "\nBonus Rate: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::bonus_rate.text();
+                    description += "\nBonus Amount: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::bonus_amount.text();
+                    description += "\nGross Acres: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::gross_acres.text();
+                    description += "\nNet Acres: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::net_acres.text();
+                    description += "\nNRI: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::nri.text();
+                    description += "\nWI: " + rsp.gml::featureMember.topp::doc_lease_tract_qq_view.topp::cwi.text();
+                    
+                    Alert.show(description);
+                } else {
+                    Alert.show("Tract not found.");
+                } 
+            }
+            
+            private function handleFeatureInfoIOError(event:Event):void {
+                CursorManager.removeBusyCursor();
+                Alert.show("handleFeatureInfoIOError: unexpected error.");
+            }
+            
+            private function handleUmapReady(event:MapEvent):void {
+/*                          
+                var tl:TileLayer = new A2ETileLayer();
+                _umap.control.mapType.addLayer(tl);
+              Alert.show("handleUmapReady: umap is ready.");
+*/              
+            }
+                
+            private function handleGMapReady(event:Event):void {
+                _gmap.setCenter(new com.google.maps.LatLng(32.1875, -94.375), 9, MapType.NORMAL_MAP_TYPE);
+                //Alert.show("handleGMapReady: GMmap is ready.");
+            }
+                
+            private function handleGMapMoveEnd(event:Event):void {
+                reflectMap();
+            }
+                
+            private function reflectMap():void {
+                if ( null != boundsGuardTimer ) {
+                    return;
+                }
+                
+/* Yahoo Map */             
+                var b:BoundingBox = _yahooMap.getMapBounds();
+                if ( null != b ) { 
+                    this.defragaGroup.geometry = new Array();
+                    this.clearDisplayObjectContainer(this.defragaGroup);
+                    if ( ddEnabled.selected && ddEnabled.enabled ) {
+                        processBBoxRequest(b);
+                    }
+                    
+                    var url:String = getBaseWMSUrl("GetMap");
+                    var img:Image = new Image();
+                    img.addEventListener(Event.COMPLETE, onGetMapLoadComplete);
+                    img.load(url);
+                    
+                    // scale
+                    var p1000:Number = _yahooMap.getMetersToPixels(1000, _yahooMap.centerLatLon.lat);
+//                  this.scaleStatus.text = p1000 + " px. per for 1000 m";
+                    this.scaleStatus.text = "(" + p1000 + ") 1px : " + (1000/p1000);
+                }
+/* Google Maps          
+                var url:String = getBaseWMSUrl("GetMap");
+                var img:Image = new Image();
+                img.addEventListener(Event.COMPLETE, onGetMapLoadComplete);
+                img.load(url);
+*/
+      
+/*                
+                if ( lease.tracts.length != tractCount ) {
+                    Alert.show("reflectMap: lease.tracts.length=" + lease.tracts.length + ", tractCount=" + tractCount);
+                    tractCount = lease.tracts.length;
+                    tractCountDown = tractCount;
+                    selectedTracts.removeAll();
+                    for each (var lt:LeaseTract in lease.tracts) {
+                        processTractQuery(lt);
+                    }
+                }
+*/
+                _tractGraphics = this._yahooMap.graphics;                 
+                _tractGraphics.clear();
+                for each (var tract:Object in selectedTracts) {
+                        renderTract(tract);
+                }
+                _tractGraphics.endFill();
+             
+            }
+
+/*
+Query map by SLD example:
+http://localhost:8400/geoserver/wms?bbox=-105.59542379741588,42.499724686392796,-104.05397767033281,43.54605747670272&request=GetMap&width=800&height=509&srs=EPSG:4267&SLD=http://llsvc.demo.logicland.com.ua/llsvc/option?id=-1&format=image/png
+*/
+            private function getBaseWMSUrl(method:String) : String {
+/* Yahoo Map */             
+                var bb:BoundingBox = this._yahooMap.getMapBounds();
+                var bbs:String = bb.minLon + "," + bb.minLat + "," + bb.maxLon + "," + bb.maxLat;
+/* Google Map               
+                var bb:com.google.maps.LatLngBounds = _gmap.getLatLngBounds();
+                var bbs:String = bb.getWest() + "," + bb.getSouth() + "," + bb.getEast() + "," + bb.getNorth();
+*/                
+                var url:String = getGeoServerUrlPrefix() + "wms?" + 
+                    "bbox=" + bbs +
+                    "&Format=image/png" +
+                    "&request=" + method + 
+                    "&layers=" + getGeoServerLayers() +
+                    "&styles=" +
+                    "&width=" + mapCanvas.width + 
+                    "&height=" + mapCanvas.height +
+                    "&transparent=false" +
+                    "&srs=EPSG:4267"; //32055"; //EPSG:4269"; //32055; //EPSG:900913"; //EPSG:4326"; //EPSG:45555";
+//                    "&srs=EPSG:45555"; //EPSG:900913"; //EPSG:4326"; //EPSG:45555";
+
+                return url;             
+            }
+            
+            private function onGetMapLoadComplete(e:Event):void {
+                var img:Image = Image(e.target);
+//              img.content.alpha = 1;
+//              img.content.blendMode = BlendMode.MULTIPLY;
+                this.wmsContainer.removeAllChildren();
+                this.wmsContainer.addChild(img);
+                this.wmsContainer.visible = true;
+            }
+
+            private function trimAlpha(s:String):String {
+                var r:String = "";
+                for (var i:int = 0; i<s.length; i++) {
+                    if ( '0' <= s.charAt(i) && s.charAt(i) <= '9' ) {
+                        r = r + s.charAt(i);
+                    }
+                }
+                return r;
+            }
+            
+            private function processTractQuery(t:Object):void {
+/*              
+                var lts:String = lt.township + lt.range;
+                var tokens:Array = lts.split("Dir");
+//              Alert.show("processTractQuery, tokens: " + tokens.toString());
+                var township:String  = trimAlpha(tokens[0]);                
+                var range:String  = trimAlpha(tokens[1]);               
+                var meridian:String  = trimAlpha(tokens[2]);
+                                
+                var trquery:String = 'T' + township + 'R' + range;
+                var sectionquery:String = lt.section;
+                var meridianquery:String = meridian + 'PM';
+*/
+/*              
+                    "       <wfs:PropertyName>topp:section</wfs:PropertyName> " +
+                    "       <wfs:PropertyName>topp:tr</wfs:PropertyName> " +
+                    "       <wfs:PropertyName>topp:meridian</wfs:PropertyName> " +
+*/
+/*                    
+                    "           <ogc:And> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>twp</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.township + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>tdir</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.townshipDir + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>rng</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.range + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>rdir</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.rangeDir + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>meridian</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.meridian + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>section</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.section + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>qtr_qtr</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.qq + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "           </ogc:And> " +
+*/
+/*                    
+                    "           <ogc:GmlObjectId gml:id=\"tobin_qq." + t.externalId + "\"/>" +
+*/                    
+                var request:String = "<?xml version=\"1.0\"?>" +
+                    "<wfs:GetFeature " +
+                    "   version=\"1.1.0\"" +                    
+                    "   service=\"WFS\"" +
+                    "   resultType=\"Hits\"" +
+                    "   xmlns:wfs=\"http://www.opengis.net/wfs\"" + 
+                    "   xmlns:gml=\"http://www.opengis.net/gml\"" +
+                    "   xmlns:ogc=\"http://www.opengis.net/ogc\"" +
+                    "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                    "   xsi:schemaLocation=\"http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd\">" +
+                    "   <wfs:Query typeName=\"topp:tobin_qq\" xmlns:topp=\"http://www.openplans.org/topp\"> " +
+                    "       <wfs:PropertyName>topp:the_geom</wfs:PropertyName> " +
+                    "       <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>topp:external_id</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + t.externalId + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "       </ogc:Filter> " +
+                    "   </wfs:Query> " +
+                    "</wfs:GetFeature> ";
+
+                var url:String = getGeoServerUrlPrefix() + "wfs";
+                var hs:HTTPService = new HTTPService();
+                hs.useProxy = false;
+                hs.url = url;
+                hs.contentType = "text/xml";
+                hs.method = "POST";
+                hs.addEventListener(mx.rpc.events.ResultEvent.RESULT, onTractQueryResult);
+                hs.addEventListener(mx.rpc.events.FaultEvent.FAULT, onTractQueryFault);
+                hs.send(request);
+            }
+
+            private function onTractQueryResult(e:mx.rpc.events.ResultEvent):void {
+                tractCountDown --;
+                var x:XML = new XML(e.message.body);
+//                Alert.show("onTractQueryRequest: XML=" + x.toXMLString());
+                if ( 1 < x.elements().length() ) {
+                    processTractQueryResponse(x);
+                } else {
+                    Alert.show("Not found.", "Error");
+                }
+            }
+            
+            private function onTractQueryFault(e:mx.rpc.events.FaultEvent):void {
+                tractCountDown --;
+                Alert.show("onTractQuery: Fault: " + e.fault.faultString);
+            }
+
+            private function processTractQueryResponse(x:XML):void {
+                var wfs:Namespace = x.namespace('wfs');
+                var gml:Namespace = x.namespace('gml');
+                var topp:Namespace = x.namespace('topp');
+                
+                if ( 0 < x.gml::featureMember.length() ) {
+                    var tract:Object = x.gml::featureMember[0];
+                    selectedTracts.addItem(tract);
+                }
+                if ( 0 == tractCountDown ) {
+//                    Alert.show("processTractQueryResponse: calculateBounds.")
+                    if ( 0 != selectedTracts.length ) { 
+                        setMapBoundsByTracts(selectedTracts);
+                        reflectMap();
+                    }
+                }
+            }
+
+            private function setMapBoundsByTracts(tracts:ArrayCollection):void {
+                var sw:LatLon = new LatLon(0, 0);
+                var ne:LatLon = new LatLon(90, 180);
+                
+                for each(var survey:Object in tracts) {
+                    var wfs:Namespace = survey.namespace('wfs');
+                    var gml:Namespace = survey.namespace('gml');
+                    var topp:Namespace = survey.namespace('topp');
+                    var coords:String = survey.topp::tobin_qq.topp::the_geom.gml::MultiPolygon.gml::polygonMember.gml::Polygon.gml::outerBoundaryIs.gml::LinearRing.gml::coordinates[0].text();
+                    var pairs:Array = coords.split(' ');
+                    
+                    for each (var p:String in  pairs) {
+                        var pair:Array = p.split(',');
+                        var lng:Number = new Number(pair[0]);
+                        var lat:Number = new Number(pair[1]);
+                        if ( Math.abs(lng) > Math.abs(sw.lon) ) {
+                            sw.lon = lng;
+                        }
+                        if ( Math.abs(lng) < Math.abs(ne.lon) ) {
+                            ne.lon = lng;
+                        }
+                        if ( Math.abs(lat) > Math.abs(sw.lat) ) {
+                            sw.lat = lat;
+                        }
+                        if ( Math.abs(lat) < Math.abs(ne.lat) ) {
+                            ne.lat = lat;
+                        }
+                    }
+                    var dlng:Number = (Math.abs(sw.lon)-Math.abs(ne.lon))/10;
+                    var dlat:Number = (Math.abs(sw.lat)-Math.abs(ne.lat))/10;
+                    sw.lon -= dlng;
+                    ne.lon += dlng;
+                    sw.lat += dlat;
+                    ne.lat -= dlat;
+                }
+
+/* Yahoo Maps */            
+                var bbox:BoundingBox = new BoundingBox(sw, ne);
+                this._yahooMap.setMapBounds(bbox);
+/* Google Maps
+                var swg:com.google.maps.LatLng = new com.google.maps.LatLng(sw.lat, sw.lon);
+                var neg:com.google.maps.LatLng = new com.google.maps.LatLng(ne.lat, ne.lon);
+                var bbox:com.google.maps.LatLngBounds = new com.google.maps.LatLngBounds(swg, neg);                
+                var bboxZoom:Number = _gmap.getBoundsZoomLevel(bbox);
+                var cntg:com.google.maps.LatLng = new com.google.maps.LatLng(
+                        (swg.lat() + neg.lat())/2, (swg.lng() + neg.lng())/2);
+                        
+Alert.show("setMapBoundsByTracts: cntg.lat=" + cntg.lat() + ", cntg.lng=" + cntg.lng() + ", bboxZoom=" + bboxZoom);                     
+                _gmap.setCenter(cntg, bboxZoom);
+*/              
+            }
+            
+            private function setMapBoundsByTract(survey:Object):void {
+                var wfs:Namespace = survey.namespace('wfs');
+                var gml:Namespace = survey.namespace('gml');
+                var topp:Namespace = survey.namespace('topp');
+                var coords:String = survey.topp::tobin_qq.topp::the_geom.gml::MultiPolygon.gml::polygonMember.gml::Polygon.gml::outerBoundaryIs.gml::LinearRing.gml::coordinates[0].text();
+                var pairs:Array = coords.split(' ');
+                var sw:LatLon = new LatLon(0, 0);
+                var ne:LatLon = new LatLon(90, 180);
+                
+                for each (var p:String in  pairs) {
+                    var pair:Array = p.split(',');
+                    var lng:Number = new Number(pair[0]);
+                    var lat:Number = new Number(pair[1]);
+                    if ( Math.abs(lng) > Math.abs(sw.lon) ) {
+                        sw.lon = lng;
+                    }
+                    if ( Math.abs(lng) < Math.abs(ne.lon) ) {
+                        ne.lon = lng;
+                    }
+                    if ( Math.abs(lat) > Math.abs(sw.lat) ) {
+                        sw.lat = lat;
+                    }
+                    if ( Math.abs(lat) < Math.abs(ne.lat) ) {
+                        ne.lat = lat;
+                    }
+                }
+                var dlng:Number = (Math.abs(sw.lon)-Math.abs(ne.lon))/10;
+                var dlat:Number = (Math.abs(sw.lat)-Math.abs(ne.lat))/10;
+                sw.lon -= dlng;
+                ne.lon += dlng;
+                sw.lat += dlat;
+                ne.lat -= dlat;
+                
+                var bbox:BoundingBox = new BoundingBox(sw, ne);
+                this._yahooMap.setMapBounds(bbox);
+            }
+            
+            private function renderTract(survey:Object): void {
+//                this._yahooMap.graphics.clear();
+                _tractGraphics = _yahooMap.graphics;
+                var wfs:Namespace = survey.namespace('wfs');
+                var gml:Namespace = survey.namespace('gml');
+                var topp:Namespace = survey.namespace('topp');
+                var coords:String = survey.topp::tobin_qq.topp::the_geom.gml::MultiPolygon.gml::polygonMember.gml::Polygon.gml::outerBoundaryIs.gml::LinearRing.gml::coordinates[0].text();
+//Alert.show("renderTract: coords=" + coords);              
+                var pairs:Array = coords.split(' ');
+            
+                var sp:Point = null;
+                for each (var p:String in  pairs) {
+                    var pair:Array = p.split(',');
+                    var cp:Point = this._yahooMap.getLatLonToXY(new LatLon(pair[1], pair[0]));
+//                  var cp:Point = this._gmap.fromLatLngToPoint(new com.google.maps.LatLng(pair[1], pair[0]));
+//Alert.show("renderTract: lat=" + pair[1] + ", lng=" + pair[0] + ", cp.x=" + cp.x + ", cp.y=" + cp.y);             
+                    if ( null == sp ) {
+                        sp = cp;
+                        _tractGraphics.beginFill(0xcccccc);
+                        _tractGraphics.lineStyle(2, 0x00FFFF);
+                        _tractGraphics.moveTo(sp.x, sp.y);
+                    } else {
+                        _tractGraphics.lineTo(cp.x, cp.y);
+                    }
+                }
+//                this._yahooMap.graphics.endFill();
+            }
+
+            private function reloadTracts():void {
+//              Alert.show("reloadTracts: lease.tracts.length=" + lease.tracts.length + ", tractCount=" + tractCount);
+//              tractCount = lease.tracts.length;
+                tractCountDown = 0;
+/*                
+                for each (var ltc:LeaseTract in lease.tracts) {
+                    tractCountDown += ltc.qqs.length;
+                }
+                
+                selectedTracts.removeAll();
+                for each (var lt:LeaseTract in lease.tracts) {
+                    for each(var ltq:LeaseTractQQ in lt.qqs) {
+//Alert.show("processTractQuery: tract=" + ltq.tract.qq);                   
+                        processTractQuery(ltq.tract);
+                    }
+                }
+*/                
+            }
+            
+            private function onTractsReloaded(event:Event):void {
+                reloadTracts();
+            }
+            
+            private function onTestClick(event:Event):void {
+/*              
+                var req:URLRequest = new URLRequest("shapefile?leaseId=" + this.lease.document.id);
+                flash.net.navigateToURL(req, "_blank");
+*/                
+            }
+/*            
+            private function onParseDescription(event:Event):void {
+                this.taResult.text = "";
+                for each(var token:String in TractDescriptionUtil.parse(this.tiDescription.text)) { 
+                    this.taResult.text += token + "\n";
+                } 
+            }
+*/            
+            private function onZoomChanged(event:Event):void {
+                if ( event.currentTarget == this.zoomIn ) {
+                    _yahooMap.zoomLevel --;
+                } else if ( event.currentTarget == this.zoomOut ) {
+                    _yahooMap.zoomLevel ++;
+                } 
+                mapStatus.text = _yahooMap.zoomLevel.toString();
+                //this.r100k2Enabled.enabled = (_yahooMap.zoomLevel >= 4 && _yahooMap.zoomLevel <= 7);
+            }
+            
+            private function onMapBoxChanged(event:Event):void {
+/*              
+                if ( event.currentTarget == this.mapTypeEnabled ) {
+                    _yahooMap.mapType = "map";
+                } else if ( event.currentTarget == this.satTypeEnabled ) {
+                    _yahooMap.mapType = "satellite";
+                } else if ( event.currentTarget == this.hybTypeEnabled ) {
+                    _yahooMap.mapType = "hybrid";
+                }
+*/                 
+            }
+            
+            private function onLayerBoxChanged(event:Event):void {
+                this.reflectMap();
+            }
+            
+            private function getGeoServerLayers():String {
+                var result:String = "";
+                var hasLayer:Boolean = false;
+
+                this.r100k2Enabled.enabled=(_yahooMap.zoomLevel >= 4 && _yahooMap.zoomLevel <= 7); 
+                this.ddEnabled.enabled=(_yahooMap.zoomLevel <= 6); 
+             
+                if ( r100k2Enabled.enabled && r100k2Enabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:100k2";
+                    hasLayer = true;
+                }
+                if ( rhsEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:hillshade1";
+                    hasLayer = true;
+                }
+                if ( twpEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:tobin_twn";
+                    hasLayer = true;
+                }
+                if ( secEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:tobin_sec";
+                    hasLayer = true;
+                }
+                if ( qqEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:tobin_qq";
+                    hasLayer = true;
+                }
+
+                // PLSS data                
+                if ( plssTwpEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:plss_twn";
+                    hasLayer = true;
+                }
+                if ( plssSecEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    hasLayer = true;
+                    result += "topp:plss_sec";
+                }
+
+                if ( tractsEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:doc_lease_tract_view";
+                    hasLayer = true;
+                }
+                
+                if ( intersectsEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:doc_lease_tract_intersect_view";
+                    hasLayer = true;
+                }
+                
+                if ( hasLayer ) {
+                    result += ",";
+                } 
+                result += "topp:doc_lease_tract_qq_view";
+                hasLayer = true;
+                
+                if ( orphansEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:doc_lease_tract_orphan_view";
+                    hasLayer = true;
+                }
+                
+                return result;
+            }
+
+            private function processBBoxRequest(bbox:BoundingBox):void {
+                var request:String = "<?xml version=\"1.0\"?>" +
+                    "<wfs:GetFeature " +
+                    "   version=\"1.1.0\"" +                    
+                    "   service=\"WFS\"" +
+                    "   resultType=\"results\"" +
+                    "   xmlns:wfs=\"http://www.opengis.net/wfs\"" + 
+                    "   xmlns:gml=\"http://www.opengis.net/gml\"" +
+                    "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                    "   xsi:schemaLocation=\"http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd\">" +
+                    "   <wfs:Query typeName=\"topp:doc_lease_tract_qq_view\" xmlns:topp=\"http://www.openplans.org/topp\"> " +
+                    "       <wfs:PropertyName>topp:the_geom</wfs:PropertyName> " +
+                    "       <wfs:PropertyName>topp:lessor</wfs:PropertyName> " +
+                    "       <wfs:PropertyName>topp:lessee</wfs:PropertyName> " +
+                    "       <wfs:PropertyName>topp:description</wfs:PropertyName> " +
+                    "       <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> " +
+                    "           <ogc:Not> " +
+                    "           <ogc:Disjoint> " +
+                    "               <ogc:PropertyName>sf:the_geom</ogc:PropertyName> " +
+                    "               <gml:Box srsName=\"EPSG:4267\"> " +
+                    "                   <gml:coordinates>" +  bbox.minLon + "," + bbox.minLat +
+                    " " +  bbox.maxLon + "," + bbox.maxLat + "</gml:coordinates> " +
+                    "               </gml:Box> " +
+                    "           </ogc:Disjoint> " +
+                    "           </ogc:Not> " +
+                    "       </ogc:Filter> " +
+                    "   </wfs:Query> " +
+                    "</wfs:GetFeature> ";
+
+                var url:String = getGeoServerUrlPrefix() + "wfs";
+                var hs:HTTPService = new HTTPService();
+                hs.useProxy = false;
+                hs.url = url;
+                hs.contentType = "text/xml";
+                hs.method = "POST";
+                hs.addEventListener(mx.rpc.events.ResultEvent.RESULT, onBBoxRequestResult);
+                hs.addEventListener(mx.rpc.events.FaultEvent.FAULT, onBBoxRequestFault);
+                hs.send(request);
+            }
+
+            private function clearDisplayObjectContainer(obj:DisplayObjectContainer):void {
+                var num:int = obj.numChildren;
+                for (var i:int; i<num; i++) {
+                    obj.removeChildAt(0);
+                }
+            }
+            
+            private function onBBoxRequestResult(e:mx.rpc.events.ResultEvent):void {
+//              Alert.show("Result: " + e.message.body);
+                var x:XML = new XML(e.message.body);
+//                Alert.show("onSurveyRequest: XML=" + x.toXMLString());
+                this.mapStatus.text = x.toXMLString();
+                var wfs:Namespace = x.namespace('wfs');
+                var gml:Namespace = x.namespace('gml');
+                var topp:Namespace = x.namespace('topp');
+
+                this.ddContainer.graphics.clear();
+                for each(var o:Object in x.gml::featureMember) {
+                    var coords:String = o.topp::doc_lease_tract_qq_view.topp::the_geom.gml::MultiPolygon.gml::polygonMember.gml::Polygon.gml::outerBoundaryIs.gml::LinearRing.gml::coordinates[0].text();
+                    var lessor:String = o.topp::doc_lease_tract_qq_view.topp::lessor.text();
+                    var lessee:String = o.topp::doc_lease_tract_qq_view.topp::lessee.text();
+                    var description:String = o.topp::doc_lease_tract_qq_view.topp::description.text();
+//Alert.show("renderSurvey: coords=" + coords);             
+                    var pairs:Array = coords.split(' ');
+                
+                    var ti:TractItem = new TractItem();
+//                  var ti:GeometryGroup = new GeometryGroup();
+                    ti.tooltip = lessor + "\n" + lessee + "\n" + description; 
+//                  ti.percentWidth = 100;
+//                  ti.percentHeight = 100;
+//                  var dp:TractItem = new TractItem();
+                    var dp:Polygon = new Polygon();
+                    var dpfSolid:SolidFill = new SolidFill();
+                    dpfSolid.color = "#cccc00"; 
+                    dp.fill = dpfSolid;
+                    var dpsStroke:SolidStroke = new SolidStroke();
+                    dpsStroke.alpha = 0.75;
+                    dpsStroke.color = "#ffcc00";
+                    dpsStroke.weight = 3;
+                    dp.stroke = dpsStroke;
+                    dp.data = "";
+                    var sp:Point = null;
+                    for each (var p:String in  pairs) {
+                        var pair:Array = p.split(',');
+                        var cp:Point = this._yahooMap.getLatLonToXY(new LatLon(pair[1], pair[0]));
+/*                        
+                        if ( null == sp ) {
+                            sp = cp;
+                            //this.ddContainer.graphics.beginFill(0xcccccc);
+                            this.ddContainer.graphics.lineStyle(1,0x000000);
+                            this.ddContainer.graphics.moveTo(sp.x, sp.y);
+                        } else {
+                            this.ddContainer.graphics.lineTo(cp.x, cp.y);
+                        }
+*/                        
+                        dp.data += cp.x + "," + cp.y + " ";
+                    }
+//                  this.defragaGroup.geometryCollection.addItem(dp);
+                    ti.geometryCollection.addItem(dp);
+                    this.defragaGroup.geometryCollection.addItem(ti);
+                    this.defragaGroup.addChild(ti);
+                    
+                }              
+                //this.ddContainer.graphics.endFill();
+                //this.mapStatus.text = this.defragaGroup.toString();
+            }
+
+            private function onBBoxRequestFault(e:mx.rpc.events.FaultEvent):void {
+                Alert.show("onBBoxRequest: Fault: " + e.fault.faultString);
+            }
+            
+            private function onDegrafaMouseMove(event:MouseEvent):void {
+                if ( event.target is TractItem ) {
+                    defragaSurface.toolTip = event.target.tooltip;
+                } else {
+                    defragaSurface.toolTip = "";
+                }
+                this.mapStatus.text = "onDefragaMouseMove: isTractItem=" + (event.target is TractItem);   
+            }
+            
+            private function onDegrafaMouseOut(event:MouseEvent):void {
+                this.defragaSurface.toolTip = "";
+                this.mapStatus.text = "";   
+            }
+
+            private function onDegrafaClick(event:Event):void {
+//              Alert.show("onDegrafaClick: event.target=" + event.target);
+                this.mapStatus.text = "onDefragaClick: isTractItem=" + (event.target is TractItem);   
+                if ( event.target is TractItem ) {
+                    var ti:TractItem = event.target as TractItem;
+                    ti.isSelected = !ti.isSelected;
+                }
+            }
+            
+            private function onParseDescription(event:Event):void {
+/*              
+                this.taResult.text = "";
+                for each(var token:String in TractDescriptionUtil.parse(this.tiDescription.text)) { 
+                    this.taResult.text += token + "\n";
+                }
+*/                
+            }
+           
+            private function onUploadShapefile(event:Event):void {
+                if ( null == fileRef ) {
+                    fileRef = new FileReference();
+                }
+                
+                fileRef.addEventListener(Event.SELECT, onFileSelected); 
+
+                var docFilter:FileFilter = new FileFilter("Shapefiles", "*.zip");
+                fileRef.browse([docFilter]);
+            }
+             
+            private function onFileSelected(e:Event):void 
+            {
+                var userId:int = 1;
+                var request:URLRequest = new URLRequest("shapefile_upload?userId=" + userId + "&description=Sample");
+                try {
+                    fileRef.upload(request);
+/*                    
+                    fileRef.addEventListener(ProgressEvent.PROGRESS, onFileProgress);
+                    fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onFileUploadComplete);
+                    fileRef.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+                    fileRef.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+*/                    
+                } catch (error:Error) {
+                    Alert.show("Unable to upload file.");
+                }
+            }
+
+            private function onZBWChanged(event:Event):void {
+                if (event.target == this.zbwEnabled) {
+                    this.zbwOut.selected = false;
+                } else if (event.target == this.zbwOut) {
+                    this.zbwEnabled.selected = false;
+                } else {
+                    this.zbwEnabled.selected = this.zbwOut.selected = false;
+                }
+                this.zbwContainer.visible = this.zbwEnabled.selected || this.zbwOut.selected;
+            }
+            
+            private var isWindowDefinition:Boolean = false;
+            private var zbw1:Point = null;
+            private var zbw2:Point = null;
+            
+            private function handleZBWMouseClick(event:MouseEvent):void {
+//              Alert.show("handleZBWMouseClick");
+                if ( event.buttonDown && !isWindowDefinition ) {
+                    if ( this.zbwContainer.visible ) {
+                        isWindowDefinition = true;
+                        zbw1 = new Point(zbwContainer.mouseX, zbwContainer.mouseY);
+                        zbw2 = null;
+                    }
+                } else {
+                    isWindowDefinition = false;
+                    zbw2 = new Point(zbwContainer.mouseX, zbwContainer.mouseY);
+                    zoomByWindow(zbw1, zbw2);
+                    
+                    this.zbwEnabled.selected = false;
+                    this.zbwOut.selected = false;
+                    this.zbwContainer.visible = false;
+                    this.zbwContainer.graphics.clear();
+                    zbw1 = null;
+                    zbw2 = null;
+                }
+            }
+            
+            [Bindable] private var latitudeStr:String = "";
+            [Bindable] private var longtitudeStr:String = "";
+
+            private function handleZBWMouseMove(event:MouseEvent):void {
+//              Alert.show("handleZBWMouseMove");
+                var ll:LatLon = point2LatLon(
+                    new Point(this.mapCanvas.mouseX,
+                            this.mapCanvas.mouseY));
+                this.mapStatus.text = "lat: " + ll.lat + ", lon:" + ll.lon;
+                
+                latitudeStr = "Lat: " + ll.lat.toString();
+                longtitudeStr = "Lon: " + ll.lon.toString();
+                
+                zbw2 = new Point(zbwContainer.mouseX, zbwContainer.mouseY);
+                if (zbw1 != null && zbw2 != null) {
+                    drawRect(zbw1, zbw2);
+                }
+            }
+            
+            private function drawRect(point1:Point, point2:Point):void 
+            {
+                zbwContainer.graphics.clear();
+                zbwContainer.graphics.beginFill(0xcccccc, 0.5);
+                zbwContainer.graphics.lineStyle(1, 0x666666, 0.5);
+                zbwContainer.graphics.drawRect(point1.x, point1.y, point2.x-point1.x, point2.y-point1.y);
+                zbwContainer.graphics.endFill();
+            }
+ 
+            private function point2LatLon(p:Point):LatLon {
+                var py:Point = new Point();
+                py.x = -1 * (p.x - this.mapCanvas.width/2);
+                py.y = -1 * (p.y - this.mapCanvas.height/2);
+                var ll:LatLon = this._yahooMap.getXYToLatLon(py);
+                return ll;
+            }
+            
+            private function zoomByWindow(p1:Point, p2:Point):void {           
+//              Alert.show("zoomByWindow: p1=" + p1 + ";" + "p2=" + p2);
+                var ll1:LatLon = point2LatLon(p1);                                  
+                var ll2:LatLon = point2LatLon(p2);                                  
+//              Alert.show("zoomByWindow: ll1=" + ll1 + ";" + "ll2=" + ll2);
+                if ( !this.zbwOut.selected ) {
+                    var bbox:BoundingBox = new BoundingBox(ll1, ll2);
+                    
+                    startBoundGuardTimer();
+                    
+                    this._yahooMap.setMapBounds(bbox);
+                } else {
+                    var ll:LatLon = new LatLon((ll1.lat+ll2.lat)/2,
+                            (ll1.lon+ll2.lon)/2);
+                    this._yahooMap.centerLatLon = ll;
+                    this._yahooMap.zoomLevel ++;
+                }
+            }
+            
+            protected function startBoundGuardTimer():void {
+                boundsGuardTimer = new Timer(1000, 1);
+                boundsGuardTimer.addEventListener(TimerEvent.TIMER, onBoundsGuardHandler);
+                boundsGuardTimer.start();
+            }
+            
+            private var boundsGuardTimer:Timer = null;
+
+            private function onBoundsGuardHandler(event:TimerEvent) : void 
+            {
+                this.mapStatus.text = "onBoundsGuardHandler";
+                boundsGuardTimer = null;
+                reflectMap();
+            }
+            
+            private function cbQuickZoomChangeHandler(event:Event):void 
+            {
+                _yahooMap.zoomLevel = cbQuickZoom.selectedIndex + 1;
+            }
+            
+            [Bindable] private var isLayerPanelCollapsed:Boolean = false;
+            
+            private function resetMap():void 
+            {
+                _yahooMap.zoomLevel = 9; 
+                _yahooMap.centerLatLon = new LatLon(43.13, -105.15);
+                reflectMap();
+            }
+            
+            private function handleYahooMouseMove(event:MouseEvent):void {
+                if (!_yahooMap.initialized)
+                    return;
+                
+                var ll:LatLon = point2LatLon(
+                    new Point(this._yahooMap.mouseX,
+                            this._yahooMap.mouseY));
+
+                latitudeStr = "Lat: " + ll.lat.toString();
+                longtitudeStr = "Lon: " + ll.lon.toString();
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Canvas id="mapCanvas" clipContent="true" width="100%" height="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+        <mx:Canvas id="wmsContainer" visible="true" width="100%" height="100%"/>
+        <mx:Canvas id="ddCanvas" alpha="0.5" visible="true"  clipContent="true" width="720" height="540" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <mx:UIComponent id="ddContainer"  visible="true" width="100%" height="541"/>
+        </mx:Canvas>
+        <mx:UIComponent id="umapContainer" visible="false" width="100%" height="100%"/>
+        <mx:UIComponent id="yahooContainer" visible="true" width="100%" height="100%" blendMode="{BlendMode.MULTIPLY}"/>
+        <mx:UIComponent id="gmapContainer" visible="false" width="100%" height="100%"/>
+        <mx:Canvas id="dfrContainer"  clipContent="true" width="720" height="540" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <degrafa:Surface id="defragaSurface" toolTip="leases map" width="721">
+                <degrafa:GeometryGroup id="defragaGroup" 
+                        mouseChildren="true" 
+                        mouseMove="onDegrafaMouseMove(event)" 
+                        mouseOut="onDegrafaMouseOut(event)" 
+                        click="onDegrafaClick(event)"
+                        >
+                </degrafa:GeometryGroup>
+<!--
+                        mouseChildren="true" 
+                        mouseMove="onDegrafaMouseMove(event)" 
+                        mouseOut="onDegrafaMouseOut(event)" 
+                        click="onDegrafaClick(event)">
+-->
+            </degrafa:Surface>            
+        </mx:Canvas>
+        <mx:Canvas id="zbwContainer" width="100%" height="100%" visible="false"/>
+    </mx:Canvas>
+
+    <mx:HBox id="controlBox" width="100%" backgroundColor="#999999" borderColor="#cccccc" borderStyle="solid">
+        <mx:TextArea id="mapStatus" visible="false" includeInLayout="false" width="150"/>
+        <mx:TextArea id="scaleStatus" visible="false" includeInLayout="false"/>
+        <mx:VBox>
+            <mx:Button label="USF" icon="@Embed('assets/icons16/map.png')" click="onUploadShapefile(event)"/>
+            <mx:Button label="TU" icon="@Embed('assets/icons16/map.png')" click="onUploadShapefile(event)"/>
+<!--            
+            <mx:TextArea id="taResult" visible="false" includeInLayout="false"/>
+-->                            
+        </mx:VBox>
+
+        <mx:HBox id="mapTypeBox" horizontalGap="1">
+            <mx:Button id="zbwEnabled"
+                width="22" height="22" toggle="true"
+                icon="@Embed('assets/icons16/zoom.png')" 
+                change="onZBWChanged(event)"/>
+            <mx:Button id="zbwOut" 
+                width="22" height="22" toggle="true"
+                icon="@Embed('assets/icons16/zoom_out.png')" 
+                click="onZBWChanged(event)"/>
+<!--
+            <mx:CheckBox id="zbwEnabled" label="ZBW" change="onZBWChanged(event)" />
+            <mx:CheckBox id="zbwOut" label="Out" />
+-->
+        </mx:HBox>
+        
+        <mx:Button id="btnReset"
+            width="22" height="22"
+            icon="@Embed('assets/icons16/arrow_in.png')" 
+            click="resetMap()"/>
+
+        <mx:HBox horizontalGap="0" includeInLayout="false" visible="false">
+            <mx:Label text="Quick Zoom"/>
+            <mx:ComboBox id="cbQuickZoom" 
+                dataProvider="{[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}"
+                change="cbQuickZoomChangeHandler(event)"/>
+            
+        </mx:HBox>
+
+        <mx:HBox horizontalGap="1">
+            <mx:Button id="zoomIn"
+                width="22" height="22"
+                icon="@Embed('assets/icons16/add.png')" 
+                click="onZoomChanged(event)"/>
+            <mx:Button id="zoomOut" 
+                width="22" height="22"
+                icon="@Embed('assets/icons16/delete.png')" 
+                click="onZoomChanged(event)"/>
+        </mx:HBox>
+<!--
+        <mx:Box id="layersBox">
+            <mx:CheckBox id="r100k2Enabled" label="100K2" change="onLayerBoxChanged(event)" />
+            <mx:CheckBox id="rhsEnabled" label="Hill Shade" change="onLayerBoxChanged(event)"/>
+            
+            <mx:CheckBox id="plssTwpEnabled" label="PLSS TWP" change="onLayerBoxChanged(event)"/>
+            <mx:CheckBox id="plssSecEnabled" label="PLSS SEC" change="onLayerBoxChanged(event)"/>
+            
+            <mx:CheckBox id="twpEnabled" label="Tobin TWP" change="onLayerBoxChanged(event)"/>
+            <mx:CheckBox id="secEnabled" label="Tobin SEC" change="onLayerBoxChanged(event)"/>
+            <mx:CheckBox id="qqEnabled" label="Tobin QQ" change="onLayerBoxChanged(event)"/>
+            
+            <mx:CheckBox id="gtEnabled" label="GEO_GEOMETRY" change="onLayerBoxChanged(event)"/>
+            
+            <mx:CheckBox id="ddEnabled" label="Draw Leases" change="onLayerBoxChanged(event)"/>
+        </mx:Box>
+-->
+    </mx:HBox>
+    
+    <mx:VBox backgroundColor="#ffffff" backgroundAlpha="0.5" right="8" top="30" borderColor="#cccccc" borderStyle="solid"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        verticalGap="-2">
+        <mx:Label text="{latitudeStr}" 
+            fontSize="10" color="#333333" width="120" textAlign="right"/>
+        <mx:Label text="{longtitudeStr}" 
+            fontSize="10" color="#333333" width="120" textAlign="right"/>
+    </mx:VBox>
+    
+    <mx:VBox id="boxLayers"
+        includeInLayout="false" visible="true" 
+        left="8" top="30" verticalGap="0"
+        backgroundColor="#ffffee" cornerRadius="2" 
+        borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+        
+        <mx:HBox width="100%" verticalAlign="middle"
+            backgroundColor="#ffffdd"
+            paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+            <mx:Label text="Layer Manager" fontWeight="bold"/>
+            <mx:Spacer width="100%"/>
+<!--
+            <mx:Button icon="@Embed('assets/icons16/application_put.png')" width="20" height="20" 
+                click="isLayerPanelCollapsed = !isLayerPanelCollapsed"/>
+-->
+        </mx:HBox>
+        
+        <mx:HRule width="100%" height="1"/>
+        
+        <mx:ButtonBar id="bbLayers" verticalCenter="0" buttonWidth="30" buttonHeight="24" 
+            paddingTop="2" paddingBottom="2" paddingLeft="2" paddingRight="2"
+            visible="{!isLayerPanelCollapsed}" includeInLayout="{!isLayerPanelCollapsed}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/add.png')"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')"/>
+                <mx:Object icon="@Embed('assets/icons16/map.png')"/>
+                <mx:Object icon="@Embed('assets/icons16/pencil.png')"/>
+                <mx:Object icon="@Embed('assets/icons16/report_add.png')"/>
+                <mx:Object icon="@Embed('assets/icons16/report_edit.png')"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+        
+        <mx:VBox verticalAlign="top"
+            paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+            visible="{!isLayerPanelCollapsed}" includeInLayout="{!isLayerPanelCollapsed}">
+            <mx:VBox verticalGap="0">
+<!--        
+                <mx:TextInput id="tiDescription"/>
+                <mx:Button label="Parse" click="this.onParseDescription(event)"/>
+                <mx:TextArea id="taResult"/>
+-->             
+                <mx:Label text="Tobin" fontWeight="bold"/>
+                <mx:HBox>
+                    <mx:Spacer width="30"/>
+                    <mx:VBox verticalGap="-2">
+                        <mx:CheckBox id="twpEnabled" 
+                            label="Tobin TWP" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="secEnabled" 
+                            label="Tobin SEC" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="qqEnabled" 
+                            label="Tobin QQ" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+            
+            <mx:VBox verticalGap="0">
+                <mx:Label text="PLSS" fontWeight="bold"/>
+                <mx:HBox>
+                    <mx:Spacer width="30"/>
+                    <mx:VBox verticalGap="-2">
+                        <mx:CheckBox id="plssTwpEnabled" 
+                            label="PLSS TWP" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="plssSecEnabled" 
+                            label="PLSS SEC" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+            
+            <mx:VBox verticalGap="0">
+                <mx:Label text="Leases" fontWeight="bold"/>
+                <mx:HBox>
+                    <mx:Spacer width="30"/>
+                    <mx:VBox verticalGap="-2">
+                        <mx:CheckBox id="intersectsEnabled" 
+                            label="Intersections" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="tractsEnabled" 
+                            label="Tracts" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="orphansEnabled" 
+                            label="Orphans" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="ddEnabled" 
+                            label="Draw Leases" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="0">
+                <mx:Label text="Topo" fontWeight="bold"/>
+                <mx:HBox>
+                    <mx:Spacer width="30"/>
+                    <mx:VBox verticalGap="-2">
+                        <mx:CheckBox id="r100k2Enabled"
+                            label="100K2" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                        <mx:CheckBox id="rhsEnabled" 
+                            label="Hill Shade" change="onLayerBoxChanged(event)" verticalCenter="0"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+</mx:Canvas>

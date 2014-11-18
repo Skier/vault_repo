@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2D07CC44-C065-4C78-9D91-1A5D1942FADA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.LeadCentral.Service</RootNamespace>
+    <AssemblyName>Dalworth.LeadCentral.Service</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\libs\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\libs\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseService.cs" />
+    <Compile Include="BillingPlan.cs" />
+    <Compile Include="BillingService.cs" />
+    <Compile Include="ContextHelper.cs" />
+    <Compile Include="IdsCustomerService.cs" />
+    <Compile Include="IdsInvoiceService.cs" />
+    <Compile Include="IdTypeUtil.cs" />
+    <Compile Include="LeadService.cs" />
+    <Compile Include="LeadSourceService.cs" />
+    <Compile Include="NotificationService.cs" />
+    <Compile Include="OAuthContext.cs" />
+    <Compile Include="OAuthKeyStore.cs" />
+    <Compile Include="PhoneService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QbInvoiceService.cs" />
+    <Compile Include="QbUserService.cs" />
+    <Compile Include="ServmanCustomerService.cs" />
+    <Compile Include="SessionSettings.cs" />
+    <Compile Include="SyncService.cs" />
+    <Compile Include="UserService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.LeadCentral.Cryptographer\Dalworth.LeadCentral.Cryptographer.csproj">
+      <Project>{89568870-7936-427C-A67F-C1C71F3BF3BA}</Project>
+      <Name>Dalworth.LeadCentral.Cryptographer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.LeadCentral.Domain\Dalworth.LeadCentral.Domain.csproj">
+      <Project>{CC3FBF92-44AE-4204-BABD-EA07D3ACC8CC}</Project>
+      <Name>Dalworth.LeadCentral.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.LeadCentral.Notification\Dalworth.LeadCentral.Notification.csproj">
+      <Project>{29D19028-D9D5-4DFE-8848-2C57E36103EB}</Project>
+      <Name>Dalworth.LeadCentral.Notification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.LeadCentral\Dalworth.LeadCentral.csproj">
+      <Project>{18BD1B3C-B288-494D-B764-FB2ADD033F9A}</Project>
+      <Name>Dalworth.LeadCentral</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Common.Util\Intuit.Common.Util.csproj">
+      <Project>{A88AADC5-BBB1-44D9-A9B1-B44C4F99215B}</Project>
+      <Name>Intuit.Common.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Platform.Client.Core.IDS\Intuit.Platform.Client.Core.IDS.csproj">
+      <Project>{6A66048A-5225-460C-87F7-5E151CC8489C}</Project>
+      <Name>Intuit.Platform.Client.Core.IDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Platform.Client.Core\Intuit.Platform.Client.Core.csproj">
+      <Project>{8E64A6C8-61F6-4EA3-80A3-FD0B8318D0B0}</Project>
+      <Name>Intuit.Platform.Client.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Platform.Client.OAuth.Common\Intuit.Platform.Client.OAuth.Common.csproj">
+      <Project>{163F74B9-311C-435D-9789-09074FC626F1}</Project>
+      <Name>Intuit.Platform.Client.OAuth.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Platform.Client.OAuth\Intuit.Platform.Client.OAuth.csproj">
+      <Project>{F9C46C39-A451-4249-BEDD-4053036E0FF4}</Project>
+      <Name>Intuit.Platform.Client.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Sb.Cdm\Intuit.Sb.Cdm.csproj">
+      <Project>{1354CDE6-C21F-4514-8D56-9E85E2602405}</Project>
+      <Name>Intuit.Sb.Cdm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TwilioApi\TwilioApi.csproj">
+      <Project>{894FF9E8-4DBF-4472-8AE2-1A6A988E105B}</Project>
+      <Name>TwilioApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

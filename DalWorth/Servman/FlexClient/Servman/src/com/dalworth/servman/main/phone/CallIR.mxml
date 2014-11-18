@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="pickUp", type="com.dalworth.servman.main.phone.PhoneCallEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.PhoneCall;
+			
+			private var _phoneCall:PhoneCall;
+			[Bindable]
+			public function get phoneCall():PhoneCall { return _phoneCall; }
+			public function set phoneCall(value:PhoneCall):void 
+			{
+				_phoneCall = value;
+				
+			}
+			
+			private function onPickUp():void 
+			{
+				dispatchEvent(new PhoneCallEvent(PhoneCallEvent.PICK_UP, phoneCall));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:PhoneFormatter id="fPhone" formatString="##(###) ###-####"/>
+
+	<mx:HBox paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		<mx:HBox borderColor="#999999" borderStyle="solid" backgroundColor="#FFFFFF" cornerRadius="3"
+			 paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+			<mx:Label text="Calling from:"/>
+			<mx:Label text="{fPhone.format(phoneCall.PhoneFrom)}" fontWeight="bold" color="#000000"/>
+			<mx:Label text="to:"/>
+			<mx:Label text="{fPhone.format(phoneCall.PhoneTo)}" fontWeight="bold" color="#000000"/>
+			<mx:Button label="Redirect to me" click="onPickUp()"/>
+		</mx:HBox>
+	</mx:HBox>
+</mx:Canvas>

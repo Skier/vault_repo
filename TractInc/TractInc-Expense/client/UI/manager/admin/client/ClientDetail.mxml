@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	title="Edit Client info."
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.ClientDataObject;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.Responder;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var client:ClientDataObject;
+		
+            public static function Open(client:ClientDataObject, parent:DisplayObject, modal:Boolean = true):ClientDetail {
+                var popup:ClientDetail = new ClientDetail();
+                popup.client = client;
+	
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%">
+		<mx:HBox>
+			<mx:Label text="Client Name:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtClientName" text="{client.ClientName}" width="150"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Client Address:" width="100" textAlign="right"/>
+			<mx:TextArea id="txtClientAddress" text="{client.ClientAddress}" width="150" height="80"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Spacer width="100"/>
+			<mx:CheckBox id="cbIsActive" label="Is Active" selected="{client.Active}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox
+		width="100%"
+		visible="{0 == client.ClientId}"
+		includeInLayout="{0 == client.ClientId}">
+        <mx:DataGrid
+        	width="100%"
+        	height="75"
+        	editable="true"
+        	dataProvider="{new ArrayCollection(client.DefaultRates)}">
+        	<mx:columns>
+        		<mx:DataGridColumn
+        			dataField="InvoiceItemTypeName"
+        			headerText="Item Type"
+        			editable="false"
+        			fontWeight="bold" />
+        		<mx:DataGridColumn
+        			dataField="InvoiceRate"
+        			headerText="Invoice Rate"
+        			editable="true"
+        			/>
+        	</mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+        
+	<mx:HRule width="100%"/>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Ok"
+			enabled="{txtClientName.text.length > 0 &amp;&amp; txtClientAddress.text.length > 0}"/>
+		<mx:Button id="btnCancel" label="Cancel"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

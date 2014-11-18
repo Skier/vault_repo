@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee"
+	xmlns:components="components.*" xmlns:Common="Domain.Common.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+			public function IsValid():Boolean {
+				
+				var isValid:Boolean = true;
+				
+				if (phoneHomeV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(phoneHome);
+					}
+					isValid = false;
+				}
+				
+				if (phoneOfficeV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(phoneOffice);
+					}
+					isValid = false;
+				}
+				
+				if (phoneCellV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(phoneCell);
+					}
+					isValid = false;
+				}
+				
+				if (phoneAltV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(phoneAlt);
+					}
+					isValid = false;
+				}
+				
+				return isValid;
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<Common:PhonesValidator id="phoneHomeV" source="{phoneHome}" property="text" required="false"/>
+	<Common:PhonesValidator id="phoneOfficeV" source="{phoneOffice}" property="text" required="false"/>
+	<Common:PhonesValidator id="phoneCellV" source="{phoneCell}" property="text" required="false"/>
+	<Common:PhonesValidator id="phoneAltV" source="{phoneAlt}" property="text" required="false"/>
+	
+	<mx:Form width="100%">
+ 	
+		<mx:FormItem label="Home Phone Number">
+			<components:MaskedInput id="phoneHome"
+				text="{controller.Model.participant.PhoneHome}"
+				inputMask="(###) ###-####"
+				change="controller.Model.participant.PhoneHome = phoneHome.text"
+				/>
+		</mx:FormItem>
+ 		<mx:FormItem label="Office Phone Number">
+			<components:MaskedInput id="phoneOffice" 
+				text="{controller.Model.participant.PhoneOffice}"
+				inputMask="(###) ###-####"
+				change="controller.Model.participant.PhoneOffice = phoneOffice.text"
+				/>
+		</mx:FormItem>
+		<mx:FormItem label="Cell Phone Number">
+			<components:MaskedInput id="phoneCell" 
+				text="{controller.Model.participant.PhoneCell}"
+				inputMask="(###) ###-####"
+				change="controller.Model.participant.PhoneCell = phoneCell.text"
+				/>
+		</mx:FormItem>
+		<mx:FormItem label="Alter Phone Number">
+			<components:MaskedInput id="phoneAlt" 
+				text="{controller.Model.participant.PhoneAlt}"
+				inputMask="(###) ###-####"
+				change="controller.Model.participant.PhoneAlt = phoneAlt.text"
+				/>
+		</mx:FormItem>
+
+	</mx:Form>
+	
+</mx:VBox>

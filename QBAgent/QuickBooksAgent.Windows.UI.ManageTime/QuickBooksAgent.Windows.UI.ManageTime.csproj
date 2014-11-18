@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5DE9FC86-5B00-4554-848A-117D1F7B2717}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QuickBooksAgent.Windows.UI.ManageTime</RootNamespace>
+    <AssemblyName>qagent.managetime</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>QuickBooksAgent.Windows.UI.ManageTime</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WINCE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SpDebug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\SP\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SMARTPHONE</DefineConstants>
+    <FileAlignment>512</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\QuickBooksAgent.Domain\QuickBooksAgent.Domain.csproj">
+      <Project>{9E79227D-559C-4098-A37F-B43F87A756E2}</Project>
+      <Name>QuickBooksAgent.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows.UI.Controls\QuickBooksAgent.Windows.UI.Controls.csproj">
+      <Project>{6B1B2BE3-E169-4B7A-8350-C9418385276E}</Project>
+      <Name>QuickBooksAgent.Windows.UI.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows\QuickBooksAgent.Windows.csproj">
+      <Project>{44411246-FF53-488A-AA72-1F887E823BB8}</Project>
+      <Name>QuickBooksAgent.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent\QuickBooksAgent.csproj">
+      <Project>{951A1DEB-1305-4D9A-B280-99C667F48248}</Project>
+      <Name>QuickBooksAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Menu\ManageTimeMenuController.cs" />
+    <Compile Include="Menu\ManageTimeMenuModel.cs" />
+    <Compile Include="Menu\ManageTimeMenuView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Menu\ManageTimeMenuView.Designer.cs">
+      <DependentUpon>ManageTimeMenuView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Single\SingleTimeTrackingController.cs" />
+    <Compile Include="Single\SingleTimeTrackingModel.cs" />
+    <Compile Include="Single\SingleTimeTrackingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Single\SingleTimeTrackingView.Designer.cs">
+      <DependentUpon>SingleTimeTrackingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Weekly\WeeklyTimeTrackingController.cs" />
+    <Compile Include="Weekly\WeeklyTimeTrackingModel.cs" />
+    <Compile Include="Weekly\WeeklyTimeTrackingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Weekly\WeeklyTimeTrackingView.Designer.cs">
+      <DependentUpon>WeeklyTimeTrackingView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Menu\ManageTimeMenuView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ManageTimeMenuView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Single\SingleTimeTrackingView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SingleTimeTrackingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Weekly\WeeklyTimeTrackingView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>WeeklyTimeTrackingView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

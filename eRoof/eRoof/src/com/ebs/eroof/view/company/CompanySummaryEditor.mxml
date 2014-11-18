@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{model != null}" xmlns:controls="com.ebs.controls.*" height="720" width="773" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	>
+	
+    <mx:Metadata>
+        [Event(name="endEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.core.Application;
+			import com.ebs.eroof.model.wrapper.Segment;
+			import com.ebs.eroof.model.wrapper.Company;
+			import com.ebs.eroof.dto.Consultant_DTO;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			
+			[Bindable]
+			private var consultantDTO:Consultant_DTO;
+			
+			private var _model:Company;
+			[Bindable]
+			public function get model():Company { return _model; }
+			public function set model(value:Company):void 
+			{
+				_model = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				if (model != null)
+					consultantDTO = model.consultantDTO;
+				else 
+					consultantDTO = null;
+				
+				updateTotals();
+			}
+			
+			[Bindable] private var totalClients:Number;
+			[Bindable] private var totalFacilities:Number;
+			[Bindable] private var totalSections:Number;
+			[Bindable] private var totalSqFt:Number;
+			[Bindable] private var totalValue:Number;
+			
+			private function updateTotals():void
+			{
+				totalClients = totalFacilities = totalSections = totalSqFt = totalValue = 0;
+
+				if (consultantDTO != null)
+				{ 
+					for each (var segment:Segment in model.segmentCollection) 
+					{
+						totalClients += segment.totalClients;
+						totalFacilities += segment.totalFacilities;
+						totalSections += segment.totalSections;
+						totalSqFt += segment.totalSqFt;
+						totalValue += segment.totalValue;
+					}
+				}
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				
+				return result;
+			}
+			
+			private function populateModel():void 
+			{
+				consultantDTO.CompanyName = txtCompanyName.text;
+				consultantDTO.Contact = txtContact.text;
+				consultantDTO.Address = txtAddress.text;
+			}
+			
+			private function updateSection():void 
+			{
+				Application.application.enabled = false;
+				
+				populateModel();
+				
+				isBusy = true;
+				
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreModel, consultantDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(consultantDTO, callBackEvent);
+            	ev.dispatch();
+			}
+			
+            private function onStoreModel(storedObject:Consultant_DTO):void 
+            {
+            	consultantDTO = storedObject;
+				Application.application.enabled = true;
+
+				isBusy = false;
+
+				dispatchEvent(new Event("endEdit"));
+            }
+			
+			private function onClickSave():void 
+			{
+				if (isFormValid()) 
+					updateSection();
+			}
+			
+			private function onClickCancel():void 
+			{
+				dispatchEvent(new Event("endEdit"));
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Label id="lblCompanyName" y="10" fontSize="14" text="{consultantDTO.CompanyName}" left="10" width="465"/>
+
+	<mx:LinkButton label="Save" width="100" click="onClickSave()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="483"/>
+	<mx:LinkButton label="Cancel" click="onClickCancel()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="591" width="100"/>
+
+	<mx:HRule left="10" width="681" top="43"/>
+
+	<mx:Label x="10" y="55" text="Business Name" textAlign="right" width="150"/>
+	<mx:TextInput x="168" y="53" id="txtCompanyName" width="508" text="{consultantDTO.CompanyName}"/>
+
+	<mx:Label x="10" y="85" text="Contact" textAlign="right" width="150"/>
+	<mx:TextInput x="168" y="83" id="txtContact" width="508" text="{consultantDTO.Contact}"/>
+
+	<mx:Label x="10" y="114" text="Address" textAlign="right" width="150"/>
+	<mx:TextArea id="txtAddress" x="168" y="113" width="508" height="82" text="{consultantDTO.Address}"/>
+
+	<mx:Label x="10" y="205" text="Total # of clients" textAlign="right" width="150"/>
+	<mx:Label x="168" y="203" 
+		text="{totalClients}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="233" text="Total # of facilities" textAlign="right" width="150"/>
+	<mx:Label x="168" y="231" 
+		text="{totalFacilities}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="261" text="Total # of sections" textAlign="right" width="150"/>
+	<mx:Label x="168" y="259" 
+		text="{totalSections}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="289" text="Total Sq. Ft" textAlign="right" width="150"/>
+	<mx:Label x="168" y="287" 
+		text="{totalSqFt}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+
+	<mx:Label x="10" y="317" text="Total Est Asset Value" textAlign="right" width="150"/>
+	<mx:Label x="168" y="315" 
+		text="{cf.format(totalValue)}"
+		textAlign="right" fontWeight="bold" width="150" fontSize="12"/>
+</mx:Canvas>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Client Editor">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Clients_DTO;
+			import com.ebs.eroof.model.wrapper.Client;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var provinces:ArrayCollection;
+			
+			[Bindable]
+			private var countries:ArrayCollection;
+			
+			[Bindable]
+			public var client:Client;
+			
+            public static function open(parent:DisplayObject, client:Client, modal:Boolean = true):ClientEditPopup
+            {
+                var popup:ClientEditPopup = new ClientEditPopup();
+                
+                popup.client = client;
+                popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	provinces = client.clientDTO.Province_Info.choiceArray;
+            	countries = client.clientDTO.Country_Info.choiceArray;
+            	
+            	populateFields();
+            }
+            
+            private function populateFields():void 
+            {
+            	comboCountry.selectedItem = client.clientDTO.Country;
+            	comboProvince.selectedItem = client.clientDTO.Province;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vClientName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vBriefName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vAddress.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vCity.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vProvince.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vPostalCode.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vCountry.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	client.clientDTO.ClientName = txtClientName.text;
+            	client.clientDTO.BriefName = txtBriefName.text;
+            	client.clientDTO.Address = txtAddress.text;
+            	client.clientDTO.City = txtCity.text;
+            	client.clientDTO.PostalCode = txtPostalCode.text;
+            	client.clientDTO.Province = comboProvince.selectedItem as String;
+            	client.clientDTO.Country = comboCountry.selectedItem as String;
+            }
+            
+            private function storeClient():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreClient, client.clientDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(client.clientDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreClient(storedClient:Clients_DTO):void 
+            {
+            	client.clientDTO = storedClient;
+            	client.addToSegment();
+            	
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	if (!isFormValid())
+            		return;
+            		
+            	storeClient();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+            private function comboProvinceChangeHandler():void 
+            {
+            }
+			
+            private function comboCountryChangeHandler():void 
+            {
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vClientName" source="{txtClientName}" property="text" required="true"/>
+	<mx:StringValidator id="vBriefName" source="{txtBriefName}" property="text" required="true"/>
+	<mx:StringValidator id="vAddress" source="{txtAddress}" property="text" required="true"/>
+	<mx:StringValidator id="vCity" source="{txtCity}" property="text" required="true"/>
+	<mx:StringValidator id="vProvince" source="{comboProvince}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vPostalCode" source="{txtPostalCode}" property="text" required="true"/>
+	<mx:StringValidator id="vCountry" source="{comboCountry}" property="selectedLabel" required="true"/>
+	
+	<mx:Form id="clientForm">
+		<mx:FormItem label="Client Name" required="true">
+			<mx:TextInput id="txtClientName" text="{client.clientDTO.ClientName}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Brief Name" required="true">
+			<mx:TextInput id="txtBriefName" text="{client.clientDTO.BriefName}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Address" required="true">
+			<mx:TextArea id="txtAddress" text="{client.clientDTO.Address}" width="100%" height="50"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="City" required="true">
+			<mx:TextInput id="txtCity" text="{client.clientDTO.City}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Province" required="true">
+			<mx:ComboBox id="comboProvince" dataProvider="{provinces}" change="comboProvinceChangeHandler()"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Postal Code" required="true">
+			<mx:TextInput id="txtPostalCode" text="{client.clientDTO.PostalCode}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Country" required="true">
+			<mx:ComboBox id="comboCountry" dataProvider="{countries}" change="comboCountryChangeHandler()"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+<!--	
+	<widgets:IDNForm id="clientForm" dto="{client.clientDTO}">
+		<widgets:IDNField fieldName="ClientName" fieldLabel="Client Name" required="true"/>
+		<widgets:IDNField fieldName="BriefName" fieldLabel="Brief Name" required="false"/>
+		<widgets:IDNField fieldName="Address" fieldLabel="Address" required="false"/>
+		<widgets:IDNField fieldName="City" fieldLabel="City" required="false"/>
+		<widgets:IDNField fieldName="Province" fieldLabel="Province" required="false"/>
+		<widgets:IDNField fieldName="PostalCode" fieldLabel="Postal Code" required="false"/>
+		<widgets:IDNField fieldName="Country" fieldLabel="Country" required="false"/>
+	</widgets:IDNForm>
+-->	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

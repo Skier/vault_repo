@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="636" 
+	height="100%" 
+	xmlns="*" 
+	xmlns:m="UI.Management.TestDrive.*"
+	creationComplete="{Controller = new TestDriveController(ParentController,TestDriveView(this))}">
+<mx:Script>
+    <![CDATA[
+    	import UI.AppSettings;
+    	import UI.Management.CodeGen.CodeFormat;
+    	import mx.charts.chartClasses.DataDescription;
+    	import mx.controls.dataGridClasses.DataGridColumn;
+    	import mx.controls.TextInput;
+    	import mx.events.ListEvent;
+    	import mx.events.TreeEvent;
+    	import mx.rpc.xml.DataType;
+    	import UI.Management.*;
+    	import UI.Management.ServiceBrowser.*;
+    	
+	[Bindable]
+	public var Controller:TestDriveController;
+	
+	[Bindable]
+	public var ParentController:ManagementController;
+
+	private function renderResultNode(item:Object):String
+	{
+		var objectBrowser:ObjectBrowser = ObjectBrowser(item);
+		
+		if(objectBrowser.IsComplex())
+			return objectBrowser.Name;
+		else if(objectBrowser.IsArray())
+			return objectBrowser.Name + " Array(" + objectBrowser.Items.length.toString() + " items)";
+			
+		return objectBrowser.Name + " : " + objectBrowser.Value;
+	}
+
+	// Expand node is it not open
+	private function OnGridClick(event:Event):void
+	{
+		var treeGridNode:TreeGridNode = TreeGridNode( m_grdArgs.selectedItem );
+		
+		if(Controller.Model.TreeGridAdapter.m_dataDescriptor.isBranch(treeGridNode.Value) && 
+			!Controller.Model.TreeGridAdapter.isBranchLoaded(treeGridNode))
+		{
+			Controller.Model.TreeGridAdapter.loadBranch(treeGridNode);
+		}
+	}
+	
+	private function renderDataType(item:Object, column:DataGridColumn):String
+	{
+		var serviceDataTypeContainer:ServiceDataTypeContainer = ServiceDataTypeContainer(item.Value);
+		
+		if(serviceDataTypeContainer.DataType.IsArray())
+			return "Array of " + serviceDataTypeContainer.DataType.ElementType.Name + " (" + 
+			item.Items.length.toString() + " items)";
+		
+		return serviceDataTypeContainer.DataType.Name;
+	}
+    ]]>
+</mx:Script>
+	<mx:Label x="10" y="10" text="Invoking method:"/>
+	<mx:Label x="124" y="10" text="{Controller.Model.InvocationInfo}"/>
+	<mx:HDividedBox height="100%" width="100%" y="30">
+		<mx:VBox width="50%" height="100%">
+			<mx:Label text="Arguments:" />
+			<mx:DataGrid 
+				height="100%"
+				width="100%" 
+				sortableColumns="false" rowHeight="26" id="m_grdArgs" click="OnGridClick(event)"  dataProvider="{Controller.Model.TreeGridAdapter}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Name" textAlign="left">
+						<mx:itemRenderer>
+							<mx:Component>
+								<m:TestDriveArgRenderer />
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="Type" textAlign="left" labelFunction="renderDataType"  />
+					<mx:DataGridColumn headerText="Value" textAlign="left" rendererIsEditor="true">
+						<mx:itemRenderer>
+							<mx:Component>
+								<m:TestDriveArgEditor width="100%" />
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:CheckBox id="m_expandArgs" selected="{AppSettings.Instance.AutoexpandTestDriveArgs}" change="{AppSettings.Instance.AutoexpandTestDriveArgs = m_expandArgs.selected}" label="Autoexpand arguments" />
+		</mx:VBox>
+		<mx:Canvas height="100%" width="50%">
+			<mx:Button label="Invoke" x="10" y="8" click="Controller.Invoke()" />
+			<mx:Label text="Invocation duration(ms):"  x="84" y="10"/>
+			<mx:Label text="{Controller.Model.InvocationDuration}"  x="227" y="10"/>
+			<mx:Button label="Download Code" click="Controller.OnDownloadClick()"  x="10" y="36" width="123"/>
+			<mx:ComboBox textAlign="left" id="m_codeFormats" dataProvider="{Controller.Model.Parent.CodeFormats}" labelField="Name"  x="141" y="36">
+				<mx:change>
+					<![CDATA[
+						Controller.Model.CurrentCodeFormat = CodeFormat(m_codeFormats.selectedItem);
+					]]>
+				</mx:change>
+			</mx:ComboBox>
+			<mx:VDividedBox
+				label="Result"
+				x="0" 
+				y="70" height="100%" width="100%">
+			<mx:Tree 
+				id="m_result"
+				click="ManagementController.expandTreeNode(m_result)"
+				dataProvider="{Controller.Model.Result}"  
+				height="50%" 
+				width="100%" 
+				textAlign="left" 
+				dataDescriptor="{new ObjectBrowserTreeDataDescriptor()}" 
+				change="Controller.OnResultNodeChanged(event)"
+				labelFunction="renderResultNode"
+				/>
+			<mx:DataGrid id="m_grid" height="50%" width="100%" dataProvider="{Controller.Model.CurrentResultArray}" />
+			</mx:VDividedBox>
+		</mx:Canvas>
+	</mx:HDividedBox>
+</mx:Canvas>

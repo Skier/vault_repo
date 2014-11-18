@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox  height="100%" width="100%" dataChange="onDataChanged()" xmlns:mx="http://www.adobe.com/2006/mxml" backgroundColor="{_color}">
+	<mx:Script>
+	<![CDATA[
+		import Domain.RouteStop;
+		import Domain.JobTicket;
+		
+		[Bindable]
+		private var _color:uint;
+		private function onDataChanged():void{
+			
+			if (data != null){
+				var routeStop:RouteStop = RouteStop(data);
+				var jobTicket:JobTicket = routeStop.jobTicket;
+				if (jobTicket != null){
+					if (this.lblTicketNumber != null){
+						this.lblTicketNumber.text = String(jobTicket.ticketNumber);
+						this.lblType.text = jobTicket.type;
+						 
+						if (jobTicket.status == JobTicket.PENDING_DISPATCH_STATUS){
+								 _color = 0x00ff40;
+						}
+						else if (jobTicket.status == JobTicket.INWORK){
+								_color = 0x0080ff;		
+						}
+					}
+				}
+			}
+		} 
+	]]>
+</mx:Script>
+
+	<mx:Label id="lblTicketNumber">
+	</mx:Label>
+	
+	<mx:Label id="lblType">
+	</mx:Label>
+	
+</mx:VBox>
+

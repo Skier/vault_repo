@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+
+            [Embed(source="assets/icons16/pencil.png")]
+            [Bindable]
+            private var imgEdit:Class;
+            
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            private function onEditHandler():void 
+            {
+            	dispatchEvent(new Event("editTractCriteriaRequest", true));
+            }
+
+            private function onDeleteHandler():void 
+            {
+            	dispatchEvent(new Event("deleteTractCriteriaRequest", true));
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{imgEdit}" width="16" height="16" toolTip="Edit Criteria" click="onEditHandler()"/>
+
+    <mx:Image source="{imgDelete}" width="16" height="16" toolTip="Delete Criteria" click="onDeleteHandler()"/>
+
+</mx:HBox>

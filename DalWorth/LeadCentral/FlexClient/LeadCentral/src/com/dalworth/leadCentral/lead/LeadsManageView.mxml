@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.affilia.controls.*"
+	initialize="onInit()" 
+	creationComplete="onCreate()" xmlns:filter="com.dalworth.leadCentral.lead.filter.*" xmlns:lead="com.dalworth.leadCentral.lead.*" xmlns:voice="com.affilia.voice.*" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.MainModel;
+			import mx.collections.ArrayCollection;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.events.LeadEvent;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.core.Application;
+			import com.affilia.util.DateUtil;
+			import mx.events.CloseEvent;
+			import mx.events.ListEvent;
+			import mx.events.ItemClickEvent;
+			import mx.controls.Alert;
+			
+			private static const COLUMN_LEAD_SOURCE:String = "Lead Source";
+			private static const COLUMN_CUSTOMER:String = "Customer";
+			private static const COLUMN_FROM_PHONE:String = "From Phone";
+			private static const COLUMN_DATE_CREATED:String = "Created";
+			private static const COLUMN_LEAD_STATUS:String = "Lead Status";
+			private static const COLUMN_INVOICE_STATUS:String = "Invoice Status";
+			private static const COLUMN_INVOICE_AMOUNT:String = "Closed Amount";
+			
+			[Bindable]
+			public var isReadOnly:Boolean;
+
+            [Embed(source="/assets/icons24/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+            [Embed(source="/assets/icons16/resultset_first.png")]
+            [Bindable]
+            private var imgFirst:Class;
+            
+            [Embed(source="/assets/icons16/resultset_first_disabled.png")]
+            [Bindable]
+            private var imgFirstDisabled:Class;
+            
+            [Embed(source="/assets/icons16/resultset_last.png")]
+            [Bindable]
+            private var imgLast:Class;
+            
+            [Embed(source="/assets/icons16/resultset_last_disabled.png")]
+            [Bindable]
+            private var imgLastDisabled:Class;
+            
+            [Embed(source="/assets/icons16/resultset_prev.png")]
+            [Bindable]
+            private var imgPrev:Class;
+            
+            [Embed(source="/assets/icons16/resultset_prev_disabled.png")]
+            [Bindable]
+            private var imgPrevDisabled:Class;
+            
+            [Embed(source="/assets/icons16/resultset_next.png")]
+            [Bindable]
+            private var imgNext:Class;
+            
+            [Embed(source="/assets/icons16/resultset_next_disabled.png")]
+            [Bindable]
+            private var imgNextDisabled:Class;
+            
+			[Bindable]
+			private var model:LeadsManageModel;
+			private var controller:LeadsManageController;
+			
+			[Bindable]
+			private var timer:Timer;
+			
+			public function init():void 
+			{
+				//timer.start();
+				refreshLeads();
+			}
+			
+			private function onInit():void 
+			{
+				model = LeadsManageModel.getInstance();
+				controller = new LeadsManageController(this);
+
+				//initTimer();
+			}
+			
+			private function onCreate():void 
+			{
+				if (viewLeadFilter != null)
+				{
+					model.leads.removeAll();
+					viewLeadFilter.init();
+				}
+				
+				ChangeWatcher.watch(dgLeads, "selectedItem", onSelectLead);
+				
+				switch (MainModel.getInstance().currentUser.RoleName)
+				{
+					case User.ROLE_ADMINISTRATOR :
+						setAdminMode();
+						return;
+					case User.ROLE_STAFF :
+						setStuffMode();
+						return;
+					case User.ROLE_BUSINESS_PARTNER :
+						setPartnerMode();
+						return;
+				}
+
+			}
+			
+			private function setAdminMode():void
+			{
+				columnInvoice.itemRenderer = new ClassFactory(InvoiceAmountIR);
+			}
+			
+			private function setStuffMode():void
+			{
+				setAdminMode();
+			}
+			
+			private function setPartnerMode():void
+			{
+				columnInvoice.itemRenderer = new ClassFactory(InvoiceAmountIR);
+			}
+			
+			private function onSelectLead(e:*):void 
+			{
+				voicePlayer.stopPlaying();
+				
+				var lead:Lead = dgLeads.selectedItem as Lead;
+				if (lead == null || lead.RelatedPhoneCall == null || lead.RelatedPhoneCall.RecordingUrl == null)
+				{
+					voicePlayer.visible = voicePlayer.includeInLayout = false;
+					voicePlayer.voiceFileUrl = null;
+				} else 
+				{
+					voicePlayer.visible = voicePlayer.includeInLayout = true;
+					voicePlayer.voiceFileUrl = lead.RelatedPhoneCall.RecordingUrl + ".mp3";
+				}
+			}
+			
+			private function onLeadOpen(event:LeadEvent):void 
+			{
+				event.stopPropagation();
+				openLead(event.lead);
+			}
+			
+			private function onLeadMatch(event:LeadEvent):void 
+			{
+				event.stopPropagation();
+				dispatchEvent(new LeadEvent(LeadEvent.LEAD_MATCH, event.lead));
+			}
+			
+			private function initTimer():void 
+			{
+				timer = new Timer(3000);
+				timer.addEventListener(TimerEvent.TIMER, onTimerTick);
+				//timer.start();
+			}
+			
+			private function onTimerTick(event:TimerEvent):void 
+			{
+				refreshLeads();
+			}
+			
+			private function onShow():void 
+			{
+				//timer.start();
+				refreshLeads();
+			}
+			
+			private function onHide():void 
+			{
+				//timer.stop();
+			}
+			
+			public function refreshLeads():void 
+			{
+				if (!controller)
+					return;
+					
+				if (viewLeadFilter != null)
+					controller.refreshLeads(viewLeadFilter.getFilter());
+			}
+			
+			private function onNewClick():void 
+			{
+				 var lead:Lead = new Lead();
+				 lead.LeadStatusId = LeadStatusEnum.NEW;
+				 openLead(lead);
+			}
+			
+			private function openLead(lead:Lead):void 
+			{
+				voicePlayer.stopPlaying();
+				dispatchEvent(new LeadEvent(LeadEvent.LEAD_OPEN, lead));
+			}
+/* 			
+			private function onCreateLead():void 
+			{
+				 var lead:Lead = new Lead();
+				 lead.LeadStatusId = LeadStatusEnum.NEW;
+				 LeadCreatePopup.open(Application.application as DisplayObject, lead);
+			}
+ */			
+			private var _selectedLead:Lead;
+			[Bindable]
+			private function get selectedLead():Lead { return _selectedLead; }
+			private function set selectedLead(value:Lead):void 
+			{
+				_selectedLead = value;
+			} 
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is Lead) 
+				{
+					var lead:Lead = item as Lead;
+					switch (column.headerText) 
+					{
+						case COLUMN_LEAD_SOURCE :
+							var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(lead.LeadSourceId) as LeadSource;
+							if (leadSource)
+								return leadSource.Name;
+							else 
+								return "[undefined]";
+						
+						case COLUMN_FROM_PHONE :
+							if (lead.RelatedPhoneCall != null && lead.RelatedPhoneCall.PhoneFrom != null)
+								return lead.RelatedPhoneCall.PhoneFrom;
+							else if (lead.RelatedSms != null && lead.RelatedSms.PhoneFrom != null)
+								return lead.RelatedSms.PhoneFrom;
+							else 
+								return "";
+						
+						case COLUMN_CUSTOMER :
+							return (lead.FirstName + " " + lead.LastName);
+						
+						case COLUMN_DATE_CREATED :
+							return DateUtil.getDateTimeStr(lead.DateCreated);
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			public function selectLead(lead:Lead):void 
+			{
+				if (model.leads.length == 0 || !model.leads.contains(lead))
+				{
+					model.leads.addItem(lead);
+					model.leads.refresh();
+				}
+				var idx:int = model.leads.getItemIndex(lead);
+				dgLeads.selectedIndex = idx;
+				dgLeads.scrollToIndex(idx);
+			}
+			
+			private function openSelected():void 
+			{
+				if (dgLeads.selectedItem != null)
+				{
+					var lead:Lead = dgLeads.selectedItem as Lead;
+					openLead(lead);
+				}
+			}
+			
+			private function onLeadsDoubleClick(event:ListEvent):void 
+			{
+				openSelected();
+			}
+			
+			private function onFilterChange():void 
+			{
+				if (controller)
+				{
+					model.leads.removeAll();
+					controller.refreshLeads(viewLeadFilter.getFilter());
+				}
+			}
+			
+			private function onRefreshClick():void 
+			{
+				refreshLeads();
+			}
+			
+            private function goFirst():void 
+            {
+            	controller.goFirst();
+            }
+            
+            private function goPrev():void 
+            {
+            	controller.goPrev();
+            }
+            
+            private function goNext():void 
+            {
+            	controller.goNext();
+            }
+            
+            private function goLast():void 
+            {
+            	controller.goLast();
+            }
+            
+            private function cbPageSizeChangeHandler():void 
+            {
+                var pgNum:int = new int(cbPageSize.selectedLabel);
+                controller.setPageSize(pgNum);
+                dgLeads.rowCount = model.pageSize + 1;            
+            }
+            
+            private function cbCurrentPageChangeHandler():void 
+            {
+                controller.setCurrentPage(cbCurrentPage.selectedIndex + 1);            
+            }
+
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=98";
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0" backgroundColor="#FFFFFF">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Leads List" fontSize="24" color="#666666"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button height="35" label="Create New" click="onNewClick()" fontSize="14" icon="{imgPlus}" 
+				visible="{MainModel.getInstance().currentUser.RoleName != User.ROLE_BUSINESS_PARTNER}"/>
+		</mx:HBox> 
+		
+		<mx:Spacer width="100%" height="5"/>
+
+		<lead:SummaryView width="100%" summary="{model.summary}"/>
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<filter:LeadsFilterView id="viewLeadFilter" width="100%" filterChange="onFilterChange()"
+			borderColor="#7CB8EB" borderStyle="solid" dropShadowEnabled="true" shadowDistance="0" shadowDirection="center"
+			denyRefresh="{model.isBusy}"/>
+		
+		<mx:Spacer width="100%" height="5"/>
+
+        <mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingBottom="2" paddingTop="2" horizontalGap="2"
+            borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+            backgroundColor="#eeeeee">
+            <mx:Button width="20" height="20" cornerRadius="2"
+                icon="{(model.currentPage != 1) ? imgFirst : imgFirstDisabled}" toolTip="First" 
+                click="goFirst()" enabled="{model.currentPage != 1}"/> 
+
+            <mx:Button width="20" height="20" cornerRadius="2" 
+                icon="{(model.currentPage != 1) ? imgPrev : imgPrevDisabled}" toolTip="Previous" 
+                click="goPrev()" enabled="{model.currentPage != 1}"/> 
+
+            <mx:ComboBox id="cbCurrentPage" dataProvider="{model.pages}" height="20" width="70" verticalCenter="0"
+                selectedIndex="{(model.currentPage - 1)}" labelField="label" cornerRadius="2"
+                change="cbCurrentPageChangeHandler()"/>
+
+            <mx:Button width="20" height="20" cornerRadius="2"
+                icon="{(model.currentPage != model.pages.length) ? imgNext : imgNextDisabled}" toolTip="Next" 
+                click="goNext()" enabled="{model.currentPage != model.pages.length}"/> 
+
+            <mx:Button width="20" height="20" cornerRadius="2" 
+                icon="{(model.currentPage != model.pages.length) ? imgLast : imgLastDisabled}" toolTip="Last" 
+                click="goLast()" enabled="{model.currentPage != model.pages.length}"/>
+
+            <mx:Spacer width="100%"/>
+
+            <mx:HBox horizontalGap="0">
+                <mx:Label text="Total Leads:"/>
+                <mx:Label text="{model.leadsCount.toString()}" fontWeight="bold"/>
+                <mx:Label text="Page:"/>
+                <mx:Label text="{model.currentPage.toString()}" fontWeight="bold"/>
+                <mx:Label text="of"/>
+                <mx:Label text="{model.pages.length.toString()}" fontWeight="bold"/>
+                <mx:Label text="Page size:"/>
+                <mx:ComboBox id="cbPageSize" dataProvider="{[25,50,100]}" width="60" height="20" verticalCenter="0" cornerRadius="2"
+                    change="cbPageSizeChangeHandler()"/>
+            </mx:HBox>
+        </mx:HBox>
+
+		<mx:VBox width="100%" height="100%">
+			<mx:DataGrid id="dgLeads" dataProvider="{model.leads}" width="100%" height="100%" minWidth="600"
+				sortableColumns="false" draggableColumns="false" editable="false" resizableColumns="true"
+				doubleClickEnabled="true" itemDoubleClick="onLeadsDoubleClick(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.leadCentral.lead.LeadTransportIR"/>
+					<mx:DataGridColumn headerText="{COLUMN_LEAD_SOURCE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="200" minWidth="50"/>
+					<mx:DataGridColumn headerText="{COLUMN_CUSTOMER}" itemRenderer="mx.controls.Label" labelFunction="getLabel"/>
+					<mx:DataGridColumn headerText="{COLUMN_DATE_CREATED}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="150" minWidth="50"/>
+					<mx:DataGridColumn headerText="{COLUMN_FROM_PHONE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="150" minWidth="50"/>
+					<mx:DataGridColumn headerText="{COLUMN_LEAD_STATUS}" textAlign="center" width="100" minWidth="50" itemRenderer="com.dalworth.leadCentral.lead.LeadStatusIR"/>
+<!--
+					<mx:DataGridColumn headerText="{COLUMN_INVOICE_STATUS}" textAlign="center" width="80" minWidth="50" itemRenderer="com.dalworth.leadCentral.lead.InvoiceStatusIR"/>
+-->
+					<mx:DataGridColumn id="columnInvoice" headerText="{COLUMN_INVOICE_AMOUNT}" textAlign="right" width="100" minWidth="120"/>
+				</mx:columns>
+			</mx:DataGrid>
+
+			<voice:VoicePlayer id="voicePlayer" width="100%" layout="horizontal" showHeader="true" visible="false" includeInLayout="false"/>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:Label text="[refreshing...]" visible="{model.isBusy}" bottom="0" right="0"/>
+</mx:Canvas>

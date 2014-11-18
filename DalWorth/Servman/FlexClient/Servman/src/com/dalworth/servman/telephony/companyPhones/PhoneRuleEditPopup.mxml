@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	title="Phone Call Workflow" xmlns:controls="com.affilia.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.CallWorkflow;
+			import com.dalworth.servman.events.PhoneCallWorkflowEvent;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.servman.domain.PhoneCallWorkflow;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.Phone;
+			import mx.managers.PopUpManager;
+			
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			[Bindable] public var rule:PhoneCallWorkflow;
+
+            [Bindable] private var weekDays:ArrayCollection;
+            [Bindable] private var dayTimes:ArrayCollection;
+            [Bindable] private var phonesFrom:ArrayCollection;
+            [Bindable] private var workflows:ArrayCollection;
+
+            public static function open(parent:DisplayObject, rule:PhoneCallWorkflow, modal:Boolean = true):PhoneRuleEditPopup
+            {
+                var popup:PhoneRuleEditPopup = new PhoneRuleEditPopup();
+                popup.rule = rule;
+                popup.init();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	initWeekDays();
+            	initDayTimes();
+            	initPhonesFrom();
+            	initWorkflows();
+            }
+            
+            private function initWeekDays():void 
+            {
+            	weekDays = DateUtil.getWeekDays();
+            }
+            
+            private function initDayTimes():void 
+            {
+            	dayTimes = DateUtil.getDayTimes();
+            }
+            
+            private function initPhonesFrom():void 
+            {
+            	if (phonesFrom == null)
+            		phonesFrom = new ArrayCollection();
+            	
+            	phonesFrom.removeAll();
+
+            	PhoneService.getInstance().getAllPhones().addResponder(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+            				var result:Array = event.result as Array;
+
+            				phonesFrom.addItem(Phone.getEmpty());
+            				
+            				for each(var phone:Phone in result)
+            				{
+            					if (phone.Id != rule.RelatedPhoneTo.Id)
+            						phonesFrom.addItem(phone);
+            				}
+            			}, 
+            			function (event:FaultEvent):void 
+            			{
+            			}
+            		));
+            }
+            
+            private function initWorkflows():void 
+            {
+            	if (workflows == null)
+            		workflows = new ArrayCollection();
+            		
+            	workflows.removeAll();
+
+            	PhoneService.getInstance().getAllWorkflows().addResponder(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+            				workflows.source = event.result as Array;
+            			}, 
+            			function (event:FaultEvent):void 
+            			{
+            			}
+            		));
+            }
+            
+            private function getRule():PhoneCallWorkflow 
+            {
+            	var result:PhoneCallWorkflow = rule.prepareToSend();
+            	
+            	result.FromPhoneId = (comboPhoneFrom.selectedItem as Phone).Id;
+            	result.FromPhoneNumber = (comboPhoneFrom.selectedItem as Phone).Number;
+            	
+            	result.CallWorkflowId = (comboWorkflow.selectedItem as CallWorkflow).Id;
+            	
+            	if (radioDayRange.selected)
+            	{
+	            	result.FromWeekDay = comboDayFrom.value as int;
+	            	result.ToWeekDay = comboDayTo.value as int;
+            	} else 
+            	{
+	            	result.FromWeekDay = 0;
+	            	result.ToWeekDay = 0;
+            	}
+            	
+            	if (radioTimeRange.selected)
+            	{
+	            	result.FromTime = comboTimeFrom.selectedItem["value"] as String;
+	            	result.ToTime = comboTimeTo.selectedItem["value"] as String;
+            	} else 
+            	{
+	            	result.FromTime = null;
+	            	result.ToTime = null;
+            	}
+            	
+            	return result;
+            }
+            
+            private function onOk():void 
+            {
+            	isBusy = true;
+            	PhoneService.getInstance().savePhoneCallWorkflow(getRule()).addResponder(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void
+            			{
+			            	isBusy = false;
+			            	
+			            	rule.applyFields(event.result as PhoneCallWorkflow);
+			            	rule.RelatedPhoneFrom = comboPhoneFrom.selectedItem as Phone;
+			            	rule.RelatedWorkflow = comboWorkflow.selectedItem as CallWorkflow;
+			            	
+            				dispatchEvent(new PhoneCallWorkflowEvent(PhoneCallWorkflowEvent.PHONE_CALL_WORKFLOW_SAVE, rule));
+            				
+            				close();
+            			}, 
+            			function (event:FaultEvent):void 
+            			{
+			            	isBusy = false;
+			            	Alert.show(event.fault.message);
+            			}
+            		));
+            }
+            
+            private function onCancel():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%" borderColor="#666666" borderStyle="solid" fontSize="12" enabled="{!isBusy}">
+		<mx:FormItem label="Select Workflow:" width="100%">
+			<controls:ComboBox id="comboWorkflow" 
+				dataProvider="{workflows}" labelField="Description"
+				valueField="Id" value="{rule.RelatedWorkflow.Id}" width="100%" fontSize="12"/>
+		</mx:FormItem>
+		
+		<mx:HRule width="100%" height="1"/>
+		
+		<mx:FormItem label="From Phone:" width="100%">
+			<controls:ComboBox id="comboPhoneFrom" 
+				dataProvider="{phonesFrom}" labelField="Number"
+				valueField="Id" value="{rule.RelatedPhoneFrom.Id}" width="100%"/>
+		</mx:FormItem>
+		
+		<mx:FormHeading width="100%" label="Time restrictions:"/>
+
+		<mx:FormItem label="Week Days:" width="100%">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:RadioButton id="radioDayAny" groupName="weekDays" label="Any" selected="{rule.FromWeekDay == 0 || rule.ToWeekDay == 0}"/>
+				<mx:RadioButton id="radioDayRange" groupName="weekDays" label="Range" selected="{rule.FromWeekDay != 0 &amp;&amp; rule.ToWeekDay != 0}"/>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="from:" width="100%" visible="{radioDayRange.selected}" includeInLayout="{radioDayRange.selected}">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<controls:ComboBox id="comboDayFrom" 
+					dataProvider="{weekDays}" labelField="label"
+					valueField="data" value="{rule.FromWeekDay}" width="100%"/>
+				
+				<mx:Label text=" to:"/>
+				
+				<controls:ComboBox id="comboDayTo" 
+					dataProvider="{weekDays}" labelField="label"
+					valueField="data" value="{rule.ToWeekDay}" width="100%"/>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="Time:" width="100%">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:RadioButton id="radioTimeAny" groupName="dayTimes" label="Any" selected="{rule.FromTime == null || rule.ToTime == null}"/>
+				<mx:RadioButton id="radioTimeRange" groupName="dayTimes" label="Range" selected="{rule.FromTime != null &amp;&amp; rule.ToTime != null}"/>
+			</mx:HBox>
+		</mx:FormItem>
+
+		<mx:FormItem label="from:" width="100%" visible="{radioTimeRange.selected}" includeInLayout="{radioTimeRange.selected}">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<controls:ComboBox id="comboTimeFrom" 
+					dataProvider="{dayTimes}" labelField="label"
+					valueField="data" value="{rule.FromTime}" width="100%"/>
+				
+				<mx:Label text=" to:"/>
+				
+				<controls:ComboBox id="comboTimeTo" 
+					dataProvider="{dayTimes}" labelField="label"
+					valueField="data" value="{rule.ToTime}" width="100%"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnOk" label="Ok" width="80" click="onOk()" enabled="{!isBusy}"/>
+		<mx:LinkButton label="Cancel" click="onCancel()"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

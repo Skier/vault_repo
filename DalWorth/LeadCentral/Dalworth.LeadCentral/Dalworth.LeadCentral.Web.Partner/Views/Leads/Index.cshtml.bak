@@ -1,0 +1,40 @@
+﻿@model Dalworth.LeadCentral.Web.Partner.Models.LeadsList
+
+@{
+    ViewBag.Title = "Leads List";
+}
+
+<h2>Leads List</h2>
+
+<table>
+  <tr>
+    <th>Call</th>
+    <th>Lead Source</th>
+    <th>Customer</th>
+    <th>Date Created</th>
+    <th>From Phome</th>
+    <th>Lead Status</th>
+    <th>Closed Amount</th>
+  </tr>
+  @{
+      foreach (var item in Model.LeadItems)
+      {
+  <tr>
+  @if (string.IsNullOrEmpty(item.RecordingUrl))
+  {
+    <td style="border: 1 solid #CCC">&nbsp;</td>
+  }
+  else 
+  {
+    <td style="border: 1 solid #CCC"><a href="@item.RecordingUrl">Play</a></td>
+  }
+    <td style="border: 1 solid #CCC">@item.LeadSource</td>
+    <td style="border: 1 solid #CCC">@item.Customer</td>
+    <td style="border: 1 solid #CCC">@item.DateCreated</td>
+    <td style="border: 1 solid #CCC">@item.PhoneFrom</td>
+    <td style="border: 1 solid #CCC">@item.LeadStatus.ToString()</td>
+    <td style="border: 1 solid #CCC">@item.ClosedAmount</td>
+  </tr>
+      }
+  }
+</table>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Account" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    xmlns:cmAccountRate="tractIncContractManager.account.rate.*"
+    xmlns:cmClientContact="tractIncContractManager.account.clientContact.*"
+    xmlns:cmCompanyContact="tractIncContractManager.account.companyContact.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.Account;
+            import TractInc.Domain.AccountType;
+            import TractInc.Domain.Company;
+            import TractInc.Domain.Client;
+            import tractIncContractManager.ContractManagerController;
+            
+            [Bindable]
+            private var controller:AccountController = null;
+            private var currentAccount:Account = null;
+                
+            public static function open(ctrl:AccountController, account:Account, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, account);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:AccountController, cp:Account):void
+            {
+                controller = ctrl;
+                currentAccount = cp;
+            }
+            
+            public function init():void
+            {
+                this.cbAccountType.dataProvider =
+                        controller.parentController.model.contractManagerPackage.AccountTypeList;
+                this.cbAccountType.labelField = "TypeName";
+                
+                this.cbClient.dataProvider =
+                        controller.parentController.model.contractManagerPackage.ClientList;
+                this.cbClient.labelField = "ClientName";
+
+                var parents:Array = [null];
+                for each (var a:Account in controller.parentController.model.contractManagerPackage.AccountList) {
+                    parents.push(a);
+                }
+                this.cbParentAccount.dataProvider = parents;
+                this.cbParentAccount.labelField = "AccountName";
+                
+                if ( null != currentAccount ) {
+                    this.txtAccountName.text = currentAccount.AccountName;
+                    this.cbAccountType.selectedItem = 
+                            getAccountTypeById(currentAccount.AccountTypeId);
+                    this.cbClient.selectedItem = 
+                            getClientById(currentAccount.ClientId);
+                    if ( 0 != currentAccount.ParentAccountId ) {
+                        var parent:Account = getAccountById(currentAccount.ParentAccountId);
+                        if ( null != parent ) {
+                            this.cbParentAccount.selectedItem = parent;
+                        }
+                    }                    
+                } else {
+                    currentAccount = new Account();
+                }
+            }
+            
+            private function getAccountTypeById(id:int):AccountType
+            {
+                for each (var status:AccountType in controller.parentController.model.contractManagerPackage.AccountTypeList) {
+                    if ( id == status.AccountTypeId ) {
+                        return status;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getAccountById(id:int):Account
+            {
+                for each (var item:Account in controller.parentController.model.contractManagerPackage.AccountList) {
+                    if ( id == item.AccountId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getCompanyById(id:int):Company
+            {
+                for each (var item:Company in ContractManagerController.getInstance().model.contractManagerPackage.CompanyList) {
+                    if ( id == item.CompanyId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getClientById(id:int):Client
+            {
+                for each (var item:Client in ContractManagerController.getInstance().model.contractManagerPackage.ClientList) {
+                    if ( id == item.ClientId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getAccount():Account
+            {
+                currentAccount.CompanyId = (ContractManagerController.getInstance().model.contractManagerPackage.CompanyList[0] as Company).CompanyId;
+                currentAccount.AccountName = this.txtAccountName.text;
+                currentAccount.AccountTypeId = 
+                        (this.cbAccountType.selectedItem as AccountType).AccountTypeId;
+                currentAccount.ClientId = 
+                        (this.cbClient.selectedItem as Client).ClientId;
+                        
+                if ( null != this.cbParentAccount.selectedItem ) {
+                    currentAccount.ParentAccountId = 
+                        (this.cbParentAccount.selectedItem as Account).AccountId;
+                } else {
+                    currentAccount.ParentAccountId = 0;
+                }  
+                             
+                return currentAccount;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveAccount(getAccount());
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{cbClient}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{txtAccountName}" property="text" required="true"/>
+        <mx:StringValidator source="{cbAccountType}" property="selectedItem" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:VBox>
+        <mx:Form id="mainForm" 
+            backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+            paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+            width="100%">
+    
+            <mx:FormItem label="Client" width="100%" required="true">
+                <mx:ComboBox id="cbClient" enabled="false" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Parent Account" width="100%">
+                <mx:ComboBox id="cbParentAccount" enabled="false" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Name" width="100%" required="true">
+                <mx:TextInput id="txtAccountName" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Type" width="100%" required="true">
+                <mx:ComboBox id="cbAccountType" width="100%"/>
+            </mx:FormItem>
+        </mx:Form>
+                
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

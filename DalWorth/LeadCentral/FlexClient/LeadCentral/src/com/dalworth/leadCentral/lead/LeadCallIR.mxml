@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.binding.utils.ChangeWatcher;
+			
+            [Embed(source="/assets/icons16/sound.png")]
+            [Bindable]
+            private var imgSound:Class;
+
+            [Embed(source="/assets/icons16/sound_none.png")]
+            [Bindable]
+            private var imgSoundNone:Class;
+
+            [Embed(source="/assets/icons16/sound_mute.png")]
+            [Bindable]
+            private var imgSoundMute:Class;
+
+			[Bindable]
+			private var lead:Lead;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+
+				if (value is Lead)
+				{
+					lead = value as Lead;
+					ChangeWatcher.watch(lead, "RelatedPhoneCall", onPhoneCallChange); 
+				}
+				setImageSource();
+			} 
+			
+			private function onPhoneCallChange(event:*):void 
+			{
+				setImageSource();
+			}
+			
+			private function setImageSource():void 
+			{
+				if (lead.RelatedPhoneCall != null)
+				{
+					if (lead.RelatedPhoneCall.CallStatus.toUpperCase() == "COMPLETED")
+					{
+						imgCall.source = imgSoundNone;
+					} else if (lead.RelatedPhoneCall.CallStatus.toUpperCase() == "FAILED")
+					{
+						imgCall.source = imgSoundMute;
+					} else if (lead.RelatedPhoneCall.CallStatus.toUpperCase() == "NO ANSWER")
+					{
+						imgCall.source = imgSoundMute;
+					} else 
+					{
+						imgCall.source = imgSound;
+					}
+				} else 
+				{
+					imgCall.source = null;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Image id="imgCall" horizontalAlign="center" verticalAlign="middle"/>
+	</mx:VBox>
+
+</mx:Canvas>

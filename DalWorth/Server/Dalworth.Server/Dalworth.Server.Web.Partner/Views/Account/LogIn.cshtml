@@ -1,0 +1,91 @@
+﻿@model Dalworth.Server.Web.Partner.Models.LogOnModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Partner In Profit - LogIn</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/screen.css")" type="text/css" media="screen" title="default" />
+    <script src="@Url.Content("~/Scripts/jquery-1.4.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/custom_jquery.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+
+
+</head>
+<body id="content-outer">
+    <div id="login-holder">
+        
+	    <div id="logo-login"></div>         
+        <div id="content-table-inner">
+
+        @if (!MvcHtmlString.IsNullOrEmpty(Html.ValidationSummary(true)) || ViewData["FailMessage"] != null){
+		    <div id="message-red">
+		    <table border="0" width="100%" cellpadding="0" cellspacing="0">
+		    <tr>
+			    <td class="red-left">
+                    @(ViewData["FailMessage"] != null ? MvcHtmlString.Create(Html.Encode(ViewData["FailMessage"])) : Html.ValidationSummary(true))
+			    <td class="red-right"><a class="close-red"><img src="../Content/images/table/icon_close_red.gif"   alt="" /></a></td>
+		    </tr>
+		    </table>
+		    </div>        
+        }
+
+        @if (ViewData["SuccessMessage"] != null){
+		    <div id="message-green">
+		    <table border="0" width="100%" cellpadding="0" cellspacing="0">
+		    <tr>
+			    <td class="green-left">
+                    @Html.Encode(ViewData["SuccessMessage"])
+			    <td class="green-right"><a class="close-green"><img src="../Content/images/table/icon_close_green.gif"   alt="" /></a></td>
+		    </tr>
+		    </table>
+		    </div>        
+        }
+
+
+        </div>
+        <div class="clear"></div>
+
+@using (Html.BeginForm("LogIn", "Account", FormMethod.Post, new { id = "LoginForm" })) {
+	    <div id="loginbox">	
+	        <div id="login-inner">
+		        <table border="0" cellpadding="0" cellspacing="0">
+		        <tr>
+			        <th>Email</th>
+			        <td>
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "login-inp" })
+                    </td>
+		        </tr>
+		        <tr>
+			        <th>Password</th>
+			        <td>
+                        @Html.PasswordFor(m => m.Password, new { @onfocus = "this.value=''", @class = "login-inp" })
+                    </td>
+		        </tr>
+		        <tr>
+			        <th></th>
+			        <td valign="top">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "checkbox-size", @id = "login-check" })
+                            <label for="login-check">Remember me</label>
+                    </td>
+		        </tr>
+		        <tr>
+			        <th></th>
+			        <td>                        
+                        <input id="SubmitButton" type="submit" class="submit-login"/>
+                    </td>
+		        </tr>
+		        </table>
+	        </div>
+ 	        
+	        <div class="clear"></div>
+            @Html.ActionLink("Forgot your password?", "ForgotPassword", new { controller = "Account" }, new { @class="forgot-pwd" })	        
+        </div>
+}
+    </div>
+</body>
+</html>

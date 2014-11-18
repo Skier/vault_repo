@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:startup="com.llsvc.startup.*"
+    backgroundGradientColors="[#ffffff, #ffffff]" 
+    minWidth="490" 
+    minHeight="330"
+	width="100%" 
+	height="100%"
+	layout="absolute"
+	creationComplete="start()">
+
+    <mx:Script>
+        <![CDATA[
+			import flash.system.Security;
+			
+			private const VERSION_NUMBER:String = "1.0.2 dev";
+			
+			public function start():void {
+				Security.allowDomain("*");
+				Security.allowInsecureDomain("*");
+			}
+        ]]>
+    </mx:Script>
+
+    <mx:Style source="/css/style.css"/>
+
+	<startup:MainView width="100%" height="100%"/>
+	
+	<mx:Label text="ver. {VERSION_NUMBER}" right="0" bottom="0" fontSize="9"/>
+	
+</mx:Application>

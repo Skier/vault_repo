@@ -1,0 +1,77 @@
+﻿@using Dalworth.LeadCentral.Web.Models.User
+@model UserEdit
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Details", new { id = Model.UserId }, new{@class="button"})</div>
+      <h1>User [@Model.UserScreenName]</h1>
+    </div>
+    <div class="content">
+        @Html.HiddenFor(model => model.UserId)
+
+        @if (Model.DenyChangePartner)
+        {
+            <text>@Html.HiddenFor(model => model.PartnerId)</text>
+        }
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> First Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.UserFirstName, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.UserFirstName)
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Last Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.UserLastName, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.UserLastName)
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Screen Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.UserScreenName, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.UserScreenName)
+              </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><span class="required">*</span> Email</td>
+                <td>
+                @Html.TextBoxFor(model => model.UserEmail, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.UserEmail)</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><span class="required">*</span> Phone</td>
+                <td>
+                @Html.TextBoxFor(model => model.UserPhone)
+                @Html.ValidationMessageFor(model => model.UserPhone)</td>
+            </tr>
+            @if (!Model.DenyChangePartner){
+            <tr>
+              <td style="text-align:right;">User Role</td>
+              <td>@Html.DropDownList("UserRole", new SelectList(Model.UserRoleList, Model.UserRole))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.PartnerId))</td>
+            </tr>
+            }
+          </table>
+        </div>
+    </div>
+  </div>
+
+}

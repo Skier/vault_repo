@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    xmlns:lm="com.llsvc.client.lm.*"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.LeaseBreakdown;
+        	import mx.collections.ArrayCollection;
+        	import com.llsvc.domain.LeaseClause;
+        	import com.llsvc.domain.County;
+        	import com.llsvc.domain.State;
+        	import com.llsvc.domain.Lease;
+        	import com.llsvc.domain.Document;
+        	import com.llsvc.domain.DocumentActor;
+        	
+        	[Bindable]
+        	private var lease:Lease = null;
+        	[Bindable]
+        	private var _breakdownData:ArrayCollection = new ArrayCollection();
+        	
+        	public function getLease():Lease {
+        		if ( null == lease ) {
+    				lease = new Lease();
+    				lease.document = new Document();
+    				lease.clause = new LeaseClause();
+	        	}
+/*	        	
+    			lease.document.state = this.cbState.selectedItem as State;
+    			lease.document.county = this.cbCounty.selectedItem as County;
+    			lease.document.docNo = this.txtDocNo.text;
+    			lease.document.docDate = this.dtDocDate.selectedDate;
+*/    			
+    			
+    			var actors:ArrayCollection = new ArrayCollection();
+    			for each (var act:DocumentActor in this.davLessor.actors) {
+    				act.isGiver = true;
+//    				act.address.state = lease.document.state; // to do: fix it
+    				actors.addItem(act);
+    			}
+    			for each (var act2:DocumentActor in this.davLessee.actors) {
+    				act2.isGiver = false;
+//    				act2.address.state = lease.document.state; // to do: fix it
+    				actors.addItem(act2);
+    			}
+    			lease.document.actors = actors;
+/*
+			    lease.volume = this.txtVolume.text;
+			    lease.page = this.txtPage.text;
+*/			    
+			    lease.prospectName = this.txtProspectName.text;
+			    lease.leaseDate = this.dtLease.selectedDate;
+			    lease.effectiveDate = this.dtEffDate.selectedDate;
+			    lease.term = new int(this.txtTerm.text);
+			    lease.isPaidUp = this.chbPaidUp.selected;
+			    lease.royalty = new Number(this.fiRoyalty.decInput.text);
+			    lease.bonusRate = new Number(this.txtBonusPerAcre.text);
+			    lease.bonusAmount = new Number(this.txtTotalBonus.text);
+			    
+			    lease.clause.depth = this.sppView.chbDepthLimit.selected;
+			    lease.clause.damage = this.sppView.chbSurfDamages.selected;
+			    lease.clause.pugh = this.sppView.chbPugh.selected;
+			    lease.clause.shutInGasWell = this.sppView.chbWellInformation.selected;
+			    lease.clause.takeGasRoyInKind = this.sppView.chbRoyaltyInKind.selected;
+			    lease.clause.other = this.sppView.chbOther.selected;
+			    lease.clause.otherDescription = this.sppView.taOtherDesc.text;
+			    lease.clause.surfaceUse = this.sppView.chbSurfUse.selected;
+			    lease.clause.contDrilling = this.sppView.chbContDevel.selected;
+			    lease.clause.favoredNations = this.sppView.chbFavNations.selected;
+			    lease.clause.optionToExtent = this.sppView.chbOptToExt.selected;
+			    lease.clause.assignment = this.sppView.chbReqConsAssign.selected;
+			    lease.clause.prodPayment = this.sppView.chbProdPayment.selected;
+			    lease.clause.poolingProvision = this.sppView.chbPoolProvision.selected;
+			    lease.clause.minRoyaltyPayment = this.sppView.chbMinimumRoyalty.selected;
+			    lease.clause.renewalOption = this.sppView.chbOptToRenew.selected;
+			    lease.clause.hbp = this.sppView.chbHBP.selected;
+			    lease.clause.spacingProvision = this.sppView.chbSpacingProvision.selected;
+			    lease.clause.lesserInterest = this.sppView.chbLesserInt.selected;
+			    lease.clause.reworkDays = this.sppView.chbReworkDays.selected;
+			 
+			 	var breakdown:ArrayCollection = new ArrayCollection();
+			 	lease.breakdown = breakdown;
+			 	
+			 	var b1:LeaseBreakdown = new LeaseBreakdown();
+			 	b1.township = "39 North";
+			 	b1.range = "56 West, 6. P.M.";
+			 	b1.section = "24: S/2";
+			 	b1.interest = 0.08333;
+			 	b1.grossAcres = 320.00;
+			 	breakdown.addItem(b1);
+			 	
+			 	var b2:LeaseBreakdown = new LeaseBreakdown();
+			 	b2.township = "38 North";
+			 	b2.range = "56 West, 6. P.M.";
+			 	b2.section = "22: All";
+			 	b2.interest = 0.041667;
+			 	b2.grossAcres = 640.00;
+			 	breakdown.addItem(b2);
+			 	
+    			return lease;
+        	}
+     
+     		public function setLease(l:Lease):void {
+     			lease = l;
+/*     			
+    			this.cbState.selectedItem = lease.document.state;
+    			this.cbCounty.selectedItem = lease.document.county;
+    			this.txtDocNo.text = lease.document.docNo;
+    			this.dtDocDate.selectedDate = lease.document.docDate;
+*/    			
+    			// to do: fix it
+    			this.davLessor.actors = lease.document.actors;
+    			this.davLessee.actors = lease.document.actors;
+    			
+    			this._breakdownData.removeAll();
+    			for each (var b:LeaseBreakdown in lease.breakdown) {
+    				this._breakdownData.addItem(b);
+    			}
+     		}   
+     			
+            private function onStateChange(event:Event):void {
+            	this.cbCounty.dataProvider = this.cbState.selectedItem.counties;
+            }
+            
+            private function netAcresLabelFunction(item:LeaseBreakdown, column:DataGridColumn):String {
+                return (item.interest * item.grossAcres).toString();
+            }
+            
+            private function bonusAmountLabelFunction(item:LeaseBreakdown, column:DataGridColumn):String {
+                return (item.interest * item.grossAcres * item.lease.bonusAmount).toString();
+            }
+            
+            private function extBonusAmountLabelFunction(item:LeaseBreakdown, column:DataGridColumn):String {
+                return (item.interest * item.grossAcres * item.lease.bonusAmount).toString();
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox height="100%" width="100%">
+        <mx:Form>
+        <mx:HBox>
+            <mx:FormItem label="Prospect Name:" required="true">
+        		<mx:TextInput id="txtProspectName"/>
+            </mx:FormItem>
+            <mx:FormItem label="Doc No:" required="true">
+        		<mx:TextInput id="txtDocNo" width="80"/>
+            </mx:FormItem>
+            <mx:FormItem label="Doc Date:" required="true">
+        		<mx:DateField id="dtDocDate"/>
+            </mx:FormItem>
+            <mx:FormItem label="State:" required="true">
+        		<mx:ComboBox id="cbState" labelField="name" width="80" change="onStateChange(event)"/>
+            </mx:FormItem>
+            <mx:FormItem label="County:" required="true">
+        		<mx:ComboBox id="cbCounty" labelField="name" width="100"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="Lessor:" required="true">
+        		<lm:DocumentActorsView id="davLessor"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="Lessee:" required="true">
+        		<lm:DocumentActorsView id="davLessee"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="Volume:" required="true">
+        		<mx:TextInput id="txtVolume"/>
+            </mx:FormItem>
+            <mx:FormItem label="Page:" required="true">
+        		<mx:TextInput id="txtPage"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="Lease Date:" required="true">
+        		<mx:DateField id="dtLease"/>
+            </mx:FormItem>
+            <mx:FormItem label="Term:" required="true">
+        		<mx:TextInput id="txtTerm"/>
+            </mx:FormItem>
+            <mx:FormItem label="Eff. Date:" required="true">
+        		<mx:DateField id="dtEffDate"/>
+            </mx:FormItem>
+            <mx:FormItem label="Exp. Date:" required="true">
+        		<mx:DateField id="dtExpDate"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="PAID UP:" required="true">
+        		<mx:CheckBox id="chbPaidUp"/>
+            </mx:FormItem>
+            <mx:FormItem label="Bonus per Acre:" required="true">
+        		<mx:TextInput id="txtBonusPerAcre"/>
+            </mx:FormItem>
+            <mx:FormItem label="Total Bonus:" required="true">
+        		<mx:TextInput id="txtTotalBonus"/>
+            </mx:FormItem>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:FormItem label="Royalty:" required="true">
+        		<component:FracInput id="fiRoyalty"/>
+            </mx:FormItem>
+            <mx:FormItem label="Option to Extent:" required="false">
+        		<mx:TextArea id="taOptToExt"/>
+            </mx:FormItem>
+        </mx:HBox>
+        </mx:Form>
+        
+    	<mx:TabBar dataProvider="{vsExtra}" height="24" horizontalCenter="0" width="100%"/>
+    	<mx:ViewStack id="vsExtra" width="100%">
+    		<mx:Canvas label="APPLICABLE CLAUSES">
+       			<lm:SpecialProvisionsView id="sppView"/>
+    		</mx:Canvas>
+    		<mx:Canvas label="BREAKDOWN">
+			    <mx:DataGrid id="dgBreakdown" 
+			        left="10" 
+			        right="10" 
+			        top="0" 
+			        bottom="10" 
+			        width="100%" 
+			        height="70"
+			        editable="true"
+			        dataProvider="{_breakdownData}"
+			        >
+			        <mx:columns>
+			            <mx:DataGridColumn id="dgcTownship" headerText="Township" dataField="township" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcRange" headerText="Range" dataField="range" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcSection" headerText="Section" dataField="section" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcInt" headerText="Int." dataField="interest" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcGrossAcres" headerText="Gross Acres" dataField="grossAcres" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcNetAcres" headerText="Net Acres" labelFunction="netAcresLabelFunction" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcBonusAmount" headerText="Bonus Amount" labelFunction="bonusAmountLabelFunction" width="130" resizable="false"/>
+			            <mx:DataGridColumn id="dgcBonusAmount2" headerText="Bonus Amount (Ext)" labelFunction="extBonusAmountLabelFunction" width="110" resizable="false"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+    		</mx:Canvas>
+    		<mx:Canvas label="DOCUMENT FURNISHED">
+            	<lm:DocumentFurnishedView id="dofView" enabled="{null != lease}"/>
+    		</mx:Canvas>
+       	</mx:ViewStack>
+
+    </mx:VBox>
+
+</mx:Canvas>

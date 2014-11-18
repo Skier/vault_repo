@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+ 	horizontalScrollPolicy="off"
+    doubleClickEnabled="true" 	
+    paddingLeft="3"
+	>
+	<mx:Script>
+		<![CDATA[
+
+			[Bindable]
+			[Embed(source="/images/folder.png")]
+			private var icoFolder:Class;
+			
+			[Bindable]
+			[Embed(source="/images/file.png")]
+			private var icoFile:Class;
+
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="fileType" source="{data.IsDirectory ? icoFolder : icoFile}" width="14" height="14"/>
+	<mx:Label id="fileName" text="{data.Name}" width="100%" />
+</mx:HBox>

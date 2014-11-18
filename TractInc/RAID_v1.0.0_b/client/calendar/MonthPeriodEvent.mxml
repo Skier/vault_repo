@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="90%"
+	height="20"
+	paddingBottom="1"
+	paddingLeft="1"
+	paddingRight="1"
+	paddingTop="1"
+	borderThickness="1"
+	borderStyle="solid"
+	borderColor="#FFFFFF"
+	cornerRadius="3"
+	horizontalAlign="center"
+	verticalAlign="middle"
+	mouseDown="onMouseDown(event)"
+	mouseUp="onMouseUp(event)"
+	mouseMove="onMouseMove(event)"
+	dragComplete="onDragComplete(event)">
+
+	<mx:Script>
+        <![CDATA[
+        import mx.controls.Label;
+        import mx.events.DragEvent;
+        import mx.containers.Canvas;
+        import mx.core.DragSource;
+        import UI.landman.DailyEvent;
+        import mx.managers.DragManager;
+        
+		[Bindable]
+		public var description:String;
+		
+		[Bindable]
+		public var summary:String;
+		
+		public var date:Date;
+		
+		private var isMouseDown:Boolean = false;
+		private var isDragging:Boolean = false;
+		
+		private function onMouseDown(event:MouseEvent):void {
+			isMouseDown = true;
+		}
+		
+		private function onMouseUp(event:MouseEvent):void {
+			isMouseDown = false;
+			if (!isDragging) {
+				MonthPeriodGrid(MonthPeriodCell(parentDocument).parentDocument).eventClickHandler(this);
+			}
+		}
+		
+        private function onMouseMove(event:MouseEvent):void {
+        	if (!isMouseDown || !isEditable()) {
+        		return;
+        	}
+        	
+            var dragInitiator:MonthPeriodEvent = MonthPeriodEvent(event.currentTarget);
+            var ds:DragSource = new DragSource();
+            ds.addData(this, 'format');
+            
+            var proxy:HBox = new HBox();
+            
+            var label:Label = new Label();
+            label.text = summary;
+            label.setStyle('textSize', 10);
+            
+            proxy.setStyle('backgroundColor', dragInitiator.getStyle('backgroundColor'));
+            proxy.setStyle('horizontalAlign', 'center');
+            proxy.setStyle('verticalAlign', 'middle');
+            proxy.setStyle('cornerRadius', 3);
+            proxy.addChild(label);
+            proxy.width = width;
+            proxy.height = height;
+			proxy.x = 0;
+			proxy.y = 0;
+            proxy.data = this;
+            
+            DragManager.doDrag(dragInitiator, ds, event, proxy);
+            includeInLayout = false;
+            visible = false;
+            isDragging = true;
+            
+            removeEvent();
+        }
+        
+        private function onDragComplete(event:DragEvent):void {
+        	isDragging = false;
+        	isMouseDown = false;
+        	
+			if (DragManager.NONE == event.action) {
+				addEvent();
+			} // else if (DragManager.COPY == event.action) {
+				includeInLayout = true;
+				visible = true;
+         	// }
+        }
+        
+        protected virtual function removeEvent():void {
+        	//DailyEvent(this).group.removeEvent(this);
+        }
+        
+        protected virtual function addEvent():void {
+        	//DailyEvent(this).group.removeEvent(this);
+        }
+        
+        public virtual function isEditable():Boolean {
+        	return false;
+        }
+        
+        ]]>
+	</mx:Script>
+	
+	<mx:Label text="{summary}" fontSize="10" toolTip="{description}" />
+	
+</mx:HBox>

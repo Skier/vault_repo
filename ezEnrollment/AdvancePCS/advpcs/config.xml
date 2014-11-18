@@ -1,0 +1,1398 @@
+<config row_size="1400">
+    <header>
+        <field 
+                name="Record Type" 
+                type="text" 
+                max_size="1" 
+                required="yes" 
+                enabled="no" 
+                default="1"/>
+        <field 
+                name="Carrier" 
+                type="text" 
+                max_size="9" 
+                required="yes" 
+                enabled="yes"
+                 />                               
+        
+        <field 
+                name="Carrier Name" 
+                type="text" 
+                max_size="25" 
+                required="yes" 
+                enabled="yes"
+                />
+                             
+        <field 
+                name="Address 1" 
+                type="text" 
+                max_size="25" 
+                required="no" 
+                enabled="yes"/>
+                            
+        <field 
+                name="Address 2" 
+                type="text" 
+                max_size="15" 
+                required="no" 
+                enabled="yes"/>
+        <field 
+                name="City" 
+                type="text" 
+                max_size="20" 
+                required="no" 
+                enabled="yes"/>               
+        <field 
+                name="State" 
+                type="choice" 
+                max_size="2" 
+                required="no" 
+                enabled="yes"
+                default="  ">
+            <choice value="  "/>    
+            <choice value="AB"/>
+            <choice value="AL"/>
+            <choice value="AK"/>
+            <choice value="AR"/>
+            <choice value="AS"/>
+            <choice value="AZ"/>
+            <choice value="BC"/>
+            <choice value="CA"/>
+            <choice value="CO"/>
+            <choice value="CT"/>
+            <choice value="DE"/>
+            <choice value="DC"/>
+            <choice value="FL"/>
+            <choice value="FM"/>
+            <choice value="GA"/>
+            <choice value="GU"/>
+            <choice value="HI"/>
+            <choice value="IA"/>
+            <choice value="ID"/>
+            <choice value="IL"/>
+            <choice value="IN"/>
+            <choice value="KS"/>
+            <choice value="KY"/>
+            <choice value="LA"/>
+            <choice value="MB"/>
+            <choice value="MD"/>
+            <choice value="MA"/>
+            <choice value="ME"/>
+            <choice value="MH"/>
+            <choice value="MI"/>
+            <choice value="MO"/>
+            <choice value="MN"/>
+            <choice value="MP"/>
+            <choice value="MS"/>
+            <choice value="MT"/>
+            <choice value="NB"/>
+            <choice value="NC"/>
+            <choice value="ND"/>
+            <choice value="NE"/>
+            <choice value="NF"/>
+            <choice value="NH"/>
+            <choice value="NJ"/>
+            <choice value="NM"/>
+            <choice value="NS"/>
+            <choice value="NT"/>
+            <choice value="NU"/>
+            <choice value="NV"/>
+            <choice value="NY"/>
+            <choice value="OH"/>
+            <choice value="OK"/>
+            <choice value="ON"/>
+            <choice value="OR"/>
+            <choice value="PA"/>
+            <choice value="PE"/>
+            <choice value="PR"/>
+            <choice value="PW"/>
+            <choice value="QC"/>
+            <choice value="RI"/>
+            <choice value="SC"/>
+            <choice value="SD"/>
+            <choice value="SK"/>
+            <choice value="TN"/>
+            <choice value="TX"/>
+            <choice value="UT"/>
+            <choice value="VA"/>
+            <choice value="VI"/>
+            <choice value="VT"/>
+            <choice value="WA"/>
+            <choice value="WI"/>
+            <choice value="WV"/>
+            <choice value="WY"/>
+            <choice value="YT"/>
+        </field>
+        <field 
+                name="ZIP" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="yes"/>                
+        <field 
+                name="Phone" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="yes"/>
+        <field 
+                name="Creation Date" 
+                type="date" 
+                max_size="7" 
+                required="yes" 
+                enabled="yes"
+        default="now"/>
+        <field 
+                name="Creation Time" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Creation Source" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Data Type" 
+                type="choice" 
+                max_size="3" 
+                required="no" 
+                enabled="yes"
+                default="  ">
+        <choice value=""/>
+            <choice value="MEM"/>
+            <choice value="GRP"/>
+          </field>
+        <field 
+            name="Version" 
+            type="text" 
+            max_size="3" 
+            required="no" 
+            enabled="no"
+        default="5.0"/>
+    <field 
+            name="Rec leng" 
+            type="text" 
+            max_size="4" 
+            required="no" 
+            enabled="no"
+        default="1400"/>
+    <field 
+            name="batch num" 
+            type="text" 
+            max_size="10" 
+            required="no" 
+            enabled="no"/>
+    <field 
+            name="filler" 
+            type="text" 
+            max_size="846" 
+            required="no" 
+            enabled="no"/>
+    <field 
+            name="filler" 
+            type="text" 
+            max_size="400" 
+            required="no" 
+            enabled="no"/>        
+    <field 
+            name="EOR" 
+            type="text" 
+            max_size="1" 
+            required="no" 
+            enabled="no"
+            default="*"/>   
+    </header>
+    <detail>
+        <field 
+            name="Record Type" 
+            type="text" 
+            max_size="1" 
+            required="yes" 
+            enabled="no" 
+            default="3"/>
+          
+        <field 
+            name="Carrier"  
+            type="carrier" 
+            max_size="9" 
+            required="yes" 
+            enabled="no"/>
+        
+        <field 
+            name="Account" 
+        short_name="ACCT"
+        type="text" 
+        max_size="15" 
+        required="yes" 
+        enabled="yes"/>
+
+                            
+    <field 
+        name="Group" 
+        type="text" 
+        max_size="15" 
+        required="yes" 
+        enabled="yes"/>                      
+        <field 
+                name="Member ID" 
+                type="alphanumeric" 
+                lenght="9" 
+                max_size="9" 
+        min_size="9" 
+                required="yes" 
+                enabled="yes">
+        <dependence field="Family ID" bpos="0" epos="8"/>  
+        </field>
+      <field 
+                name="Member ID hidden" 
+                type="text" 
+                lenght="9" 
+                required="no" 
+                enabled="no"
+        default="01">
+        </field>
+    <field 
+                name="Person Code" 
+                type="choice" 
+                max_size="3" 
+                required="yes" 
+                enabled="yes"
+                default="01"
+            separator=" -">             
+          <choice value="01 - card holder"      id="1"/>
+          <choice value="02 - spouse"           id="2"/>
+          <choice value="03 - first  dependent" id="3"/>
+          <choice value="04 - second dependent" id="3"/>
+          <choice value="05 - third  dependent" id="3"/>
+          <choice value="06 - fourth dependent" id="3"/>
+          <choice value="07 - fifth  dependent" id="3"/>
+          <choice value="08 - sixth  dependent" id="3"/>
+          <choice value="09 - 7th    dependent" id="3"/>          
+          <choice value="10 - other  dependent" id="3"/>
+          <choice value="11 - other  dependent" id="3"/>
+          <choice value="12 - other  dependent" id="3"/>
+          <choice value="13 - other  dependent" id="3"/>
+          <choice value="14 - other  dependent" id="3"/>
+          <choice value="15 - other  dependent" id="3"/>
+          <choice value="16 - other  dependent" id="3"/>
+          <choice value="17 - other  dependent" id="3"/>
+          <choice value="18 - other  dependent" id="3"/>
+          <choice value="19 - other  dependent" id="3"/>
+          <choice value="20 - other  dependent" id="3"/>
+          <choice value="21 - other  dependent" id="3"/>
+          <choice value="22 - other  dependent" id="3"/>
+          <choice value="23 - other  dependent" id="3"/>
+          <choice value="24 - other  dependent" id="3"/>
+          <choice value="25 - other  dependent" id="3"/>
+          <choice value="26 - other  dependent" id="3"/>
+          <choice value="27 - other  dependent" id="3"/>
+          <choice value="28 - other  dependent" id="3"/>
+          <choice value="29 - other  dependent" id="3"/>
+          <choice value="30 - other  dependent" id="3"/>
+          <choice value="31 - other  dependent" id="3"/>
+          <choice value="32 - other  dependent" id="3"/>
+          <choice value="33 - other  dependent" id="3"/>
+          <choice value="34 - other  dependent" id="3"/>
+          <choice value="35 - other  dependent" id="3"/>
+          <choice value="36 - other  dependent" id="3"/>
+          <choice value="37 - other  dependent" id="3"/>
+          <choice value="38 - other  dependent" id="3"/>
+          <choice value="39 - other  dependent" id="3"/>
+          <choice value="40 - other  dependent" id="3"/>
+          <choice value="41 - other  dependent" id="3"/>
+          <choice value="42 - other  dependent" id="3"/>
+          <choice value="43 - other  dependent" id="3"/>
+          <choice value="44 - other  dependent" id="3"/>
+          <choice value="45 - other  dependent" id="3"/>
+          <choice value="46 - other  dependent" id="3"/>
+          <choice value="47 - other  dependent" id="3"/>
+          <choice value="48 - other  dependent" id="3"/>
+          <choice value="49 - other  dependent" id="3"/>
+          <choice value="50 - other  dependent" id="3"/>
+          <choice value="51 - other  dependent" id="3"/>
+          <choice value="52 - other  dependent" id="3"/>
+          <choice value="53 - other  dependent" id="3"/>
+          <choice value="54 - other  dependent" id="3"/>
+          <choice value="55 - other  dependent" id="3"/>
+          <choice value="56 - other  dependent" id="3"/>
+          <choice value="57 - other  dependent" id="3"/>
+          <choice value="58 - other  dependent" id="3"/>
+          <choice value="59 - other  dependent" id="3"/>
+          <choice value="60 - other  dependent" id="3"/>
+          <choice value="61 - other  dependent" id="3"/>
+          <choice value="62 - other  dependent" id="3"/>
+          <choice value="63 - other  dependent" id="3"/>
+          <choice value="64 - other  dependent" id="3"/>
+          <choice value="65 - other  dependent" id="3"/>
+          <choice value="66 - other  dependent" id="3"/>
+          <choice value="67 - other  dependent" id="3"/>
+          <choice value="68 - other  dependent" id="3"/>
+          <choice value="69 - other  dependent" id="3"/>
+          <choice value="70 - other  dependent" id="3"/>
+          <choice value="71 - other  dependent" id="3"/>
+          <choice value="72 - other  dependent" id="3"/>
+          <choice value="73 - other  dependent" id="3"/>
+          <choice value="74 - other  dependent" id="3"/>
+          <choice value="75 - other  dependent" id="3"/>
+          <choice value="76 - other  dependent" id="3"/>
+          <choice value="77 - other  dependent" id="3"/>
+          <choice value="78 - other  dependent" id="3"/>
+          <choice value="79 - other  dependent" id="3"/>
+          <choice value="80 - other  dependent" id="3"/>
+          <choice value="81 - other  dependent" id="3"/>
+          <choice value="82 - other  dependent" id="3"/>
+          <choice value="83 - other  dependent" id="3"/>
+          <choice value="84 - other  dependent" id="3"/>
+          <choice value="85 - other  dependent" id="3"/>
+          <choice value="86 - other  dependent" id="3"/>
+          <choice value="87 - other  dependent" id="3"/>
+          <choice value="88 - other  dependent" id="3"/>
+          <choice value="89 - other  dependent" id="3"/>
+          <choice value="90 - other  dependent" id="3"/>
+          <choice value="91 - other  dependent" id="3"/>
+          <choice value="92 - other  dependent" id="3"/>
+          <choice value="93 - other  dependent" id="3"/>
+          <choice value="94 - other  dependent" id="3"/>
+          <choice value="95 - other  dependent" id="3"/>
+          <choice value="96 - other  dependent" id="3"/>
+          <choice value="97 - other  dependent" id="3"/>
+          <choice value="98 - other  dependent" id="3"/>
+          <choice value="99 - other  dependent" id="3"/>     
+            <dependence field="Member ID hidden" bpos="0" epos="1"/>  
+            
+            
+        </field>
+            
+            <field 
+            name="Relationship" 
+                type="choice" 
+                max_size="1" 
+                required="yes" 
+                enabled="yes"
+                default="1"
+                separator=" -"
+                cross-field="Person Code">
+            <choice value="0 - not specified" id="1"/>
+            <choice value="1 - employee"      id="2" cross-ids="1"/>
+            <choice value="2 - spouse"        id="3" cross-ids="2,3"/>
+            <choice value="3 - child"         id="4" cross-ids="2,3"/>
+            <choice value="4 - other"         id="5" cross-ids="2,3"/>
+        </field>
+        <field 
+                name="Last Name" 
+                type="text" 
+                max_size="25" 
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="First Name" 
+                type="text" 
+                max_size="15" 
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="Middle Initial" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="yes"/>
+        <field 
+                name="Sex Code" 
+                short_name="Gender"
+                type="choice" 
+                max_size="1" 
+                required="yes" 
+                enabled="yes"
+                separator=" -">
+            <choice value="M - male"/>
+            <choice value="F - female"/>
+        </field>
+        <field 
+                name="Date of Birth" 
+                type="longdate" 
+                max_size="8" 
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="Mult Birth Code"
+                short_name="Mult Birth Cd"
+                type="numeric" 
+                max_size="1" 
+                required="no" 
+                enabled="yes"
+                default="0"/>
+        <field 
+                name="Member Type" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Language Code" 
+                short_name="Lang Cd" 
+                type="text" 
+                max_size="1" 
+                required="yes" 
+                enabled="no"
+                default="1"/>
+        <field 
+                name="DUR Flag" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"
+                default=""/>
+        <field 
+                name="DUR Key" 
+                type="text" 
+                max_size="18" 
+                required="no" 
+                enabled="no"
+                default=""/>
+        <field 
+                name="Social Security Number" 
+                short_name="SSN"
+                type="numeric" 
+                min_size="9"
+                max_size="9" 
+                required="no" 
+                enabled="yes"/>
+                
+        <field 
+                name="Address 1" 
+                type="text" 
+                max_size="25" 
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="Address 2" 
+                type="text" 
+                max_size="15" 
+                required="no" 
+                enabled="yes"/>
+        <field 
+                name="City" 
+                type="text" 
+                max_size="20" 
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="State" 
+                type="choice" 
+                max_size="2" 
+                required="yes" 
+                enabled="yes">
+            <choice value="AB"/>
+            <choice value="AL"/>
+            <choice value="AK"/>
+            <choice value="AR"/>
+            <choice value="AS"/>
+            <choice value="AZ"/>
+            <choice value="BC"/>
+            <choice value="CA"/>
+            <choice value="CO"/>
+            <choice value="CT"/>
+            <choice value="DE"/>
+            <choice value="DC"/>
+            <choice value="FL"/>
+            <choice value="FM"/>
+            <choice value="GA"/>
+            <choice value="GU"/>
+            <choice value="HI"/>
+            <choice value="IA"/>
+            <choice value="ID"/>
+            <choice value="IL"/>
+            <choice value="IN"/>
+            <choice value="KS"/>
+            <choice value="KY"/>
+            <choice value="LA"/>
+            <choice value="MB"/>
+            <choice value="MD"/>
+            <choice value="MA"/>
+            <choice value="ME"/>
+            <choice value="MH"/>
+            <choice value="MI"/>
+            <choice value="MO"/>
+            <choice value="MN"/>
+            <choice value="MP"/>
+            <choice value="MS"/>
+            <choice value="MT"/>
+            <choice value="NB"/>
+            <choice value="NC"/>
+            <choice value="ND"/>
+            <choice value="NE"/>
+            <choice value="NF"/>
+            <choice value="NH"/>
+            <choice value="NJ"/>
+            <choice value="NM"/>
+            <choice value="NS"/>
+            <choice value="NT"/>
+            <choice value="NU"/>
+            <choice value="NV"/>
+            <choice value="NY"/>
+            <choice value="OH"/>
+            <choice value="OK"/>
+            <choice value="ON"/>
+            <choice value="OR"/>
+            <choice value="PA"/>
+            <choice value="PE"/>
+            <choice value="PR"/>
+            <choice value="PW"/>
+            <choice value="QC"/>
+            <choice value="RI"/>
+            <choice value="SC"/>
+            <choice value="SD"/>
+            <choice value="SK"/>
+            <choice value="TN"/>
+            <choice value="TX"/>
+            <choice value="UT"/>
+            <choice value="VA"/>
+            <choice value="VI"/>
+            <choice value="VT"/>
+            <choice value="WA"/>
+            <choice value="WI"/>
+            <choice value="WV"/>
+            <choice value="WY"/>
+            <choice value="YT"/>
+        </field>
+        <field 
+                name="Zip 1" 
+                type="text" 
+                max_size="5" 
+                min_size="5"
+                required="yes" 
+                enabled="yes"/>
+        <field 
+                name="Zip 2" 
+                type="text" 
+                max_size="4" 
+                min_size="4"
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Zip 3" 
+                type="text" 
+                max_size="2" 
+                min_size="2"
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Country" 
+                type="text" 
+                max_size="4" 
+                required="no" 
+                enabled="no"
+                default="USA"/>
+        <field 
+                name="Phone Number" 
+                type="text" 
+                max_size="10" 
+                min_size="10"
+                required="no" 
+                enabled="yes"/>
+        <field 
+                name="Family Flag" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Family Type" 
+                type="choice" 
+                max_size="1" 
+                required="no" 
+                enabled="no"
+                separator=" -">
+            <choice value="- empty"/>   
+            <choice value="1 - family"/>
+            <choice value="2 - cardholder only"/>
+            <choice value="3 - c.h. and spouse"/>
+            <choice value="4 - c.h. and dependents"/>
+            <choice value="5 - Spouse and Dependents"/>
+            <choice value="6 - Dependents"/>
+            <choice value="7 - Spouse only"/>
+            <choice value="8 - member + 1"/>
+        </field>
+        <field 
+                name="Family ID" 
+                type="text" 
+                max_size="18" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Original From Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Benefit Reset Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Effective Date" 
+                type="date9" 
+                max_size="7" 
+                required="yes" 
+                enabled="yes"/>
+                           
+        <field 
+                name="Termination Date" 
+                type="date9" 
+                max_size="7" 
+                required="yes" 
+                enabled="yes"
+                default="99/99/9999"/>
+        <field 
+                name="Plan" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Plan Eff Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Brand" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Generic" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Copay 3" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Copay 4" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Client Product Code" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Client Rider Code" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Care From Date" 
+                type="date0" 
+                max_size="7" 
+                required="no" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Care Thru Date" 
+                type="date0" 
+                max_size="7" 
+                required="no" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Care Network" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Care Network Plan Ovr" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Care Network Plan Frm" 
+                type="numeric" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="0000000"/>
+        <field 
+                name="Care Facility ID" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+                
+        <field 
+                name="Care Qualifier" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Physician ID" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"
+                default=""/>
+        <field 
+                name="Alt Ins From Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Alt Ins Thru Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Wrap Indicator" 
+                type="choice" 
+                max_size="1" 
+                required="no" 
+                enabled="no"
+                default="">
+                <choice value=""/>
+                <choice value="Y"/>
+                <choice value="N"/>
+        </field>
+        <field 
+                name="Alt Ins Code" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Alt Ins ID" 
+                type="text" 
+                max_size="18" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="New Card Flag" 
+                type="choice" 
+                max_size="1" 
+                required="no" 
+                enabled="no"
+                default=" ">
+                <choice value=" "/>
+                <choice value="Y"/>
+                <choice value="N"/>
+        </field>
+        <field 
+                name="Filler" 
+                type="text" 
+                max_size="9" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Med Coverage Type" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Med From Date" 
+                type="date0" 
+                max_size="7" 
+                required="yes" 
+                enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Medicare HIC" 
+                type="text" 
+                max_size="11" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 1" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 2" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 3" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 4" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 5" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 6" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 7" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 8" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 9" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Diagnosis Code 10" 
+                type="text" 
+                max_size="6" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 1" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 2" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 3" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 4" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 5" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Allergy Code 6" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Height" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Weight" 
+                type="numeric" 
+                max_size="5" 
+                required="yes" 
+                enabled="no"
+                default="00000"/>
+        <field 
+                name="Blood Type" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Contact Lens Code" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Smoking Code" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Pregnancy Code" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Alcogol Code" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Misc Code 1" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Misc Code 2" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Card Logo Eff Dte" 
+        type="date0" 
+        max_size="7" 
+        required="yes" 
+        enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Card Logo Thru Dte" 
+        type="date0" 
+        max_size="7" 
+        required="yes" 
+        enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="Card logo" 
+                type="text" 
+                max_size="5" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Alt Card address Pointer" 
+                type="text" 
+                max_size="10" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="CDD Eff Date" 
+        type="date0" 
+        max_size="7" 
+        required="yes" 
+        enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="CDD Term Date" 
+        type="date0" 
+        max_size="7" 
+        required="yes" 
+        enabled="no"
+                default="00/00/0000"/>
+        <field 
+                name="CDD" 
+                type="text" 
+                max_size="256" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="MbrIDCard Text1" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="MbrIDCard Text2" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="MbrIDCard Text3" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Accu Family Type" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>        
+        <field 
+                name="Override Duductible Prorate" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Override HSA Prorate" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Proration Date" 
+        type="date0" 
+        max_size="7" 
+        required="yes" 
+        enabled="no"
+                default="00/00/0000"/>
+        <field 
+            name="Med Part. Ind" 
+            type="choice" 
+            max_size="1" 
+            required="no" 
+            enabled="yes"
+            default=" ">
+            <choice value=" " id="1"/>
+            <choice value="0" id="2"/>
+                <choice value="1" id="3"/>
+                <choice value="2" id="4"/>
+                <choice value="3" id="5"/>
+                <choice value="4" id="6"/>
+                <choice value="5" id="7"/>
+                <choice value="E" id="8"/>
+         </field>       
+        
+        <field 
+                name="Reserved" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"/>
+        <field 
+            name="Med Part Effective date" 
+            type="longdate0" 
+            max_size="8" 
+            required="no" 
+            enabled="yes"
+            default=""
+            check_empty="Med Part. Ind"
+            empty_else="!00/00/0000"/>
+        
+        <field 
+                name="Client ID" 
+                type="text" 
+                max_size="9" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Crosswalk Member ID" 
+                type="alphanumeric" 
+                Length="9"
+                min_size="9"
+                max_size="9"
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Crosswalk Member ID Hidden" 
+                type="text" 
+                max_size="9" 
+                required="no" 
+                enabled="no"
+                default="  ">
+        </field> />
+        <field 
+                name="filler" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+                
+        <field 
+                name="HIC/RRBN" 
+                type="text" 
+                max_size="12" 
+                required="no" 
+                enabled="no"/>
+        
+        <field 
+                name="LICS Premium Sub Lvl" 
+                type="choice" 
+            max_size="3" 
+            required="no" 
+            enabled="no"
+            default="000"
+            separator=" -">
+                <choice value="000 - No Premium Subsidy"/>   
+                <choice value="025 - 25% Premium Subsidy"/>
+                <choice value="050 - 50% Premium Subsidy"/>
+                <choice value="075 - 75% Premium Subsidy"/>
+                <choice value="100 - 100 Premium Subsidy"/>
+                
+         </field>       
+        
+        <field 
+                name="Contract ID" 
+                type="text" 
+                max_size="5" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Plan ID" 
+                type="text" 
+                max_size="3" 
+                required="no" 
+                enabled="no"/>
+        
+         <field 
+                name="Caretaker First Name" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Caretaker Last Name" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Caretaker Address 1" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Caretaker Address 2" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Caretaker City" 
+                type="text" 
+                max_size="30" 
+                required="no" 
+                enabled="no"/>
+        <field 
+                name="Caretaker State" 
+                type="choice" 
+                max_size="2" 
+                required="no" 
+                enabled="no">
+            <choice value="AB"/>
+            <choice value="AL"/>
+            <choice value="AK"/>
+            <choice value="AR"/>
+            <choice value="AS"/>
+            <choice value="AZ"/>
+            <choice value="BC"/>
+            <choice value="CA"/>
+            <choice value="CO"/>
+            <choice value="CT"/>
+            <choice value="DE"/>
+            <choice value="DC"/>
+            <choice value="FL"/>
+            <choice value="FM"/>
+            <choice value="GA"/>
+            <choice value="GU"/>
+            <choice value="HI"/>
+            <choice value="IA"/>
+            <choice value="ID"/>
+            <choice value="IL"/>
+            <choice value="IN"/>
+            <choice value="KS"/>
+            <choice value="KY"/>
+            <choice value="LA"/>
+            <choice value="MB"/>
+            <choice value="MD"/>
+            <choice value="MA"/>
+            <choice value="ME"/>
+            <choice value="MH"/>
+            <choice value="MI"/>
+            <choice value="MO"/>
+            <choice value="MN"/>
+            <choice value="MP"/>
+            <choice value="MS"/>
+            <choice value="MT"/>
+            <choice value="NB"/>
+            <choice value="NC"/>
+            <choice value="ND"/>
+            <choice value="NE"/>
+            <choice value="NF"/>
+            <choice value="NH"/>
+            <choice value="NJ"/>
+            <choice value="NM"/>
+            <choice value="NS"/>
+            <choice value="NT"/>
+            <choice value="NU"/>
+            <choice value="NV"/>
+            <choice value="NY"/>
+            <choice value="OH"/>
+            <choice value="OK"/>
+            <choice value="ON"/>
+            <choice value="OR"/>
+            <choice value="PA"/>
+            <choice value="PE"/>
+            <choice value="PR"/>
+            <choice value="PW"/>
+            <choice value="QC"/>
+            <choice value="RI"/>
+            <choice value="SC"/>
+            <choice value="SD"/>
+            <choice value="SK"/>
+            <choice value="TN"/>
+            <choice value="TX"/>
+            <choice value="UT"/>
+            <choice value="VA"/>
+            <choice value="VI"/>
+            <choice value="VT"/>
+            <choice value="WA"/>
+            <choice value="WI"/>
+            <choice value="WV"/>
+            <choice value="WY"/>
+            <choice value="YT"/>
+        </field>
+        
+        <field 
+                name="Caretaker Zip" 
+                type="text" 
+                max_size="9" 
+                min_size="5"
+                required="no" 
+                enabled="no"/>
+        <field 
+            name="RDS App ID" 
+            type="numeric" 
+            max_size="10" 
+            required="no" 
+            enabled="yes"/>
+                
+        <field 
+            name="Unique Benefit Options Identifier" 
+            type="text" 
+            max_size="20" 
+            required="no" 
+            enabled="yes"/>          
+        
+        <field 
+        name="ST-Carrier"  
+        type="text" 
+        max_size="9" 
+        required="no" 
+        enabled="no"/>
+            
+    <field 
+        name="ST-Account" 
+        short_name="ST-ACCT"
+        type="text" 
+        max_size="15" 
+        required="no" 
+        enabled="no"/>
+                            
+    <field 
+        name="ST-Group" 
+        type="text" 
+        max_size="15" 
+        required="no" 
+        enabled="no"/>          
+                  
+    <field 
+        name="ST-Member ID" 
+        type="alphanumeric" 
+        lenght="9" 
+        max_size="9" 
+        min_size="9" 
+        required="no" 
+        enabled="no"/>
+       
+    <field 
+        name="ST-Member ID hidden" 
+        type="text" 
+        lenght="9" 
+        required="no" 
+        enabled="no"
+        default="">
+        </field>
+        
+        <field 
+        name="ST-Status" 
+        type="choice" 
+        max_size="1" 
+        required="no" 
+        enabled="no"
+        default=" "
+        separator=" -">
+        <choice value=" "/>
+        <choice value="A - Active "/>
+        <choice value="I - Inactive"/>
+        </field>
+        
+        <field 
+        name="ST-COB Coverage Code" 
+        type="choice" 
+        max_size="1" 
+        required="no" 
+        enabled="no"
+        default=" "
+        separator=" -">
+        <choice value=" "/>
+        <choice value="1 - ST Data for Primary Plan "/>
+        <choice value="2 - ST Data for Secondary Plan"/>
+        </field>
+        
+                
+        <field 
+                name="Filler" 
+                type="text" 
+                max_size="126" 
+                required="no" 
+                enabled="no"/>        
+        <field 
+                name="EOR" 
+                type="text" 
+                max_size="1" 
+                required="no" 
+                enabled="no"
+                default="*"/>      
+               
+    </detail>
+    <composer
+            subject="ABCH"
+            suffix=""/>
+        <http-agent enable="true"
+                    host="client.advancepcsrx.com"
+                    port="443"
+                    login ="aponline/control/EDILogin"
+                    upload="aponline/control/EDIFiletransfer"
+                    status="aponline/control/EDIStatus"
+                    chgpwd="aponline/control/EDIchangePassword"
+                    secure="true"
+                compressed="true"/> 
+</config>
+
+<!-- web36510.mail.mud.yahoo.com uncompressed/chunked Thu Jul 26 08:46:25 PDT 2007 -->

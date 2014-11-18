@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	paddingLeft="10" paddingRight="10" paddingBottom="2" paddingTop="2" height="24" width="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.BillItemStatus;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import App.Domain.BillStatus;
+			import common.StatusesRegistry;
+			
+			private function Confirm():void 
+			{
+				data.statusTemp = StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_CONFIRMED);
+			}
+			
+			private function Decline():void 
+			{
+				data.statusTemp = StatusesRegistry.getInstance().getBillItemStatusByName(BillItemStatus.BILL_ITEM_STATUS_DECLINED);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Button width="70" height="20" label="confirm" click="Confirm()" enabled="{data.statusTemp.Status != BillItemStatus.BILL_ITEM_STATUS_CONFIRMED}"/>
+
+	<mx:Button width="70" height="20" label="decline" click="Decline()" enabled="{data.statusTemp.Status != BillItemStatus.BILL_ITEM_STATUS_DECLINED}"/>
+	
+</mx:HBox>

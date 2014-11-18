@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:TractModule xmlns:mx="http://www.adobe.com/2006/mxml" 
+    layout="absolute" backgroundColor="#c0c0c0" 
+    xmlns:modules="TractInc.modules.*"
+    xmlns:projectManager="tractIncProjectManager.*"
+    percentWidth="100" percentHeight="100">
+    
+    <mx:Script>
+        <![CDATA[
+            import TractInc.Domain.Module;
+            import TractInc.Domain.User;
+
+            private var moduleInfo:Module = null;
+            
+            public override function init(user:User, module:Module):void 
+            {
+                moduleInfo = module;
+                callLater(initLater, [user]);
+            }
+
+            public override function modeChanged(mode:String):void
+            {
+            }   
+                    
+            public override function logout():Boolean
+            {
+                return true;
+            }
+            
+            private function initLater(user:User):void
+            {
+                view.init(user);
+            }
+        ]]>
+    </mx:Script>
+
+    <projectManager:ProjectManagerView id="view" width="100%" height="100%"/>
+    
+</modules:TractModule>

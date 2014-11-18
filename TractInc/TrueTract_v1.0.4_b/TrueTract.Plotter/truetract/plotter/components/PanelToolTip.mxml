@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+    implements="mx.core.IToolTip" width="300">
+    <mx:Script>
+        <![CDATA[
+            import mx.events.ToolTipEvent;
+
+            [Bindable]
+            public var bodyText:String = "";
+        
+            //  Implement required methods of the IToolTip interface; these 
+            //  methods are not used in this example, though.
+            public var _text:String;
+    
+            public function get text():String { 
+                return _text; 
+            } 
+            public function set text(value:String):void {
+            } 
+            
+            public static function create(title:String, body:String, event:ToolTipEvent):void {
+               var ptt:PanelToolTip = new PanelToolTip();
+               ptt.title = title;
+               ptt.bodyText = body;
+               event.toolTip = ptt;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Text id="bodyTxt" htmlText="{bodyText}" percentWidth="100"/>
+    
+</mx:Panel>
+

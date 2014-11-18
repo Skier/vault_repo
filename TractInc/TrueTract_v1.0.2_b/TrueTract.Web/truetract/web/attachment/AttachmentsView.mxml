@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" width="480" height="240"
+	title="Attached files to current Document">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import truetract.plotter.domain.IAttach;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var controller:AttachmentsController;
+			
+            public static function Open(doc:IAttach, parent:DisplayObject = null, modal:Boolean = true):AttachmentsView {
+                var popup:AttachmentsView = new AttachmentsView();
+                popup.controller = new AttachmentsController(popup, doc);
+
+				if (!parent) {
+					parent = Application.application as DisplayObject;
+				}
+				
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%"
+		paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"
+		enabled="{!controller.model.uploadingInProgress}"
+		>
+		
+		<mx:Label text="System allow only one attachment per document." fontWeight="bold"/>
+		
+		<mx:HBox width="100%" height="100%">
+	
+			<mx:DataGrid id="dgAttachments" width="100%" height="100%"
+				dataProvider="{controller.model.currentDoc.Attachments}"
+				itemDoubleClick="controller.onOpen_clickHandler()" doubleClickEnabled="true"
+				>
+				<mx:columns>
+					<mx:DataGridColumn headerText="Filename" dataField="OriginalFileName"/>
+				</mx:columns>
+			</mx:DataGrid>
+	
+			<mx:VBox width="90" height="100%" verticalAlign="bottom">
+				<mx:Button label="Add new" width="100%" textAlign="center" 
+					click="controller.onUpload_clickHandler()"
+					enabled="{controller.model.uploaderUrlLoaded &amp;&amp; controller.model.currentDoc.Attachments.length == 0}"/>
+				<mx:Button label="Open" width="100%" textAlign="center"
+					click="controller.onOpen_clickHandler()"
+					enabled="{controller.model.storageBaseUrlLoaded &amp;&amp; dgAttachments.selectedItem != null}"/>
+				<mx:Button label="Remove" width="100%" textAlign="center"
+					click="controller.onRemove_clickHandler()"
+					enabled="{dgAttachments.selectedItem != null}"/>
+				<mx:Spacer height="10"/>
+				<mx:Button label="Close" width="100%" textAlign="center"
+					click="controller.onClose_clickHandler()"/>
+			</mx:VBox>
+	
+		</mx:HBox>
+		
+	</mx:VBox>
+
+	<mx:ControlBar>
+		<mx:HBox width="100%" 		
+			visible="{controller.model.uploadingInProgress}">
+			<mx:ProgressBar id="pbUpload" labelPlacement="right" mode="manual" width="100%"/>
+			<mx:Button id="cancel" label="Cancel" click="controller.onCancelUpload_clickHandler()"/>
+		</mx:HBox>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

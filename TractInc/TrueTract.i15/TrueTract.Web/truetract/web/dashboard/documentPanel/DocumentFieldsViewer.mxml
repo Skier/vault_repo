@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.DateField;
+            import truetract.plotter.domain.Document;
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+            
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            [Bindable] public var docum:Document;
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="DD MMM YYYY"/>
+
+    <mx:VBox width="100%">
+
+        <mx:HBox width="100%">
+            <mx:Form 
+                paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                verticalGap="3" indicatorGap="3" labelWidth="90">
+
+                <mx:FormItem label="State :">
+                    <mx:Label text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc Type :">
+                    <mx:Label text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Date Signed :">
+                    <mx:Label text="{df.format(docum.DateSigned)}"/>
+                </mx:FormItem>
+
+            </mx:Form>
+
+            <mx:Form 
+                paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" 
+                verticalGap="3" indicatorGap="3" width="100%">
+
+                <mx:FormItem label="County :" width="100%">
+                    <mx:Label text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}" width="100%"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc Place :" width="100%">
+                    <mx:Label width="100%" text="{docum.DocumentNo}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Date Filled :" width="100%">
+                    <mx:Label width="100%" text="{df.format(docum.DateFiled)}" />
+                </mx:FormItem>
+
+            </mx:Form>
+        </mx:HBox>
+
+        <mx:Form 
+            paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+            width="100%" indicatorGap="3" labelWidth="90">
+
+            <mx:FormItem 
+                label="{docum.SellerRoleName.length > 0 ? docum.SellerRoleName : 'Seller'}:" 
+                width="100%">
+                <mx:Label width="100%" text="{docum.Seller.AsNamed}" />
+            </mx:FormItem>
+
+            <mx:FormItem 
+                label="{(docum.BuyerRoleName.length != 0) ? docum.BuyerRoleName : 'Buyer'}:" 
+                width="100%" height="23">
+                <mx:Label width="100%" text="{docum.Buyer.AsNamed}"/>
+            </mx:FormItem>
+
+        </mx:Form>
+
+    </mx:VBox>
+    
+</mx:VBox>

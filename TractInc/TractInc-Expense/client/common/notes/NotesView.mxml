@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	width="500" height="400" title="Notes for current item"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	showCloseButton="true" close="controller.onClickClose()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import App.Entity.UserDataObject;
+			import mx.managers.PopUpManager;
+		
+			[Bindable]
+			public var controller:NotesController;
+			public var onClose:Function;
+			
+			[Bindable]
+			private var _isReadOnly:Boolean;
+			
+            public static function Open(item:*, parent:DisplayObject, isReadOnly:Boolean, onClose:Function = null):NotesView {
+                var popup:NotesView = new NotesView();
+                popup.controller = new NotesController(popup, item);
+                popup.onClose = onClose;
+                popup._isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+			
+		]]>
+	</mx:Script>
+
+	<mx:Canvas width="100%" height="100%" backgroundColor="#ffffff" horizontalScrollPolicy="off">
+		
+		<mx:VBox width="100%" height="100%" borderColor="#999999" borderStyle="solid"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			
+			<mx:Repeater id="r" dataProvider="{controller.model.item.Notes}">
+				
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="{r.currentItem.SenderName} says:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Label text="{r.currentItem.Posted.toLocaleString()}" fontStyle="italic"/>
+				</mx:HBox>
+				
+				<mx:Text id="txtBody" width="100%" text="{r.currentItem.NoteText}"/>
+	
+			</mx:Repeater>
+			
+		</mx:VBox>
+		
+	</mx:Canvas>
+	<mx:HBox
+		id="boxControls"
+		width="100%"
+		visible="{!_isReadOnly}"
+		includeInLayout="{!_isReadOnly}">
+		<mx:TextInput id="txtNewNote" width="100%" enter="controller.onClickOk()" maxChars="250"/>
+		<mx:Button label="Ok" click="controller.onClickOk()" enabled="{txtNewNote.text.length > 0}"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

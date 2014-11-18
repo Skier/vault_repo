@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Layer Editor" xmlns:view="com.quickbase.idn.view.*" xmlns:controls="com.ebs.controls.*"
+	creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import com.ebs.eroof.dto.Expenditures_DTO;
+			import com.ebs.eroof.model.wrapper.Expenditure;
+			import com.ebs.eroof.dto.Inspections_DTO;
+			import com.ebs.eroof.model.wrapper.Inspection;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var expenditure:Expenditure;
+			
+            public static function open(parent:DisplayObject, expenditure:Expenditure, modal:Boolean = true):ExpenditureEditPopup
+            {
+                var popup:ExpenditureEditPopup = new ExpenditureEditPopup();
+                
+                popup.expenditure = expenditure;
+                //popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	initCombos();
+            }
+            
+            private function initCombos():void 
+            {
+            	if (expenditure == null)
+            		return;
+
+           		comboTypeOfWork.selectedItemVal = expenditure.expenditureDTO.TypeOfWork;
+           		comboAllocation.selectedItemVal = expenditure.expenditureDTO.Allocation;
+           		comboUrgency.selectedItemVal = expenditure.expenditureDTO.Urgency;
+           		comboStatus.selectedItemVal = expenditure.expenditureDTO.Status;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vBudgetYear.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vActionItem.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vTypeOfWork.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vAllocation.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vUrgency.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vStatus.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	expenditure.expenditureDTO.BudgetYear = nsBudgetYear.value;
+            	expenditure.expenditureDTO.TypeOfWork = comboTypeOfWork.selectedItem as String;
+            	expenditure.expenditureDTO.ActionItem = txtActionItem.text;
+            	expenditure.expenditureDTO.Allocation = comboAllocation.selectedItem as String;
+            	expenditure.expenditureDTO.Urgency = comboUrgency.selectedItem as String;
+            	expenditure.expenditureDTO.Status = comboStatus.selectedItem as String;
+            	expenditure.expenditureDTO.Amount = Number(currAmount.currency);
+            	expenditure.expenditureDTO.Description = txtDescription.text;
+            }
+            
+            private function storeModel():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreModel, expenditure.expenditureDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(expenditure.expenditureDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreModel(storedObject:Expenditures_DTO):void 
+            {
+            	expenditure.expenditureDTO = storedObject;
+            	dispatchEvent(new Event("closeRequest"));
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	if (!isFormValid())
+            		return;
+            		
+            	storeModel();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:NumberValidator id="vBudgetYear" source="{nsBudgetYear}" property="value" required="true"/>
+	<mx:StringValidator id="vTypeOfWork" source="{comboTypeOfWork}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vActionItem" source="{txtActionItem}" property="text" required="true"/>
+	<mx:StringValidator id="vAllocation" source="{comboAllocation}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vUrgency" source="{comboUrgency}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vStatus" source="{comboStatus}" property="selectedLabel" required="true"/>
+	
+	<mx:Form id="expenditureForm">
+		<mx:FormItem label="Budget Year" required="true" width="100%">
+			<mx:NumericStepper id="nsBudgetYear" value="{expenditure.expenditureDTO.BudgetYear}" stepSize="1" minimum="1000" maximum="3000"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Type of Activity" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboTypeOfWork" 
+				dtoType="{Expenditures_DTO}" dto="{expenditure.expenditureDTO}"
+				selectedItemVal="{expenditure.expenditureDTO.TypeOfWork}"  
+				tableField="TypeOfWork" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Action Item" required="true" width="100%">
+			<mx:TextInput id="txtActionItem" text="{expenditure.expenditureDTO.ActionItem}" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Allocation" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboAllocation" 
+				dtoType="{Expenditures_DTO}" dto="{expenditure.expenditureDTO}"
+				selectedItemVal="{expenditure.expenditureDTO.Allocation}"  
+				tableField="Allocation" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Urgency" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboUrgency" 
+				dtoType="{Expenditures_DTO}" dto="{expenditure.expenditureDTO}"
+				selectedItemVal="{expenditure.expenditureDTO.Urgency}"   
+				tableField="Urgency" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Status" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboStatus" 
+				dtoType="{Expenditures_DTO}" dto="{expenditure.expenditureDTO}"
+				selectedItemVal="{expenditure.expenditureDTO.Status}"   
+				tableField="Status" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Budget Cost" required="true" width="100%">
+			<controls:CurrencyInput id="currAmount" currency="{expenditure.expenditureDTO.Amount.toString()}" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Details of Activity" required="true" width="100%">
+			<mx:TextArea id="txtDescription" text="{expenditure.expenditureDTO.Description}" width="100%" height="80"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

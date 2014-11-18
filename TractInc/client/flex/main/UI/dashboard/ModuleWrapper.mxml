@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:dashboard="UI.dashboard.*" 
+    xmlns:modules="TractInc.modules.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Image;
+            import TractInc.modules.TractModuleLoader;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgClose:Class;
+            private var dashboardController:DashboardController;
+            
+            public function init(loader:TractModuleLoader, controller:DashboardController):void 
+            {
+                dashboardController = controller;
+                this.addChildAt(loader, 0);
+            }
+            
+            private function closeClickHandler():void {
+                dashboardController.closeModule(this);   
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" horizontalAlign="right" verticalAlign="top">
+        <mx:Image source="{imgClose}" 
+            toolTip="Close" 
+            click="closeClickHandler()"/>
+    </mx:HBox>
+        
+</mx:Canvas>

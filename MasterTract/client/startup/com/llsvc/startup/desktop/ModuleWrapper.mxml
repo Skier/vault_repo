@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" 
+    height="100%"
+    xmlns:module="com.llsvc.module.*"
+    xmlns:desktop="com.llsvc.startup.desktop.*" 
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Image;
+            import com.llsvc.module.ModuleImplLoader;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgClose:Class;
+            private var desktopController:DesktopController;
+            
+            public function init(loader:ModuleImplLoader, controller:DesktopController):void 
+            {
+                desktopController = controller;
+                this.addChildAt(loader, 0);
+            }
+            
+            private function closeClickHandler():void {
+                desktopController.closeModule(this);   
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" horizontalAlign="right" verticalAlign="top">
+        <mx:Image source="{imgClose}" 
+            toolTip="Close" 
+            click="closeClickHandler()"
+            visible="false"/>
+    </mx:HBox>
+        
+</mx:Canvas>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	xmlns:pmProject="tractIncProjectManager.project.*">
+	
+	<mx:Script>
+		<![CDATA[
+		]]>
+	</mx:Script>
+
+	<pmProject:ProjectController id="controller" view="{this}"/>
+	
+	<mx:HBox>
+        <mx:Button id="addButton" label="Add Project" click="controller.addButtonOnClickHandler(event)"/>
+	    <mx:ComboBox id="cbClient" width="200"/>
+        <mx:Button id="searchButton" label="Search" click="controller.searchButtonOnClickHandler(event)"/>
+	</mx:HBox>
+    <mx:DataGrid id="dataGrid" width="100%" height="100%">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Id" width="20" dataField="ProjectId"/>
+            <mx:DataGridColumn headerText="Client" width="85" labelFunction="controller.clientLabelFunction"/>
+            <mx:DataGridColumn headerText="Name" width="85" dataField="ProjectName"/>
+            <mx:DataGridColumn headerText="Created By" width="85" dataField="CreatedBy"/>
+            <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                    itemRenderer="tractIncProjectManager.project.ActionIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+<!--    
+            <mx:DataGridColumn headerText="Start Date" width="55" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="End Date" width="55" labelFunction="controller.dateLabelFunction"/>
+-->            
+</mx:VBox>

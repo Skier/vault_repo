@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leads</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+</head>
+<body>
+<div id="header">
+  <div class="div1"><img src="image/logo.png" title="Home" onclick="location='home.html'" /></div>
+  <div class="div2">
+    <select>
+      <option value="1">Lead</option>
+      <option value="2">Campaign</option>
+      <option value="3">User</option>
+    </select>
+    <input type="text"/>
+    <a class="button search" style="height:12px;">Search</a>
+  </div>
+</div>
+<div id="menu">
+  <ul class="nav left">
+    <li id="home"><a href="home.html" class="top">Home</a></li>
+    <li id="leads" class="selected"><a href="leads.html" class="top">Leads</a></li>
+    <li id="campaigns"><a href="campaigns.html" class="top">Campaigns</a></li>
+    <li id="partners"><a href="partners.html" class="top">Partners</a></li>
+    <li id="users"><a href="users.html" class="top">Users</a></li>
+    <li id="phones"><a href="phones.html" class="top">Phones</a></li>
+    <li id="billing"><a href="billing.html" class="top">Billing</a></li>
+    <li id="profile"><a href="profile.html" class="top">Company Profile</a></li>
+  </ul>
+  <ul class="nav right">
+    <li id="store"><a class="top" onclick="window.open('http://www.theleadcentral.com');">Help</a></li>
+  </ul>
+</div>
+<div id="content">
+
+<div class="breadcrumb" style="height:15px;">
+  <div style="float:left;">
+    <a href="home.html">Home</a>&gt;
+    <a href="leads.html">Leads</a>&gt;
+    <a href="lead.html">Edit Lead</a>
+  </div>
+  <div style="float:right;">
+    <a href="http://www.theleadcentral.com/"><img src="image/question-frame.png"/> Context Help</a>
+  </div>
+</div>
+
+  <div class="info-panel">
+    This is information message
+  </div>
+
+  <div class="attention-panel">
+    This is attention message
+  </div>
+
+  <div class="error-panel">
+    This is error message
+  </div>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <a href="leads.html" class="button">Back to Leads list</a>&nbsp;
+        <a href="lead.html" class="button primary">Save</a>&nbsp;
+        <a href="lead.html" class="button">Cancel</a>
+      </div>
+      <h1 style="background-image: url('image/home.png');">Lead [Boris Furman]</h1>
+    </div>
+    <div class="content">
+      <form action="" method="post" enctype="multipart/form-data" id="form">
+        <div class="details" style="margin-top:5px; margin-bottom:5px;text-align:right;padding:5px;background-color:#DDF">
+          Lead matched to <b>3</b> Invoices. Closed Amount: <b>$5,345.00</b>
+          <a href="match.html" class="button">Match to Quickbooks Invoice</a>&nbsp;
+        </div>
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;"><span class="required"></span> Lead Status</td>
+              <td><select name="filter_status">
+                    <option value="1">NEW</option>
+                    <option value="2">PENDING</option>
+                    <option value="3">CANCELLED</option>
+                    <option value="3">COMPLETED</option>
+                  </select></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required"></span> Campaign</td>
+              <td><select name="filter_status">
+                    <option value="0"></option>
+                    <option value="1">Affilia Inc.</option>
+                    <option value="2">Exceleron Software</option>
+                    <option value="3">Plumbing</option>
+                  </select></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> First Name</td>
+              <td><input type="text" name="txt_name" value="Alex"/><span class="error">First Name is required</span></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Last Name</td>
+              <td><input type="text" name="txt_name" value="Smilansky"/><span class="error">Last Name is required</span></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Phone</td>
+              <td><input type="text" name="txt_name" value="214 335 2121"/><span class="error">Phone is required</span></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Address</td>
+              <td><textarea cols="40" rows="5">7016 Randall Way, Plano TX</textarea></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Customer Notes</td>
+              <td><textarea cols="40" rows="6" id="description">Description of possible problem and detail information about leak</textarea></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;vertical-align:bottom;">Recording:</td>
+              <td style="vertical-align:bottom;">
+                <object style="margin-top:10px; margin-bottom:-5px;" type="application/x-shockwave-flash" data="mp3player.swf" width="200" height="20"> 
+                    <param name="movie" value="mp3player.swf" /> 
+                    <param name="FlashVars" value="mp3=chopin.mp3&amp;showstop=1&amp;showvolume=1&amp;bgcolor1=999999&amp;bgcolor2=666666" /> 
+                </object>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br/>
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Source Details</div>
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>Lead created by Phone Call</h3>
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">From number:</td>
+              <td>+1(214)335-1111</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">To phone number:</td>
+              <td>+1(214)335-2222</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Call Duration</td>
+              <td>02:45</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Caller ID</td>
+              <td>Smilansky A</td>
+            </tr>
+          </table>
+
+          <h4>Possible related phone web rotations:</h4>
+
+          <table class="list">
+            <thead>
+              <tr>
+                <td class="left">Page URI</td>
+                <td class="left">Showed Number</td>
+                <td class="left">Time</td>
+                <td class="left">Referrer URI</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left">http://www.dalworthrestoration.com/index.html</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">01/01/2001 6:00PM</td>
+                <td class="left">http://www.google.com/search?q=water+damage</td>
+              </tr>
+              <tr class="selected">
+                <td class="left">http://www.dalworthrestoration.com/index.html</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">01/01/2001 6:00PM</td>
+                <td class="left">http://www.google.com/search?q=water+damage</td>
+              </tr>
+              <tr>
+                <td class="left">http://www.dalworthrestoration.com/index.html</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">01/01/2001 6:00PM</td>
+                <td class="left">http://www.google.com/search?q=water+damage</td>
+              </tr>
+              <tr>
+                <td class="left">http://www.dalworthrestoration.com/index.html</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">01/01/2001 6:00PM</td>
+                <td class="left">http://www.google.com/search?q=water+damage</td>
+              </tr>
+              <tr>
+                <td class="left">http://www.dalworthrestoration.com/index.html</td>
+                <td class="left">(214)335-1212</td>
+                <td class="left">01/01/2001 6:00PM</td>
+                <td class="left">http://www.google.com/search?q=water+damage</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <br/>
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Matched Invoices</div>
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <div class="details" style="margin-top:5px; margin-bottom:5px;text-align:right;padding:5px;background-color:#DDF">
+            Lead matched to <b>3</b> Invoices. Closed Amount: <b>$5,345.00</b>
+            <a href="match.html" class="button">Match to Quickbooks Invoice</a>&nbsp;
+          </div>
+          <div id="invoice" style="background: #F7F7F7; border: 1px solid #DDDDDD; padding: 10px; margin-top: 3px; margin-bottom: 10px;">
+            <table class="form" style="width:100%;">
+              <tr>
+                <td style="text-align:right;"><span style="font-size:16px; font-weight:bold;">Invoice:</span></td>
+                <td><span style="font-size:16px; font-weight:bold;">234543</span></td>
+                <td rowspan="2" style="width:100%; white-space:nowrap; vertical-align:top;">
+                  Customer:
+                  <textarea style="width:300px;height:50px;">Boris Furman
+7016 Randall Way, 
+Plano TX 75025</textarea></td>
+                <td rowspan="2" style="vertical-align:bottom; white-space:nowrap;">
+                  <a class="button" onclick="javascript:$('#invoice-items-1').toggle();">Invoice details</a>&nbsp;<a class="button" onclick="javascript:Alert('Ups..');">Unmatch Invoice</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:right;">created:</td>
+                <td><b>01/01/2011</b></td>
+              </tr>
+            </table>                 
+            <table id="invoice-items-1" class="list" style="display:none;">
+              <thead>
+                <tr>
+                  <td>#</td>
+                  <td>Item</td>
+                  <td class="right">Amount</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Remove carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2</td>
+                  <td>Clean carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>3</td>
+                  <td>Put carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+            </table>
+            <div class="details" style="text-align:right;padding:10px;font-size:14px;">
+               Closed Amount:<b>$545.00</b>
+               Tax:<b>$123.00</b>
+               Total:<b>$823.00</b>
+            </div>
+          </div>
+          <div id="invoice" style="background: #F7F7F7; border: 1px solid #DDDDDD; padding: 10px; margin-top: 3px; margin-bottom: 10px;">
+            <table class="form" style="width:100%;">
+              <tr>
+                <td style="text-align:right;"><span style="font-size:16px; font-weight:bold;">Invoice:</span></td>
+                <td><span style="font-size:16px; font-weight:bold;">234543</span></td>
+                <td rowspan="2" style="width:100%; white-space:nowrap; vertical-align:top;">
+                  Customer:
+                  <textarea style="width:300px;height:50px;">Boris Furman
+7016 Randall Way, 
+Plano TX 75025</textarea></td>
+                <td rowspan="2" style="vertical-align:bottom; white-space:nowrap;">
+                  <a class="button" onclick="javascript:$('#invoice-items-2').toggle();">Invoice details</a>&nbsp;<a class="button" onclick="javascript:Alert('Ups..');">Unmatch Invoice</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:right;">created:</td>
+                <td><b>01/01/2011</b></td>
+              </tr>
+            </table>                 
+            <table id="invoice-items-2" class="list" style="display:none;">
+              <thead>
+                <tr>
+                  <td>#</td>
+                  <td>Item</td>
+                  <td class="right">Amount</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Remove carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2</td>
+                  <td>Clean carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>3</td>
+                  <td>Put carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+            </table>
+            <div class="details" style="text-align:right;padding:10px;font-size:14px;">
+               Closed Amount:<b>$545.00</b>
+               Tax:<b>$123.00</b>
+               Total:<b>$823.00</b>
+            </div>
+          </div>
+          <div id="invoice" style="background: #F7F7F7; border: 1px solid #DDDDDD; padding: 10px; margin-top: 3px; margin-bottom: 10px;">
+            <table class="form" style="width:100%;">
+              <tr>
+                <td style="text-align:right;"><span style="font-size:16px; font-weight:bold;">Invoice:</span></td>
+                <td><span style="font-size:16px; font-weight:bold;">234543</span></td>
+                <td rowspan="2" style="width:100%; white-space:nowrap; vertical-align:top;">
+                  Customer:
+                  <textarea style="width:300px;height:50px;">Boris Furman
+7016 Randall Way, 
+Plano TX 75025</textarea></td>
+                <td rowspan="2" style="vertical-align:bottom; white-space:nowrap;">
+                  <a class="button" onclick="javascript:$('#invoice-items-3').toggle();">Invoice details</a>&nbsp;<a class="button" onclick="javascript:Alert('Ups..');">Unmatch Invoice</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:right;">created:</td>
+                <td><b>01/01/2011</b></td>
+              </tr>
+            </table>                 
+            <table id="invoice-items-3" class="list" style="display:none;">
+              <thead>
+                <tr>
+                  <td>#</td>
+                  <td>Item</td>
+                  <td class="right">Amount</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Remove carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2</td>
+                  <td>Clean carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>3</td>
+                  <td>Put carpet</td>
+                  <td class="right">$123.00</td>
+                </tr>
+              </thead>
+            </table>
+            <div class="details" style="text-align:right;padding:10px;font-size:14px;">
+               Closed Amount:<b>$545.00</b>
+               Tax:<b>$123.00</b>
+               Total:<b>$823.00</b>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+<div id="footer">
+  Footer text. Copyright
+</div>
+</body></html>

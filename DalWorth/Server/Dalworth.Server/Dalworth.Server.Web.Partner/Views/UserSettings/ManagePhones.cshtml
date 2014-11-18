@@ -1,0 +1,67 @@
+﻿@model Dalworth.Server.Web.Partner.Models.PhoneInfoModel
+
+@{
+    ViewBag.Title = "Partner In Profit - Manage Phones";
+    ViewBag.Header = "Manage Phones";
+}
+
+<table>
+<tr>    
+    <td valign="top">
+    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="2">Personal Phones</th>
+            </tr>
+
+        @if (Model.OwnPhones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+
+        @foreach (var item in Model.OwnPhones) {
+            <tr>
+                <td width="100px">
+                    @item.NumberText        
+                </td>
+                <td>
+                    @Html.ActionLink(" ", "Delete", new { id=item.ID }, new { @class = "icon-2 info-tooltip" })
+                </td>
+            </tr>
+        }
+        </table>
+    </td>
+    <td width="100px"></td>
+    <td valign="top">
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left">Tracking Phones</th>
+            </tr>
+
+        @if (Model.TrackingPhones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+
+        @foreach (var item in Model.TrackingPhones) {
+            <tr>
+                <td>
+                    @item.NumberText
+                </td>
+            </tr>
+        }
+
+        </table>
+
+    </td>
+</tr>
+</table>
+
+
+<p></p>
+
+
+
+<p>
+@Html.ActionLink("Add Personal Phone", "AddPhone", new { controller = "UserSettings" }, new { @class="back-link" })    
+</p>
+
+

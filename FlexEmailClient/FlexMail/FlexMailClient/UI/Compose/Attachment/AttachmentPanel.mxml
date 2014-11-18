@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+    horizontalAlign="left"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+    title="Attachments" backgroundAlpha="1.0" xmlns:Attachment="UI.Compose.Attachment.*">
+    
+	<mx:titleIcon>@Embed('/Images/attachment_icon.gif')</mx:titleIcon>
+    
+	<mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="true"/>
+
+    <Attachment:AttachmentList id="attachmentList" height="100%" width="100%" 
+        borderColor="#505b70" borderStyle="solid" horizontalScrollPolicy="off"/>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:VBox horizontalAlign="right">
+        
+            <mx:Form paddingRight="0" verticalGap="0">
+                <mx:FormItem label="Total Size:" fontWeight="bold" horizontalAlign="right">
+                    <mx:Label text="{nf.format(attachmentList.TotalSize/1024)} Kb" textAlign="right"/>
+                </mx:FormItem>
+            </mx:Form>
+        
+            <mx:Button label="Add attachment"  click="attachmentList.AddAttachment()"/>
+        </mx:VBox>    
+    </mx:ControlBar>
+
+</mx:Panel>

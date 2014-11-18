@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:TractModule xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	xmlns:modules="TractInc.modules.*"
+	xmlns:userProfile="UI.userProfile.*"
+	percentWidth="100" percentHeight="100" backgroundColor="#e5e5ff"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.Module;
+			import mx.controls.Alert;
+			import TractInc.Domain.User;
+			
+			public override function init(user:User, module:Module):void
+			{
+				callLater(initProfile, [user]);
+			}
+			
+			public override function logout():Boolean 
+			{
+				return viewUserProfile.logout();
+			}
+			
+			private function initProfile(user:User):void 
+			{
+				viewUserProfile.init(user);
+			}
+		
+		]]>
+	</mx:Script>
+	
+	<userProfile:UserProfileView id="viewUserProfile" width="100%" height="100%"/>
+	
+</modules:TractModule>

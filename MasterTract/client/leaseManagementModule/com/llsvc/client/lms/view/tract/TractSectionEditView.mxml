@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Breakdown Section"
+	creationComplete="onCreate()" xmlns:component="com.llsvc.component.*">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.util.TractDescriptionUtil;
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentActorPhone;
+			import com.llsvc.domain.DocumentActor;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+			
+			public var parsedQQs:ArrayCollection;
+			
+			[Bindable] private var errorMessage:String;
+
+			private var _section:TractSection;
+			[Bindable]
+			public function get section():TractSection { return _section; }
+			public function set section(value:TractSection):void 
+			{
+				_section = value;
+				
+				populateFields();
+			}
+			
+            public static function open(parent:DisplayObject, modal:Boolean):TractSectionEditView
+            {
+                var popup:TractSectionEditView = new TractSectionEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	focusManager.setFocus(txtSection);
+            }
+            
+            private function populateFields():void 
+            {
+        		txtSection.text = section.key.substring(section.key.indexOf("Section ") + 8, section.key.indexOf(": "));
+        		txtDesc.text = section.key.substring(section.key.indexOf(": ") + 2); 
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	if (
+            		   txtSection.text.length > 0
+            		&& txtDesc.text.length > 0 
+            		
+            		&& !isNaN(Number(txtSection.text))
+            		)
+            	{
+            		return true;
+            	} else 
+            	{
+            		return false;
+            	}
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+            	errorMessage = "";
+
+	        	if (isFormValid()) 
+	        	{
+	        		section.section = txtSection.text;
+	        		section.tract = txtDesc.text;
+	        		parsedQQs = TractDescriptionUtil.parse(txtDesc.text);
+	        		
+			        dispatchEvent(new Event("commitRequest"));
+	        	} else 
+	        	{
+            		errorMessage = "Not all required fields selected !";
+	        	}
+	        }
+	        
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formMain" width="100%" labelWidth="60" 
+		borderColor="#999999" borderStyle="solid" borderThickness="1"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+		verticalGap="2">
+        <mx:Label text="Please enter your Section info."/>
+        
+        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+            <mx:Label text="Section"/>
+            <mx:TextInput id="txtSection" width="40" maxChars="3" text="{section.section}" restrict="0-9"/>
+            <mx:Label text="Desc"/>
+            <component:SelectableInput id="txtDesc" width="150" text="{section.tract}"/>
+        </mx:HBox>
+
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+		<mx:Label fontSize="12" color="#ff0000" text="{errorMessage}" minWidth="200"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

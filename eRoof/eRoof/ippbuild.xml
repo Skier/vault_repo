@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!--
+   - To Invoke:
+   - Ensure JAVA_HOME is set
+   - Ensure ANT_HOME is set
+   - Ensure ANT_HOME/bin is in the path
+   - ant -lib antlib [other ant options] <target> ...  
+  -->
+<project name="flexProject" default="buildAndDeploy" basedir=".">
+    <!--
+       - Main build file for an IPP Flex project, handles build, wrap and 
+       - deploy of the flex project, any custom build steps you want to add
+       - (from a build.xml file of your own creation) and the build of any
+       - Server Business Logic project associated with the flex project.
+       -
+       - Important properties:
+       -    ipp.password  - the password of the IPP user named in your
+       -                    devEnvironment.xml file.  We recommend that you
+       -                    put this on the command line.
+       -                    This will eventually be replaced by an OAuth
+       -                    token approach.
+       -
+       -    targetEnv     - one of "Dev", "QA", "Staging" or "TechCheck"
+       -                    the environment to which you want to deploy, 
+       -                    defaults to "Dev".
+       -
+       - Properties set by build.properties that you should edit:
+       -    FLEX_HOME     - the root of the flex SDK you want to build with.
+       -    DEPLOY_DIR    - the directory where you want built stuff to go
+       -
+      -->
+        <path id="ipptasks.classpath">
+                <pathelement location="${basedir}/antlib/ippant.jar" />
+                <pathelement location="${basedir}/antlib/ippconfig.jar" />
+                <pathelement location="${basedir}/antlib/flexTasks.jar" />
+                <pathelement location="${basedir}/antlib/ipp-java-devkit-0.9.5.jar" />
+        </path> 
+    <taskdef resource="flexTasks.tasks" classpath="${basedir}/antlib/flexTasks.jar" />
+    <taskdef resource="com/intuit/ipp/ant/ippant.xml">
+        <classpath refid="ipptasks.classpath" />
+    </taskdef>
+    
+    <property file="build.properties" />
+    <property name="ipp.projectDir" value="${basedir}" />
+    <property name="DEPLOY_DIR" value="${basedir}/bin" />
+
+    <property name="debug" value="false" />
+    <property name="targetEnv" value="Dev" />
+
+    <!-- 
+       - Load the QBProjectInfo, etc. and clean up in prep for a build
+      -->
+    <target name="init">
+        <ippprojectproperties pass="${ipp.password}" />
+                <delete dir="${DEPLOY_DIR}" />
+                <mkdir dir="${DEPLOY_DIR}" />
+    </target>
+
+    <!-- 
+       - Support for inserting your own custom build steps...
+       - add a "build.xml" file in the same directory as this
+       - ippbuild.xml file and make sure it's default target does
+       - all the build steps you need.
+       -
+       - your custom build will run before we build dependent projects
+       - (SBL) and before we build the flex app itself.
+      -->
+    <target name="checkForCustomBuild">
+        <available file="build.xml" property="custombuild.present" />
+    </target>
+
+    <target name="custombuild" if="custombuild.present">
+        <ant />
+    </target>
+
+    <!--
+       - Build SBL project if there is one
+      -->
+    <target name="dependentProjects" if="ippProject.dependentProject">
+        <ant dir="${ippProject.dependentProject}" inheritAll="false" antfile="SBLbuild.xml">
+                <property name="DEPLOY_DIR" value="${DEPLOY_DIR}" />
+                <property name="targetEnv" value="${targetEnv}" />
+                </ant> 
+    </target>
+
+    <!--
+       - Build the Flex project itself.  Note that we use an ipp-custom
+       - task here, this is like the Adobe mxmlc task except that it 
+       - obeys the settings in .actionScriptProperties, so whatever your
+       - FlexBuilder project does, we'll do here...
+      -->
+    <target name="compile" depends="init,custombuild,dependentProjects">
+        <ippflexbuild debug="${debug}" overrideOutputFolderPath="${DEPLOY_DIR}" />
+    </target>
+
+    <!--
+       - Build the HTML wrapper for the Flex app.  The IPPHTMLWrapper task
+       - ensures that we use the custom index.template.html file in your
+       - project html-template directory, it also sets the ipp.homePage
+       - property to the generated root html page.
+      -->
+    <target name="wrapper" description="build html wrapper from custom template">
+        <ipphtmlwrapper 
+            height="100%"
+            width="100%"
+            template="${basedir}/html-template/index.template.html"
+            output="${DEPLOY_DIR}"/>
+        <copy todir="${DEPLOY_DIR}">
+            <fileset dir="${basedir}/html-template" id="htmlPages">
+                <include name="**/*" />
+                <exclude name="**/index.template.html" />
+            </fileset>
+        </copy>
+        <property name="homePage" value="${ipp.homePage}" />
+    </target>
+        
+        <target name="package" description="package built components" depends="compile,wrapper">
+            <delete file="QBAppResource.zip" />
+            <zip destfile="QBAppResource.zip" basedir="${DEPLOY_DIR}" />
+        </target>
+
+    <target name="build" description="build SWF and wrapper" depends="compile,wrapper" />
+
+    <target name="deploy" description="normal deployment">
+        <ippdeploy pass="${ipp.password}" qar="QBAppResource.zip" targetEnv="${targetEnv}" homePage="${homePage}" />
+    </target>
+
+    <target name="buildAndDeploy" description="full build + deploy" depends="build,package,deploy" />
+</project>

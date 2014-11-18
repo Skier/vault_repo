@@ -1,0 +1,477 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Web"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{FB3E86F5-E754-4442-A50D-7DFD7A2099B2}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "Dpi.Central.Web"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "Dpi.Central.Web"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "Interfaces"
+                    Project = "{21A6A10E-ACE2-4570-ADE9-E389DA94587C}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "DPIComp"
+                    Project = "{AAE61D0E-3697-4BB6-B5C9-2E117FB7E6F2}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "ClientComp"
+                    Project = "{DE82C6F7-A112-448D-8A26-3CECE5C75E95}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "BusComp"
+                    Project = "{39E1C1EA-9DC4-467B-BE60-BF9B9DD36AA1}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Services"
+                    Project = "{690BD868-E152-4B04-8B48-24F85398C45B}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Design"
+                    AssemblyName = "System.Design"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Design.dll"
+                />
+                <Reference
+                    Name = "Dpi.Central.Web.Common"
+                    Project = "{C03B6E2A-9872-45C5-92DE-7A2F3638081A}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Dpi.Central.Web.Account"
+                    Project = "{E210D673-88F9-4DA9-B05E-15AC04899257}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "10 Things You Need to Know About Selling Your Telecom Accounts.doc"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "about.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "about.aspx.cs"
+                    DependentUpon = "about.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "about.aspx.resx"
+                    DependentUpon = "about.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_selling_get_doc.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_selling_get_doc.aspx.cs"
+                    DependentUpon = "account_selling_get_doc.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_selling_get_doc.aspx.resx"
+                    DependentUpon = "account_selling_get_doc.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "account_selling_put_info.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "account_selling_put_info.aspx.cs"
+                    DependentUpon = "account_selling_put_info.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "account_selling_put_info.aspx.resx"
+                    DependentUpon = "account_selling_put_info.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "agent_contact.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "agent_contact.aspx.cs"
+                    DependentUpon = "agent_contact.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "agent_contact.aspx.resx"
+                    DependentUpon = "agent_contact.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "agent_thankyou.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "agent_thankyou.aspx.cs"
+                    DependentUpon = "agent_thankyou.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "agent_thankyou.aspx.resx"
+                    DependentUpon = "agent_thankyou.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "bp.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "bp.aspx.cs"
+                    DependentUpon = "bp.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "bp.aspx.resx"
+                    DependentUpon = "bp.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "contact.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "contact.aspx.cs"
+                    DependentUpon = "contact.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "contact.aspx.resx"
+                    DependentUpon = "contact.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Global.asax"
+                    SubType = "Component"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Global.asax.cs"
+                    DependentUpon = "Global.asax"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Global.asax.resx"
+                    DependentUpon = "Global.asax.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "index.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "index.aspx.cs"
+                    DependentUpon = "index.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "index.aspx.resx"
+                    DependentUpon = "index.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "jobs.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "jobs.aspx.cs"
+                    DependentUpon = "jobs.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "jobs.aspx.resx"
+                    DependentUpon = "jobs.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "legal.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "legal.aspx.cs"
+                    DependentUpon = "legal.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "legal.aspx.resx"
+                    DependentUpon = "legal.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "locations.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "locations.aspx.cs"
+                    DependentUpon = "locations.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "locations.aspx.resx"
+                    DependentUpon = "locations.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ppc.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ppc.aspx.cs"
+                    DependentUpon = "ppc.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ppc.aspx.resx"
+                    DependentUpon = "ppc.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "pphp.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "pphp.aspx.cs"
+                    DependentUpon = "pphp.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "pphp.aspx.resx"
+                    DependentUpon = "pphp.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ppi.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ppi.aspx.cs"
+                    DependentUpon = "ppi.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ppi.aspx.resx"
+                    DependentUpon = "ppi.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ppld.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ppld.aspx.cs"
+                    DependentUpon = "ppld.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ppld.aspx.resx"
+                    DependentUpon = "ppld.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ppmc.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ppmc.aspx.cs"
+                    DependentUpon = "ppmc.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ppmc.aspx.resx"
+                    DependentUpon = "ppmc.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "products.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "products.aspx.cs"
+                    DependentUpon = "products.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "products.aspx.resx"
+                    DependentUpon = "products.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "reseller.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "reseller.aspx.cs"
+                    DependentUpon = "reseller.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "reseller.aspx.resx"
+                    DependentUpon = "reseller.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "reseller2.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "reseller2.aspx.cs"
+                    DependentUpon = "reseller2.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "reseller2.aspx.resx"
+                    DependentUpon = "reseller2.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "thankyou.aspx"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "thankyou.aspx.cs"
+                    DependentUpon = "thankyou.aspx"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "thankyou.aspx.resx"
+                    DependentUpon = "thankyou.aspx.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Web.config"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "flash\dpi.swf"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "flash\dpi_1006_generic_home_phone_tv15_2_396x217.swf"
+                    BuildAction = "Content"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

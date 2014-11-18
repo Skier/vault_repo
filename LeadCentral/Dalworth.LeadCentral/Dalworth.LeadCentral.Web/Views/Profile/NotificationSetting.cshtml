@@ -1,0 +1,48 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Profile.NotificationSetting
+
+@{
+    ViewBag.Title = "Notification Setting";
+}
+
+@using (Html.BeginForm())
+{
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+          <button type="submit" class="primary">Update settings</button>
+          @Html.ActionLink("Cancel", "Notifications", new { controller="Profile" }, new { @class="button" } )
+      </div>
+      <h1>Notification Settings</h1>
+    </div>
+
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+                <td style="vertical-align:middle;white-space: nowrap;"><b>Type / Send To</b></td>
+                <td style="width: 100px;"><b>Administrator</b></td>
+                <td style="width: 100px;"><b>Sales Rep</b></td>
+                <td style="width: 100px;"><b>Staff</b></td>
+                <td style="width: 100px;"><b>Accountant</b></td>
+                <td style="width: 100px;"><b>Partner</b></td>
+                <td style="width: 100px;"><b>Partner Users</b></td>
+            </tr>
+            @foreach (var type in Model.NotificationSettings)
+            {
+            <tr>
+                <td style="vertical-align:middle;">@type.TypeName</td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".01")" @(type.SendToAdmin ? "checked='checked'" : "")/></td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".02")" @(type.SendToSalesRep ? "checked='checked'" : "")/></td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".03")" @(type.SendToStaff ? "checked='checked'" : "")/></td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".04")" @(type.SendToAccountant ? "checked='checked'" : "")/></td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".05")" @(type.SendToPartner ? "checked='checked'" : "")/></td>
+                <td><input type="checkbox" name="settings" value="@(type.Id + ".06")" @(type.SendToPartnerUsers ? "checked='checked'" : "")/></td>
+            </tr>
+            }
+          </table>
+        </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:messages="common.messages.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import UI.manager.ManagerController;
+			
+			public var controller:DashController;
+			
+			public function set parentController(parent:ManagerController):void {
+				controller = new DashController(this as DashView, parent);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+    <messages:MessagePanelView id="msgPanel"
+    	title="Message center"
+        width="100%" height="250"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        />
+
+</mx:VBox>

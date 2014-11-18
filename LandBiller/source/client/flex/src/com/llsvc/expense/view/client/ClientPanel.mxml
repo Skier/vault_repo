@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+    <mx:Metadata>
+        [Event(name="editClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="deleteClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="addProjectRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="selectProjectRequest", type="com.llsvc.domain.events.ProjectEvent")]
+    </mx:Metadata>
+    
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.ProjectEvent;
+			import com.llsvc.domain.Project;
+			import com.llsvc.domain.events.ClientEvent;
+			import com.llsvc.domain.Client;
+			
+			private var _client:Client;
+			[Bindable]
+			public function get client():Client { return _client; }
+			public function set client(value:Client):void 
+			{
+				_client = value;
+			} 
+			
+			private function btnAddProjectClickHandler():void 
+			{
+				dispatchEvent(new ClientEvent("addProjectRequest", client));
+			}
+			
+			private function btnEditClickHandler():void 
+			{
+				dispatchEvent(new ClientEvent("editClientRequest", client));
+			}
+			
+			private function btnDeleteClickHandler():void 
+			{
+				dispatchEvent(new ClientEvent("deleteClientRequest", client));
+			}
+			
+			private function dgProjectsDoubleClick():void 
+			{
+				var project:Project = dgProjects.selectedItem as Project;
+				dispatchEvent(new ProjectEvent("selectProjectRequest", project));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:PhoneFormatter id="pf" formatString="(###) ###-####" validPatternChars="#-() "/>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#ffeeff"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+		<mx:VBox width="100%" height="100%">
+			<mx:Label text="Client: {client.name}" fontWeight="bold" fontSize="14"/>
+			<mx:Label text="Description:" fontWeight="bold" fontSize="14"/>
+			<mx:Text text="{client.description}" width="100%"/>
+			<mx:HRule width="100%"/>
+			<mx:HBox width="100%" height="100%">
+				<mx:VBox>
+					<mx:Label text="Contact person:" fontWeight="bold" fontSize="14"/>
+					<mx:HBox width="100%">
+						<mx:Label text="First name:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.firstname}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Middle name:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.middlename}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Last name:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.lastname}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Phone:" width="100" textAlign="right"/>
+						<mx:Label text="{pf.format(client.person.phone)}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Phone alt:" width="100" textAlign="right"/>
+						<mx:Label text="{pf.format(client.person.phonealt)}" fontWeight="bold"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Address:" fontWeight="bold" fontSize="14"/>
+					<mx:HBox width="100%">
+						<mx:Label text="Address:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.address.address1}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.address.address2}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="City:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.address.city}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="State:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.address.state.name}" fontWeight="bold"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Zip:" width="100" textAlign="right"/>
+						<mx:Label text="{client.person.address.zip}" fontWeight="bold"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox width="100%">
+			<mx:Label text="Projects:" fontWeight="bold" fontSize="14"/>
+			<mx:DataGrid id="dgProjects" width="100%" height="100%" dataProvider="{client.projects}"
+				doubleClickEnabled="true" doubleClick="dgProjectsDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Name" dataField="projectname"/>
+					<mx:DataGridColumn headerText="AFE" dataField="afe"/>
+					<mx:DataGridColumn headerText="Status" dataField="status"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button height="24" label="Add new Project" click="btnAddProjectClickHandler()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:HRule width="100%"/>
+		
+	<mx:HBox width="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:Spacer width="100%"/>
+		<mx:Button height="24" label="Edit" click="btnEditClickHandler()"/>
+		<mx:Button height="24" label="Delete" click="btnDeleteClickHandler()"/>
+	</mx:HBox>
+	
+</mx:VBox>

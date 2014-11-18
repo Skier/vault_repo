@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" title="Expense Type Edit" 
+	xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.services.ExpenceTypeService;
+			import com.llsvc.domain.DefaultExpenceType;
+			import com.llsvc.registry.MainModel;
+			import com.llsvc.domain.ExpenceType;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var defaultTypes:ArrayCollection;
+			
+			[Bindable] public var expenseType:ExpenceType;
+			
+            public static function open(parent:DisplayObject, expenseType:ExpenceType, modal:Boolean = true):ExpenseTypeEditView
+            {
+                var popup:ExpenseTypeEditView = new ExpenseTypeEditView();
+                
+                if (expenseType == null)
+                	expenseType = new ExpenceType();
+                	
+                popup.expenseType = expenseType;
+                popup.defaultTypes = MainModel.instance.defaultExpenseTypes;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vRate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (cbBasedOn.selected && comboBasedOn.selectedIndex < 0)
+					result = false;
+				
+				return result;
+			}
+			
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			private function getType():ExpenceType 
+			{
+				expenseType.user = MainModel.instance.currentUser;
+				expenseType.userid = expenseType.user.userid;
+				expenseType.itemname = txtName.text;
+				expenseType.defaultrate = Number(txtRate.text);
+				if (cbBasedOn.selected) 
+				{
+					expenseType.basedon = DefaultExpenceType(comboBasedOn.selectedItem).defaultexpencetypeid;
+					expenseType.defaultItem = comboBasedOn.selectedItem as DefaultExpenceType;
+				} else 
+				{
+					expenseType.basedon = 0;
+					expenseType.defaultItem = null;
+				}
+				
+				return expenseType;
+			}
+			
+			public function save(expenseType:ExpenceType):void 
+			{
+				if (expenseType == null)
+				{
+					trace("Expense Type is incomplete!");
+					return;
+				}
+
+				startRemoting();				
+
+				ExpenceTypeService.instance.saveExpenceType(expenseType).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							dispatchEvent(new Event("expenseTypeSavingComplete"));
+						}, faultHandler));
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Expense Type saving failed !\n" + event.fault.message); 
+			}
+				
+			private function btnCancelClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				if (!isFormValid())
+					return;
+					
+				save(getType());
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="true"/>
+	<mx:NumberValidator id="vRate" source="{txtRate}" property="text" required="true"/>
+
+	<mx:Form width="100%">
+		<mx:FormItem label="Type Name" width="100%" required="true">
+			<mx:TextInput id="txtName" text="{expenseType.itemname}" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Default Rate" width="100%" required="true">
+			<mx:TextInput id="txtRate" 
+				text="{expenseType.defaultrate == 0 ? '' : expenseType.defaultrate}" textAlign="right"
+				restrict="0-9,."/>
+		</mx:FormItem>
+		<mx:FormItem label="" width="100%">
+			<mx:HBox width="100%">
+				<mx:CheckBox id="cbBasedOn" selected="{expenseType.basedon &gt; 0}" label="based on"/>
+				<controls:ComboBox id="comboBasedOn" value="{expenseType.basedon}" valueField="defaultexpencetypeid"
+					dataProvider="{defaultTypes}" enabled="{cbBasedOn.selected}" labelField="itemname"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+		visible="{isBusy}" includeInLayout="{isBusy}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!isBusy}" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" enabled="{!isBusy}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    rollOver="rollOverHandler(event)"
+    rollOut="rollOutHandler(event)"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Project;
+			import mx.core.IUIComponent;
+			import mx.managers.DragManager;
+			import mx.controls.Alert;
+			import mx.events.DragEvent;
+			import mx.events.DynamicEvent;
+			import mx.effects.Resize;
+			import truetract.domain.ProjectTab;
+			
+        	[Embed(source="/assets/project.png")]
+        	[Bindable]
+        	private var imgProject:Class;
+			
+        	[Embed(source="/assets/check24.png")]
+        	[Bindable]
+        	private var imgComplete:Class;
+			
+			[Bindable] private var _selected:Boolean = false;;
+            [Bindable] public function set selected(value:Boolean):void { _selected = value; };
+            		   public function get selected():Boolean { return _selected; };
+
+            [Bindable] private var _project:Project;
+            [Bindable] public function set project(value:Project):void { _project = value; };
+            		   public function get project():Project { return _project; };
+            
+	        private function rollOverHandler(event:MouseEvent):void
+	        {
+	            boxContent.setStyle("borderColor", "#cccccc");
+	            boxContent.setStyle("shadowDistance", 2);
+	        }
+	
+	        private function rollOutHandler(event:MouseEvent):void
+	        {
+	            boxContent.setStyle("borderColor", "#999999");
+	            boxContent.setStyle("shadowDistance", 1);
+	        }
+	
+	
+		]]>
+	</mx:Script>
+		
+	<mx:VBox id="boxContent"
+		width="76" height="76" 
+		verticalAlign="middle" horizontalAlign="center"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		backgroundColor="{selected ? 0xffffcc : 0xffffff}"
+		borderColor="#999999" borderStyle="solid" cornerRadius="2"
+		dropShadowEnabled="true" shadowDirection="center" shadowDistance="1">
+		<mx:Canvas width="48" height="48"
+			toolTip="{(project.Status == Project.PROJECT_STATUS_ACTIVE) ? 'Project is active.' : 'Project is complete.'}">
+	 		<mx:Image
+	 			source="{imgProject}" 
+	 			width="48" height="48"/>
+
+	 		<mx:Box width="100%" height="100%" 
+				paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+				verticalAlign="bottom" horizontalAlign="right">
+		 		<mx:Image
+		 			source="{imgComplete}" 
+		 			width="24" height="24"
+		 			visible="{(project.Status != Project.PROJECT_STATUS_ACTIVE)}"/>
+	 		</mx:Box>
+		</mx:Canvas>
+
+		<mx:Label width="100%" minWidth="48" 
+			text="{project.Name}" textAlign="center" fontSize="9"/>
+	</mx:VBox>
+	
+</mx:Canvas>
+

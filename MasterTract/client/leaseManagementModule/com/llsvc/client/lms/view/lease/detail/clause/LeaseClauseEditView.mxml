@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:component="com.llsvc.component.*"
+	title="Edit Term"
+	width="400" height="350">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import com.llsvc.domain.LeaseClause;
+			
+			private static const LABEL_WIDTH:int = 80;
+			
+			private var _clause:LeaseClause;
+			[Bindable]
+			public function get clause():LeaseClause { return _clause; }
+			public function set clause(value:LeaseClause):void 
+			{
+				_clause = value;
+			}
+			
+            public static function open(parent:DisplayObject, clause:LeaseClause, modal:Boolean):LeaseClauseEditView
+            {
+                var popup:LeaseClauseEditView = new LeaseClauseEditView();
+                
+                popup.clause = clause;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+			
+			private function comboCodeChangeHandler():void 
+			{
+				if (comboCode.value == LeaseClause.OTHER_TYPE) 
+				{
+					txtName.visible = true;
+					txtName.includeInLayout = true;
+					txtName.text = "";
+				} else {
+					txtName.visible = false;
+					txtName.includeInLayout = false;
+					txtName.text = comboCode.selectedLabel;
+				}
+
+				if (comboCode.value == LeaseClause.OPTION_TO_EXTEND_TYPE) 
+				{
+					boxExtend.visible = true;
+					boxExtend.includeInLayout = true;
+				} else {
+					boxExtend.visible = false;
+					boxExtend.includeInLayout = false;
+				}
+			}
+			
+			private function btnSubmitClickHandler():void 
+			{
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					return;
+					
+				clause.code = comboCode.value as String;
+				if (comboCode.value == LeaseClause.OTHER_TYPE) 
+				{
+					clause.name = txtName.text;
+				} else 
+				{
+					clause.name = comboCode.selectedLabel as String;
+				}
+				clause.description = txtDescription.text;
+				clause.details = txtDetails.htmlText;
+				clause.bonusRate = Number(txtBonusRate.text);
+				
+				dispatchEvent(new Event("submitRequest"));
+			}
+			
+			private function btnCancelClickHandler():void 
+			{
+				close();
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="true" minLength="2" maxLength="250"/>
+		
+    <mx:VBox id="boxOtherDetail" 
+    	width="100%" height="100%" horizontalGap="2" verticalAlign="middle"
+    	paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+    	
+    	<mx:HBox width="100%" verticalAlign="middle">
+    		<mx:Label width="{LABEL_WIDTH}" text="Clause Name:" textAlign="right"/>
+    		<controls:ComboBox id="comboCode" 
+    			value="{clause.code}" dataProvider="{LeaseClause.getTypes()}" valueField="value"
+    			change="comboCodeChangeHandler()"/>
+    		<component:SelectableInput id="txtName" 
+    			width="100%" maxChars="250" text="{clause.name}"
+	    		includeInLayout="{clause.code == LeaseClause.OTHER_TYPE}" 
+	    		visible="{clause.code == LeaseClause.OTHER_TYPE}"/>
+    	</mx:HBox>
+
+    	<mx:HBox id="boxExtend" width="100%" verticalAlign="middle" 
+    		includeInLayout="{clause.code == LeaseClause.OPTION_TO_EXTEND_TYPE}" 
+    		visible="{clause.code == LeaseClause.OPTION_TO_EXTEND_TYPE}"
+    		backgroundColor="#ffffdd">
+    		<mx:Label width="{LABEL_WIDTH}" text="Amt per Acre:" textAlign="right"/>
+    		<mx:TextInput id="txtBonusRate" restrict="0-9,." textAlign="right"
+    			width="60" text="{isNaN(clause.bonusRate)? '' : clause.bonusRate}"/>
+    		<mx:Label text="Total:" textAlign="right"/>
+    		<mx:Label id="lblTotal" 
+    			text="{isNaN(Number(txtBonusRate.text))? '' : Number(Number(txtBonusRate.text) * clause.lease.netAcres).toFixed(2)}"/>
+    	</mx:HBox>
+
+    	<mx:VBox width="100%" verticalAlign="middle" verticalGap="-2">
+    		<mx:Label text="Subject:" textAlign="right"/>
+    		<component:SelectableInput id="txtDescription" 
+    			width="100%"  
+    			text="{clause.description}"/>
+    	</mx:VBox>
+
+    	<mx:VBox width="100%" height="100%" verticalAlign="middle" verticalGap="-2">
+    		<mx:Label text="Details:" textAlign="right"/>
+    		<mx:TextArea id="txtDetails" 
+    			width="100%" height="100%"
+    			htmlText="{clause.details}"/>
+    	</mx:VBox>
+
+    	<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button icon="@Embed('assets/icons16/accept.png')" label="Ok" width="100" height="28" 
+				click="btnSubmitClickHandler()"/>
+			<mx:Button icon="@Embed('assets/icons16/cancel.png')" label="Cancel" width="100" height="28" 
+				click="btnCancelClickHandler()"/>
+    	</mx:HBox>
+    </mx:VBox>
+</mx:TitleWindow>

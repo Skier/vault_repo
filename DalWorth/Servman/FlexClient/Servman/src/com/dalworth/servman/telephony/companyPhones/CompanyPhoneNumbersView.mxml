@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:companyPhones="com.dalworth.servman.telephony.companyPhones.*"
+	initialize="onInit()" creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import mx.events.DynamicEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import com.dalworth.servman.domain.Phone;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var phoneNumbers:ArrayCollection = new ArrayCollection(); 
+			
+			[Bindable]
+			public var isEditMode:Boolean = false; 
+			
+			public function init():void 
+			{
+				if (vsPhones != null)
+					vsPhones.selectedIndex = 0;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Phone settings > Phone numbers management";
+				
+				phoneNumbers.removeAll();
+				PhoneService.getInstance().getCompanyPhoneNumbers().addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							phoneNumbers.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+						}
+					));
+			}
+			
+			private function onPurchase():void 
+			{
+				var popup:PurchasePhonePopup = PurchasePhonePopup.open(Application.application as DisplayObject);
+				popup.addEventListener("purchasePhoneComplete", 
+					function (event:Event):void 
+					{
+						phoneNumbers.addItem(popup.phone);
+					});
+			}
+			
+			private function onInit():void
+			{
+				init();
+			}
+			
+			private function onCreate():void 
+			{
+				viewPhoneEdit.addEventListener("phoneEditClose", 
+					function (event:DynamicEvent):void 
+					{
+						isEditMode = false;
+						var phone:Phone = event.phone as Phone;
+						vsPhones.selectedChild = viewPhoneList;
+
+						if (phone != null && phoneNumbers.contains(phone))
+							dgPhones.selectedIndex = phoneNumbers.getItemIndex(phone);
+						else 
+							init();
+
+						BreadCrumbModel.getInstance().breadCrumbString = "Phone settings > Phone numbers management";
+				
+						viewPhoneEdit.phone = null;
+					});
+			}
+			
+			private function onPhoneDoubleClick():void 
+			{
+				var phone:Phone = dgPhones.selectedItem as Phone;
+				if (phone == null)
+					return;
+				vsPhones.selectedChild = viewPhoneEdit;
+				viewPhoneEdit.phone = phone;
+				isEditMode = true;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Phone settings > Phone numbers management > Edit Phone number settings [" + phone.Number + "]";
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsPhones" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewPhoneList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+				<mx:Label text="Company Inbound Phones" color="#333333" fontSize="14"/>
+		
+				<mx:DataGrid id="dgPhones" borderColor="#DDDDDD" borderStyle="solid"
+					dataProvider="{phoneNumbers}" 
+					width="100%" height="100%" sortableColumns="false" draggableColumns="false" resizableColumns="false"
+					doubleClickEnabled="true" itemDoubleClick="onPhoneDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn dataField="Number" headerText="Phone Number"/>
+						<mx:DataGridColumn dataField="Description" headerText=""/>
+						<mx:DataGridColumn dataField="TwilioId" headerText="UID"/>
+						<mx:DataGridColumn dataField="IsSuspended" itemRenderer="com.dalworth.servman.telephony.companyPhones.PhoneStatusIR" 
+							textAlign="center" headerText="Status"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<mx:VBox horizontalAlign="center" height="100%">
+				<mx:Button label="Purchase New" click="onPurchase()" fontSize="12" width="150" height="35"/>
+				
+				<mx:Spacer height="100%"/>
+
+				<companyPhones:PhoneUsageView phone="{dgPhones.selectedItem as Phone}"/>
+
+				<mx:VBox width="100%" 
+					paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+					borderColor="#FFFF66" borderStyle="solid" cornerRadius="5" borderThickness="2"
+					backgroundColor="#FFFFCC" horizontalAlign="center"
+					dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+					<mx:Label text="Current Balance" fontSize="14" color="#666666"/>
+					<mx:Label text="$45.67" fontSize="24" color="#666666"/> 
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<companyPhones:CompanyPhoneNumberEditView id="viewPhoneEdit" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:Canvas>

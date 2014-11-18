@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" 
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2">
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Tract;
+			import mx.controls.Alert;
+			import truetract.domain.ProjectTabDocument;
+			import truetract.domain.ProjectTabContact;
+			
+        	[Embed(source="/assets/delete2.png")]
+        	[Bindable]
+        	private var imgDelete:Class;
+        	
+        	[Embed(source="/assets/page_white_acrobat.png")]
+        	[Bindable]
+        	private var imgPdf:Class;
+        	
+        	[Embed(source="/assets/page_white_acrobat_disable.png")]
+        	[Bindable]
+        	private var imgPdfDisable:Class;
+        	
+        	[Embed(source="/assets/page_go.png")]
+        	[Bindable]
+        	private var imgDocOpen:Class;
+        	
+			private function openDocClickHandler():void 
+			{
+				ProjectTabDetailView(parentDocument).openDocument(ProjectTabDocument(data).DocumentRef);
+			}
+			
+			private function openPdfCopyClickHandler():void 
+			{
+				ProjectTabDetailView(parentDocument).openPdfCopy(ProjectTabDocument(data).DocumentRef);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{imgDocOpen}" 
+		toolTip="Open Document" 
+        click="openDocClickHandler()"/>
+
+	<mx:Image source="{ProjectTabDocument(data).DocumentRef.PdfCopy != null ? imgPdf : imgPdfDisable}"
+        toolTip="Open Pdf Copy" 
+        click="openPdfCopyClickHandler()"/>
+</mx:HBox>

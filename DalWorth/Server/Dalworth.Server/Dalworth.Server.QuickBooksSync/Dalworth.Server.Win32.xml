@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application Trace="True">
+  <settings/>
+  <database ConnectionString="server=localhost;user id=root; password=++Winston; database=dalworth_server_dbo_production; pooling=true"
+            ServmanConnectionString="Driver={Microsoft Visual FoxPro Driver};SourceType=DBF;SourceDB=C:\work\Dalworth\main\Server\sermandb2;Exclusive=No; Collate=Machine;NULL=NO;DELETED=YES;BACKGROUNDFETCH=NO;"/>
+  <printing VisitPrinter="Oki" AutomatedVisitPrint="false" TomorrowVisitsPrintTime="6:00"/>
+  <sync TicketImportInterval="120000" CustomerImportInterval="3600000" ExportInterval="1800000" WorkingTimeStart="5:00" WorkingTimeEnd="19:00"/>
+  <smtp Host="localhost" Port="1010" Login="boris" Password="Password" FromAddress="courtney@dalworth.com"
+        LateLeadsAddress = "courtney@dalworth.com" LateLeadsDisplayName="Late Lead Notification"
+        DisplayName="Amber Hollman" OnCallAddress="oncall@dalworth.com" OnCallDisplayName="On Call Technician"
+        FeedbackAddress ="feedback@dalworth.com"  FeedbackDisplayName ="Customer Feedback"
+  />
+  <quickbooks CompanyFile="C:\dev\dalworth\Temp\qb\QbBackupDec6\Dalworth Restoration, Inc..QBW"
+   appName ="DalworthQbSync"
+   appId =""
+   LogLevel ="DEBUG"
+   ItemRugCleaningCostListId="80000010-1273525408"
+   ItemRugCleaningCostFloodListId="8000004E-1288815668"
+   ItemRugCleaningPadListId = "80000011-1273525596"
+   ItemRugCleaningProtectantListId="80000012-1273525632"
+   ItemRugCleaningRepairsListId="80000013-1273525669"
+   ItemRugCleaningMothListId="80000015-1273525722"
+   ItemRugCleaningWrapListId="80000016-1273783401"
+   ItemRugCleaningRevenueListId="8000002E-1274732453"
+   ItemRugCleaningStorageListId="8000003A-1276285856"
+   ItemRugCleaningDiscountListId="80000037-1275608104"
+   ItemRugCleaningMinimumChargeListId="8000003D-1279208079"
+   ItemTaxRateListId="80000002-1272662060"
+   ItemDefloodRevenueListId="8000002D-1274731640"
+  />
+  <emailTemplates BaseDirectory="./emailtemplates" RugCleaningCompletedTemplate="CompletedRugCleaning.htm"
+                  DefloodCompletedTemplate="CompletedDeflood.htm" LeadReceivedTemplate="LeadReceived.htm"
+                  ProjectFeedbackReceivedTemplate="FeedbackReceived.htm"
+                  ProjectFeedbackProcessedTemplate="FeedbackProcessed.htm"
+                  RugCleaningReminderTemplate="RugCleaningReminder.htm"
+                  RugCleaningReminderFeedbackOffer="RUGREM"
+                  />
+  <log FlushEveryRecord="true"/>
+</application>
+
+

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" 
+	width="700"
+	height="500"
+	title="Asset Detail"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import util.NumberUtil;
+			import mx.managers.PopUpManager;
+		
+			[Bindable]
+			private var _currentGroup:InvoiceItemGroupByAsset;
+			
+			public function init(currentGroup:InvoiceItemGroupByAsset):void 
+			{
+				_currentGroup = currentGroup;
+			}
+			
+			private function onClose():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" backgroundColor="#eeeeee">
+
+	   	<mx:HBox width="100%">
+	   		<mx:Label text="Landman: "/>
+	   		<mx:Label text="{_currentGroup.asset.BusinessName}" fontWeight="bold"/>
+	   	</mx:HBox>
+		
+		<mx:HBox width="100%">
+			
+		   	<mx:HBox width="100%">
+		   		<mx:Label text="Total Days: "/>
+		   		<mx:Label text="{NumberUtil.fraction(_currentGroup.totalDays, 8)}" fontWeight="bold"/>
+		   	</mx:HBox>
+	
+		   	<mx:HBox width="100%">
+		   		<mx:Label text="Daily Amount: "/>
+		   		<mx:Label text="{(Math.round(_currentGroup.dailyAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+		   	</mx:HBox>
+
+		   	<mx:HBox width="100%">
+		   		<mx:Label text="Other Amount: "/>
+		   		<mx:Label text="{(Math.round(_currentGroup.otherAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+		   	</mx:HBox>
+
+		   	<mx:HBox width="100%">
+		   		<mx:Label text="Total Amount: "/>
+		   		<mx:Label text="{(Math.round(_currentGroup.totalAmount * 100) / 100).toFixed(2)}" fontWeight="bold"/>
+		   	</mx:HBox>
+
+		</mx:HBox>
+
+	</mx:VBox>
+	
+	<mx:VBox width="100%" height="100%" paddingTop="10" paddingBottom="10">
+		
+		<mx:VBox width="100%" height="100%" verticalGap="-2" >
+			
+			<mx:HBox width="100%" horizontalGap="0">
+				
+				<mx:Spacer width="1"/>
+				<mx:VBox width="26" height="26" horizontalAlign="center" verticalAlign="middle">
+<!--
+					<mx:Image source="@Embed(source='/assets/plus_disabled.png')"/>
+ -->
+				</mx:VBox>
+
+			    <mx:DataGrid width="100%" height="26" enabled="false" borderThickness="1">
+			        <mx:columns>
+						<mx:DataGridColumn headerText="Type"/>
+						<mx:DataGridColumn headerText="Days" width="90"/>
+						<mx:DataGridColumn headerText="Daily Amt" width="90" />
+						<mx:DataGridColumn headerText="Other Amt" width="90"/>
+						<mx:DataGridColumn headerText="Total" width="90"/>
+						<mx:DataGridColumn headerText=" " width="26"/>
+			        </mx:columns>
+			    </mx:DataGrid>
+
+				<mx:Spacer width="1"/>
+			
+			</mx:HBox>
+	
+		    <mx:List
+		    	id="afeList"
+		    	width="100%"
+		    	height="100%"
+		        paddingBottom="0"
+		        paddingTop="0"
+		        paddingLeft="0"
+		        paddingRight="0"
+		        selectable="false"
+		        columnCount="1"
+		        variableRowHeight="true"
+		        dataProvider="{_currentGroup.typeGroups}"
+		        itemRenderer="UI.manager.invoice.InvoiceLandmanItemRenderer"/>
+	
+		</mx:VBox>
+		
+	</mx:VBox>
+
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="Close" click="onClose()"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

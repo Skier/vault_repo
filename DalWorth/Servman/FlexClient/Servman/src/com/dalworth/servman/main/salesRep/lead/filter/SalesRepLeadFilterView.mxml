@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()" xmlns:controls="com.affilia.controls.*"
+	creationComplete="onCreate()">
+
+    <mx:Metadata>
+        [Event(name="filterChange", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.lead.filter.LeadFilterController;
+			import com.dalworth.servman.main.lead.filter.LeadFilterModel;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.main.lead.LeadFilter;
+			import mx.core.UIComponent;
+			
+            [Embed(source="/assets/icons16/toggle.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+            [Embed(source="/assets/icons16/toggle_collapse.png")]
+            [Bindable]
+            private var imgMinus:Class;
+
+			[Bindable]
+			private var isCollapsible:Boolean = true;
+			
+			[Bindable]
+			private var model:LeadFilterModel;
+			private var controller:LeadFilterController;
+			
+			private function onInit():void 
+			{
+				model = LeadFilterModel.getInstance();
+				controller = new LeadFilterController(this as UIComponent);
+				controller.initModel();
+			}
+			
+			private function onCreate():void 
+			{
+				collapse();
+			}
+			
+			public function init():void 
+			{
+				setFilterModel();
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			public function getFilter():LeadFilter
+			{
+				if (model != null)
+					return model.leadFilter;
+				
+				return null;
+			}
+			
+			private function collapse():void 
+			{
+				isCollapsible = true;
+				lblFilterDescription.text = model.getFilterDescription();
+			}
+			
+			private function expand():void 
+			{
+				isCollapsible = false;
+			}
+			
+			private function toggleView():void 
+			{
+				if (isCollapsible)
+					expand();
+				else
+					collapse();
+			}
+			
+			private function onHeaderDoubleClick():void 
+			{
+				expand();
+			}
+			
+			private function setFilterModel():void 
+			{
+				model.leadFilter.LeadStatuses = new Array();
+				for (var i:int = 0; i < model.leadStatuses.length; i++)
+				{
+					if (cbStatus[i].selected)
+						model.leadFilter.LeadStatuses.push(LeadStatus(model.leadStatuses[i]).Id);
+				}
+				
+				model.leadFilter.LeadTypeId = comboType.value as int;
+				model.leadFilter.DateFrom = dateFrom.selectedDate;
+				model.leadFilter.DateTo = dateTo.selectedDate;
+				model.leadFilter.SalesRepId = comboSalesRep.value as int;
+				model.leadFilter.BusinessPartnerId = comboBusinessPartner.value as int;
+				model.leadFilter.AssignedToUserId = comboAssignedToUser.value as int;
+				model.leadFilter.CreatedByUserId = comboUser.value as int;
+				
+				if (lblFilterDescription && model)
+					lblFilterDescription.text = model.getFilterDescription();
+			}
+			
+			private function onSetFilter():void 
+			{
+				setFilterModel();
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			private function onResetFilter():void 
+			{
+				model.leadStatuses.refresh();
+				comboType.selectedIndex = 0;
+				dateFrom.selectedDate = null;
+				dateTo.selectedDate = null;
+				comboSalesRep.selectedIndex = 0;
+				comboBusinessPartner.selectedIndex = 0;
+				comboAssignedToUser.selectedIndex = 0;
+				comboUser.selectedIndex = 0;
+				
+				setFilterModel();
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#7CB8EB"
+			paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:Image source="{isCollapsible ? imgPlus : imgMinus}" click="toggleView()"/>
+			<mx:Label id="lblFilterDescription" fontSize="12" fontWeight="bold" color="#2A6285" width="100%" minWidth="200"
+				doubleClickEnabled="true" doubleClick="onHeaderDoubleClick()"/>
+<!--
+			<mx:Label text="Leads Filter" fontSize="12" fontWeight="bold" color="#2A6285"
+				visible="{!isCollapsible}" includeInLayout="{!isCollapsible}"/>
+-->
+		</mx:HBox>
+		
+		<mx:HBox width="100%" backgroundColor="#EEEEFF" 
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+				visible="{!isCollapsible}" includeInLayout="{!isCollapsible}">
+			<mx:VBox height="100%" horizontalGap="0" verticalGap="0">
+				<mx:Label text="Statuses:" fontSize="12"/>
+				<mx:VBox verticalGap="-4" paddingLeft="15">
+					<mx:Repeater id="rptStatuses" dataProvider="{model.leadStatuses}">
+<!--
+						<mx:CheckBox id="cbStatus" label="{LeadStatus(rptStatuses.currentItem).Name}" 
+							selected="true"/>
+-->
+						<mx:CheckBox id="cbStatus" label="{LeadStatus(rptStatuses.currentItem).Name}" 
+							selected="{LeadStatus(rptStatuses.currentItem).Id == LeadStatus.STATUS_NEW_ID || LeadStatus(rptStatuses.currentItem).Id == LeadStatus.STATUS_QUALIFIED_ID || LeadStatus(rptStatuses.currentItem).Id == LeadStatus.STATUS_CONTACTED_ID}"/>
+					</mx:Repeater>
+				</mx:VBox>
+<!--				
+				<mx:List id="lstStatuses" dataProvider="{model.leadStatuses}" allowMultipleSelection="true" selectedIndices="{model.selectedStatusesIndices}"
+					labelField="Name" width="100%" height="94" minHeight="50"/>
+-->
+			</mx:VBox>
+			
+			<mx:Grid width="100%">
+				<mx:GridRow width="100%">
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="From:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem>
+						<mx:DateField id="dateFrom" selectedDate="{model.leadFilter.DateFrom}"/>
+					</mx:GridItem>
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="Sales Rep:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<controls:ComboBox id="comboSalesRep" 
+							width="100%" minWidth="100" fontSize="12" 
+							dataProvider="{model.salesReps}" labelField="ShowAs"
+							value="{model.leadFilter.SalesRepId}" valueField="Id"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%">
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="To:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem>
+						<mx:DateField id="dateTo" selectedDate="{model.leadFilter.DateTo}"/>
+					</mx:GridItem>
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="Business Partner:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<controls:ComboBox id="comboBusinessPartner" 
+							width="100%" minWidth="100" fontSize="12" 
+							dataProvider="{model.businessPartners}" labelField="ShowAs"
+							value="{model.leadFilter.BusinessPartnerId}" valueField="Id"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%">
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="Lead Type:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<controls:ComboBox id="comboType" 
+							width="100%" minWidth="100" fontSize="12" 
+							dataProvider="{model.leadTypes}" labelField="Name"
+							value="{model.leadFilter.LeadTypeId}" valueField="Id"/>
+					</mx:GridItem>
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="Assigned To:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<controls:ComboBox id="comboAssignedToUser" 
+							width="100%" minWidth="100" fontSize="12" 
+							dataProvider="{model.users}" labelField="Name"
+							value="{model.leadFilter.AssignedToUserId}" valueField="Id"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%">
+					<mx:GridItem horizontalAlign="right">
+						<mx:Label text="Created By:" fontSize="12"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%">
+						<controls:ComboBox id="comboUser" 
+							width="100%" minWidth="100" fontSize="12" 
+							dataProvider="{model.users}" labelField="Name"
+							value="{model.leadFilter.CreatedByUserId}" valueField="Id"/>
+					</mx:GridItem>
+					<mx:GridItem horizontalAlign="right" colSpan="2" width="100%">
+						<mx:HBox width="100%" horizontalAlign="right">
+							<mx:LinkButton label="Reset Filter" click="onResetFilter()" fontSize="12"/>
+							<mx:Button label="Apply" click="onSetFilter()" fontSize="12"/>
+						</mx:HBox>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</mx:Canvas>

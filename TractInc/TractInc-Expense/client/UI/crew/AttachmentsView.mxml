@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute"
+	width="650"
+	height="550"
+	enabled="{controller.model.isLoaded}"
+	title="Attachments">
+
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.BillDataObject;
+			import util.NumberUtil;
+			import App.Entity.BillItemAttachmentDataObject;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import UI.landman.Composition;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var controller:AttachmentsController;
+			
+            public static function Open(bill:BillDataObject, parent:DisplayObject):AttachmentsView {
+                var popup:AttachmentsView = new AttachmentsView();
+                popup.controller = new AttachmentsController(popup, bill);
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:VBox
+		width="100%"
+		height="100%"
+		verticalAlign="bottom">
+		
+		<mx:Panel
+			title="Item Attachments"
+			width="100%"
+			height="100%"
+			visible="{0 &lt; controller.model.itemAttachments.length}"
+			includeInLayout="{0 &lt; controller.model.itemAttachments.length}">
+			<mx:DataGrid
+				width="100%"
+				height="100%"
+				dataProvider="{controller.model.itemAttachments}">
+				<mx:columns>
+					<mx:DataGridColumn
+						dataField="type"
+						headerText="Type"/>
+					<mx:DataGridColumn
+						dataField="date"
+						headerText="Date"/>
+					<mx:DataGridColumn
+						dataField="amount"
+						headerText="Amount"/>
+					<mx:DataGridColumn
+						dataField="OriginalFileName"
+						headerText="File Name"/>
+					<mx:DataGridColumn
+						headerText="View"
+						width="70"
+						textAlign="center"
+						itemRenderer="UI.crew.AttachItemRendererExRO"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:Panel>
+		
+		<mx:Panel
+			title="Multiday Attachments"
+			width="100%"
+			height="100%"
+			visible="{0 &lt; controller.model.compositeAttachments.length}"
+			includeInLayout="{0 &lt; controller.model.compositeAttachments.length}">
+			<mx:DataGrid
+				width="100%"
+				height="100%"
+				dataProvider="{controller.model.compositeAttachments}">
+				<mx:columns>
+					<mx:DataGridColumn
+						dataField="type"
+						headerText="Type"/>
+					<mx:DataGridColumn
+						dataField="amount"
+						headerText="Amount"/>
+					<mx:DataGridColumn
+						dataField="description"
+						headerText="Description"/>
+					<mx:DataGridColumn
+						dataField="OriginalFileName"
+						headerText="File Name"/>
+					<mx:DataGridColumn
+						headerText="View"
+						width="70"
+						textAlign="center"
+						itemRenderer="UI.crew.AttachItemRendererExRO"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:Panel>
+		
+		<mx:HBox
+			width="100%"
+			horizontalAlign="center">
+			<mx:Button
+				label="Close"
+				click="controller.onClickClose()"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</mx:TitleWindow>

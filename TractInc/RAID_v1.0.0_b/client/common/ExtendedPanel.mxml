@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import common.notes.NotesRenderer;
+			import mx.core.UIComponent;
+			
+			private var notes:NotesRenderer = null;
+		
+			public function addNotes(item:*):void {
+				if (null == notes) {
+					notes = new NotesRenderer();
+					this.titleBar.addChild(notes);
+					notes.x = titleBar.width - 110;
+					notes.y = 5;
+					notes.width = 110;
+					notes.height = 20;
+				}
+				notes.data = item;
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:Panel>

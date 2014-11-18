@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:attachments="com.llsvc.client.lms.view.lease.detail.attachments.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	creationComplete="onCreate()" xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.client.lms.events.AttachmentEvent;
+			import com.llsvc.domain.DocumentRecord;
+			import com.afcomponents.umap.core.Display;
+			import mx.core.Application;
+			import com.llsvc.domain.Document;
+			import com.llsvc.domain.File;
+			import mx.controls.Alert;
+			import com.llsvc.client.lms.LocalCash;
+			import mx.events.CloseEvent;
+			import com.llsvc.domain.DocumentAttachment;
+			import com.llsvc.domain.Lease;
+			
+            private var _docum:Document;
+            [Bindable]
+            public function get docum():Document {return _docum;}
+            public function set docum(value:Document):void 
+            {
+                _docum = value;
+            }
+
+			[Bindable] private var inProcess:Boolean = false;
+
+			public function getResult():Boolean 
+			{
+				return true;
+			}
+			
+			private function getAttachedFile(file:File):void 
+			{
+		        var request:URLRequest = new URLRequest("download?id=" + file.id.toString());
+        		navigateToURL(request);
+			}
+			
+			private function editAttachment(attach:DocumentAttachment):void 
+			{
+				switch (attach.type) 
+				{
+					case DocumentAttachment.RECORDED_TYPE:
+						editAttachRecorded(attach);
+						break;
+
+					case DocumentAttachment.UNRECORDED_TYPE:
+						editAttachUnRecorded(attach);
+						break;
+
+					case DocumentAttachment.CORRESPONDENCE_TYPE:
+						editAttachCorrespondence(attach);
+						break;
+
+					case DocumentAttachment.OTHER_TYPE:
+						editAttachOther(attach);
+						break;
+
+				}
+			}  
+			
+			private function editAttachRecorded(attach:DocumentAttachment):void 
+			{
+				var popup:AttachRecordedEditView = AttachRecordedEditView.open(Application.application as DisplayObject, attach, true);
+					popup.addEventListener("submitRequest", 
+						function (event:Event):void 
+						{
+							if (!docum.attachments.contains(popup.attachment)) 
+								docum.attachments.addItem(popup.attachment);
+							
+							if (!docum.records.contains(popup.attachment.record)) 
+								docum.records.addItem(popup.attachment.record);
+
+							attach = popup.attachment;
+							popup.close();
+						}
+					); 
+					popup.addEventListener("cancelRequest", 
+						function (event:Event):void 
+						{
+							popup.close();
+						}
+					); 
+			} 
+			
+			private function editAttachUnRecorded(attach:DocumentAttachment):void 
+			{
+				var popup:AttachUnRecordedEditView = AttachUnRecordedEditView.open(Application.application as DisplayObject, attach, true);
+					popup.addEventListener("submitRequest", 
+						function (event:Event):void 
+						{
+							if (!docum.attachments.contains(popup.attachment)) 
+							{
+								docum.attachments.addItem(popup.attachment);
+							}
+							attach = popup.attachment;
+							popup.close();
+						}
+					); 
+					popup.addEventListener("cancelRequest", 
+						function (event:Event):void 
+						{
+							popup.close();
+						}
+					); 
+			} 
+			
+			private function editAttachCorrespondence(attach:DocumentAttachment):void 
+			{
+				var popup:AttachCorrespondenceEditView = AttachCorrespondenceEditView.open(Application.application as DisplayObject, attach, true);
+					popup.addEventListener("submitRequest", 
+						function (event:Event):void 
+						{
+							if (!docum.attachments.contains(popup.attachment)) 
+							{
+								docum.attachments.addItem(popup.attachment);
+							}
+							attach = popup.attachment;
+							popup.close();
+						}
+					); 
+					popup.addEventListener("cancelRequest", 
+						function (event:Event):void 
+						{
+							popup.close();
+						}
+					); 
+			} 
+			
+			private function editAttachOther(attach:DocumentAttachment):void 
+			{
+				var popup:AttachOtherEditView = AttachOtherEditView.open(Application.application as DisplayObject, attach, true);
+					popup.addEventListener("submitRequest", 
+						function (event:Event):void 
+						{
+							if (!docum.attachments.contains(popup.attachment)) 
+							{
+								docum.attachments.addItem(popup.attachment);
+							}
+							attach = popup.attachment;
+							popup.close();
+						}
+					); 
+					popup.addEventListener("cancelRequest", 
+						function (event:Event):void 
+						{
+							popup.close();
+						}
+					); 
+			} 
+			
+			private function onCreate():void 
+			{
+				dgAttachedDocs.addEventListener(AttachmentEvent.REMOVE_ATTACHMENT, removeAttachmentHandler);
+				dgAttachedDocs.addEventListener(AttachmentEvent.OPEN_PDF_ATTACHMENT, getAttachedFileHandler);
+				dgAttachedDocs.addEventListener(AttachmentEvent.OPEN_ATTACHMENT, openAttachmentHandler);
+			}
+			
+			private function removeAttachmentHandler(e:AttachmentEvent):void 
+			{
+				e.stopPropagation();
+				e.preventDefault();
+
+				var item:DocumentAttachment = e.attachment;
+				var idx:int = docum.attachments.getItemIndex(item);
+				if (idx > -1) {
+	                Alert.show("Do you really want to remove attached file ?", 
+	                   "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+	                   function (event:CloseEvent):void 
+	                   {
+	                        if (event.detail == Alert.YES)
+	                        {
+								docum.attachments.removeItemAt(idx);
+	                        }
+	                    });
+				}
+			}
+			
+			private function getAttachedFileHandler(e:AttachmentEvent):void 
+			{
+				e.stopPropagation();
+				e.preventDefault();
+
+				var attach:DocumentAttachment = e.attachment;
+				getAttachedFile(attach.file);
+			}
+			
+			private function openAttachmentHandler(e:AttachmentEvent):void 
+			{
+				e.stopPropagation();
+				e.preventDefault();
+
+				var item:DocumentAttachment = e.attachment;
+				editAttachment(item);
+			}
+			
+			private function btnAddClickHandler():void 
+			{
+				var popup:SelectAttachmentTypeView = SelectAttachmentTypeView.open(this, true);
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			var selectedType:String = popup.typeName;
+            			popup.close();
+            			attachFile(selectedType);
+            		});
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+			}
+			
+            private function attachFile(attachmentType:String):void 
+            {
+	            var	fileRef:FileReference = new FileReference();
+
+				var docFilter:FileFilter = new FileFilter("PDF Documents", "*.pdf");
+				var imgFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png;*.jpeg");
+
+                fileRef.addEventListener(Event.SELECT, 
+                	function (event:Event):void 
+                	{
+						boxUploadList.addUploadProcess(fileRef, attachmentType);
+                	});
+                fileRef.addEventListener(Event.CANCEL, 
+                	function (event:Event):void 
+                	{
+				    	var attach:DocumentAttachment = new DocumentAttachment();
+				    	attach.type = attachmentType;
+				    	attach.file = null;
+				    	
+						editAttachment(attach);		    	
+                	});
+                	 
+        		fileRef.browse([docFilter]);
+            }
+            
+            private function onOpen():void 
+            {
+            	var attach:DocumentAttachment = dgAttachedDocs.selectedItem as DocumentAttachment;
+            	getAttachedFile(attach.file);
+            }
+            
+            private function onRemove():void 
+            {
+                Alert.show("Do you really want to remove attached file ?", 
+                   "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+			            	dispatchEvent(new Event("removeAttachmentRequest"));
+                        }
+                    });
+            }
+            
+		    private function onFileUploadComplete(event:DataEvent):void 
+		    {
+		    	event.stopPropagation();
+
+		    	var up:UploadProcessRenderer = event.target as UploadProcessRenderer; 
+		    	var file:File = new File();
+		    	file.id = int(Number(event.data));
+		    	file.origFilename = up.fileRef.name;
+		    	file.user = LocalCash.getInstance().getCurrentUser();
+		    	
+		    	var attach:DocumentAttachment = new DocumentAttachment();
+		    	attach.type = up.attachmentType;
+		    	attach.name = up.attachmentType;
+		    	attach.file = file;
+
+				editAttachment(attach);		    	
+		    }
+		    
+		    private function onCancelUploadProcess(event:Event):void 
+		    {
+		    	event.stopPropagation();
+
+		    	var up:UploadProcessRenderer = event.target as UploadProcessRenderer; 
+		    	
+		    	var attach:DocumentAttachment = new DocumentAttachment();
+		    	attach.type = up.attachmentType;
+		    	attach.file = null;
+		    	
+				editAttachment(attach);		    	
+		    }
+		    
+		    private function fileNumber(item:Object, col:int):String 
+		    {
+		    	var idx:int = docum.attachments.getItemIndex(item);
+		    	return (idx + 1).toString();
+		    } 
+		    
+		    private function selectRowColor(item:DocumentAttachment, color:uint):uint 
+		    {
+		    	switch (item.type) 
+		    	{
+		    		case DocumentAttachment.RECORDED_TYPE:
+		    			return 0xeeffee;
+
+		    		case DocumentAttachment.UNRECORDED_TYPE:
+		    			return 0xffeeee;
+
+		    		case DocumentAttachment.CORRESPONDENCE_TYPE:
+		    			return 0xeeeeff;
+
+		    		default :
+		    			return 0xffffff;
+		    	}
+		    }
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:HBox width="100%" backgroundColor="#dddddd" verticalAlign="middle"
+			borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+			<mx:Label text="Attached Documents"/>
+			
+			<mx:Spacer width="100%"/>
+	
+	        <mx:Button toolTip="Add Record"
+	        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')"
+	        	click="btnAddClickHandler()"/>
+		</mx:HBox>
+		
+		<controls:ColoredDataGrid id="dgAttachedDocs" 
+			width="100%" height="100%" borderThickness="0" dataProvider="{docum.attachments}"
+			doubleClickEnabled="true" itemDoubleClick="onOpen()" editable="true"
+            rowColorFunction="selectRowColor">
+			<controls:columns>
+				<mx:DataGridColumn headerText=" " width="22" minWidth="22" itemRenderer="com.llsvc.client.lms.view.lease.detail.attachments.AttachmentTypeIR" editable="false"/>
+				<mx:DataGridColumn headerText="Name" dataField="name" editable="true" itemEditor="com.llsvc.component.SelectableInput"/>
+				<mx:DataGridColumn headerText="Date" dataField="date" width="90" editable="false"/>
+				<mx:DataGridColumn width="56" itemRenderer="com.llsvc.client.lms.view.lease.detail.attachments.AttachmentActionsIR" editable="false" minWidth="56"/>
+			</controls:columns>
+		</controls:ColoredDataGrid>
+		
+		<mx:HRule width="100%" height="1"/>
+	
+		<attachments:UploadProcessesList id="boxUploadList" 
+			width="100%"
+			uploadCompleteData="onFileUploadComplete(event)"
+			cancelUploadProcess="onCancelUploadProcess(event)"/>
+	</mx:VBox>
+</mx:VBox>

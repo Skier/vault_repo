@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" height="720" width="867">
+	
+    <mx:Metadata>
+        [Event(name="startEditSection", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			[Bindable]
+			private var sectionDTO:Sections_DTO;
+			
+			[Bindable]
+			private var roofSystems:ArrayCollection;
+			
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+				sectionDTO = _section.sectionDTO;
+			}
+			
+			private function onClickEdit():void 
+			{
+				dispatchEvent(new Event("startEditSection"));
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf"/>
+	
+	<mx:Label id="lblRoofName" y="10" fontSize="14" text="{sectionDTO.Designation + ' - ' + sectionDTO.RoofName}" left="10" width="635"/>
+
+	<mx:LinkButton label="Edit" click="onClickEdit()" top="11" height="22" textAlign="center" fontSize="12" left="789" width="100"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:Label x="10" y="55" text="Designation" textAlign="right" width="97"/>
+	<mx:Label fontSize="12" x="115" y="53" width="161" text="{sectionDTO.Designation}"/>
+
+	<mx:Label x="10" y="85" text="Roof Name" textAlign="right" width="97"/>
+	<mx:Label x="115" y="83" fontSize="12" width="360" text="{sectionDTO.RoofName}"/>
+
+	<mx:Label x="10" y="115" text="Sq Ft" textAlign="right" width="97"/>
+	<mx:Label x="115" y="113" width="161" fontSize="12" textAlign="right" text="{sectionDTO.SqFt}"/>
+
+	<mx:Label x="7" y="145" text="Est.Cost per SqFt" textAlign="right"/>
+	<mx:Label x="115" y="143" fontSize="12" width="161" textAlign="right" text="{cf.format(sectionDTO.EstCostPerSqFt)}"/>
+
+	<mx:Label x="10" y="176" text="Est.Cost" textAlign="right" width="97"/>
+	<mx:Label id="lblCost" x="115" y="174" text="{cf.format(sectionDTO.EstCost)}"
+		textAlign="right" fontWeight="bold" width="161" fontSize="12"/>
+
+	<mx:Label x="31" y="208" text="Roof System" textAlign="right"/>
+	<mx:Label x="115" y="206" fontSize="12" width="360" text="{sectionDTO.RoofSystem}"/>
+
+	<mx:HBox x="10" y="244" width="185" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioYearInstalled" selectedValue="{sectionDTO.YearInstalledSource}"/>
+		<mx:RadioButton label="Known" groupName="radioYearInstalled" enabled="false"/>
+		<mx:RadioButton label="Estimated" groupName="radioYearInstalled" enabled="false"/>
+	</mx:HBox>
+	<mx:HBox x="20" y="234" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Year Installed"/>
+		<mx:Label width="68" fontSize="12" text="{sectionDTO.YearInstalled}"/>
+	</mx:HBox>
+
+	<mx:Label x="203" y="238" text="Height" textAlign="right" width="50"/>
+	<mx:Label x="261" y="236" fontSize="12" width="118" text="{sectionDTO.Height}"/>
+
+	<mx:Label x="203" y="268" text="Slope" textAlign="right" width="50"/>
+	<mx:Label x="261" y="266" fontSize="12" width="214" text="{sectionDTO.Slope}"/>
+
+	<mx:Panel title="Leak Details" top="294" left="10" width="465" height="348">
+		<mx:TextArea width="100%" height="100%" htmlText="{sectionDTO.LeakDetails}" editable="false"/>
+	</mx:Panel>
+
+	<mx:Label x="493" y="54" text="Interior sensitivity" textAlign="right" width="113"/>
+	<mx:Label x="614" y="52" fontSize="12" width="275" text="{sectionDTO.InteriorSensitivity}"/>
+
+	<mx:Label x="493" y="84" text="Condition Index" textAlign="right" width="113"/>
+	<mx:Label x="614" y="82" fontSize="12" width="275" text="{sectionDTO.ConditionIndex}"/>
+	
+	<mx:HBox x="483" y="122" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioRestorable" selectedValue="{sectionDTO.Restorable}"/>
+		<mx:RadioButton label="Yes" groupName="radioRestorable" enabled="false"/>
+		<mx:RadioButton label="No" groupName="radioRestorable" enabled="false"/>
+	</mx:HBox>
+	<mx:HBox x="493" y="112" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Restorable"/>
+	</mx:HBox>
+
+	<mx:HBox x="690" y="122" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioDrainage" selectedValue="{sectionDTO.Drainage}"/>
+		<mx:RadioButton label="Yes" groupName="radioDrainage" enabled="false"/>
+		<mx:RadioButton label="No" groupName="radioDrainage" enabled="false"/>
+	</mx:HBox>
+	<mx:HBox x="700" y="112" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Drainage Adequate"/>
+	</mx:HBox>
+
+	<mx:HBox x="483" y="184" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioCurrentlyLeaking" selectedValue="{sectionDTO.CurrentlyLeaking}"/>
+		<mx:RadioButton label="Yes" groupName="radioCurrentlyLeaking" enabled="false"/>
+		<mx:RadioButton label="No" groupName="radioCurrentlyLeaking" enabled="false"/>
+		<mx:RadioButton label="Unknown" groupName="radioCurrentlyLeaking" enabled="false"/>
+	</mx:HBox>
+	<mx:HBox x="493" y="174" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Currently Leaking"/>
+	</mx:HBox>
+
+	<mx:HBox x="690" y="184" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioHistoryLeaking" selectedValue="{sectionDTO.HistoryOfLeaking}"/>
+		<mx:RadioButton label="Yes" groupName="radioHistoryLeaking" enabled="false"/>
+		<mx:RadioButton label="No" groupName="radioHistoryLeaking" enabled="false"/>
+		<mx:RadioButton label="Unknown" groupName="radioHistoryLeaking" enabled="false"/>
+	</mx:HBox>
+	<mx:HBox x="700" y="174" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="History of Leaking"/>
+	</mx:HBox>
+
+	<mx:VBox top="236" left="483" height="406" width="406" verticalAlign="middle" horizontalAlign="center"
+		borderColor="#eeeeee" borderStyle="solid">
+		<mx:Image source="{sectionDTO.Photo.url}"/>
+	</mx:VBox>
+</mx:Canvas>

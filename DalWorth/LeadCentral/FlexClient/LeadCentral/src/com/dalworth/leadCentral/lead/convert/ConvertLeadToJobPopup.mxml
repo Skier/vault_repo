@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="800" height="500"
+    title="Convert Lead To Job Wizard" 
+    borderColor="#EEEEEE" dropShadowEnabled="true" shadowDirection="center" shadowDistance="1"
+    creationComplete="onCreate()" xmlns:convert="com.dalworth.leadCentral.lead.convert.*" xmlns:steps="com.dalworth.leadCentral.lead.convert.steps.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.events.QbInvoiceEvent;
+        	import com.dalworth.leadCentral.lead.convert.steps.IWizardStep;
+        	import com.dalworth.leadCentral.domain.Lead;
+        	import com.dalworth.leadCentral.events.JobEvent;
+        	import Intuit.Sb.Cdm.vo.Job;
+        	import Intuit.Sb.Cdm.vo.Customer;
+        	import mx.events.ValidationResultEvent;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            public static function open(parent:DisplayObject, lead:Lead, modal:Boolean = true):ConvertLeadToJobPopup
+            {
+                var popup:ConvertLeadToJobPopup = new ConvertLeadToJobPopup();
+                popup.init(lead);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	if (model != null && model.currentLead != null) 
+            		viewCustomerLookup.init(model);
+            	wizardLine.selectedIndex = 0;
+            }
+            
+			[Bindable]
+			private var model:ConvertLeadToJobModel;
+			private var controller:ConvertLeadToJobController;
+			
+			private function init(lead:Lead):void 
+			{
+				model = ConvertLeadToJobModel.getInstance();
+				controller = new ConvertLeadToJobController(this as UIComponent);
+				model.currentLead = lead;
+				model.reset();
+
+            	if (viewCustomerLookup != null)
+            		viewCustomerLookup.init(model);
+            	if (wizardLine != null)
+	            	wizardLine.selectedIndex = 0;
+			}
+			
+			private function onBack():void 
+			{
+				//vsConvert.selectedIndex --;
+				stepBack();
+				updateButtons();
+			}
+			
+			private function onNext():void 
+			{
+				//vsConvert.selectedIndex ++;
+				stepNext();
+				updateButtons();
+			}
+			
+			private function stepBack():void 
+			{
+				vsConvert.selectedIndex --;
+			}
+			
+			private function stepNext():void 
+			{
+				if (!(vsConvert.selectedChild as IWizardStep).isValid)
+					return;
+
+				switch (vsConvert.selectedIndex)
+				{
+					case 0:
+						if (viewCustomerLookup.isValid) 
+						{
+							viewCustomerLookup.updateModel();
+							viewCustomerEdit.init(model);
+							vsConvert.selectedChild = viewCustomerEdit;
+						}
+						break;
+
+					case 1:
+						if (viewCustomerEdit.isValid) 
+						{
+							viewCustomerEdit.updateModel();
+							viewJobCreate.init(model);
+							vsConvert.selectedChild = viewJobCreate;
+						}
+						break;
+
+					case 2:
+						if (viewJobCreate.isValid) 
+						{
+							viewJobCreate.updateModel();
+							controller.commitJob();
+						}
+						break;
+				}
+			}
+			
+			private function updateButtons():void 
+			{
+				if (vsConvert.selectedIndex == 0)
+					btnBack.enabled = false;
+				else
+					btnBack.enabled = true;
+				
+				if (vsConvert.selectedIndex == 2)
+					btnNext.label = "Finish";
+				else 
+					btnNext.label = "Next";
+			}
+			
+			private function onCancel():void 
+			{
+				close();
+			}
+			
+			private function onJobConnect(event:QbInvoiceEvent):void 
+			{
+				event.stopPropagation();
+				//model.currentJob = event.job.prepareToSend();
+				controller.commitJob();
+			}
+			
+			private function onLookupChange():void 
+			{
+				if (viewCustomerLookup.isValid)
+					btnNext.enabled = true;
+				else 
+					btnNext.enabled = false;
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:HBox width="100%" horizontalAlign="center"
+		paddingLeft="25" paddingRight="25" paddingTop="2" paddingBottom="2"
+		backgroundColor="#FFFFEE" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+		<convert:WizardStatusLine id="wizardLine" width="100%" selectedIndex="{vsConvert.selectedIndex}"/>
+	</mx:HBox>
+
+	<mx:ViewStack id="vsConvert" width="100%" height="100%" creationPolicy="all"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		borderColor="#999999" borderStyle="solid"
+		enabled="{!model.isBusy}">
+		<steps:CustomerLookupStep id="viewCustomerLookup" width="100%" height="100%" stepCustomerLookupChange="onLookupChange()"/>
+		<steps:CustomerEditStep id="viewCustomerEdit" width="100%" height="100%" jobConnect="onJobConnect(event)"/>
+		<steps:JobCreateStep id="viewJobCreate" width="100%" height="100%"/>
+	</mx:ViewStack>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%" enabled="{!model.isBusy}">
+		<mx:Spacer width="100%"/>
+        <mx:Button width="100" label="Cancel" click="onCancel()" fontSize="12"/>
+		<mx:Spacer width="30"/>
+		<mx:Button id="btnBack" width="100" label="Back" click="onBack()" fontSize="12" enabled="false"/>
+		<mx:Button id="btnNext" width="100" label="Next" click="onNext()" fontSize="12" enabled="false"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" backgroundColor="#ffffff"
+	borderColor="#dddddd" borderStyle="solid" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import Domain.Document;
+			[Bindable]
+			public var Controller:DocumentSearchController;
+			
+			public function set Parent(parent:DocumentController):void{
+				Controller = new DocumentSearchController(this as DocumentSearchView, parent);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="searchPanel" width="100%" height="100%" horizontalScrollPolicy="off"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		borderColor="#dddddd" borderStyle="solid" cornerRadius="5"
+		>
+
+		<mx:VBox width="100%" backgroundColor="#ffffff"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			visible="false"
+			includeInLayout="false"
+			>
+
+			<mx:HBox>
+				<mx:Label text="Document Type:"/>
+				<mx:Label text="{Controller.Parent.Model.CurrentDocumentType.Name}" fontWeight="bold"/>
+			</mx:HBox>
+	
+			<mx:HBox>
+				<mx:Label text="State:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.State}" fontWeight="bold"/>
+				<mx:VRule height="25"/>
+				<mx:Label text="County:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.County}" fontWeight="bold"/>
+			</mx:HBox>
+	
+			<mx:HBox>
+				<mx:Label text="DocumentNo:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.DocumentNo}" fontWeight="bold"/>
+				<mx:VRule height="25"/>
+				<mx:Label text="Date Filed:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.DateFiled.toDateString()}" fontWeight="bold"/>
+			</mx:HBox>
+	
+			<mx:HBox>
+				<mx:Label text="Volume:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.Vol}" fontWeight="bold"/>
+				<mx:VRule height="25"/>
+				<mx:Label text="Page:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.Pg}" fontWeight="bold"/>
+			</mx:HBox>
+
+		</mx:VBox>
+
+		<mx:HBox width="100%" backgroundColor="#cccccc">
+			<mx:Label text="Found - {Controller.Model.Count} documents" fontWeight="bold" color="#cc0000" width="100%"/>
+			<mx:LinkButton label="SHOW" 
+				visible="{(Controller.Model.Count > 0) &amp;&amp; (docList.visible == false)}"
+				includeInLayout="{Controller.Model.Count > 0}"
+				click="Controller.ShowDocuments()"
+				/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="docList" width="100%"
+			visible="{Controller.Model.Items.length > 0}" 
+			includeInLayout="{Controller.Model.Items.length > 0}"
+			dataProvider="{Controller.Model.Items}"
+			>
+			<mx:columns>
+                <mx:DataGridColumn headerText="Document No" dataField="DocumentNo" width="100"/>
+                <mx:DataGridColumn headerText="Volume" dataField="Vol" width="70"/>
+                <mx:DataGridColumn headerText="Page" dataField="Pg" width="70"/>
+			</mx:columns>
+		</mx:DataGrid>
+
+		<mx:HBox width="100%">
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Match" 
+				enabled="{docList.selectedItem != null}"
+				click="Controller.MatchDocument(docList.selectedItem as Document)"
+				/>
+		</mx:HBox>
+	
+	</mx:VBox>
+	
+</mx:Canvas>

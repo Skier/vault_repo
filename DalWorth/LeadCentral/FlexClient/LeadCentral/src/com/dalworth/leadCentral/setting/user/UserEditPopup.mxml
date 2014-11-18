@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    title="Edit User" width="500" xmlns:controls="com.affilia.controls.*" xmlns:user="com.dalworth.leadCentral.setting.user.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.events.UserEvent;
+        	import com.dalworth.leadCentral.service.UserService;
+        	import com.dalworth.leadCentral.domain.User;
+        	import mx.collections.SortField;
+        	import mx.collections.Sort;
+        	import mx.utils.StringUtil;
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.Alert;
+        	import mx.managers.PopUpManager;
+        	import mx.core.UIComponent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.events.CloseEvent;
+        	import mx.events.ValidationResultEvent;
+        	import mx.rpc.Responder;
+            
+            [Bindable] private var isBusy:Boolean = false;
+            [Bindable] private var isReadOnly:Boolean = false;
+            
+            [Bindable]
+            private var user:User;
+            
+            public static function open(parent:DisplayObject, user:User, isReadOnly:Boolean = false, modal:Boolean = true):UserEditPopup
+            {
+                var popup:UserEditPopup = new UserEditPopup();
+                
+                popup.user = user;
+                popup.isReadOnly = isReadOnly;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                if (!isBusy)
+                    close();
+            }
+            
+			private function onSaveClick():void 
+			{
+				if (!viewUserInfo.isValid())
+					return;
+					
+				var newUser:User = viewUserInfo.getUser();
+				
+				var view:UIComponent = this;
+				view.enabled = false;
+				UserService.getInstance().saveUser(newUser, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							view.enabled = true;
+							user.applyFields(event.result as User);
+							
+							dispatchEvent(new UserEvent(UserEvent.USER_SAVED, user));
+							close();
+						},
+						function (event:FaultEvent):void 
+						{
+							view.enabled = true;
+							Alert.show(event.fault.message);
+						}));
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<user:UserEditPanel id="viewUserInfo" width="100%" user="{user}" fontSize="12"/>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%"  enabled="{!isBusy}" fontSize="12">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Save" click="onSaveClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceStep 
+    xmlns="src.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="src.deedplotter.validators.*" 
+    xmlns:components="src.deedplotter.components.*"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="newDocumentRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.events.CloseEvent;
+            import src.deedplotter.domain.Document;
+            import src.deedplotter.domain.DocumentWO;
+            import src.deedplotter.domain.dictionary.DictionaryRegistry;
+
+            import mx.collections.ArrayCollection;
+            import mx.rpc.events.FaultEvent;
+            import mx.controls.Alert;
+            import mx.rpc.events.ResultEvent;
+
+            public var docum:Document;
+
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            [Bindable]
+            private var documentList:ArrayCollection;
+            
+            private var queryTemplate:Document;
+
+            override public function validateForm():Boolean
+            {
+                docum = Document(dg.selectedItem);
+
+                return (null != docum);
+            }
+
+            private function creationCompleteHandler():void
+            {
+                if (service)
+                {
+                    service.FindDocumentsByTemplate.addEventListener(
+                        ResultEvent.RESULT, FindDocumentsByTemplate_resultHandler);
+    
+                    service.FindDocumentsByTemplate.addEventListener(
+                        FaultEvent.FAULT, FindDocumentsByTemplate_faultHandler);
+                }
+            }
+
+            override public function activate():void
+            {
+                if (!documentList || documentList.length == 0)
+                    formValid = false;
+            }
+            
+            private function findDocument():void {
+            	
+            	if (!formValidator.validate(true)) return;
+
+            	queryTemplate = new Document();
+            	
+            	queryTemplate.DocTypeId = int(documentTypeCmb.selectedItem.@DocTypeID);
+            	queryTemplate.State = int(stateCmb.selectedItem.@StateId);
+
+            	queryTemplate.County = countyCmb.selectedItem 
+            	    ? int(countyCmb.selectedItem.@CountyId) : 0;
+
+            	queryTemplate.DocumentNo = documNoTxt.text;
+            	queryTemplate.Volume = volumeTxt.text;
+            	queryTemplate.Page = pageTxt.text;
+
+            	service.FindDocumentsByTemplate(queryTemplate.ToDocumentWO());
+            }
+
+            private function FindDocumentsByTemplate_resultHandler(event:ResultEvent):void
+            {
+           		documentList = new ArrayCollection();
+           		
+           		var result:Array = event.result as Array;
+           		
+           		for each (var doc:DocumentWO in result) {
+					documentList.addItem(doc.ToDocument());
+           		}
+
+                formValid = (documentList.length > 0);
+                dg.selectedIndex = 0;
+
+           		if (documentList.length == 0 && isKeyFieldsFilled(queryTemplate))
+           		{
+	                Alert.show("Document not found. Would you like to create new Document ?", 
+                       "Create Document", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                       function (event:CloseEvent):void 
+                       {
+                            if (event.detail == Alert.YES)
+                            {
+                                docum = queryTemplate;
+                                dispatchEvent(new Event("newDocumentRequest"));
+                            }
+                        });
+           		}
+            }
+
+            private function FindDocumentsByTemplate_faultHandler(event:FaultEvent):void
+            {
+                Alert.show("Error: " + event.fault.faultString);
+            }
+
+           	private function isKeyFieldsFilled(doc:Document):Boolean 
+           	{
+           	    return (doc && doc.State > 0 && doc.County > 0 && doc.DocTypeId > 0 &&
+   	             (doc.DocumentNo.length > 0 || (doc.Page.length > 0 && doc.Volume.length > 0)));
+           	}
+            
+            override public function clean():void
+            {
+                stateCmb.selectedIndex = 0;
+                countyCmb.selectedIndex = 0;
+                documentTypeCmb.selectedIndex = 0;
+                documNoTxt.text = "";
+                volumeTxt.text = "";
+                pageTxt.text = "";
+
+                documentList = null;
+                queryTemplate = null;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" required="false"/>
+    </validators:ValidatorsGroup>
+
+    <mx:HBox width="100%">
+        <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="2" indicatorGap="3">
+        
+            <mx:FormItem label="State :">
+                <mx:ComboBox id="stateCmb"
+                    labelField="@Name" width="120"
+                    dataProvider="{dictionary.statesAndCounties.state}"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Doc Type :">
+                <components:ExtendedComboBox id="documentTypeCmb"
+                    labelField="@Name" keepOptimalDropDownWidth="true"
+                    dataProvider="{dictionary.documentTypes.DocumentType}" width="120"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Vol :">
+                <mx:TextInput id="volumeTxt" width="120"/>
+            </mx:FormItem>
+            
+        </mx:Form>
+
+        <mx:Spacer width="100%" />
+
+        <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="2" indicatorGap="3">
+
+            <mx:FormItem label="County :">
+                <mx:ComboBox id="countyCmb"
+                    labelField="@Name" width="120"
+                    dataProvider="{stateCmb.selectedItem.county}"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="Doc No :">
+                <mx:TextInput id="documNoTxt" width="120" />
+            </mx:FormItem>
+
+            <mx:FormItem label="Page :">
+                <mx:HBox>
+                    <mx:TextInput id="pageTxt" width="62"/>
+                    <mx:Button 
+                        label="Find"
+                        click="findDocument()"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+        </mx:Form>
+    </mx:HBox>
+
+    <mx:DataGrid id="dg" width="100%" height="100%" dataProvider="{documentList}">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Doc ID" dataField="DocID" width="50"/>
+            <mx:DataGridColumn headerText="Doc No" dataField="DocumentNo" width="50"/>
+            <mx:DataGridColumn headerText="Doc Type" dataField="DocumentTypeName"/>
+            <mx:DataGridColumn headerText="State" dataField="StateName"/>
+            <mx:DataGridColumn headerText="County" dataField="CountyName"/>
+        </mx:columns>
+    </mx:DataGrid>
+
+</ServiceStep>

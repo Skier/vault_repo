@@ -1,0 +1,82 @@
+﻿@using Dalworth.LeadCentral.Service
+@using Dalworth.LeadCentral.Web.Models.User
+@model UserList
+
+@{
+    ViewBag.Title = "User List";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>User List</h1>
+    @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+    {
+    <div style="float:right;padding: 8px 0px 8px 0px;">@Html.ActionLink("Create New", "Create", new { controller = "Users" }, new { @class = "button primary" })</div>
+    }
+  </div>
+  <div class="content">
+    @if(!currentUser.IsBusinessPartner)
+    {
+        using (Html.BeginForm("Index", "Users", FormMethod.Get))
+        {
+        <div class="filter" style="border-bottom: none;">
+        <table style="width:100%;">
+            <tr>
+            <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">Business Partner:</span>
+                @Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.PartnerId))</td>
+            <td class="left" style="white-space: nowrap;">
+                <span style="margin-left: 15px;">@Html.CheckBoxFor(model => model.ShowInactive) show inactive </span></td>
+            <td class="left" style="width:100%;vertical-align:bottom;">
+                <div style="float:right;">
+                <button type="submit">Refresh</button>
+                @Html.ActionLink("Clear", "Index", new { controller = "Users" }, new { @class = "button" })
+                </div>
+            </td>
+            </tr>
+        </table>
+        </div>
+        }
+    }
+@if (Model.Users != null && Model.Users.Count > 0)
+{
+    <table class="list">
+      <thead>
+        <tr>
+          <td class="left">Name</td>
+          <td class="left">Phone</td>
+          @if (!currentUser.IsBusinessPartner)
+          {
+          <td class="left">Role</td>
+          <td class="left">Partner</td>
+          }
+          <td class="left">Status</td>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var user in Model.Users)
+        {
+        <tr>
+          <td class="left">@Html.ActionLink(user.ScreenName, "Details", new { user.Id })</td>
+          <td class="left">@user.Phone</td>
+          @if (!currentUser.IsBusinessPartner)
+          {
+          <td class="left">@user.QbRoleName</td>
+          <td class="left">@user.PartnerName</td>
+          }
+          <td class="left">@user.StatusStr</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+}
+else
+{
+    <div>No Business Partners found</div>
+}
+  </div>
+</div>
+
+

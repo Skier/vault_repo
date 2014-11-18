@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   title="Audio Recorder"
+					   backgroundColor="#DCDCDC"
+					   showStatusBar="false"
+					   width="500" height="35">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ebs.eroof.voice.VoiceSender;
+			
+			import flash.events.SampleDataEvent;
+			import flash.media.Microphone;
+			import flash.media.Sound;
+			import flash.media.SoundChannel;
+			import flash.utils.ByteArray;
+			
+			import mx.controls.Alert;
+			import mx.events.DynamicEvent;
+			import mx.graphics.ImageSnapshot;
+			import mx.graphics.codec.PNGEncoder;
+			
+			[Bindable] private var isRecording:Boolean = false;
+			[Bindable] private var isPlaying:Boolean = false;
+			[Bindable] private var soundClip:ByteArray;
+			
+			private var microphone:Microphone;
+			private var sound:Sound;
+			private var channel:SoundChannel;
+			
+			[Embed(source="/assets/control.png")]
+			[Bindable]
+			private var imgPlay:Class;
+
+			[Embed(source="/assets/control-record.png")]
+			[Bindable]
+			private var imgRecord:Class;
+			
+			[Embed(source="/assets/control-stop-square.png")]
+			[Bindable]
+			private var imgStop:Class;
+			
+			private function toggleRecording():void
+			{
+				if (isRecording)
+					stopRecording();
+				else
+					startRecording();
+			}
+			
+			private function startRecording():void
+			{
+				isRecording = true;
+				btnRecord.label = "Stop Record";
+				pb.label = "RECORDING...";
+				microphone = Microphone.getMicrophone();
+				microphone.rate = 44;
+				microphone.gain = 100;
+				soundClip = new ByteArray();
+				microphone.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler);
+			}
+			
+			private function stopRecording():void
+			{
+				isRecording = false;
+				btnRecord.label = "Start Record";
+				pb.label = "";
+				microphone.removeEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler);
+			}
+			
+			private function micSampleDataHandler(event:SampleDataEvent):void
+			{
+				while(event.data.bytesAvailable)
+				{
+					var sample:Number = event.data.readFloat();
+					soundClip.writeFloat(sample);
+				}
+			}
+			
+			private function togglePlaying():void
+			{
+				if (isPlaying)
+					stopPlaying();
+				else
+					startPlaying();
+			}
+			
+			private function startPlaying():void
+			{
+				isPlaying = true;
+				btnPlay.label = "Stop";
+				soundClip.position = 0;
+				sound = new Sound();
+				sound.addEventListener(SampleDataEvent.SAMPLE_DATA, soundSampleDataHandler);
+				channel = sound.play();
+				channel.addEventListener(Event.SOUND_COMPLETE, soundCompleteHandler);                
+			}
+			
+			private function stopPlaying():void
+			{
+				channel.stop();
+				isPlaying = false;
+				btnPlay.label = "Play";
+			}
+			
+			private function soundSampleDataHandler(event:SampleDataEvent):void
+			{
+				if (!soundClip.bytesAvailable > 0)
+				{
+					return;
+				}
+				
+				for (var i:int = 0; i < 8192; i++)
+				{
+					var sample:Number = 0;
+					if (soundClip.bytesAvailable > 0)
+					{
+						sample = soundClip.readFloat();
+					}
+					event.data.writeFloat(sample); 
+				}
+			}
+			
+			private function soundCompleteHandler(event:Event):void
+			{
+				isPlaying = false;
+				btnPlay.label = "Play";
+			}
+			
+			[Bindable] private var isUploading:Boolean;
+			
+			private function upload():void 
+			{
+				var uploader:VoiceSender = new VoiceSender(Config.PHOTO_TABLE_ID, "14", "sample.wav");
+				uploader.addEventListener("voiceSenderFault", faultHandler);
+				uploader.addEventListener("loginComplete", loginHandler);
+				uploader.addEventListener("sendComplete", completeHandler);
+				isUploading = true;
+				pb.label = "SIGN IN...";
+				uploader.send(soundClip);
+			}
+			
+			private function snapshot():void 
+			{
+				var uploader:VoiceSender = new VoiceSender(Config.PHOTO_TABLE_ID, "14", "sample.png");
+				uploader.addEventListener("voiceSenderFault", faultHandler);
+				uploader.addEventListener("loginComplete", loginHandler);
+				uploader.addEventListener("sendComplete", completeHandler);
+				isUploading = true;
+				uploader.send(getSnapshot());
+			}
+			
+			private function getSnapshot():ByteArray 
+			{
+				var bmp:BitmapData = ImageSnapshot.captureBitmapData(h_group);
+				return new PNGEncoder().encode(bmp);
+			}
+			
+			private function faultHandler(event:DynamicEvent):void 
+			{
+				isUploading = false;
+				Alert.show(event.errtext as String);
+			}
+			
+			private function loginHandler(event:Event):void 
+			{
+				pb.label = "UPLOADING...";
+			}
+			
+			private function completeHandler(event:Event):void 
+			{
+				isUploading = false;
+				soundClip = null;
+				pb.label = "";
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+	</fx:Declarations>
+
+	<s:HGroup id="h_group" top="4" left="4" right="4" bottom="4" verticalAlign="middle">
+		<s:Button id="btnPlay" label="Play" click="togglePlaying()" enabled="{!isRecording &amp;&amp; !isUploading &amp;&amp; soundClip != null}" width="50" height="100%"/>
+		<mx:ProgressBar id="pb" indeterminate="true" visible="{isRecording || isUploading}" width="100%" labelPlacement="center"/>
+		<s:Button id="btnRecord" label="Start Record" click="toggleRecording()" enabled="{!isPlaying &amp;&amp; !isUploading }" width="100" height="100%"/>
+		<s:Button id="btnUpload" label="Upload" click="upload()" enabled="{!isPlaying &amp;&amp; !isRecording &amp;&amp; !isUploading &amp;&amp; soundClip != null}" width="80" height="100%"/>
+<!--
+		<s:Button id="btnSnapshot" label="Snapshot" click="snapshot()" enabled="{!isPlaying &amp;&amp; !isRecording &amp;&amp; !isUploading &amp;&amp; soundClip != null}" width="90" height="100%"/>
+-->
+	</s:HGroup>
+
+</s:WindowedApplication>

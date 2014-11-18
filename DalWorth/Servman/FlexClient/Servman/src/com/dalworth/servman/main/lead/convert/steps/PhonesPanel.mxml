@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.TelephoneNumber;
+			import mx.collections.ArrayCollection;
+			
+            [Embed(source="/assets/icons16/toggle.png")]
+            [Bindable]
+            private var imgPlus:Class;
+            
+            [Bindable]
+            public var editable:Boolean = false;
+
+			[Bindable]
+			private var _phones:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public function get phones():Array { return _phones.source; }
+			public function set phones(value:Array):void 
+			{
+				_phones.source = value;
+			}
+			
+			private function setEditor(obj:Object):void 
+			{
+				var rowIndex:int = _phones.getItemIndex(obj);
+				var columnIndex:int = 0;
+				dgPhones.editedItemPosition = {columnIndex:columnIndex, rowIndex:rowIndex};
+			}
+			
+			private function onAdd():void 
+			{
+				var phone:TelephoneNumber = new TelephoneNumber();
+				phone.FreeFormNumber = "[new phone]";
+				
+				_phones.addItem(phone);
+				
+				setEditor(phone);
+			} 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		backgroundColor="#FFFFFF">
+		<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#EEEEEE" horizontalGap="-1">
+			<mx:Label text="PHONES:" fontSize="12"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button height="24" click="onAdd()" cornerRadius="2" label="Add new" fontSize="12" visible="{editable}"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgPhones" width="100%" height="100%" dataProvider="{_phones}" editable="{editable}" showHeaders="false">
+			<mx:columns>
+				<mx:DataGridColumn dataField="FreeFormNumber" headerText="Number" editable="{editable}"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	
+</mx:Canvas>

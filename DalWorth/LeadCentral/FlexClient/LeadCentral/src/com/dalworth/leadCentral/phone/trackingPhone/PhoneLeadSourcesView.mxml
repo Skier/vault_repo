@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.leadSource.LeadSourceSelectorPopup;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.service.LeadSourceService;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import com.dalworth.leadCentral.events.LeadSourceEvent;
+			import mx.core.Application;
+			import mx.events.DynamicEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var leadSources:ArrayCollection;
+			
+			private var _phone:TrackingPhone;
+			[Bindable]
+			public function get phone():TrackingPhone { return _phone; }
+			public function set phone(value:TrackingPhone):void 
+			{
+				_phone = value;
+				initLeadSources();
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function initLeadSources():void 
+			{
+				if (leadSources == null)
+					leadSources = new ArrayCollection();
+				
+				leadSources.removeAll();
+				if (_phone == null)
+					return; 
+
+				startRemoting();
+				LeadSourceService.getInstance().getByCompanyPhoneId(_phone.Id,
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							var result:Array = event.result as Array;
+							var len:int = result.length;
+							for (var i:int = 0; i < len; i++)
+							{
+								var leadSource:LeadSource = result[i] as LeadSource;
+								leadSources.addItem(leadSource);
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							trace(event.fault.message);
+						}));
+			}
+/* 			
+			private function onAddLeadSource():void 
+			{
+				var popup:LeadSourceSelectorPopup = LeadSourceSelectorPopup.open(Application.application as DisplayObject, leadSources);
+				popup.addEventListener(LeadSourceEvent.LEAD_SOURCE_SELECT, onLeadSourceSelect);
+			}
+			
+			private function onLeadSourceSelect(event:LeadSourceEvent):void 
+			{
+				var leadSource:LeadSource = event.leadSource;
+				if (leadSource == null)
+					return;
+				
+				startRemoting();
+				LeadSourceService.getInstance().addCompanyPhone(leadSource, phone, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							initLeadSources();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							trace(event.fault.message);
+						}));
+			}
+			
+			private function onRemoveLeadSource():void 
+			{
+				var leadSource:LeadSource = dgLeadSources.selectedItem as LeadSource;
+				if (leadSource == null)
+					return;
+				
+				startRemoting();
+				LeadSourceService.getInstance().removeCompanyPhone(leadSource, phone, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							initLeadSources();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							trace(event.fault.message);
+						}));
+			}
+ */			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" 
+		horizontalAlign="right">
+<!--
+		<mx:HBox width="100%">
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Remove selected" click="onRemoveLeadSource()" enabled="{dgLeadSources.selectedItem != null}" width="80"/>
+			<mx:Button label="Add" click="onAddLeadSource()" width="80"/>
+		</mx:HBox>
+-->
+		<mx:DataGrid id="dgLeadSources" width="100%" height="100%" dataProvider="{leadSources}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Related Lead Sources" dataField="Name"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+
+</mx:Canvas>

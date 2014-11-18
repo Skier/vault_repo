@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.loveland.mapper.UI.events.VertexEvent;
+			import com.loveland.mapper.markers.VertexMarker;
+
+	        [Embed(source="/assets/icons16/cross.png")]
+	        [Bindable]
+	        private var iconDelete:Class;
+		
+			public var vertex:VertexMarker;
+		
+			private function btnDeleteClickHandler():void 
+			{
+				dispatchEvent(new VertexEvent(VertexEvent.DELETE, vertex));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox>
+		<mx:HBox>
+			<mx:Button id="btnSetLatLng" width="20" height="20" icon="{iconDelete}" 
+				mouseOver="lblToolName.text='Delete Marker'" 
+				click="btnDeleteClickHandler()"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%">
+			<mx:Label id="lblToolName"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

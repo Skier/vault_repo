@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import mx.binding.utils.ChangeWatcher;
+			
+            [Embed(source="/assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+			[Bindable]
+			private var leadSource:LeadSource;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+
+				if (value is LeadSource)
+					leadSource = value as LeadSource;
+			} 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" fontSize="12" verticalAlign="middle">
+		<mx:Label text="{leadSource.Name}" fontWeight="bold" width="150"/>
+		<mx:HBox width="100%" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+			backgroundColor="#FFFFCC" backgroundAlpha="0.5"
+			visible="{leadSource.RelatedUser != null}" includeInLayout="{leadSource.RelatedUser != null}">
+			<mx:Image source="{imgUser}"/>
+			<mx:Label text="{leadSource.RelatedUser.Email}" minWidth="50"/>
+			<mx:Label text="{leadSource.RelatedUser.Phone}" minWidth="50"/>
+		</mx:HBox>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,41 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Partner
+@model EditPhoneNumber
+
+@{
+    ViewBag.Title = "Edit Phone Number";
+}
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Details", new { controller = "Partners", id = Model.PartnerId }, new { @class = "button" })</div>
+      <h1>Edit Phone Number</h1>
+    </div>
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.PartnerId)
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+                <td style="text-align:right;"><span class="required">*</span> Phone Number</td>
+                <td>
+                @Html.TextBoxFor(model => model.PhoneNumber)
+                @Html.ValidationMessageFor(model => model.PhoneNumber)</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Description</td>
+                <td>
+                @Html.TextAreaFor(model => model.Description)
+                @Html.ValidationMessageFor(model => model.Description)</td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+}

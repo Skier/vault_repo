@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Breakdown Township &amp; Range"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentActorPhone;
+			import com.llsvc.domain.DocumentActor;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] private var errorMessage:String;
+
+			private var _tractRange:TractRange;
+			[Bindable]
+			public function get tractRange():TractRange { return _tractRange; }
+			public function set tractRange(value:TractRange):void 
+			{
+				_tractRange = value;
+				
+				populateFields();
+			}
+			
+            public static function open(parent:DisplayObject, modal:Boolean):TractTownshipEditView
+            {
+                var popup:TractTownshipEditView = new TractTownshipEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	focusManager.setFocus(txtTownship);
+            }
+            
+            private function populateFields():void 
+            {
+            	if (tractRange.key == null)
+            		return;
+            	
+            	var fields:Array = tractRange.key.split(" ");
+            	if (fields.length < 10)
+            		return;
+            		
+            	txtTownship.text = fields[1];
+            	txtRange.text = fields[5];
+            	txtPm.text = fields[9];
+            	comboNorth.selectedIndex = (fields[3].toString() == "N") ? 0 : 1;
+            	comboEast.selectedIndex = (fields[7].toString() == "E") ? 0 : 1;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	if (
+            		   txtTownship.text.length > 0
+            		&& comboNorth.selectedIndex != -1 
+            		&& txtRange.text.length > 0 
+            		&& comboEast.selectedIndex != -1 
+            		&& txtPm.text.length > 0
+            		
+            		&& !isNaN(Number(txtTownship.text))
+            		&& !isNaN(Number(txtRange.text))
+            		&& !isNaN(Number(txtPm.text))
+            		)
+            	{
+            		return true;
+            	} else 
+            	{
+            		return false;
+            	}
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+            	errorMessage = "";
+
+	        	if (isFormValid()) 
+	        	{
+	        		tractRange.township = txtTownship.text + " Dir " + comboNorth.selectedLabel;
+	        		tractRange.range = txtRange.text + " Dir " + comboEast.selectedLabel  + " PM " + txtPm.text;
+	        		
+			        dispatchEvent(new Event("commitRequest"));
+	        	} else 
+	        	{
+            		errorMessage = "Not all required fields selected !";
+	        	}
+	        }
+	        
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formMain" width="100%" labelWidth="60" 
+		borderColor="#999999" borderStyle="solid" borderThickness="1"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+		verticalGap="2">
+        <mx:Label text="Please enter your Township and Range info."/>
+        
+        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+            <mx:Label text="TWN"/>
+            <mx:TextInput id="txtTownship" width="40" maxChars="3" restrict="0-9"/>
+            <mx:Label text="Dir"/>
+            <mx:ComboBox id="comboNorth" dataProvider="[N, S]"/>
+            <mx:Label text="RNG"/>
+            <mx:TextInput id="txtRange" width="40" maxChars="3" restrict="0-9"/>
+            <mx:Label text="Dir"/>
+            <mx:ComboBox id="comboEast" dataProvider="[E, W]"/>
+            <mx:Label text="PM"/>
+            <mx:TextInput id="txtPm" width="40" maxChars="3" restrict="0-9"/>
+        </mx:HBox>
+
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+		<mx:Label fontSize="12" color="#ff0000" text="{errorMessage}" minWidth="200"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

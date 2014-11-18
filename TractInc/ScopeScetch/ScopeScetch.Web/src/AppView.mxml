@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    width="100%" height="100%"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:local="*" 
+    xmlns:src="src.*"
+    xmlns:login="src.login.*"
+    xmlns:util="src.util.*"
+    xmlns:menu="src.appMenu.*"
+    xmlns:deedplotter="src.deedplotter.*">
+    
+    <src:AppController id="controller" view="{this}"/>
+
+	<util:ClientIdleTimeOut id="timeOutWatcher" 
+	    listenMouseMove="true" timeOutInterval="25" confirmInterval="1" 
+	    appTimedOut="controller.app_timeOutHandler()"/>
+
+    <mx:ViewStack id="mainViewStack" width="100%" height="100%" creationPolicy="all">
+        
+        <mx:Box id="loginView" 
+            width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+            <login:LoginView appController="{controller}"/>
+        </mx:Box>
+
+	    <mx:VBox id="scopeScetchView" enabled="{!controller.serviceIsBusy}">
+
+            <menu:AppMenuView id="appMenu"
+                currentTract="{controller.model.currentTract}" width="100%"
+                fileAttachDrawing="controller.menu_fileAttachDrawingHandler(event)"
+                fileCreateTract="controller.menu_fileCreateTractHandler(event)"
+                fileCreateDrawing="controller.menu_fileCreateDrawingHandler(event)"
+                fileLogout="controller.menu_fileLogoutHandler(event)"
+                fileOpenTract="controller.menu_fileOpenTractHandler(event)"
+                fileOpenDrawing="controller.menu_fileOpenDrawingHandler(event)"
+                filePrint="controller.menu_filePrintHandler(event)"
+                fileSave="controller.menu_fileSaveHandler(event)"
+                viewZoomIn="controller.menu_viewZoomInHandler(event)"
+                viewZoomAll="controller.menu_viewZoomAllHandler(event)"
+                viewZoomOut="controller.menu_viewZoomOutHandler(event)"
+                settingsShowAnnotation="controller.menu_settingsShowAnnotationHandler(event)"
+                settingsShowArea="controller.menu_settingsShowAreaHandler(event)"
+                settingsMore="controller.menu_settingsMoreHandler(event)"
+                />
+
+            <deedplotter:DeedPlotter id="plotter" 
+                width="100%" height="100%" tractViewStyleName="tractView"
+                borderStyle="solid" enabled="{controller.model.currentTract != null}"
+                horizontalCenter="0.5" backgroundColor="#c2d8fe"
+                editTractInfoRequest="controller.plotter_editTractInfoRequestHandler()"/>
+	        
+	    </mx:VBox>
+
+	</mx:ViewStack>
+
+</mx:Canvas>

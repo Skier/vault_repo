@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:summary="com.llsvc.client.lms.view.lease.summary.*"
+	creationComplete="onCreationCompleteHandler()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.SortField;
+			import mx.collections.Sort;
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.client.lms.control.TabManager;
+			import mx.events.PropertyChangeEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import com.llsvc.domain.Lease;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.client.lm.storage.Storage;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.Project;
+			import mx.rpc.Responder;
+			
+            [Embed(source="assets/icons16/expand.png")]
+            [Bindable]
+            private var imgExpand:Class;
+
+            [Embed(source="assets/icons16/collapse.png")]
+            [Bindable]
+            private var imgCollapse:Class;
+            
+			private var _project:Project;
+			[Bindable] 
+			public function get project():Project { return _project; }
+			public function set project(value:Project):void 
+			{
+				_project = value;
+				
+				if (_project != null)
+					init(_project);
+			}
+			
+			[Bindable] private var leaseList:ArrayCollection;
+			[Bindable] private var isListCollapsed:Boolean = false;
+			[Bindable] private var isDetailCollapsed:Boolean = false;
+			
+			private function init(proj:Project):void 
+			{
+				if (leaseList == null)
+					leaseList = new ArrayCollection();
+				
+				leaseList.removeAll();
+				
+				startRemoting("Getting Lease List for current Project");
+				
+				Storage.instance.getLeasesByProject(proj.id, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							
+                            var result:ArrayCollection = event.result as ArrayCollection; 
+
+                            for each (var l:Lease in result) {
+                                l.isDirty = false;
+                                l.document.refreshAttachments();
+                                
+                                for each (var t:LeaseTract in l.tracts) 
+                                {
+                                    if (t.leaseBurden == 0)
+                                        t.leaseBurden = l.royalty;
+                                }
+                                
+                                var tractSort:Sort = new Sort();
+                                tractSort.fields = [new SortField("townshipRangeStr"), new SortField("sectionStr")];
+                                l.tracts.sort = tractSort;
+                                l.tracts.refresh();
+
+                                l.updateTractsSummary();
+                                
+                                leaseList.addItem(l);
+                            }
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							boxContent.enabled = false;
+							Alert.show("Error getting Leases for current Project");
+						}
+					)
+				);
+				
+			}
+			
+            private function startRemoting(name:String):void 
+            {
+                boxContent.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                boxContent.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+            private function switchLeaseListState():void 
+            {
+            	isListCollapsed = !isListCollapsed;
+            }
+            
+            private function switchLeaseDetailState():void 
+            {
+            	isDetailCollapsed = !isDetailCollapsed;
+            }
+            
+            private function setRowColor(item:Lease, color:uint):uint 
+            {
+            	if (item.vet) 
+            	{
+            		return 0xeeffee;
+            	} else 
+            	{
+            		return color;
+            	}
+            }
+            
+            private function onCreationCompleteHandler():void 
+            {
+            	ChangeWatcher.watch(dgLeases, "selectedItem", onSelectedLeaseChanged);
+            }
+               
+			private function onSelectedLeaseChanged(event:Event):void 
+			{
+				if (dgLeases.selectedItem != null) 
+				{
+					isDetailCollapsed = false;
+				}
+			}
+
+            private function dgLeasesDoubleClickHandler():void 
+            {
+                var lease:Lease = dgLeases.selectedItem as Lease;
+                TabManager.openLease(lease);
+            }
+            
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="boxContent"
+		width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="-1">	
+		<mx:HBox id="boxLeaseListHeaderBar" width="100%" height="20" verticalAlign="middle"
+			backgroundColor="#eeeeee" borderColor="#dddddd" borderStyle="solid">
+			<mx:Label text="Lease List" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button icon="{isListCollapsed ? imgExpand : imgCollapse}" width="18" height="18" click="switchLeaseListState()"/>
+		</mx:HBox>
+		
+		<mx:Box id="boxLeasesList" width="100%" height="100%"
+			visible="{!isListCollapsed}" includeInLayout="{!isListCollapsed}">
+	        <mx:VBox width="100%" height="100%" verticalGap="-1">
+	            <controls:ColoredDataGrid id="dgLeases" dataProvider="{leaseList}" minWidth="600" width="100%" height="100%"
+	                sortableColumns="false" draggableColumns="false" resizableColumns="false"
+	                doubleClickEnabled="true" itemDoubleClick="dgLeasesDoubleClickHandler()"
+	                rowColorFunction="setRowColor">
+	                <controls:columns>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Lease No" headerWordWrap="true" dataField="leaseNum" width="50" minWidth="50"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+	                        headerText="Lease Name" dataField="leaseName"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+	                        headerText="Records" itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseRecordsIR"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Exp Date" headerWordWrap="true" dataField="expirationDateStr" width="100" minWidth="100" textAlign="center"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Gross AC" headerWordWrap="true" dataField="tractsGrossAcresStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Net AC" headerWordWrap="true" dataField="tractsNetAcresStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Interest" dataField="tractsInterestStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Lease Burden" headerWordWrap="true" dataField="tractsBurdenStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Lease NRI" headerWordWrap="true" dataField="tractsNriStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="FCR WI" headerWordWrap="true" dataField="tractsCwiStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="Addition. Burden" headerWordWrap="true" dataField="tractsAddBurdensStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="FCR NRI" headerWordWrap="true" dataField="tractsCnriStr" width="60" minWidth="60" textAlign="right"/>
+	                    <mx:DataGridColumn headerStyleName="headerTextCentered" 
+	                        headerText="FCR Net Acres" headerWordWrap="true" dataField="tractsCNetAcresStr" width="50" minWidth="50" textAlign="right"/>
+	                </controls:columns>
+	            </controls:ColoredDataGrid>
+	        </mx:VBox>
+		</mx:Box>
+		
+		<mx:HBox id="boxLeaseDetailHeaderBar" left="5" right="5" width="100%" height="20" verticalAlign="middle"
+			backgroundColor="#eeeeee" borderColor="#dddddd" borderStyle="solid" paddingLeft="5">
+			<mx:Label text="Lease Detail" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button icon="{!isDetailCollapsed ? imgExpand : imgCollapse}" width="18" height="18" click="switchLeaseDetailState()"/>
+		</mx:HBox>
+	
+		<mx:Box	id="boxLeaseDetail"
+			width="100%" height="100%" 
+			visible="{!isDetailCollapsed}" includeInLayout="{!isDetailCollapsed}">
+			<summary:LeaseDetail  
+				width="100%" height="100%"
+				backgroundColor="#ffffee" borderColor="#dddddd" borderStyle="solid" cornerRadius="2"
+				lease="{dgLeases.selectedItem as Lease}"/>
+		</mx:Box>
+	</mx:VBox>
+
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false" includeInLayout="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:Canvas>

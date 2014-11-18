@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:documentDetail="truetract.web.dashboard.documentList.documentDetail.*"
+    xmlns:dashboard="truetract.web.dashboard.*" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:validators="truetract.plotter.validators.*"
+    label="Documents ({(documentList != null) ? documentList.length : 0})">
+
+    <mx:Metadata>
+        [Event(name="applyFilter", type="mx.events.DynamicEvent")]
+        [Event(name="resetFilter", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+            import truetract.plotter.domain.Document;
+            import mx.collections.ArrayCollection;
+
+            [Bindable] public var documentList:ArrayCollection;
+            
+            [Bindable]
+            public var controller:DocumentListController = 
+                new DocumentListController(DocumentListView(this));
+
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] public var searchMode:Boolean = false;
+
+        ]]>
+    </mx:Script>
+    
+    <mx:Component className="coloredLabel">
+        <mx:Label/>
+    </mx:Component>
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <components:ExtendedPopUpButton id="moveToFolderButton"
+            label="Move to Folder"
+            enabled="{docDG.selectedItem != null}"
+            openAlways="true" popUpWidth="{moveToFolderButton.width}"/>
+
+        <mx:Button label="Delete" enabled="false"/>
+
+    </mx:HBox>
+
+    <mx:VDividedBox width="100%" height="100%">
+
+        <mx:DataGrid id="docDG" 
+            width="100%" height="100%" dataProvider="{documentList}"
+            doubleClickEnabled="true" 
+            change="controller.docDG_changeHandler()"
+            doubleClick="controller.docDG_doubleClickHandler()">
+
+            <mx:columns>
+                <mx:DataGridColumn headerText="State" dataField="StateName"/>
+                <mx:DataGridColumn headerText="County" dataField="CountyName"/>
+                <mx:DataGridColumn headerText="Doc Type" dataField="DocumentTypeName"/>
+                <mx:DataGridColumn headerText="Doc Place" dataField="DocumentPlacement"/>
+                <mx:DataGridColumn headerText="Modified" dataField="DateModifiedString"/>
+                <mx:DataGridColumn headerText="Created By" dataField="CreatedBy"/>
+            </mx:columns>
+
+        </mx:DataGrid>
+
+        <documentDetail:DocumentDetailView id="documentDetailt"
+            enabled="{docDG.selectedItem != null}"
+            docum="{Document(docDG.selectedItem)}"
+            addTract="controller.addTractHandler()"
+            openTract="controller.openTractHandler(event)"
+            width="100%" minHeight="150" />
+
+    </mx:VDividedBox>
+
+</mx:VBox>

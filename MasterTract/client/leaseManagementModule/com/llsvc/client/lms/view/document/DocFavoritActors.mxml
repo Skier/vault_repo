@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100" borderColor="#9999ff" borderStyle="solid" borderThickness="1" verticalGap="0"
+	dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)"
+	initialize="onInit()" creationComplete="onCreate()">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.IUIComponent;
+			import mx.controls.Alert;
+			import mx.core.DragSource;
+			import mx.managers.DragManager;
+			import com.llsvc.domain.County;
+			import com.llsvc.domain.State;
+			import com.llsvc.domain.Address;
+			import com.llsvc.domain.DocumentActorPhone;
+			import mx.events.DragEvent;
+			import com.llsvc.domain.DocumentActor;
+			import mx.collections.ArrayCollection;
+
+			[Bindable] private var favorits:ArrayCollection = new ArrayCollection();
+			
+			private function onInit():void 
+			{
+				favoritsFromLocal();
+			}
+			
+			private function onCreate():void 
+			{
+				dgFavorits.addEventListener("removeFavorit", removeFavoritHandler);
+			}
+			
+			private function favoritsFromLocal():void 
+			{
+				registerClassAlias("com.llsvc.server.entity.DocumentActorEntity", DocumentActor);
+				registerClassAlias("com.llsvc.server.entity.DocumentActorPhoneEntity", DocumentActorPhone);
+				registerClassAlias("com.llsvc.server.entity.AddressEntity", Address);
+				registerClassAlias("com.llsvc.server.entity.StateEntity", State);
+				registerClassAlias("com.llsvc.server.entity.CountyEntity", County);
+				
+				var so:SharedObject = SharedObject.getLocal("favorits");
+				
+				favorits.removeAll();
+				for each (var da:DocumentActor in so.data.favorits) 
+				{
+					var actor:DocumentActor = new DocumentActor();
+					actor.populate(da);
+					favorits.addItem(actor);
+				}
+			}
+			
+			private function favoritsToLocal():void 
+			{
+				var so:SharedObject = SharedObject.getLocal("favorits");
+				so.data.favorits = this.favorits;
+				so.flush();
+			}
+			
+			private function removeFavoritHandler(e:*):void 
+			{
+				favorits.removeItemAt(dgFavorits.selectedIndex);
+				favoritsToLocal();
+			}
+
+// drag-n-drop functionality ------
+
+            private function actorDragStart(event:MouseEvent):void
+            {
+                if (DragManager.isDragging == false)
+                {
+                    var actor:DocumentActor = dgFavorits.selectedItem as DocumentActor;
+                    
+                    var ds:DragSource = new DragSource();
+                    ds.addData(actor, "documentActor");
+    
+                    var di:DocActorDragIR = new DocActorDragIR();
+                    di.actor = actor;
+                    
+                    DragManager.doDrag(dgFavorits, ds, event, di, -dgFavorits.itemToItemRenderer(actor).x, 
+                                      -(dgFavorits.itemToItemRenderer(actor).y + dgFavorits.y) + dgFavorits.verticalScrollPosition, 
+                                       0.5, false);
+                }    
+            }
+            
+            private function dragEnterHandler(event:DragEvent):void
+            {
+                if (event.dragSource.hasFormat("documentActor"))
+                {
+                    DragManager.acceptDragDrop(IUIComponent(event.target));
+                    DragManager.showFeedback(DragManager.COPY);
+                }
+            }
+    
+            private function dragDropHandler(event:DragEvent):void
+            {
+                var draggedActor:DocumentActor = event.dragSource.dataForFormat("documentActor") as DocumentActor;
+                 
+                if (isCollectionContains(favorits, draggedActor)) 
+                {
+                    Alert.show("Participant with the same name already exists in collection! Please remove old.");
+                    return;
+                }
+                
+                var actor:DocumentActor = draggedActor.createCopy();
+                favorits.addItem(actor);
+                favoritsToLocal();
+            }
+            
+// drag-n-drop functionality ------
+			
+            private function isCollectionContains(collection:ArrayCollection, actor:DocumentActor):Boolean 
+            {
+            	for each (var da:DocumentActor in collection) 
+            	{
+            		if (da.name == actor.name)
+            			return true;
+            	}
+            	
+            	return false;
+            }  
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#9999ff" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+		<mx:Label text="Repetitive Info"/>
+	</mx:HBox>
+	
+	<mx:DataGrid id="dgFavorits" width="100%" height="100%"
+		dataProvider="{favorits}" borderThickness="0" dragEnabled="true"
+		dragStart="actorDragStart(event)">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Common participant" dataField="name"/>
+			<mx:DataGridColumn headerText=" " 
+				itemRenderer="com.llsvc.client.lms.view.document.FavoritRemoveIR" width="22"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

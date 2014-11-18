@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center" verticalGap="-5" 
+	verticalAlign="middle"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+		
+			[Bindable] private var lines:ArrayCollection;
+			[Bindable] private var align:String;
+			
+			private var _data:MultiLinesHeaderColumn;
+		
+			override public function get data():Object
+			{
+				return _data;
+			}
+		
+			override public function set data(value:Object):void
+			{
+				_data = value as MultiLinesHeaderColumn;
+				lines = _data.lines;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:Repeater id="rpt" width="100%" dataProvider="{lines}">
+		<mx:Label text="{rpt.currentItem}" fontWeight="bold"/>
+	</mx:Repeater>
+
+</mx:VBox>

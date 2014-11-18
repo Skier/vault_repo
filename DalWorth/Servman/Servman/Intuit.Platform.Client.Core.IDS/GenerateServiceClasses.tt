@@ -1,0 +1,411 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ assembly name = "System.Xml" #>
+<#@ assembly name= "System.Data" #>
+<#@ import namespace = "System.Data" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections" #> 
+<#@ import namespace="System.Collections.Generic" #> 
+
+<#+
+///<summary>
+/// Generates report classes and adds it to project file.
+///</summary>
+void GenerateServiceClasses(string className, Dictionary<string, List<string>> operationList , string NameSpace, DataTable filterMetaData)
+{
+#>
+/*
+ * Copyright (c) 2009-2010 Intuit, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * Contributors:
+ *    Intuit Partner Platform – initial contribution
+ */
+
+using System;
+using System.Collections.Generic;
+using Intuit.Sb.Cdm;
+using Intuit.Platform.Client.Core;
+using System.Diagnostics;
+using Intuit.Platform.Client.Core.IDS;
+
+namespace Intuit.Sb.Cdm.<#=NameSpace#>
+{
+	/// <summary>
+	/// Provides Method to perform CRUD operations on <#= className #> Resource of QuickBooks
+	/// </summary>
+	public class <#= className#>Service : IDSBaseService
+	{
+<#+
+	//Read List of Operations for specified class
+	foreach(KeyValuePair<string, List<string>> operation in operationList)
+	{
+
+		//OperationList contains a list of operations and supported platforms for each operation.
+		//OperationList Key contains the name of the operation
+		//While Operation list value contains the list of supported platforms for particular operation.
+		
+		string returnType = className;
+		string resourceType = className.ToLower();
+		string listClassName = className;
+				
+		//Get Name of the cdmCollection object type of Entity.
+		switch(className)
+		{
+			case "Class":
+			case "SalesTax":
+				listClassName = className +"es";
+				break;
+			case "JournalEntry":
+				listClassName = "JournalEntries";
+				break;
+			case "TimeActivity":
+				listClassName = "TimeActivities";
+				break;
+			case "SyncActivityRequest":
+				listClassName = "SyncActivityResponses";
+				break;
+			case "Preferences":
+				listClassName = "CompanyPreferences";
+				break;
+			case "ItemConsolidated":
+				listClassName = "ItemsConsolidated";
+				break;
+			default:
+				listClassName = className +"s";
+				break;
+		}
+		
+		//Return type of the collection functions such as FindAll and Get.
+		//change return type to void for delete operation.
+		switch(operation.Key)
+		{
+			//if operation is delete return type is Void
+			case "Delete":
+				returnType = "void";
+				break;
+			default:
+				switch(className) 
+				{
+					case "SyncActivityRequest":
+						returnType = "SyncActivityResponse";
+						break;
+					default:
+						returnType = className;
+						break;
+				}
+				break;
+		}
+
+		//Form warning message text for common objects and whose operation support is different for QB and QBO.
+		string warningText = className + " " + operation.Key +" operation is supported by ";
+		foreach (string plat in operation.Value)
+        {
+            warningText += plat +", ";
+        }
+		char[] trimChar = new char[] {','};
+        warningText = warningText.Trim();
+        warningText = warningText.Trim(trimChar);
+		
+		
+		//Handle Class entiry resource Type.
+		//Reason: cannot write Class enum member in all lower case as class is keyword of .net
+		if(string.Compare(className,"Class")==0)
+		{
+			resourceType = className;
+		}
+		
+		//Handle Add, Update, Delete and Revert operation.
+		if(string.Compare(operation.Key,"Add")==0 || string.Compare(operation.Key,"Update")==0 ||
+			string.Compare(operation.Key ,"Delete" ) ==0|| string.Compare(operation.Key ,"Revert")==0)
+		{
+#>
+
+		/// <summary>
+		/// <#=operation.Key#>s a <#= className#> under the specified realm. 
+		/// </summary>
+		/// <param name="context">PlatformSessionContext object with session info filled</param>
+		/// <param name="realmId">Users RealmID</param>
+		/// <param name="new<#= className#>"><#= className#> object to <#=operation.Key#></param>
+<#+
+			if(string.Compare(operation.Key ,"Delete")!=0)
+			{
+#>
+		/// <returns>Returns an updated version of the <#= className#> with updated IdType and sync token.</returns>
+<#+
+			}
+
+			//If supported platfrom list is not blank insert warning text
+			if(operation.Value.Count>0)
+			{
+#>
+		#warning '<#=warningText#>'
+<#+
+			}
+#>
+		public <#= returnType #> <#=operation.Key#><#= className#>(PlatformSessionContext context, string realmId, <#= className #> new<#= className#>)
+		{
+<#+
+         	
+			//Delete operation has void return type
+			if(string.Compare(operation.Key ,"Delete")==0)
+			{
+#>
+			Logger.WriteToLog(TraceLevel.Info,"RealmID: " +realmId);
+			base.SetServiceTypeProperty(realmId,ref context);
+			base.<#=operation.Key#>Resource(context, realmId, new<#=className#>, IDSResource.<#= resourceType #>);
+<#+
+			}
+			else
+			{
+#>
+			base.SetServiceTypeProperty(realmId,ref context);
+			new<#= className#> = (<#= className#>)base.<#=operation.Key#>Resource(context, realmId, new<#=className#>, IDSResource.<#= resourceType #>);
+			return new<#= className#>;
+<#+
+			}
+#>
+		}
+<#+
+		}
+		else if(string.Compare(operation.Key , "FindAll")==0)
+		{
+#>
+
+		/// <summary>
+        /// Returns a list of all <#= listClassName#> under the specified Realm.
+        /// </summary>
+        /// <param name="context">PlatformSessionContext object with session info filled</param>
+        /// <param name="realmId">Users RealmID</param>
+        /// <returns>List of all <#= listClassName#></returns>
+<#+
+			//If supported platfrom list is not blank insert warning text
+			if(operation.Value.Count>0)
+			{
+#>
+		#warning '<#=warningText#>'
+<#+
+			}
+#>
+		public List<<#= returnType #>> <#=operation.Key#>(PlatformSessionContext context, string realmId)
+		{
+			Logger.WriteToLog(TraceLevel.Info,"RealmId: " +realmId);
+			base.SetServiceTypeProperty(realmId,ref context);
+			IDSResource resource = IDSResource.<#= resourceType#>;
+           
+<#+			if(string.Compare(NameSpace ,"Common")==0 || string.Compare(NameSpace ,"QBO")==0)
+			{
+#>
+            if (context.ServiceType == IntuitServicesType.QBO)
+            {
+                resource = IDSResource.<#= resourceType#>s;
+            }
+<#+
+			}
+#>
+			<#= listClassName#> listOfObjects = (<#= listClassName#>)base.<#=operation.Key#>(context, realmId, resource,typeof(<#=listClassName#>));
+			if (listOfObjects != null && listOfObjects.<#= returnType#> != null)
+            {
+<#+			if(string.Compare(className ,"Preferences")==0)
+			{
+#>
+				List<<#= returnType #>> <#= returnType #>List = new List<<#= returnType #>>();
+				<#= returnType #>List.Add(listOfObjects.<#= returnType#>);
+				return <#= returnType #>List;
+<#+
+			}
+			else
+			{
+#>
+                return new List<<#= returnType #>>(listOfObjects.<#= returnType#>);
+<#+
+			}
+#>
+            }
+            else
+            {	
+				Logger.WriteToLog(TraceLevel.Info,"<#= returnType #> not found.");
+                return new List<<#= returnType #>>();
+            }
+		}
+<#+
+		}
+		else if(string.Compare(operation.Key ,"FindById")==0)
+		{
+#>
+
+		/// <summary>
+        /// Returns a <#= className#> based on the Id string.
+        /// </summary>
+        /// <param name="context">PlatformSessionContext object with session info filled</param>
+        /// <param name="realmId">Users RealmID</param>
+        /// <param name="<#= className.ToLower()#>IdToFind"><#= className#> Id</param>
+        /// <returns><#= className#> object with specified id</returns>
+<#+
+			//If supported platfrom list is not blank insert warning text
+			if(operation.Value.Count>0)
+			{
+#>
+		#warning '<#=warningText#>'
+<#+
+			}
+#>
+		public <#= returnType #> <#=operation.Key#>(PlatformSessionContext context, string realmId, IdType <#= className.ToLower()#>IdToFind)
+		{
+			Logger.WriteToLog(TraceLevel.Info,"RealmId: " +realmId);
+			base.SetServiceTypeProperty(realmId,ref context);
+			<#= returnType#> <#= className.ToLower()#>Found = null;
+<#+			
+			switch(NameSpace)
+			{
+				case "Common":
+#>				
+			switch (context.ServiceType)
+			{
+				case IntuitServicesType.QBD:
+					<#= listClassName#> <#= listClassName.ToLower()#> = (<#= listClassName#>)base.FindById(context, realmId, <#= className.ToLower()#>IdToFind, IDSResource.<#= resourceType#>, typeof(<#= listClassName#>));
+					if (<#= listClassName.ToLower()#>.<#= returnType#> == null || <#= listClassName.ToLower()#>.<#= returnType#>.Length == 0)
+					{
+						Logger.WriteToLog(TraceLevel.Info,"<#= returnType#> not found.");
+						return null;
+					}
+					<#= className.ToLower()#>Found = <#= listClassName.ToLower()#>.<#= returnType#>[0];
+					break;
+				case IntuitServicesType.QBO:
+					<#= className.ToLower()#>Found = (<#= className#>)base.FindById(context, realmId, <#= className.ToLower()#>IdToFind, IDSResource.<#= resourceType#>, typeof(<#= className#>));
+					break;
+			}
+<#+	
+					break;
+				case "QB":
+#>
+			<#= listClassName#> <#= listClassName.ToLower()#> = (<#= listClassName#>)base.FindById(context, realmId, <#= className.ToLower()#>IdToFind, IDSResource.<#= resourceType#>, typeof(<#= listClassName#>));
+			if (<#= listClassName.ToLower()#>.<#= returnType#> == null || <#= listClassName.ToLower()#>.<#= returnType#>.Length == 0)
+			{
+				Logger.WriteToLog(TraceLevel.Info,"<#= returnType#> not found.");
+				return null;
+			}
+			<#= className.ToLower()#>Found = <#= listClassName.ToLower()#>.<#= returnType#>[0];
+<#+
+					break;
+				case "QBO":
+#>
+			<#= className.ToLower()#>Found = (<#= className#>)base.FindById(context, realmId, <#= className.ToLower()#>IdToFind, IDSResource.<#= resourceType#>, typeof(<#= className#>));
+<#+
+				break;
+            }
+#>
+            return <#= className.ToLower()#>Found;
+		}
+<#+
+		}
+		else if(string.Compare(operation.Key ,"Get")==0)
+		{
+			string inputQueryType = className;
+			if(string.Compare(NameSpace ,"QB" )==0|| string.Compare(NameSpace ,"Common")==0)
+			{
+				if(string.Compare(className , "SalesTerm")==0)
+				{
+					inputQueryType = "Term";
+				}
+			}
+			
+			
+#>
+		
+		/// <summary>
+        /// Query on <#= className#> object basis on the search criteria and company Id.
+        /// </summary>
+        /// <param name="context">Session information</param>
+        /// <param name="realmId">Company, for which search query to be executed.</param>        
+        /// <param name="searchQuery">Criteria for the search
+		///</param>
+        /// <returns>Returns Search result.</returns>
+<#+
+			string queryReturnType = string.Empty;
+			string queryInputType = string.Empty;
+			
+			if(string.Compare( NameSpace , "Common")==0 || 
+				string.Compare( NameSpace , "QBO")==0)
+			{
+				queryInputType = "QBQBO" +inputQueryType + "Query";
+			}
+			else
+			{
+				queryInputType = inputQueryType + "Query";
+			}
+			queryReturnType = "List<"+className+">";
+							
+#>		
+		public <#=queryReturnType#> Get<#= listClassName#>(PlatformSessionContext context, string realmId, <#=queryInputType#> searchQuery)
+        {
+			Logger.WriteToLog(TraceLevel.Info,"Realm Id: " +realmId);
+			
+			base.SetServiceTypeProperty(realmId,ref context);
+			
+<#+
+			
+			if(string.Compare( NameSpace , "QBO")==0)
+			{
+				resourceType += "s"; 
+			}
+			
+#>
+			<#= listClassName#> search<#= listClassName#> = null;
+
+			<#+
+			
+			if(string.Compare( NameSpace , "Common")==0)
+			{
+				
+#>
+			IDSOperationContext operationContext = new IDSOperationContext(IDSResource.<#= resourceType#>, realmId);
+			if (context.ServiceType == IntuitServicesType.QBO)
+            {
+                operationContext = new IDSOperationContext(IDSResource.<#= resourceType + "s"#>, realmId);
+            }
+           
+<#+
+			}
+			else
+			{
+#>
+			IDSOperationContext operationContext = new IDSOperationContext(IDSResource.<#= resourceType#>,realmId);
+			
+<#+
+			}
+#>
+			if(searchQuery != null)
+			{
+            	search<#= listClassName#> = (<#= listClassName#>)base.GetResourcesForQuery(context,operationContext,searchQuery);
+			}
+			else
+			{
+				search<#= listClassName#> = (<#= listClassName#>)base.GetResources(context, operationContext, typeof(<#= listClassName#>));
+			}
+                    
+            if (search<#= listClassName#> == null || search<#= listClassName#>.<#= className#> == null)
+            {
+				Logger.WriteToLog(TraceLevel.Info, "<#= className#> not found.");
+                return null;
+            }
+            return new List<<#= className#>>(search<#= listClassName#>.<#= className#>);
+        }
+<#+
+		
+		}
+	}
+#>
+
+	}
+}
+
+<#+ 
+} 
+#>
+

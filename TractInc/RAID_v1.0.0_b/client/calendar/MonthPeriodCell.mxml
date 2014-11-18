@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:GridItem
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	backgroundColor="#F0F0F0"
+	rollOver="onRollOver(event)"
+	rollOut="onRollOut(event)"
+	dragEnter="onDragEnter(event)"
+	dragExit="onDragExit(event)"
+	dragOver="onDragOver(event)"
+	dragDrop="onDragDrop(event)">
+
+	<mx:Script>
+        <![CDATA[
+       	import mx.events.DragEvent;
+       	import mx.managers.PopUpManager;
+	    import mx.managers.DragManager;
+       	
+       	[Bindable]
+       	private var _text:String = null;
+       	
+		[Bindable]
+		private var _hours:int = 0;
+		
+		[Bindable]
+		public function set hours(value:int):void {
+			_hours = value;
+		}
+		
+		public function get hours():int {
+			return _hours;
+		}
+		
+        [Bindable]
+        private var _day:int = 0;
+        
+        [Bindable]
+        public function set day(value:int):void {
+        	_day = value;
+        }
+        
+        public function get day():int {
+        	return _day;
+        }
+        
+        private var _isCursorOverCell:Boolean = false;
+        
+        public function isCursorOverCell():Boolean {
+        	return _isCursorOverCell;
+        }
+        
+        [Bindable]
+        private var _date:Date = null;
+        
+        [Bindable]
+        public function set date(value:Date):void {
+        	_date = value;
+        	day = value.date;
+        }
+        
+        public function get date():Date {
+        	return _date;
+        }
+        
+        private var _included:Boolean = true;
+        
+        [Bindable]
+        public function set included(value:Boolean):void {
+        	_included = value;
+        }
+        public function get included():Boolean {
+        	return _included;
+        }
+        
+        private var _active:Boolean = false;
+        
+        [Bindable]
+        public function set active(value:Boolean):void {
+        	_active = value;
+        }
+        
+        public function get active():Boolean {
+        	return _active;
+        }
+        
+        [Bindable]
+        private var _grid:MonthPeriodGrid = null;
+        
+       	[Bindable]
+        public function set grid(value:MonthPeriodGrid):void {
+        	_grid = value;
+        }
+        
+        public function get grid():MonthPeriodGrid {
+        	return _grid;
+        }
+        
+        protected function isCurrentDay():Boolean {
+        	var current:Date = new Date();
+        	return current.date == date.date
+        		&& current.month == date.month
+        		&& current.fullYear == date.fullYear;
+        }
+        
+        protected function onRollOver(event:MouseEvent):void {
+        	if (!included || !active) {
+        		return;
+        	}
+
+        	_isCursorOverCell = true;
+        	eventsBox.setStyle("borderColor", 0xE0E8F0);
+        	eventsBox.setStyle("backgroundColor", 0xF0F8FF);
+        }
+        
+        protected function onRollOut(event:MouseEvent):void {
+        	if (!included || !active) {
+        		return;
+        	}
+
+        	_isCursorOverCell = false;
+        	eventsBox.setStyle("borderColor", 0xE0E0E0);
+        	eventsBox.setStyle("backgroundColor", 0xFFFFFF);
+        }
+        
+        protected function onDragEnter(event:DragEvent):void {
+        	if (!included) {
+        		return;
+        	}
+        	
+        	onRollOver(null);
+        	grid.eventDragEnterHandler(event);
+        }
+        
+        protected function onDragDrop(event:DragEvent):void {
+        	grid.eventDragDropHandler(event);
+        	onRollOut(null);
+        }
+        
+        protected function onDragOver(event:DragEvent):void {
+        	onRollOver(null);
+        	grid.eventDragOverHandler(event);
+        }
+        
+        protected function onDragExit(event:DragEvent):void {
+        	onRollOut(null);
+        }
+        
+        ]]>
+	</mx:Script>
+
+	<mx:VBox id="dayBox" width="100%" height="100%">
+	
+		<mx:HBox
+			height="19" width="100%" verticalAlign="middle">
+			<mx:Label
+				width="10%" />
+			<mx:Label id="caption"
+				text="{((0 == hours)? '': ((100 / 8 * hours).toString() + '%'))}"
+				textAlign="center"
+				width="80%"
+				includeInLayout="{included}"
+				visible="{included}"
+				color="#000000"
+				fontSize="10"/>
+			<mx:Label id="dayLabel"
+				text="{day}"
+				textAlign="right"
+				width="10%"
+				includeInLayout="{included}"
+				visible="{included}"
+				fontWeight="bold"
+				color="{(isCurrentDay())? 0x60D060: 0x000000}" />
+		</mx:HBox>
+		
+		<mx:VBox id="eventsBox"
+			width="100%"
+			height="100%"
+			backgroundColor="{((active)? 0xFFFFFF: 0xF0F0F0)}"
+			borderThickness="1"
+			borderColor="#E0E0E0"
+			borderStyle="solid"
+			horizontalAlign="center">
+		</mx:VBox>
+	
+	</mx:VBox>
+	
+</mx:GridItem>

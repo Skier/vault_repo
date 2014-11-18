@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Asset Rates" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    creationComplete="init();"
+    minWidth="500" minHeight="450">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.AssetRate;
+            import TractInc.Domain.Asset;
+            import TractInc.Domain.BillItemType;
+            import TractInc.Domain.Contract;
+            import tractIncStaffManager.StaffManagerController;
+            
+            [Bindable]
+            private var controller:AssetRateController = null;
+            private var contract:Contract = null;
+//            private var currentAssetRate:AssetRate = null;
+                
+            public static function open(ctrl:AssetRateController, contract:Contract, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, contract);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:AssetRateController, c:Contract):void
+            {
+                controller = ctrl;
+                contract = c;
+//                currentAssetRate = cp;
+            }
+            
+            public function init():void
+            {
+                var contracts:Array = new Array();
+                if ( null == contract ) {        
+                    if ( !controller.isContractRatesExists(0) ) {
+                        contracts.push(null);
+                    }
+                    for each (var a:Contract in StaffManagerController.getInstance().model.staffManagerPackage.ContractList) {
+                        if ( !controller.isContractRatesExists(a.ContractId) ) {
+                            contracts.push(a);
+                        }
+                    }
+                } else {
+                    contracts.push(contract);
+                }
+                this.cbContract.dataProvider = contracts;
+                this.cbContract.labelField = "ContractName";
+
+                if ( null != contract ) {
+                    if ( 0 != contract.ContractId ) {
+                        this.cbContract.selectedItem = contract;
+                    }
+                    
+                    this.dataGrid.dataProvider = controller.getAssetRatesByContract(contract);
+                } else {
+                    var far:ArrayCollection = new ArrayCollection();
+                    for each (var bit:BillItemType in StaffManagerController.getInstance().model.staffManagerPackage.BillItemTypeList) {
+                        var ar:AssetRate = new AssetRate();
+                        ar.BillItemTypeId = bit.BillItemTypeId;
+                        ar.Rate = 0.00;
+                        far.addItem(ar);
+                    }
+                    this.dataGrid.dataProvider = far;
+                }
+
+            }
+            
+            public function getAssetRates():ArrayCollection
+            {
+                for each(var ar:AssetRate in this.dataGrid.dataProvider) {
+                    if ( null != cbContract.selectedItem ) {
+                        ar.ContractId = (this.cbContract.selectedItem as Contract).ContractId;
+                    } else {
+                        ar.ContractId = 0;
+                    }
+                }
+                return dataGrid.dataProvider as ArrayCollection;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveAssetRates(getAssetRates());
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+<!--    
+        <mx:StringValidator source="{txtRate}" property="text" required="true"/>
+        <mx:StringValidator source="{cbBillItemType}" property="selectedItem" required="true"/>
+-->        
+    </validators:ValidatorsGroup>
+
+    <mx:VBox width="100%" height="100%">
+        <mx:Form id="mainForm" 
+            backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+            paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+            width="100%" height="100%">
+<!--    
+            <mx:FormItem label="Bill Item Type" width="100%" required="true">
+                <mx:ComboBox id="cbBillItemType" width="100%"/>
+            </mx:FormItem>
+-->            
+            <mx:FormItem label="Contract" width="100%">
+                <mx:ComboBox id="cbContract" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Rates" width="100%" height="100%" required="true">
+                <mx:DataGrid id="dataGrid" width="100%" height="350"
+                        editable="true" itemEditEnd="controller.itemOnEditEndHandler(event)">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="Id" width="25" dataField="AssetRateId" editable="false"/>
+                        <mx:DataGridColumn headerText="Bill Item Type" width="95" labelFunction="controller.billItemTypeLabelFunction" editable="false"/>
+                        <mx:DataGridColumn headerText="Rate" width="85" dataField="Rate"/>
+                    </mx:columns>
+                </mx:DataGrid>
+            </mx:FormItem>
+        </mx:Form>
+                
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

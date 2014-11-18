@@ -1,0 +1,45 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Billing.TransactionList
+
+@{
+    ViewBag.Title = "Transaction List";
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <div style="float:right;padding: 8px 0px 8px 0px;">
+        <span style="font-size: 15px;">Current Balance:
+          @if (Model.CurrentBalance > 0){<b>@string.Format("{0:C}", Model.CurrentBalance)</b>}
+           else{<b style="color:#D00;">@string.Format("{0:C}", Model.CurrentBalance)</b>}</span>
+        @Html.ActionLink("Add Funds", "AddFunds", new{controller="Company"}, new{@class="button primary"})</div>
+    <h1>Transaction List</h1>
+  </div>
+  <div class="content">
+@{
+    var grid = new WebGrid(source: Model.Transactions, rowsPerPage: 20);
+    var columns = new List<WebGridColumn>
+                      {
+                          grid.Column("DateCreated", "Created", canSort : false),
+                          grid.Column("TransactionType", "Type", canSort : false),
+                          grid.Column("Description", "Description", canSort : false),
+                          grid.Column("Quantity", "Quantity", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0}", item.Quantity))</span></text> ),
+                          grid.Column("Amount", "Amount", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0:C}", item.Amount))</span></text> ),
+                          grid.Column("CurrentBalance", "Current Balance", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0:C}", item.CurrentBalance))</span></text> )
+                      };
+}
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 30,
+            tableStyle: "list"
+    )
+  </div>
+</div>

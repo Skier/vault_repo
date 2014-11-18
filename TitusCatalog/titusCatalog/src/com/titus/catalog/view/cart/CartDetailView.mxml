@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="350">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import flash.net.navigateToURL;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager;
+			import com.titus.catalog.model.cart.Cart;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			public var cart:Cart = Cart.getInstance();
+			
+            public static function open(parent:DisplayObject, cart:Cart, modal:Boolean):CartDetailView
+            {
+                var popup:CartDetailView = new CartDetailView();
+                
+                popup.cart = cart;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+			
+            private function startRemoting(name:String):void 
+            {
+                content.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                content.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+			private function onCloseCartClick():void 
+			{
+				close();
+			}
+			
+			private function onGetPackageClick():void 
+			{
+				startRemoting("Preparing packet for download");
+				
+				CartService.getInstance().getPackage(Cart.getInstance()).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							navigateToURL(new URLRequest(event.result as String));
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show("Can not get Package", "Package Error");
+						}
+					)
+				);
+			}
+			
+			private function onClearCartClick():void 
+			{
+				Cart.getInstance().clear();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="content" width="100%" height="100%"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+		borderColor="#dddddd" borderStyle="solid" borderThickness="2"
+		backgroundColor="#ffffcc"
+		>
+		<mx:VBox width="100%" height="100%">
+			<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				backgroundColor="#ffffff" borderColor="#eeeeee" borderStyle="solid">
+				<mx:Label text="Selected documents for download:" fontSize="14" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgCartItems"
+				width="100%" height="100%"
+				dataProvider="{cart.items}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Type" dataField="FileType" width="150"/>
+					<mx:DataGridColumn headerText="Cart Item" dataField="FileName">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label
+									color="#0000FF"
+									useHandCursor="true"
+									mouseChildren="false"
+									buttonMode="true"
+									mouseEnabled="true"
+									textDecoration="underline"
+									text="{data.FileName}"
+									click="doClick(data)">
+									<mx:Script>
+										<![CDATA[
+											import com.titus.catalog.model.Submittal;
+											import com.titus.catalog.storage.DBStorage;
+											public function doClick(data:Object):void 
+											{
+												var link:String = DBStorage.getInstance().getStorageURL();
+												link += ("?fileid=" + Submittal(data).FileId.toString());
+												navigateToURL(new URLRequest(link), "_blank");
+											}
+				
+										]]>
+									</mx:Script>
+								</mx:Label>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText=" " width="30" sortable="false" 
+						itemRenderer="com.titus.catalog.view.submittal.CartActionsIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:HBox width="100%">
+			<mx:Button label="Clear cart" 
+				enabled="{0 &lt; Cart.getInstance().items.length}"
+				click="onClearCartClick()"/>
+			<mx:Button label="Get package"
+				click="onGetPackageClick()"
+				enabled="{0 &lt; Cart.getInstance().items.length}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Close" 
+				click="onCloseCartClick()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+
+</mx:Canvas>

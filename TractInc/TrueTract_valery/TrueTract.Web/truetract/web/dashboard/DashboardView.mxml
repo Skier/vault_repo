@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:documentList="truetract.web.dashboard.documentList.*" 
+    xmlns:drawingList="truetract.web.dashboard.drawingList.*" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:util="truetract.web.util.*" 
+    xmlns:plotter="truetract.web.dashboard.plotter.*" 
+    xmlns:dashboard="truetract.web.dashboard.*" 
+    xmlns:web="truetract.web.*" 
+    xmlns:containers="truetract.plotter.containers.*" 
+    xmlns:groupPanel="truetract.web.dashboard.groupPanel.*" 
+    xmlns:filterPanel="truetract.web.dashboard.filterPanel.*" 
+    xmlns:extendedTabNavigatorClasses="truetract.plotter.containers.extendedTabNavigatorClasses.*" 
+    xmlns:tractPreview="truetract.web.dashboard.documentPanel.tractPreview.*"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.web.services.ProjectService;
+            import truetract.domain.Project;
+            import truetract.domain.Client;
+            import truetract.web.AppView;
+            import mx.collections.ArrayCollection;
+            import truetract.domain.Document;
+            import truetract.domain.Tract;
+            import truetract.web.AppModel;
+
+            [Bindable][Embed(source="/assets/folder_user.png")] 
+            private var userGroupIcon:Class;
+
+            [Bindable][Embed(source="/assets/folder_star.png")] 
+            private var sysGroupIcon:Class;
+
+            [Bindable][Embed(source="/assets/building.png")] 
+            private var clientIcon:Class;
+
+            [Bindable][Embed(source="/assets/report.png")] 
+            private var projectIcon:Class;
+
+            [Bindable][Embed(source="/assets/tab.png")] 
+            private var tabIcon:Class;
+            
+            public var projectsPanel:VBox;
+
+            public function setProjectsVisible(isVisible:Boolean):void 
+            {
+                if (!projectsPanel)
+                    return;
+                    
+                if (isVisible) 
+                {
+                    if (!acdFolders.contains(projectsPanel)) 
+                    {
+                        acdFolders.addChildAt(projectsPanel, 0);
+                    }
+                } else
+                {
+                    if (acdFolders.contains(projectsPanel)) 
+                    {
+                        acdFolders.removeChild(projectsPanel);
+                    }
+                }
+            }
+            
+            private function treeGroup_iconFunction(item:Object):Class 
+            {
+                return item.systemGroup ? sysGroupIcon : userGroupIcon;
+            }
+
+            private function treeProject_iconFunction(item:Object):Class
+            {
+                return (item is Client) 
+                    ? clientIcon 
+                    : (item is Project) ? projectIcon : tabIcon;
+            }
+            
+            private function creationCompleteHandler():void 
+            {
+                projectsPanel = boxProjects;
+            }
+        ]]>
+    </mx:Script>
+
+    <web:AppController id="appController"/>
+
+    <dashboard:DashboardController id="controller" view="{this}"/>
+
+    <util:ClientIdleTimeOut id="timeOutWatcher" 
+        listenMouseMove="true" timeOutInterval="25" confirmInterval="1" 
+        appTimedOut="controller.app_timeOutHandler()"/>
+
+    <!-- Navigation Bar is hardcoded for now -->
+    <mx:HBox id="navBar" width="100%" verticalAlign="middle" paddingTop="5">
+
+        <mx:Label text="True Tract" fontWeight="bold" fontSize="11" selectable="false"/>
+
+        <mx:LinkButton label="Scope Mapping"
+            visible="{appController.model.isScopeMappingAllowed}"
+            click="appController.switchToScopeMapping()"/>
+
+        <mx:Spacer width="100%"/>
+        <mx:Label text="{AppModel.getInstance().user.Login}"/>
+        <mx:VRule height="15"/>
+        <mx:LinkButton 
+            label="Logout" color="#2e39b7" fontSize="11" click="appController.logOut()"/>
+
+    </mx:HBox>
+
+    <mx:VBox id="boxProjects"
+        label="Projects"
+        width="100%" height="100%" 
+        visible="false" 
+        includeInLayout="false">
+        <dashboard:ExtendedTree id="userProjectsTree"
+            dataProvider="{controller.model.userClientList}"
+            showDisclosureIcon="true" allowDragSelection="true"
+            labelField="Name" dragEnabled="true" doubleClickEnabled="true"
+            iconFunction="treeProject_iconFunction"
+            paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"                        
+            width="100%" height="100%"
+            dragDrop="controller.userProjectsTree_dragDropHandler(event)"
+            dragEnter="controller.userProjectsTree_dragEnterHandler(event)"
+            dragOver="controller.userProjectsTree_dragOverHandler(event)"
+            doubleClick="controller.userProjectsTree_doubleClickHandler()"
+            borderThickness="0"/>
+    </mx:VBox>
+
+    <mx:ViewStack id="vs"
+        selectedIndex="{controller.model.plotterMode ? 0 : 1}"
+        creationPolicy="all" width="100%" height="100%">
+
+        <plotter:PlotterView id="plotter"
+            backgroundColor="#e0ebfd"
+            paddingRight="5" paddingLeft="5" cornerRadius="5" borderStyle="solid" 
+            borderThickness="0" paddingBottom="5" paddingTop="5"
+            dashboardController="{controller}"
+            width="100%" height="100%" 
+            close="controller.plotter_closeHandler()"/>
+
+        <mx:Box id="dashboard" 
+            width="100%" height="100%" backgroundColor="#e0ebfd" borderStyle="solid" 
+            borderColor="#7599ee" 
+            paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+
+            <mx:HDividedBox width="100%" height="100%" id="box">
+            
+                <mx:Accordion id="acdFolders" 
+                    width="150" minWidth="150" height="100%">
+                    <mx:VBox width="100%" height="100%" label="Documents">
+                        <mx:HBox width="100%" paddingTop="2" paddingBottom="2" backgroundColor="#eeeeee">
+                            <mx:Spacer width="100%"/>
+                            <mx:Button
+                                icon="@Embed(source='/assets/folder_add.png')" width="20" height="20"
+                                toolTip="Add Folder" styleName="toolButton"
+                                click="controller.addFolder()"/>
+    
+                            <mx:Button
+                                icon="@Embed(source='/assets/page_add.png')" width="20" height="20"
+                                toolTip="Add Document" styleName="toolButton"
+                                click="controller.addDocumentToGroupRequestHandler()"/>
+    
+                            <mx:Button
+                                icon="@Embed(source='/assets/drawing_add.png')" width="20" height="20"
+                                toolTip="Add Drawing" styleName="toolButton"
+                                click="controller.addDrawing()"/>
+                        </mx:HBox>
+
+                        <dashboard:ExtendedTree id="userGroupsTree"
+                            dataProvider="{controller.model.userGroupList}"
+                            itemRenderer="truetract.web.dashboard.UserGroupTreeIR"
+                            labelField="groupName" showDisclosureIcon="false"
+                            allowDragSelection="true" doubleClickEnabled="true"
+                            iconFunction="treeGroup_iconFunction"
+                            paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"                        
+                            width="100%" height="100%"
+                            change="{controller.userGroupsTree_changeHandler()}"
+                            itemEditEnd="controller.userGroupName_changeHandler(event);"
+                            doubleClick="controller.userGroupsTree_doubleClickHandler()"
+                            dragEnter="controller.userGroupsTree_dragEnterHandler(event)"
+                            dragDrop="controller.userGroupsTree_dragDropHandler(event)"
+                            dragOver="controller.userGroupsTree_dragOverHandler(event)"
+                            borderThickness="0">
+                            <dashboard:itemEditor>
+                                <mx:Component>
+                                    <mx:TextInput backgroundAlpha="1"/>
+                                </mx:Component>
+                            </dashboard:itemEditor>
+                        </dashboard:ExtendedTree>
+                    </mx:VBox>
+                </mx:Accordion>
+<!--
+                <mx:VDividedBox width="150" minWidth="150" height="100%" paddingTop="2">
+
+                    <mx:VBox 
+                        width="100%" height="100%" 
+                        visible="{controller.model.userClientList.length > 0}" 
+                        includeInLayout="{controller.model.userClientList.length > 0}">
+
+                        <mx:Label text="Projects" fontWeight="bold"/>
+
+                        <dashboard:ExtendedTree id="userProjectsTree"
+                            dataProvider="{controller.model.userClientList}"
+                            showDisclosureIcon="true" allowDragSelection="true"
+                            labelField="Name" dragEnabled="true" doubleClickEnabled="true"
+                            
+                            includeInLayout="{userProjectsTree.visible}"
+                            iconFunction="treeProject_iconFunction"
+                            paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"                        
+                            width="100%" height="100%"
+                            dragDrop="controller.userProjectsTree_dragDropHandler(event)"
+                            dragEnter="controller.userProjectsTree_dragEnterHandler(event)"
+                            dragOver="controller.userProjectsTree_dragOverHandler(event)"
+                            doubleClick="controller.userProjectsTree_doubleClickHandler()"/>
+                    </mx:VBox>
+
+                    <mx:VBox width="100%" height="100%">
+
+                        <mx:Label text="Documents" fontWeight="bold"/>
+
+                        <mx:HBox width="100%">
+                            <mx:Spacer width="100%"/>
+                            <mx:Button
+                                icon="@Embed(source='/assets/folder_add.png')" width="20" height="20"
+                                toolTip="Add Folder" styleName="toolButton"
+                                click="controller.addFolder()"/>
+    
+                            <mx:Button
+                                icon="@Embed(source='/assets/page_add.png')" width="20" height="20"
+                                toolTip="Add Document" styleName="toolButton"
+                                click="controller.addDocumentToGroupRequestHandler()"/>
+    
+                            <mx:Button
+                                icon="@Embed(source='/assets/drawing_add.png')" width="20" height="20"
+                                toolTip="Add Drawing" styleName="toolButton"
+                                click="controller.addDrawing()"/>
+                        </mx:HBox>
+
+                        <dashboard:ExtendedTree id="userGroupsTree"
+                            dataProvider="{controller.model.userGroupList}"
+                            itemRenderer="truetract.web.dashboard.UserGroupTreeIR"
+                            labelField="groupName" showDisclosureIcon="false"
+                            allowDragSelection="true" doubleClickEnabled="true"
+                            iconFunction="treeGroup_iconFunction"
+                            paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"                        
+                            width="100%" height="100%"
+                            change="{controller.userGroupsTree_changeHandler()}"
+                            itemEditEnd="controller.userGroupName_changeHandler(event);"
+                            doubleClick="controller.userGroupsTree_doubleClickHandler()"
+                            dragEnter="controller.userGroupsTree_dragEnterHandler(event)"
+                            dragDrop="controller.userGroupsTree_dragDropHandler(event)"
+                            dragOver="controller.userGroupsTree_dragOverHandler(event)">
+
+                            <dashboard:itemEditor>
+                                <mx:Component>
+                                    <mx:TextInput backgroundAlpha="1"/>
+                                </mx:Component>
+                            </dashboard:itemEditor>
+    
+                        </dashboard:ExtendedTree>
+                        
+                    </mx:VBox>
+
+                </mx:VDividedBox>                
+ -->                
+                <mx:VBox width="100%" height="100%" verticalGap="2">
+
+                    <containers:ExtendedTabNavigator id="panels" 
+                        backgroundColor="#e0ebfd" width="100%" height="100%" paddingTop="2">
+                        
+                        <extendedTabNavigatorClasses:TabPanel id="tabSummary"
+                            showCloseButton="false" label="Summary Panel">
+                            
+                            <mx:Label text="This is sumary Panel..."/>
+
+                        </extendedTabNavigatorClasses:TabPanel>
+
+                    </containers:ExtendedTabNavigator>
+
+                </mx:VBox>
+                
+            </mx:HDividedBox>
+        </mx:Box>
+
+    </mx:ViewStack>
+
+</mx:VBox>

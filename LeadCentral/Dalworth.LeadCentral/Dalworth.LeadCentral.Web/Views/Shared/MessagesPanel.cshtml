@@ -1,0 +1,45 @@
+﻿@{
+    var msgs = Dalworth.LeadCentral.Web.Models.Flash.GetCurrent();
+
+    var infos = new List<string>();
+    var warnings = new List<string>();
+    var errors = new List<string>();
+    
+    if (msgs != null)
+    {
+        infos = msgs.PopInfos();
+        warnings = msgs.PopWarnings();
+        errors = msgs.PopErrors();
+    }
+}
+
+
+@if (infos != null && infos.Count > 0)
+{
+<div class="info-panel">
+    @foreach (var info in infos)
+    {
+        <div style="margin-bottom: 10px;">@info</div>
+    }
+</div>
+}
+
+@if (warnings != null && warnings.Count > 0)
+{
+<div class="attention-panel">
+    @foreach (var warning in warnings)
+    {
+        <div style="margin-bottom: 10px;">@warning</div>
+    }
+</div>
+}
+
+@if (errors != null && errors.Count > 0)
+{
+<div class="error-panel">
+    @foreach (var error in errors)
+    {
+        <div style="margin-bottom: 10px;">@error</div>
+    }
+</div>
+}

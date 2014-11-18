@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="TractInc.SDK.validators.*"
+    backgroundAlpha="1"
+    >
+
+    <mx:Metadata>
+        [Event(name="loginRequest", type="AerSysCo.Events.LoginEvent")]
+    </mx:Metadata>
+
+ 	<mx:Script>
+ 		<![CDATA[
+ 			import AerSysCo.UI.Models.ASCUserUI;
+ 			import AerSysCo.Events.LoginEvent;
+ 			import mx.events.ValidationResultEvent;
+ 			
+ 			private function onLogin():void 
+ 			{
+ 				var vResult:ValidationResultEvent;
+ 				
+ 				vResult = uValidator.validate();
+ 				if (vResult.type == ValidationResultEvent.INVALID)
+ 					return;
+ 					
+ 				vResult = pValidator.validate();
+ 				if (vResult.type == ValidationResultEvent.INVALID)
+ 					return;
+ 					
+ 				var user:ASCUserUI = new ASCUserUI();
+ 				user.login = username.text;
+ 				user.password = password.text;
+ 				
+ 				dispatchEvent(new LoginEvent(LoginEvent.LOGIN_REQUEST, user));
+ 			}
+ 			
+ 		]]>
+ 	</mx:Script>
+
+    <mx:StringValidator id="uValidator"
+        source="{username}" property="text" required="true" minLength="4" maxLength="12"/>
+        
+    <mx:StringValidator id="pValidator"
+        source="{password}" property="text" required="false" maxLength="12"/>
+
+	<mx:TitleWindow
+		title="Login to the system">
+		
+		<mx:Form id="content" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+		    backgroundColor="#ffffff" borderStyle="solid" borderColor="#666666"
+		    paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+		    >
+	
+			<mx:FormItem label="Username">
+				<mx:TextInput id="username" enter="onLogin()"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Password">
+				<mx:TextInput id="password" 
+				    displayAsPassword="true" enter="onLogin()"/>
+			</mx:FormItem>
+	
+		</mx:Form>
+	
+		<mx:ControlBar>
+			<mx:Spacer width="100%"/>
+	
+			<mx:Button id="btnLogin" width="80" height="22"
+				label="Login" click="onLogin()"/>
+		</mx:ControlBar>
+	    	
+	</mx:TitleWindow>
+
+</mx:Box>
+

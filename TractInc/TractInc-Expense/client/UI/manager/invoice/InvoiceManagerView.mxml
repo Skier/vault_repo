@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	width="100%"
+	height="100%" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:components="components.*"
+	xmlns:invoice="UI.manager.invoice.*"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.PeriodDataObject;
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import App.Entity.InvoiceDataObject;
+			import common.StatusesRegistry;
+			import util.NumberUtil;
+			import UI.manager.ManagerController;
+			
+			[Bindable] public var controller:InvoiceManagerController;
+			
+			[Bindable] public var periods:ArrayCollection = new ArrayCollection();
+			
+			public function set parentController(parent:ManagerController):void {
+				controller = new InvoiceManagerController(this as InvoiceManagerView, parent);
+			}
+			
+            private function selectRowColor(item:InvoiceDataObject, color:uint):uint {
+           		var newColor:uint = StatusesRegistry.instance.getColorByName(item.Status);
+           		if (newColor == 0) {
+	           		return color;
+           		} else {
+	           		return newColor;
+           		}
+            }
+
+            private function setInvoicesLabel(item:InvoiceDataObject, column:DataGridColumn):String {
+            	if (column.dataField == "totalDays") {
+            		return NumberUtil.fraction(item.TotalDailyAmt, 8)
+            	} else if (column.dataField == "dailyAmt") {
+            		return (Math.round(item.DailyInvoiceAmt * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "otherAmt") {
+            		return (Math.round(item.OtherInvoiceAmt * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "totalAmt") {
+            		return (Math.round(item.TotalInvoiceAmt * 100) / 100).toFixed(2);
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function onSelectStatusFilter():void {
+            	ListCollectionView(dgInvoices.dataProvider).refresh();
+            }
+            
+            private function onClientFilterChange():void {
+            	ListCollectionView(dgInvoices.dataProvider).refresh();
+            }
+            
+            private function onAllClientsClick():void {
+            	cbClientFilter.selectedIndex = -1;
+            	onClientFilterChange();
+            }
+			
+			private function initPeriods():void 
+			{
+				var year:int = Number(txtYear.text);
+				
+				periods.removeAll();
+
+				if (0 == year) {
+					return;
+				}
+				
+				periods.addItem(new PeriodDataObject(year, 01, true));
+				periods.addItem(new PeriodDataObject(year, 01, false));
+				periods.addItem(new PeriodDataObject(year, 02, true));
+				periods.addItem(new PeriodDataObject(year, 02, false));
+				periods.addItem(new PeriodDataObject(year, 03, true));
+				periods.addItem(new PeriodDataObject(year, 03, false));
+				periods.addItem(new PeriodDataObject(year, 04, true));
+				periods.addItem(new PeriodDataObject(year, 04, false));
+				periods.addItem(new PeriodDataObject(year, 05, true));
+				periods.addItem(new PeriodDataObject(year, 05, false));
+				periods.addItem(new PeriodDataObject(year, 06, true));
+				periods.addItem(new PeriodDataObject(year, 06, false));
+				periods.addItem(new PeriodDataObject(year, 07, true));
+				periods.addItem(new PeriodDataObject(year, 07, false));
+				periods.addItem(new PeriodDataObject(year, 08, true));
+				periods.addItem(new PeriodDataObject(year, 08, false));
+				periods.addItem(new PeriodDataObject(year, 09, true));
+				periods.addItem(new PeriodDataObject(year, 09, false));
+				periods.addItem(new PeriodDataObject(year, 10, true));
+				periods.addItem(new PeriodDataObject(year, 10, false));
+				periods.addItem(new PeriodDataObject(year, 11, true));
+				periods.addItem(new PeriodDataObject(year, 11, false));
+				periods.addItem(new PeriodDataObject(year, 12, true));
+				periods.addItem(new PeriodDataObject(year, 12, false));
+				
+				if ((new Date()).fullYear == year) {
+					selectCurrentPeriod();
+				}
+			}
+			
+			private function onCreationComplete():void 
+			{
+				initPeriods();
+				
+				selectCurrentPeriod();
+			}
+			
+			private function selectCurrentPeriod():void {
+				var now:Date = new Date();
+				var index:int = (now.date > 15) ? (now.month * 2 + 1) : (now.month * 2);
+				
+				if (index >= 0 && index < 23) {
+					cbPeriod.selectedIndex = index;
+				}
+			}
+			
+			private function onPeriodFilterChange():void {
+				ListCollectionView(dgInvoices.dataProvider).refresh();
+			}
+			
+			private function onAllPeriodsClick():void {
+				cbPeriod.selectedIndex = -1;
+				onPeriodFilterChange();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsInvoices" width="100%" height="100%">
+		
+	    <mx:Panel
+	    	title="Current Invoices"
+	    	id="invoiceList"
+	        width="100%"
+	        paddingLeft="5"
+	        paddingRight="5"
+	        paddingTop="5"
+	        paddingBottom="5"
+	        >
+			
+			<mx:VBox
+				width="100%"
+				height="100%">
+				
+				<mx:HBox
+					width="100%">
+					<mx:Button
+						id="btnShowPaid"
+						label="Show Paid"
+						toggle="true"
+						click="onSelectStatusFilter()"/>
+					<mx:Button
+						id="btnShowVoid"
+						label="Show Void"
+						toggle="true"
+						click="onSelectStatusFilter()"/>
+					<mx:Button
+						id="btnShowCurrent"
+						label="Show Current"
+						toggle="true"
+						click="onSelectStatusFilter()"
+						selected="true"/>
+					<mx:Spacer
+						width="100%"/>
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtYear"
+						width="80"
+						change="initPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbPeriod"
+						width="150"
+						dataProvider="{periods}"
+						change="onPeriodFilterChange()"
+						prompt=" "/>
+					<mx:Button
+						label="All"
+						click="onAllPeriodsClick()"
+						width="32"/>
+					<mx:Spacer
+						width="30"/>
+					<mx:Label
+						text="Client:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbClientFilter"
+						dataProvider="{controller.model.clients}"
+						labelField="ClientName"
+						prompt=" "
+						change="onClientFilterChange()"/>
+					<mx:Button
+						label="All"
+						click="onAllClientsClick()"
+						width="32"/>
+				</mx:HBox>
+			
+		        <components:ColoredDataGrid
+		        	id="dgInvoices"
+	    	    	focusEnabled="false"
+	        		width="100%"
+	        		height="100%"
+		        	minWidth="700"
+		        	itemDoubleClick="controller.onOpenInvoice()"
+					rowColorFunction="selectRowColor"
+	        		doubleClickEnabled="true"
+	        		dataProvider="{controller.model.invoices}">
+	        		<components:columns>
+        		        <mx:DataGridColumn dataField="InvoiceNumber"
+        	    	    	headerText="Number" width="90"/>
+    	    	        <mx:DataGridColumn dataField="ClientName"
+	            	    	headerText="Client" width="120"/>
+        	        	<mx:DataGridColumn dataField="Landman"
+            		    	headerText="Landman" width="120"/>
+            	    	<mx:DataGridColumn dataField="StartDate"
+	    	            	headerText="Start Date" width="100"/>
+    		            <mx:DataGridColumn dataField="totalDays" labelFunction="setInvoicesLabel"
+	        	        	headerText="Total Days" textAlign="right" width="90" sortable="false"/>
+            	    	<mx:DataGridColumn dataField="dailyAmt" labelFunction="setInvoicesLabel"
+                			headerText="Daily Amt" textAlign="right" width="90" sortable="false"/>
+	        	        <mx:DataGridColumn dataField="otherAmt" labelFunction="setInvoicesLabel"
+    		            	headerText="Other Amt" textAlign="right" width="90" sortable="false"/>
+    	    	        <mx:DataGridColumn dataField="totalAmt" labelFunction="setInvoicesLabel"
+	            	    	headerText="Total Amt" textAlign="right" width="90" sortable="false"/>
+						<mx:DataGridColumn dataField="Status"
+							headerText="Status" textAlign="center" width="100"/>
+ 						<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+			       	</components:columns>
+	    	    </components:ColoredDataGrid>
+				
+			</mx:VBox>
+			
+			<mx:ControlBar horizontalAlign="right">
+				<mx:Button label="Open selected" click="controller.onOpenInvoice()" enabled="{dgInvoices.selectedItem != null}"/>
+				<mx:Button label="Create New Invoice" click="controller.createInvoice()"/>
+			</mx:ControlBar>
+			
+	    </mx:Panel>
+	    
+	    <invoice:InvoiceDetail id="invoiceDetail"/>
+
+	</mx:ViewStack>
+	
+</mx:VBox>

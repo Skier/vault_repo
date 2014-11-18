@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle" horizontalAlign="center"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.events.InvoiceItemEvent;
+        	import com.llsvc.domain.InvoiceItem;
+            [Embed(source="assets/icons16/attach.png")]
+            [Bindable]
+            private var imgAttach:Class;
+            
+            private function onOpenAttachments():void 
+            {
+            	dispatchEvent(new InvoiceItemEvent("openAttachmentsRequest", InvoiceItem(data), true));
+            }
+
+        ]]>
+    </mx:Script>
+
+	<mx:Button height="22" icon="{imgAttach}" visible="{data is InvoiceItem}" width="100%"
+		label="{(data is InvoiceItem &amp;&amp; InvoiceItem(data).attachments.length &gt; 0) ? ('(' + InvoiceItem(data).attachments.length + ')') : ''}"
+		click="onOpenAttachments()"/>
+
+</mx:HBox>

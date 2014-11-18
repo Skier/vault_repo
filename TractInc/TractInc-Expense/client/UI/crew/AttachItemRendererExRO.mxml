@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%"
+	verticalAlign="middle"
+	horizontalScrollPolicy="off"
+	horizontalAlign="center"
+	paddingLeft="5"
+	paddingRight="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.BillItemAttachmentDataObject;
+			
+			private function onClickView():void 
+			{
+				var attachment:BillItemAttachmentDataObject = BillItemAttachmentDataObject(data);
+				
+				var url:URLRequest = new URLRequest(AppController.storageBaseUrl + AppController.BILL_ITEMS_STORAGE_DIRECTORY + "/" + attachment.FileName);
+				navigateToURL(url, "_blank");
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_attachment.png')"
+        click="onClickView()"/>
+
+</mx:HBox>

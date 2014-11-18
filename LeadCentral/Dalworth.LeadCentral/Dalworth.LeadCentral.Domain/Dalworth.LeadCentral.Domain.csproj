@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC3FBF92-44AE-4204-BABD-EA07D3ACC8CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.LeadCentral.Domain</RootNamespace>
+    <AssemblyName>Dalworth.LeadCentral.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>http://localhost/Dalworth.LeadCentral.Domain/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActivityLog.cs" />
+    <Compile Include="BusinessPartner.cs" />
+    <Compile Include="Campaign.cs" />
+    <Compile Include="codegen\ActivityLog.Generator.cs" />
+    <Compile Include="codegen\BusinessPartner.Generator.cs" />
+    <Compile Include="codegen\Campaign.Generator.cs" />
+    <Compile Include="codegen\CompaignTrackingPhone.Generator.cs" />
+    <Compile Include="codegen\Customer.Generator.cs" />
+    <Compile Include="codegen\Lead.Generator.cs" />
+    <Compile Include="codegen\LeadStatus.Generator.cs" />
+    <Compile Include="codegen\Notification.Generator.cs" />
+    <Compile Include="codegen\NotificationType.Generator.cs" />
+    <Compile Include="codegen\OAuthConnection.Generator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="codegen\PartnerPhoneNumber.Generator.cs" />
+    <Compile Include="codegen\PhoneBlackList.Generator.cs" />
+    <Compile Include="codegen\PhoneCall.Generator.cs" />
+    <Compile Include="codegen\PhoneSms.Generator.cs" />
+    <Compile Include="codegen\QbInvoice.Generator.cs" />
+    <Compile Include="codegen\QbmsTransaction.Generator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="codegen\Session.Generator.cs" />
+    <Compile Include="codegen\Source.Generator.cs" />
+    <Compile Include="codegen\TrackingPhone.Generator.cs" />
+    <Compile Include="codegen\TrackingPhoneRotation.Generator.cs" />
+    <Compile Include="codegen\Transaction.Generator.cs" />
+    <Compile Include="codegen\TransactionType.Generator.cs" />
+    <Compile Include="codegen\User.Generator.cs" />
+    <Compile Include="codegen\WebForm.Generator.cs" />
+    <Compile Include="CompaignTrackingPhone.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="Lead.cs" />
+    <Compile Include="LeadStatus.cs" />
+    <Compile Include="Notification.cs" />
+    <Compile Include="NotificationType.cs" />
+    <Compile Include="OAuthConnection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PartnerPhoneNumber.cs" />
+    <Compile Include="PhoneBlackList.cs" />
+    <Compile Include="PhoneCall.cs" />
+    <Compile Include="PhoneSms.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QbInvoice.cs" />
+    <Compile Include="QbmsTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Session.cs" />
+    <Compile Include="Source.cs" />
+    <Compile Include="TrackingPhone.cs" />
+    <Compile Include="TrackingPhoneRotation.cs" />
+    <Compile Include="Transaction.cs" />
+    <Compile Include="TransactionType.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="WebForm.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Common\Dalworth.Common.csproj">
+      <Project>{18BD1B3C-B288-494D-B764-FB2ADD033F9A}</Project>
+      <Name>Dalworth.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit\Intuit.Sb.Cdm\Intuit.Sb.Cdm.csproj">
+      <Project>{1354CDE6-C21F-4514-8D56-9E85E2602405}</Project>
+      <Name>Intuit.Sb.Cdm</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

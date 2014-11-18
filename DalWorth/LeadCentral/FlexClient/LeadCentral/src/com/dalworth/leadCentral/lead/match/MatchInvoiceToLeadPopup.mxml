@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="750" height="550"
+    title="Match Lead To Invoice"
+    paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" borderThickness="1"
+    borderColor="#EEEEEE" dropShadowEnabled="true" shadowDirection="center" shadowDistance="1"
+    backgroundColor="#FFFFDD"
+    xmlns:steps="com.dalworth.leadCentral.lead.match.steps.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.domain.Lead;
+        	import Intuit.Sb.Cdm.vo.Customer;
+        	import mx.events.ValidationResultEvent;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            public static function open(parent:DisplayObject, lead:Lead, modal:Boolean = true):MatchInvoiceToLeadPopup
+            {
+                var popup:MatchInvoiceToLeadPopup = new MatchInvoiceToLeadPopup();
+                popup.callLater(popup.init, [lead]);
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function init(lead:Lead):void 
+			{
+				vsMatch.selectedIndex = 0;
+				stepSelectInvoice.setLead(lead);
+				
+				btnCancel.visible = btnCancel.includeInLayout = true;
+				btnNext.visible = btnNext.includeInLayout = true;
+				btnMatch.visible = btnMatch.includeInLayout = false;
+				btnBack.visible = btnBack.includeInLayout = false;
+				btnClose.visible = btnClose.includeInLayout = false;
+			}
+			
+			private function onClose():void 
+			{
+				close();
+			}
+			
+			private function onBack():void 
+			{
+				vsMatch.selectedIndex = 0;
+
+				btnCancel.visible = btnCancel.includeInLayout = true;
+				btnNext.visible = btnNext.includeInLayout = true;
+				btnMatch.visible = btnMatch.includeInLayout = false;
+				btnBack.visible = btnBack.includeInLayout = false;
+				btnClose.visible = btnClose.includeInLayout = false;
+			}
+			
+			private function onNext():void 
+			{
+				if (stepSelectInvoice.getLead() != null && stepSelectInvoice.getQbInvoice() != null)
+				vsMatch.selectedIndex = 1;
+				stepCommitInvoice.setLead(stepSelectInvoice.getLead());
+				stepCommitInvoice.setQbInvoice(stepSelectInvoice.getQbInvoice());
+
+				btnCancel.visible = btnCancel.includeInLayout = true;
+				btnNext.visible = btnNext.includeInLayout = false;
+				btnMatch.visible = btnMatch.includeInLayout = true;
+				btnBack.visible = btnBack.includeInLayout = true;
+				btnClose.visible = btnClose.includeInLayout = false;
+			}
+			
+			private function onMatch():void 
+			{
+				stepCommitInvoice.addEventListener("jobMatchComplete", onMatchComplete);
+				stepCommitInvoice.commitQbInvoice();
+
+				btnCancel.visible = btnCancel.includeInLayout = true;
+				btnMatch.enabled = false;
+				btnBack.enabled = false;
+			}
+			
+			private function onMatchComplete(event:*):void 
+			{
+				stepCommitInvoice.setSuccess();
+				dispatchEvent(event);
+
+				btnCancel.visible = btnCancel.includeInLayout = false;
+				btnNext.visible = btnNext.includeInLayout = false;
+				btnMatch.visible = btnMatch.includeInLayout = false;
+				btnBack.visible = btnBack.includeInLayout = false;
+				btnClose.visible = btnClose.includeInLayout = true;
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:VBox width="100%" height="100%" borderColor="#CCCCCC">
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Match Lead to Quickbooks Invoice" fontSize="18" color="#666666" width="100%" minWidth="300"/>
+		</mx:HBox> 
+	
+		<mx:ViewStack id="vsMatch" width="100%" height="392" creationPolicy="all"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="0" backgroundColor="#FFFFFF">
+			<steps:SelectInvoiceStep id="stepSelectInvoice" width="100%" height="100%"/>
+			<steps:CommitInvoiceStep id="stepCommitInvoice" width="100%" height="100%"/>
+		</mx:ViewStack>
+	</mx:VBox>
+
+    <mx:ControlBar id="cPanel" horizontalAlign="center" width="100%" verticalAlign="middle">
+    	<mx:Button id="btnCancel" label="Cancel" click="onClose()" fontSize="12"/>
+    	<mx:Spacer width="100%"/>
+    	<mx:LinkButton id="btnBack" width="100" height="30" label="Back" click="onBack()" fontSize="14" textAlign="center"/>
+    	<mx:Button id="btnNext" width="100" height="30" label="Next" click="onNext()" fontSize="14"
+    		enabled="{stepSelectInvoice.lstQbInvoices.selectedItem != null}"/>
+    	<mx:Button id="btnMatch" width="100" height="30" label="Match" click="onMatch()" fontSize="14"/>
+    	<mx:Button id="btnClose" width="100" height="30" label="Close" click="onClose()" fontSize="14"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

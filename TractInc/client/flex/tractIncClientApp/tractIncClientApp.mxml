@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:UI="UI.*"
+    xmlns:client="tractIncClientApp.*"
+	pageTitle="Master Tract" 
+    backgroundGradientColors="[#ffffff, #ffffff]" 
+    minWidth="490" minHeight="330"
+    layout="absolute" width="100%" height="100%"
+    creationComplete="init();" xmlns:local="*">
+    
+    <mx:Style source="/css/style.css"/>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.utils.Base64Decoder;
+
+		    import mx.rpc.events.FaultEvent;
+		    import mx.rpc.events.InvokeEvent;
+		    import mx.rpc.events.ResultEvent;
+		    import mx.rpc.remoting.mxml.RemoteObject;
+		    import mx.rpc.AsyncToken;
+		    import mx.rpc.Responder;
+    		import truetract.domain.User;
+    		import tractIncClientApp.services.UserService;
+            
+            private function decodeSession(session:String):String
+            {
+                var bd:Base64Decoder = new Base64Decoder();
+                bd.decode(session);
+                var decodedData:ByteArray = bd.drain();
+                return decodedData.toString();            
+            }
+            
+            private function init():void
+            {
+/*
+            	if (Application.application.parameters.sessionId == null) 
+            	{
+            		Alert.show("Unautorized request !");
+            		Application.application.enabled = false;
+            		return;
+            	}
+
+                var session:String = decodeSession(Application.application.parameters.sessionId);
+                var userIdstr:String = session.substr(0, session.indexOf("-"));
+*/            	
+                
+//	            var asyncToken:AsyncToken = UserService.getInstance().loginById(new int(userIdstr));
+	            var asyncToken:AsyncToken = UserService.getInstance().loginById(270);
+	            asyncToken.addResponder(new mx.rpc.Responder(login_onResultHandler, onFaultHandler));
+            }
+            
+	        private function login_onResultHandler(event:ResultEvent):void 
+	        {
+                this.view.init(User(event.result));
+	        }
+	        
+	        private function onFaultHandler(event:FaultEvent):void 
+	        {
+	            Alert.show(event.fault.faultString);
+           		Application.application.enabled = false;
+	        }
+        ]]>
+    </mx:Script>
+
+
+	<client:ClientView id="view" width="100%" height="100%"/>
+	
+</mx:Application>

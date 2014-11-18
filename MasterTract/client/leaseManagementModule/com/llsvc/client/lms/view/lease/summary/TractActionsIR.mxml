@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.LeaseTract;
+        	import com.llsvc.client.lms.events.TractEvent;
+        	import mx.events.DynamicEvent;
+        	import com.llsvc.domain.Lease;
+        
+            [Embed(source="assets/icons16/add.png")]
+            [Bindable]
+            private var imgAdd:Class;
+
+            [Embed(source="assets/icons16/pencil.png")]
+            [Bindable]
+            private var imgEdit:Class;
+            
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            private function onAddHandler():void 
+            {
+            	var event:TractEvent = new TractEvent(TractEvent.CREATE_TRACT, new LeaseTract(), true);
+            	dispatchEvent(event);
+            }
+
+            private function onEditHandler():void 
+            {
+            	var event:TractEvent = new TractEvent(TractEvent.UPDATE_TRACT, LeaseTract(data), true);
+            	dispatchEvent(event);
+            }
+
+            private function onDeleteHandler():void 
+            {
+            	var event:TractEvent = new TractEvent(TractEvent.REMOVE_TRACT, LeaseTract(data), true);
+            	dispatchEvent(event);
+            }
+
+
+        ]]>
+    </mx:Script>
+<!--
+    <mx:Image source="{imgAdd}" width="16" height="16" toolTip="Add New Tract" click="onAddHandler()"/>
+-->
+    <mx:Image source="{imgEdit}" width="16" height="16" toolTip="Edit Tract" click="onEditHandler()"/>
+    <mx:Image source="{imgDelete}" width="16" height="16" toolTip="Delete Tract" click="onDeleteHandler()"/>
+</mx:HBox>

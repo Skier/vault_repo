@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="600" height="400">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.llsvc.client.lms.control.TabManager;
+			import com.llsvc.domain.LeaseTractQQ;
+			import com.llsvc.util.TractDescriptionUtil;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.domain.Tract;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.domain.Lease;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+		
+			[Bindable] public var leases:ArrayCollection; 
+			
+			[Bindable] private var inProcess:Boolean = false;
+			[Bindable] private var inSaving:Boolean = false;
+			
+            public static function open(parent:DisplayObject, leases:ArrayCollection, modal:Boolean = true):ProcessTracts
+            {
+                var popup:ProcessTracts = new ProcessTracts();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                popup.leases = leases;
+                
+                return popup;
+            }
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function startRemoting(label:String):void 
+            {
+                boxContent.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = label;
+            }
+            
+            private function stopRemoting():void
+            {
+                boxContent.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+			
+            public function reloadLeases():void 
+            {
+            	if (leases == null)
+            		leases = new ArrayCollection();
+            		
+				leases.removeAll();
+				
+				startRemoting("Receiving leases.");
+				
+				Storage.instance.getLeases( 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							
+                        	var result:ArrayCollection = event.result as ArrayCollection; 
+
+                            for each (var l:Lease in result) {
+                            	l.isDirty = false;
+                            	
+                            	for each (var t:LeaseTract in l.tracts) 
+                            	{
+                            		if (t.leaseBurden == 0)
+                            			t.leaseBurden = l.royalty;
+                            	}
+                            	
+                            	l.updateTractsSummary();
+								
+								leases.addItem(l);
+                            }
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							
+							Alert.show("Cannot get leases from remote server");
+						}));
+            } 
+			
+			[Bindable] 
+			private var problemLeases:ArrayCollection = new ArrayCollection();
+			
+			private function processAll():void 
+			{
+				problemLeases.removeAll();
+				
+				for each (var lease:Lease in leases) 
+				{
+					processLease(lease);
+				}
+			}
+			
+			private function processLease(lease:Lease):void 
+			{
+				lease.addEventListener("processLeaseSuccess", processLeaseSuccessHandler);
+				lease.addEventListener("processLeaseFault", processLeaseFaultHandler);
+
+				lease.isProcessed = false;
+				lease.isProcessing = true;
+				
+				if (lease.tracts.length == 0) 
+					lease.dispatchEvent(new Event("processLeaseSuccess"));
+				
+				for each (var tract:LeaseTract in lease.tracts) 
+				{
+					tract.lease = lease;
+					processTract(tract);
+				}
+			}
+			
+			private function processTract(leaseTract:LeaseTract):void 
+			{
+				leaseTract.addEventListener("processTractSuccess", processTractSuccessHandler);
+				leaseTract.addEventListener("processTractFault", processTractFaultHandler);
+
+				leaseTract.isProcessed = false;
+				leaseTract.isProcessing = true;
+				
+	        	var tractMask:Tract = new Tract();
+		        	tractMask.township = leaseTract.townshipStr;
+		        	tractMask.townshipDir = leaseTract.townshipDirStr;
+		        	tractMask.range = leaseTract.rangeStr;
+		        	tractMask.rangeDir = leaseTract.rangeDirStr;
+		        	tractMask.meridian = leaseTract.meridianStr;
+		        	tractMask.section = leaseTract.section;
+
+				Storage.instance.findTracts(tractMask, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+				        	var allExists:Boolean = true;
+				        	
+							var existingGeoTracts:ArrayCollection = event.result as ArrayCollection; 
+							
+							leaseTract.qqs.removeAll();
+							for each (var key:String in TractDescriptionUtil.parse(leaseTract.tract)) 
+							{
+								var tract:Tract = getTractByKey(key, existingGeoTracts);
+								if (tract == null) 
+								{
+									allExists = false;
+								} else 
+								{
+									var qq:LeaseTractQQ = new LeaseTractQQ();
+										qq.leaseTract = leaseTract;
+										qq.tract = tract;
+
+									leaseTract.qqs.addItem(qq);
+								}
+							}
+
+							leaseTract.isProcessing = false;
+							
+							if (allExists) 
+							{
+								leaseTract.isProcessed = true;
+								leaseTract.note = null;
+								leaseTract.dispatchEvent(new Event("processTractSuccess"));
+							} else 
+							{
+								leaseTract.lease.localMessage += (leaseTract.tract + " | ");
+								leaseTract.note = "NOT PARSED";
+								leaseTract.dispatchEvent(new Event("processTractFault"));
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							leaseTract.isProcessing = false;
+							leaseTract.note = "NOT PARSED";
+							leaseTract.dispatchEvent(new Event("processTractFault"));
+						}
+					)
+				);
+			}
+			
+			private function processLeaseSuccessHandler(event:Event):void 
+			{
+				var lease:Lease = Lease(event.target); 
+				lease.isProcessed = true;
+				lease.isProcessing = false;
+				
+				checkLeases();
+			}
+			
+			private function processLeaseFaultHandler(event:Event):void 
+			{
+				var lease:Lease = Lease(event.target); 
+				lease.isProcessed = false;
+				lease.isProcessing = false;
+				
+				problemLeases.addItem(lease);
+				
+				checkLeases();
+			}
+			
+			private function checkLeases():void 
+			{
+				for each (var lease:Lease in leases) 
+				{
+					if (lease.isProcessing) 
+					{
+						inProcess = true;
+						return;
+					}
+				}
+				
+				inProcess = false;
+			}
+			
+			private function processTractSuccessHandler(event:Event):void 
+			{
+				var leaseTract:LeaseTract = LeaseTract(event.target); 
+				leaseTract.isProcessed = true;
+				leaseTract.isProcessing = false;
+				
+				checkTracts(leaseTract.lease);
+			}
+			
+			private function processTractFaultHandler(event:Event):void 
+			{
+				var leaseTract:LeaseTract = LeaseTract(event.target); 
+				leaseTract.isProcessed = false;
+				leaseTract.isProcessing = false;
+				
+				checkTracts(leaseTract.lease);
+			}
+			
+			private function checkTracts(lease:Lease):void 
+			{
+				var isProcessed:Boolean = true; 
+				
+				for each (var leaseTract:LeaseTract in lease.tracts) 
+				{
+					if (leaseTract.isProcessing) 
+					{
+						return;
+					} else if (!leaseTract.isProcessed) 
+					{
+						isProcessed = false;
+					}
+				}
+				
+				if (isProcessed) 
+				{
+					lease.dispatchEvent(new Event("processLeaseSuccess"));
+				} else 
+				{
+					lease.dispatchEvent(new Event("processLeaseFault"));
+				}
+			}
+			
+			private function getTractByKey(key:String, tractCollection:ArrayCollection):Tract 
+			{
+				for each (var tract:Tract in tractCollection) 
+				{
+					if (tract.qq == key || tract.lot == key) 
+						return tract;
+				}
+				
+				return null;
+			}
+			
+			private function saveLeases(collection:ArrayCollection):void 
+			{
+				if (collection && collection.length > 0) 
+				{
+					startSaving();
+					for each (var lease:Lease in collection) 
+					{
+						saveLease(lease);
+					}
+				}
+			
+			}
+			
+			private function saveLease(lease:Lease):void 
+			{
+				lease.isLoading = true;
+				lease.isLoaded = false;
+				
+				Storage.instance.storeLease(lease, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							lease.isLoading = false;
+							lease.isLoaded = true;
+							lease.isDirty = false;
+							
+							checkSavingLeases();
+						},
+						function (event:FaultEvent):void 
+						{
+							lease.isLoading = false;
+							lease.isLoaded = false;
+						} 
+					)
+				); 
+			}
+			
+			private function startSaving():void 
+			{
+				inSaving = true;
+			}
+			
+			private function stopSaving():void 
+			{
+				inSaving = false;
+			}
+			
+			private function checkSavingLeases():void 
+			{
+				for each (var lease:Lease in leases) 
+				{
+					if (lease.isLoading) return;
+				}
+				
+				stopSaving();
+			}
+			
+			private function btnCloseClickHandler():void 
+			{
+				close();
+			}
+			
+			private function btnProcessClickHandler():void 
+			{
+				processAll();
+			}
+			
+			private function btnCancelClickHandler():void 
+			{
+				return;
+			}
+			
+			private function btnSaveAllClickHandler():void 
+			{
+				saveLeases(leases);
+			}
+			
+			private function btnSaveProcessedClickHandler():void 
+			{
+				var collection:ArrayCollection = new ArrayCollection();
+				for each (var lease:Lease in leases) 
+				{
+					if (lease.isProcessed)
+						collection.addItem(lease);
+				}
+				
+				saveLeases(collection);
+			} 
+			
+			private function dgItemDoubleClickHandler():void 
+			{
+				var lease:Lease = dgLeases.selectedItem as Lease;
+				TabManager.openLease(lease);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="boxContent" width="100%" height="100%">
+		<mx:DataGrid id="dgLeases" 
+			width="100%" height="100%" dataProvider="{leases}" 
+			doubleClickEnabled="true" itemDoubleClick="dgItemDoubleClickHandler()" editable="true">
+			<mx:columns>
+				<mx:DataGridColumn itemRenderer="com.llsvc.client.lms.view.lease.LeaseProcessIR" width="20" editable="false"/>
+				<mx:DataGridColumn itemRenderer="com.llsvc.client.lms.view.lease.LeaseSavingIR" width="20" editable="false"/>
+				<mx:DataGridColumn headerText="Lease Name" dataField="leaseName" editable="false"/>
+				<mx:DataGridColumn headerText="Problems" dataField="localMessage" editable="true"/>
+			</mx:columns>
+		</mx:DataGrid>
+			
+		<mx:ControlBar>
+			<mx:Button label="Close" click="btnCloseClickHandler()" enabled="{!inProcess &amp;&amp; !inSaving}"/>
+			<mx:Spacer width="20"/>
+			<mx:Button label="Process All" click="btnProcessClickHandler()" enabled="{!inProcess}"/>
+			<mx:Button label="Stop" click="btnCancelClickHandler()" enabled="{inProcess}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Save All" click="btnSaveAllClickHandler()" enabled="{!inProcess &amp;&amp; !inSaving}"/>
+			<mx:Button label="Save Processed" click="btnSaveProcessedClickHandler()" enabled="{!inProcess &amp;&amp; !inSaving}"/>
+		</mx:ControlBar>
+	</mx:VBox>
+	
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false" includeInLayout="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:TitleWindow>

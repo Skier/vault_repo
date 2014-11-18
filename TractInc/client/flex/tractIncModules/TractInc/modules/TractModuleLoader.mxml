@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ModuleLoader xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="creationComplete()" width="100%" height="100%">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.Module;
+
+			private var standin:Canvas;
+			
+			public var isLoaded:Boolean = false;
+			
+			public var moduleInfo:TractInc.Domain.Module;
+			
+			public function load():void 
+			{
+				url = null;
+				
+				if (moduleInfo) {
+					this.url = moduleInfo.Url;
+				}
+			}
+
+			public function getTractModule():ITractModuleInfo
+			{
+				return child as ITractModuleInfo;
+			}
+			
+			private function creationComplete():void 
+			{
+				addEventListener("urlChanged", onUrlChanged);
+				addEventListener("loading", onLoading);
+				addEventListener("progress", onProgress);
+				addEventListener("unload", onUnload);
+				addEventListener("ready", onReady);
+				addEventListener("setup", onSetup);
+				addEventListener("error", onError);
+				
+				standin = loadCanvas;
+				removeChild(standin);
+				
+			}
+			
+			public function onUrlChanged(event:Event):void 
+			{
+				if (url == null) {
+					if (contains(standin)) {
+						removeChild(standin);
+					}
+				} else {
+					if (!contains(standin)) {
+						addChild(standin);
+					}
+				}
+					
+				progress.indeterminate = true;
+
+				btnReload.enabled = false;
+			}
+			
+			public function onLoading(event:Event):void 
+			{
+				progress.label = "Loading module " + url;
+				
+				if (!contains(standin)) {
+					addChild(standin);
+				}
+					
+				progress.indeterminate = true;
+				btnReload.enabled = false;
+			}
+			
+			public function onProgress(event:Event):void 
+			{
+				progress.label = "Loaded %1 of %2 bytes...";
+				
+				progress.indeterminate = false;
+				btnReload.enabled = false;
+			}
+			
+			public function onSetup(event:Event):void 
+			{
+				progress.label = "Module " + url + " inited !";
+				
+				progress.indeterminate = false;
+				btnReload.enabled = true;
+			}
+			
+			public function onReady(event:Event):void 
+			{
+				progress.label = "Module " + url + " loaded !";
+				
+				btnReload.enabled = true;
+
+				if (contains(standin)) {
+					removeChild(standin);
+				}
+				
+				isLoaded = true;
+			}
+			
+			public function onError(event:Event):void 
+			{
+				progress.label = "Error loading module " + url;
+				
+				btnReload.enabled = true;
+				
+				isLoaded = false;
+			}
+			
+			public function onUnload(event:Event):void 
+			{
+				if (url == null) {
+					if (contains(standin)) {
+						removeChild(standin);
+					}
+				} else {
+					if (!contains(standin)) {
+						addChild(standin);
+					}
+				}
+					
+				progress.indeterminate = true;
+				progress.label = "Module " + url + " was unloaded !";
+				
+				btnReload.enabled = true;
+			}
+			
+			private function onClickReload():void 
+			{
+				unloadModule();
+				loadModule();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="loadCanvas" width="100%">
+		
+		<mx:HBox width="100%" horizontalAlign="right" backgroundColor="#eeeeee" borderColor="#ffffff" borderStyle="solid">
+			
+			<mx:ProgressBar id="progress" source="{this}" labelPlacement="center" width="100%"/>
+			
+			<mx:Button id="btnReload" label="Reload" click="onClickReload()"/>
+			
+		</mx:HBox>
+		
+	</mx:Canvas>
+	
+</mx:ModuleLoader>

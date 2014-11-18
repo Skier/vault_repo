@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalGap="5"
+    paddingLeft="5"
+    paddingRight="5"
+    paddingTop="5"
+    paddingBottom="5"
+    backgroundColor="#c0c0c0"
+    xmlns:components="components.*"
+    xmlns:notes="common.notes.*"
+    creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ListCollectionView;
+        	import App.Entity.PeriodDataObject;
+        	import mx.collections.ArrayCollection;
+        	import App.Entity.AssetDataObject;
+        	import App.Entity.BillDataObject;
+        	import App.Domain.Message;
+        	import UI.manager.ManagerController;
+        	import mx.controls.Alert;
+        	import common.StatusesRegistry;
+        	import util.NumberUtil;
+        	import util.DateUtil;
+        	import mx.events.DataGridEvent;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            
+            [Bindable]
+            public var controller: SummaryController;
+
+            public function set parentController(parentController:ManagerController): void {
+                this.controller = new SummaryController(this, parentController);
+            }
+            
+			[Bindable]
+			public var submittedPeriods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var rejectedPeriods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var correctedPeriods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var declinedPeriods:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			public var confirmedPeriods:ArrayCollection = new ArrayCollection();
+			
+            private function messagesLabels(item:Message, column:DataGridColumn):String {
+                if (column.dataField == "From") {
+                    return item.From.Login;
+                } else {
+                    return "";
+                }
+            }
+            
+            private function setBillsLabel(item:BillDataObject, column:DataGridColumn):String {
+				if (column.dataField == "totalDailyBill") {
+					return NumberUtil.fraction(item.TotalDailyBill, 8);
+				} else if (column.dataField == "dailyBillAmt") {
+					return (Math.round(item.DailyBillAmt * 100) / 100).toFixed(2);
+				} else if (column.dataField == "otherBillAmt") {
+					return (Math.round(item.OtherBillAmt * 100) / 100).toFixed(2);
+				} else if (column.dataField == "totalBillAmt") {
+					return (Math.round(item.TotalBillAmt * 100) / 100).toFixed(2);
+				} else if (column.dataField == "isloaded") {
+					return "yes";
+				} else {
+					return "";
+				}
+            }
+        
+            private function selectBillColor(item:BillDataObject, color:uint):uint {
+            	if (item.statusTemp == BillDataObject.BILL_STATUS_DECLINED) {
+            		return StatusesRegistry.instance.getColorByName(BillDataObject.BILL_STATUS_DECLINED);
+            	} else if (item.statusTemp == BillDataObject.BILL_STATUS_CONFIRMED) {
+            		return StatusesRegistry.instance.getColorByName(BillDataObject.BILL_STATUS_CONFIRMED);
+            	} else {
+            		return color;
+            	}
+            }
+            
+			private function initPeriods(txtYear:String):ArrayCollection
+			{
+				var result:ArrayCollection = new ArrayCollection();
+				var year:int = Number(txtYear);
+				
+				if (0 == year) {
+					return result;
+				}
+				
+				result.addItem(new PeriodDataObject(year, 01, true));
+				result.addItem(new PeriodDataObject(year, 01, false));
+				result.addItem(new PeriodDataObject(year, 02, true));
+				result.addItem(new PeriodDataObject(year, 02, false));
+				result.addItem(new PeriodDataObject(year, 03, true));
+				result.addItem(new PeriodDataObject(year, 03, false));
+				result.addItem(new PeriodDataObject(year, 04, true));
+				result.addItem(new PeriodDataObject(year, 04, false));
+				result.addItem(new PeriodDataObject(year, 05, true));
+				result.addItem(new PeriodDataObject(year, 05, false));
+				result.addItem(new PeriodDataObject(year, 06, true));
+				result.addItem(new PeriodDataObject(year, 06, false));
+				result.addItem(new PeriodDataObject(year, 07, true));
+				result.addItem(new PeriodDataObject(year, 07, false));
+				result.addItem(new PeriodDataObject(year, 08, true));
+				result.addItem(new PeriodDataObject(year, 08, false));
+				result.addItem(new PeriodDataObject(year, 09, true));
+				result.addItem(new PeriodDataObject(year, 09, false));
+				result.addItem(new PeriodDataObject(year, 10, true));
+				result.addItem(new PeriodDataObject(year, 10, false));
+				result.addItem(new PeriodDataObject(year, 11, true));
+				result.addItem(new PeriodDataObject(year, 11, false));
+				result.addItem(new PeriodDataObject(year, 12, true));
+				result.addItem(new PeriodDataObject(year, 12, false));
+				
+				return result;
+			}
+			
+			private function initConfirmedPeriods():void
+			{
+				confirmedPeriods = initPeriods(txtConfirmedYear.text);
+				if ((new Date()).fullYear == Number(txtConfirmedYear.text)) {
+					selectCurrentPeriod(cbConfirmedPeriods);
+				}
+			}
+			
+			private function initSubmittedPeriods():void
+			{
+				submittedPeriods = initPeriods(txtSubmittedYear.text);
+				if ((new Date()).fullYear == Number(txtSubmittedYear.text)) {
+					selectCurrentPeriod(cbSubmittedPeriods);
+				}
+			}
+			
+			private function initRejectedPeriods():void
+			{
+				rejectedPeriods = initPeriods(txtRejectedYear.text);
+				if ((new Date()).fullYear == Number(txtRejectedYear.text)) {
+					selectCurrentPeriod(cbRejectedPeriods);
+				}
+			}
+			
+			private function initCorrectedPeriods():void
+			{
+				correctedPeriods = initPeriods(txtCorrectedYear.text);
+				if ((new Date()).fullYear == Number(txtCorrectedYear.text)) {
+					selectCurrentPeriod(cbCorrectedPeriods);
+				}
+			}
+			
+			private function initDeclinedPeriods():void
+			{
+				declinedPeriods = initPeriods(txtDeclinedYear.text);
+				if ((new Date()).fullYear == Number(txtDeclinedYear.text)) {
+					selectCurrentPeriod(cbDeclinedPeriods);
+				}
+			}
+			
+			private function onCreationComplete():void 
+			{
+				initConfirmedPeriods();
+				selectCurrentPeriod(cbConfirmedPeriods);
+				
+				initSubmittedPeriods();
+				selectCurrentPeriod(cbSubmittedPeriods);
+				
+				initRejectedPeriods();
+				selectCurrentPeriod(cbRejectedPeriods);
+				
+				initCorrectedPeriods();
+				selectCurrentPeriod(cbCorrectedPeriods);
+				
+				initDeclinedPeriods();
+				selectCurrentPeriod(cbDeclinedPeriods);
+			}
+			
+			private function selectCurrentPeriod(cb:ComboBox):void {
+				var now:Date = new Date();
+				var index:int = (now.date > 15) ? (now.month * 2 + 1) : (now.month * 2);
+				
+				if (index >= 0 && index < 23) {
+					cb.selectedIndex = index;
+				}
+			}
+			
+			private function onSubmittedPeriodsFilterChange():void {
+				ListCollectionView(dgSubmittedBills.dataProvider).refresh();
+			}
+			
+			private function onRejectedPeriodsFilterChange():void {
+				ListCollectionView(dgRejectedBills.dataProvider).refresh();
+			}
+			
+			private function onCorrectedPeriodsFilterChange():void {
+				ListCollectionView(dgCorrectedBills.dataProvider).refresh();
+			}
+			
+			private function onDeclinedPeriodsFilterChange():void {
+				ListCollectionView(dgDeclinedBills.dataProvider).refresh();
+			}
+			
+			private function onConfirmedPeriodsFilterChange():void {
+				controller.loadOldBills(PeriodDataObject(cbConfirmedPeriods.selectedItem));
+			}
+			
+			private function onTNBillsChange():void {
+				if (tnBills.selectedChild == vbConfirmedBills) {
+					controller.loadOldBills(PeriodDataObject(cbConfirmedPeriods.selectedItem));
+				}
+			}
+			
+        ]]>
+    </mx:Script>
+    
+    <mx:Panel title="Current Bills" enabled="{controller.model.notBusy}"
+        width="100%" height="100%"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        >
+        
+        <mx:VBox width="100%" height="100%" label="Approved">
+	        <components:ColoredDataGrid 
+	        	id="dgApprovedBills"
+	        	focusEnabled="false"
+	        	width="100%"
+	        	height="100%"
+	        	minWidth="800"
+	        	editable="false"
+	        	itemDoubleClick="controller.showDetails(event)"
+				rowColorFunction="selectBillColor"
+	        	doubleClickEnabled="true"
+	        	dataProvider="{controller.model.approvedBills}">
+	        	<components:columns>
+        	        <mx:DataGridColumn
+        	        	dataField="AssetName"
+            	    	headerText="Asset"
+            	    	width="100"/>
+        	        <mx:DataGridColumn
+        	        	dataField="ChiefAssetName"
+            	    	headerText="Crew Chief"
+            	    	width="100"/>
+                	<mx:DataGridColumn
+                		dataField="StartDate"
+	                	headerText="Start Date"
+	                	width="80"/>
+    	            <mx:DataGridColumn
+    	            	dataField="totalDailyBill"
+    	            	labelFunction="setBillsLabel"
+        	        	headerText="Daily Bills"
+        	        	textAlign="right"
+        	        	width="80"
+        	        	sortable="false"/>
+            	    <mx:DataGridColumn
+            	    	dataField="dailyBillAmt"
+            	    	labelFunction="setBillsLabel"
+                		headerText="Daily Amt"
+                		textAlign="right"
+                		width="80"
+                		sortable="false"/>
+	                <mx:DataGridColumn
+	                	dataField="otherBillAmt"
+	                	labelFunction="setBillsLabel"
+    	            	headerText="Other Amt"
+    	            	textAlign="right"
+    	            	width="80"
+    	            	sortable="false"/>
+        	        <mx:DataGridColumn
+        	        	dataField="totalBillAmt"
+        	        	labelFunction="setBillsLabel"
+            	    	headerText="Total Amt"
+            	    	textAlign="right"
+            	    	width="80"
+            	    	sortable="false"/>
+					<mx:DataGridColumn
+						headerText=""
+						width="130"
+						minWidth="130"
+						itemRenderer="UI.manager.bill.BillStatusRenderer"
+						sortable="false"/>
+					<mx:DataGridColumn
+						headerText=""
+						width="130"
+						sortable="false">
+						<mx:itemRenderer>
+							<mx:Component>
+								<notes:NotesRenderer
+									canEditNotes="true"/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						width="100"
+						headerText="Attachments"
+						itemRenderer="UI.crew.AttachmentsRenderer"
+						sortable="false"/>
+	        	</components:columns>
+    	    </components:ColoredDataGrid>
+
+	        <mx:HBox
+	        	width="100%"
+	        	horizontalAlign="center" 
+	        	backgroundColor="#dddddd"
+	        	borderColor="#999999"
+	        	borderStyle="solid"
+	        	cornerRadius="2"
+		        paddingLeft="5"
+		        paddingRight="5"
+		        paddingTop="5"
+		        paddingBottom="5">
+				<mx:Button
+					id="btnSubmit"
+					label="Submit"
+					click="controller.submit()" />
+	        </mx:HBox>
+    
+        </mx:VBox>
+
+    </mx:Panel>
+    
+    <mx:Panel title="Bills Review" enabled="{controller.model.notBusy}"
+        width="100%" height="100%"
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        
+        <mx:TabNavigator
+        	id="tnBills"
+        	width="100%"
+        	height="100%"
+        	historyManagementEnabled="false" 
+	        paddingLeft="3"
+	        paddingRight="3"
+	        paddingTop="3"
+	        paddingBottom="3"
+	        change="onTNBillsChange()">
+        	
+	        <mx:VBox width="100%" height="100%" label="Submitted">
+	        	<mx:HBox width="100%">
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtSubmittedYear"
+						width="80"
+						change="initSubmittedPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbSubmittedPeriods"
+						width="150"
+						dataProvider="{submittedPeriods}"
+						change="onSubmittedPeriodsFilterChange()"
+						prompt=" "/>
+	        	</mx:HBox>
+	        
+		        <mx:DataGrid
+		        	id="dgSubmittedBills"
+		        	width="100%"
+		        	height="100%"
+		        	minWidth="800"
+		        	itemDoubleClick="controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{controller.model.submittedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn
+	        	        	dataField="AssetName"
+	        	        	headerText="Asset"
+	        	        	width="100"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="ChiefAssetName"
+	        	        	headerText="Crew Chief"
+	        	        	width="100"/>
+	                	<mx:DataGridColumn
+	                		dataField="StartDate"
+	                		headerText="Start Date"
+	                		width="80"/>
+	    	            <mx:DataGridColumn
+	    	            	dataField="totalDailyBill"
+	    	            	labelFunction="setBillsLabel"
+	    	            	headerText="Days"
+	    	            	textAlign="right"
+	    	            	width="70"
+	    	            	sortable="false"/>
+	            	    <mx:DataGridColumn
+	            	    	dataField="dailyBillAmt"
+	            	    	labelFunction="setBillsLabel"
+	            	    	headerText="Daily Amt"
+	            	    	textAlign="right"
+	            	    	width="80"
+	            	    	sortable="false"/>
+		                <mx:DataGridColumn
+		                	dataField="otherBillAmt"
+		                	labelFunction="setBillsLabel"
+		                	headerText="Other Amt"
+		                	textAlign="right"
+		                	width="80"
+		                	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="totalBillAmt"
+	        	        	labelFunction="setBillsLabel"
+	        	        	headerText="Total Amt"
+	        	        	textAlign="right"
+	        	        	width="80"
+	        	        	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="statusTemp"
+	        	        	headerText="Status"
+	        	        	textAlign="center"
+	        	        	width="90"/>
+						<mx:DataGridColumn
+							headerText=""
+							itemRenderer="common.notes.NotesRenderer"
+							sortable="false"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox width="100%" height="100%" label="Rejected">
+	        	<mx:HBox width="100%">
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtRejectedYear"
+						width="80"
+						change="initRejectedPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbRejectedPeriods"
+						width="150"
+						dataProvider="{rejectedPeriods}"
+						change="onRejectedPeriodsFilterChange()"
+						prompt=" "/>
+	        	</mx:HBox>
+	        
+		        <mx:DataGrid 
+		        	id="dgRejectedBills"
+		        	width="100%"
+		        	height="100%"
+		        	minWidth="800"
+		        	itemDoubleClick="controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{controller.model.rejectedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn
+	        	        	dataField="AssetName"
+	        	        	headerText="Asset"
+	        	        	width="100"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="ChiefAssetName"
+	        	        	headerText="Crew Chief"
+	        	        	width="100"/>
+	                	<mx:DataGridColumn
+	                		dataField="StartDate"
+	                		headerText="Start Date"
+	                		width="80"/>
+	    	            <mx:DataGridColumn
+	    	            	dataField="totalDailyBill"
+	    	            	labelFunction="setBillsLabel"
+	    	            	headerText="Days"
+	    	            	textAlign="right"
+	    	            	width="70"
+	    	            	sortable="false"/>
+	            	    <mx:DataGridColumn
+	            	    	dataField="dailyBillAmt"
+	            	    	labelFunction="setBillsLabel"
+	            	    	headerText="Daily Amt"
+	            	    	textAlign="right"
+	            	    	width="80"
+	            	    	sortable="false"/>
+		                <mx:DataGridColumn
+		                	dataField="otherBillAmt"
+		                	labelFunction="setBillsLabel"
+		                	headerText="Other Amt"
+		                	textAlign="right"
+		                	width="80"
+		                	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="totalBillAmt"
+	        	        	labelFunction="setBillsLabel"
+	        	        	headerText="Total Amt"
+	        	        	textAlign="right"
+	        	        	width="80"
+	        	        	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="statusTemp"
+	        	        	headerText="Status"
+	        	        	textAlign="center"
+	        	        	width="90"/>
+						<mx:DataGridColumn
+							headerText=""
+							itemRenderer="common.notes.NotesRenderer"
+							sortable="false"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox width="100%" height="100%" label="Corrected">
+	        	<mx:HBox width="100%">
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtCorrectedYear"
+						width="80"
+						change="initCorrectedPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbCorrectedPeriods"
+						width="150"
+						dataProvider="{correctedPeriods}"
+						change="onCorrectedPeriodsFilterChange()"
+						prompt=" "/>
+	        	</mx:HBox>
+	        
+		        <mx:DataGrid 
+		        	id="dgCorrectedBills"
+		        	width="100%"
+		        	height="100%"
+		        	minWidth="800"
+		        	itemDoubleClick="controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{controller.model.correctedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn
+	        	        	dataField="AssetName"
+	        	        	headerText="Asset"
+	        	        	width="100"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="ChiefAssetName"
+	        	        	headerText="Crew Chief"
+	        	        	width="100"/>
+	                	<mx:DataGridColumn
+	                		dataField="StartDate"
+	                		headerText="Start Date"
+	                		width="80"/>
+	    	            <mx:DataGridColumn
+	    	            	dataField="totalDailyBill"
+	    	            	labelFunction="setBillsLabel"
+	    	            	headerText="Days"
+	    	            	textAlign="right"
+	    	            	width="70"
+	    	            	sortable="false"/>
+	            	    <mx:DataGridColumn
+	            	    	dataField="dailyBillAmt"
+	            	    	labelFunction="setBillsLabel"
+	            	    	headerText="Daily Amt"
+	            	    	textAlign="right"
+	            	    	width="80"
+	            	    	sortable="false"/>
+		                <mx:DataGridColumn
+		                	dataField="otherBillAmt"
+		                	labelFunction="setBillsLabel"
+		                	headerText="Other Amt"
+		                	textAlign="right"
+		                	width="80"
+		                	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="totalBillAmt"
+	        	        	labelFunction="setBillsLabel"
+	        	        	headerText="Total Amt"
+	        	        	textAlign="right"
+	        	        	width="80"
+	        	        	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="statusTemp"
+	        	        	headerText="Status"
+	        	        	textAlign="center"
+	        	        	width="90"/>
+						<mx:DataGridColumn
+							headerText=""
+							itemRenderer="common.notes.NotesRenderer"
+							sortable="false"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox width="100%" height="100%" label="Declined">
+	        	<mx:HBox width="100%">
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtDeclinedYear"
+						width="80"
+						change="initDeclinedPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbDeclinedPeriods"
+						width="150"
+						dataProvider="{declinedPeriods}"
+						change="onDeclinedPeriodsFilterChange()"
+						prompt=" "/>
+	        	</mx:HBox>
+	        
+		        <mx:DataGrid 
+		        	id="dgDeclinedBills"
+		        	width="100%"
+		        	height="100%"
+		        	minWidth="800"
+		        	itemDoubleClick="controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{controller.model.declinedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn
+	        	        	dataField="AssetName"
+	        	        	headerText="Asset"
+	        	        	width="100"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="ChiefAssetName"
+	        	        	headerText="Crew Chief"
+	        	        	width="100"/>
+	                	<mx:DataGridColumn
+	                		dataField="StartDate"
+	                		headerText="Start Date"
+	                		width="80"/>
+	    	            <mx:DataGridColumn
+	    	            	dataField="totalDailyBill"
+	    	            	labelFunction="setBillsLabel"
+	    	            	headerText="Days"
+	    	            	textAlign="right"
+	    	            	width="70"
+	    	            	sortable="false"/>
+	            	    <mx:DataGridColumn
+	            	    	dataField="dailyBillAmt"
+	            	    	labelFunction="setBillsLabel"
+	            	    	headerText="Daily Amt"
+	            	    	textAlign="right"
+	            	    	width="80"
+	            	    	sortable="false"/>
+		                <mx:DataGridColumn
+		                	dataField="otherBillAmt"
+		                	labelFunction="setBillsLabel"
+		                	headerText="Other Amt"
+		                	textAlign="right"
+		                	width="80"
+		                	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="totalBillAmt"
+	        	        	labelFunction="setBillsLabel"
+	        	        	headerText="Total Amt"
+	        	        	textAlign="right"
+	        	        	width="80"
+	        	        	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="statusTemp"
+	        	        	headerText="Status"
+	        	        	textAlign="center"
+	        	        	width="90"/>
+						<mx:DataGridColumn
+							headerText=""
+							itemRenderer="common.notes.NotesRenderer"
+							sortable="false"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+	        <mx:VBox
+	        	width="100%"
+	        	height="100%"
+	        	label="Confirmed"
+	        	id="vbConfirmedBills">
+	        	<mx:HBox width="100%">
+					<mx:Label
+						text="Year:"
+						fontWeight="bold"/>
+					<mx:TextInput
+						id="txtConfirmedYear"
+						width="80"
+						change="initConfirmedPeriods()"
+						text="{(new Date()).fullYear.toString()}"/>
+					<mx:Label
+						text="Period:"
+						fontWeight="bold"/>
+					<mx:ComboBox
+						id="cbConfirmedPeriods"
+						width="150"
+						dataProvider="{confirmedPeriods}"
+						change="onConfirmedPeriodsFilterChange()"
+						prompt=" "/>
+	        	</mx:HBox>
+	        
+		        <mx:DataGrid 
+		        	id="dgConfirmedBills"
+		        	width="100%"
+		        	height="100%"
+		        	minWidth="800"
+		        	itemDoubleClick="controller.showDetailsRO(event)"
+		        	doubleClickEnabled="true"
+		        	dataProvider="{controller.model.confirmedBills}">
+	    	        <mx:columns>
+	        	        <mx:DataGridColumn
+	        	        	dataField="AssetName"
+	        	        	headerText="Asset"
+	        	        	width="100"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="ChiefAssetName"
+	        	        	headerText="Crew Chief"
+	        	        	width="100"/>
+	                	<mx:DataGridColumn
+	                		dataField="StartDate"
+	                		headerText="Start Date"
+	                		width="80"/>
+	    	            <mx:DataGridColumn
+	    	            	dataField="totalDailyBill"
+	    	            	labelFunction="setBillsLabel"
+	    	            	headerText="Days"
+	    	            	textAlign="right"
+	    	            	width="70"
+	    	            	sortable="false"/>
+	            	    <mx:DataGridColumn
+	            	    	dataField="dailyBillAmt"
+	            	    	labelFunction="setBillsLabel"
+	            	    	headerText="Daily Amt"
+	            	    	textAlign="right"
+	            	    	width="80"/>
+		                <mx:DataGridColumn
+		                	dataField="otherBillAmt"
+		                	labelFunction="setBillsLabel"
+		                	headerText="Other Amt"
+		                	textAlign="right"
+		                	width="80"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="totalBillAmt"
+	        	        	labelFunction="setBillsLabel"
+	        	        	headerText="Total Amt"
+	        	        	textAlign="right"
+	        	        	width="80"
+	        	        	sortable="false"/>
+	        	        <mx:DataGridColumn
+	        	        	dataField="statusTemp"
+	        	        	headerText="Status"
+	        	        	textAlign="center"
+	        	        	width="90"/>
+						<mx:DataGridColumn
+							headerText=""
+							itemRenderer="common.notes.NotesRenderer"
+							sortable="false"/>
+		            </mx:columns>
+	    	    </mx:DataGrid>
+	        </mx:VBox>
+
+        </mx:TabNavigator>
+        
+    </mx:Panel>
+
+</mx:VDividedBox>

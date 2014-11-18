@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.Asset;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            [Embed(source="/assets/page_go.png")]
+            [Bindable]
+            private var imgDocOpen:Class;
+            
+            private function openClickHandler():void 
+            {
+                AssetController.getInstance().openAsset(data as Asset);
+            }
+
+            private function removeClickHandler():void 
+            {
+                AssetController.getInstance().removeAsset(data as Asset);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{imgDocOpen}" 
+        toolTip="Open Asset" 
+        click="openClickHandler()"/>
+        
+    <mx:Image source="{imgDelete}"
+        toolTip="Remove Asset" 
+        click="removeClickHandler()"/>
+        
+</mx:HBox>

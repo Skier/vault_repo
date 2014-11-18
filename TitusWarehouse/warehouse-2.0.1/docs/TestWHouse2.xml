@@ -1,0 +1,184 @@
+<!--Pricing Center Release XML package-->
+<cXML version="1.0" payloadID="XML PO for MacPac">
+  <Header>
+    <From>
+      <Credential domain="Titus">                                 <!--  -->
+        <Identity />
+      </Credential>
+    </From>
+    <To>
+      <Credential domain="Ruskin Corp">                           <!--  --> 
+        <Identity />
+      </Credential>
+    </To>
+    <Sender>
+      <Credential domain="Titus">                                 <!--  -->
+        <Identity />
+        <SharedSecret />
+      </Credential>
+    </Sender>
+  </Header>
+  <Report>
+    <TTS file="FCC05110-B67F-46E1-A6B3-C58A90B73208.xml">   <!-- ???Id this the current file name??? -->
+      <Address>
+        <SoldTo>
+          <Name1><![CDATA[Norman S. Wright Mechanical]]></Name1>  <!-- TheOrder.. -->
+          <Street1><![CDATA[99A South Hill Dr.]]></Street1>
+          <City><![CDATA[Brisbane]]></City>
+          <State><![CDATA[CA]]></State>
+          <Zip><![CDATA[94005-1215]]></Zip>
+           <!-- ???????? Where is country ???????? -->
+        </SoldTo>
+        <ShipTo>
+          <Name1><![CDATA[ANDERSON ROWE AND BUCKLEY]]></Name1>    <!-- TheOrder.AddressId.Name -->
+          <Street1><![CDATA[2833 THIRD STREET]]></Street1>        <!-- TheOrder.AddressId.Street1 
+                                                                     + TheOrder.AddressId.Street2 -->
+          <City><![CDATA[SAN FRANCISCO]]></City>                  <!-- TheOrder.AddressId.City -->
+          <State><![CDATA[CA]]></State>                           <!-- TheOrder.AddressId.State -->
+          <Zip><![CDATA[94107]]></Zip>                            <!-- TheOrder.AddressId.Zip -->
+          <Attention><![CDATA[]]></Attention>                     <!-- TheOrder.AddressId.Name -->
+          <Country><![CDATA[USA]]></Country>                      <!-- TheOrder.AddressId.Country -->
+        </ShipTo>
+      </Address>
+      <Brand>
+        <AccountInfo>
+          <RepAccountNo><![CDATA[123123]]></RepAccountNo>          <!-- TheOrder.RepAccountNo -->
+          <Phone><![CDATA[(415) 467-7600]]></Phone>                <!-- --> 
+          <Fax><![CDATA[(415) 467-0900]]></Fax>                    <!-- -->
+        </AccountInfo>
+    <SellingWarehouse>TTS</SellingWarehouse>
+    <OrderSource>WHS</OrderSource>                                 <!--  -->
+      </Brand>
+      <MarketingProgram>
+        <ProgramCode><![CDATA[X]]></ProgramCode>
+        <Program><![CDATA[X]]></Program>
+      </MarketingProgram>
+      <OrderInfo>
+        <OrderDate>1/11/2008</OrderDate>                            <!-- TheOrder.OrderDate -->
+        <RepPONo><![CDATA[TestPOWhouse]]></RepPONo>                 <!-- TheOrder.PONumber -->
+        <CustomerPONo><![CDATA[]]></CustomerPONo>                   <!--  -->
+        <CustAccountNo><![CDATA[]]></CustAccountNo>                 <!--  -->
+        <JobName><![CDATA[MMC]]></JobName>                          <!--  -->
+        <SalesPerson><![CDATA[LIU, ALLEN]]></SalesPerson>           <!--  -->
+      </OrderInfo>
+      <Shipping>
+        <ShippingMethod>
+          <ShipVia>LTL</ShipVia>                                         <!-- ShippingType.ShippingCode -->
+          <CallBeforeDelivery><![CDATA[]]></CallBeforeDelivery>          <!--  -->
+          <Terms><![CDATA[F.O.B. Factory]]></Terms>                      <!--  -->
+          <MarkOrder><![CDATA[MMC]]></MarkOrder>                         <!--  -->
+          <ShippingInstructions><![CDATA[]]></ShippingInstructions>      <!--  -->
+        </ShippingMethod>
+        <ShippingCharges>
+          <CommentsToFactory><![CDATA[]]></CommentsToFactory>            <!--  -->
+          <CustomerServiceRequest><![CDATA[]]></CustomerServiceRequest>  <!--  -->
+        </ShippingCharges>
+      </Shipping>
+      <SpecialInfo>
+        <SDANo><![CDATA[]]></SDANo>                                      <!--  -->
+      </SpecialInfo>
+      <QuantityInfo>
+        <JobNumber><![CDATA[26276]]></JobNumber>                         <!--  -->
+        <ModelCount>1</ModelCount>                                       <!--  -->
+        <VersionNumber></VersionNumber>
+        <LineCount>3</LineCount>                                         <!--  -->
+        <BrandLogo>DarkBlueLogo.gif</BrandLogo>
+        <JobInitiatedDate>1/11/2008</JobInitiatedDate>                   <!-- TheOrder.OrderDate -->
+        <email>aliu@norman-wright.com</email>                            <!--  -->
+      </QuantityInfo>
+      <LineItems>
+        <Group>
+          <ModelConfig>
+            <Line>001</Line>                                             <!-- OrderDetail.LineItemNumber -->
+            <PlantCode>NCD</PlantCode>                                   <!-- Warehouse.Code -->
+            <Qty>75</Qty>                                                <!-- OrderDetail.QtyOrdered -->
+            <Model>30001</Model>                                         <!-- OrderDetail.SKU -->
+            <Comment><![CDATA[]]></Comment>                              <!--  -->
+            <Tag><![CDATA[]]></Tag>                                      <!--  -->
+            <Multiplier>1</Multiplier>                                   <!--  -->
+            <IndividualPrice>58.00</IndividualPrice>                     <!-- OrderDetail.Price -->
+            <TotalCost>4350.00</TotalCost>                               <!-- OrderDetail.Price * OrderDetail.QtyOrdered -->
+           </ModelConfig>
+        </Group>
+        <Group>
+          <ModelConfig>
+            <Line>002</Line>
+            <PlantCode>TRB</PlantCode>
+            <Qty>20</Qty>
+            <Model>30007</Model>
+            <Comment><![CDATA[]]></Comment>
+            <Tag><![CDATA[]]></Tag>
+            <Multiplier>1</Multiplier>
+            <IndividualPrice>50.00</IndividualPrice>
+            <TotalCost>1000.00</TotalCost>
+           </ModelConfig>
+        </Group>
+    <Group>
+          <ModelConfig>
+            <Line>003</Line>
+            <PlantCode>FRD</PlantCode>
+            <Qty>20</Qty>
+            <Model>30007</Model>
+            <Comment><![CDATA[]]></Comment>
+            <Tag><![CDATA[]]></Tag>
+            <Multiplier>1</Multiplier>
+            <IndividualPrice>50.00</IndividualPrice>
+            <TotalCost>1000.00</TotalCost>
+           </ModelConfig>
+        </Group>
+    <Group>
+          <ModelConfig>
+            <Line>004</Line>                                        <!-- Max(OrdreDetail.LineItemNumber) + 1 -->
+           <PlantCode>NCD</PlantCode>                               <!-- OrderShipment.WarehouseCode -->
+            <Qty>1</Qty>                                            <!-- 1 -->
+            <Model><![CDATA[\FRT]]></Model>                         <!-- \FRT -->
+            <Comment><![CDATA[]]></Comment>
+            <Tag><![CDATA[]]></Tag>
+            <Multiplier>1</Multiplier>                              <!--  -->
+            <IndividualPrice>100.00</IndividualPrice>               <!-- OrderShipment.ShippingTotal -->
+            <TotalCost>100.00</TotalCost>
+           </ModelConfig>
+        </Group>
+    <Group>
+          <ModelConfig>
+            <Line>005</Line>
+            <PlantCode>TRB</PlantCode>
+            <Qty>1</Qty>
+            <Model><![CDATA[\FRT]]></Model>
+            <Comment><![CDATA[]]></Comment>
+            <Tag><![CDATA[]]></Tag>
+            <Multiplier>1</Multiplier>
+            <IndividualPrice>200.00</IndividualPrice>
+            <TotalCost>100.00</TotalCost>
+           </ModelConfig>
+        </Group>
+    <Group>
+          <ModelConfig>
+            <Line>006</Line>
+           <PlantCode>FRD</PlantCode>
+            <Qty>1</Qty>
+            <Model><![CDATA[\FRT]]></Model>
+            <Comment><![CDATA[]]></Comment>
+            <Tag><![CDATA[]]></Tag>
+            <Multiplier>1</Multiplier>
+            <IndividualPrice>300.00</IndividualPrice>
+            <TotalCost>100.00</TotalCost>
+           </ModelConfig>
+        </Group>
+      </LineItems>
+      <PricingTotals>
+        <BaseOrderCost><![CDATA[5450.00]]></BaseOrderCost>         <!-- TheOrder. -->
+        <SetupCharge><![CDATA[.00]]></SetupCharge>                 <!-- TheOrder. -->
+        <Freight><![CDATA[.00]]></Freight>                         <!-- TheOrder. -->
+        <TotalOrderCost><![CDATA[5450.00]]></TotalOrderCost>       <!-- TheOrder. -->
+        <NetMinusFreight><![CDATA[5450.00]]></NetMinusFreight>     <!-- TheOrder. -->
+      </PricingTotals>
+      <SpecialItems>
+        <IsSpecial />
+        <XLines />
+        <CommLines />
+        <CtrlQty><![CDATA[75]]></CtrlQty>                           <!--  -->
+      </SpecialItems>
+    </TTS>
+  </Report>
+</cXML>

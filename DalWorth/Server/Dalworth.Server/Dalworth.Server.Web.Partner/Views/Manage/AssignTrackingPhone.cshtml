@@ -1,0 +1,55 @@
+﻿@model Dalworth.Server.Web.Partner.Models.TrackingPhones
+
+@{
+    ViewBag.Title = "Partner In Profit - Assign Tracking Phone";
+    ViewBag.Header = "Assign Tracking Phone";
+
+    ViewBag.ActiveTopMenu = "Manage";
+    ViewBag.ActiveSubMenu = "Partners";
+}
+
+@using (Html.BeginForm("AssignTrackingPhone", "Manage", FormMethod.Post, new { id = "AssignTrackingPhoneForm" })) {
+    if (!MvcHtmlString.IsNullOrEmpty(Html.ValidationSummary(true))){
+		<div id="message-red">
+		<table border="0" width="500px" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="red-left">
+                @Html.ValidationSummary(true)
+			<td class="red-right"><a class="close-red"><img src="../Content/images/table/icon_close_red.gif"   alt="" /></a></td>
+		</tr>
+		</table>
+		</div>        
+    }   
+<table>
+<tr>    
+    <td valign="top">
+    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="2">Tracking Phone</th>
+            </tr>
+
+        @if (Model.Phones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+
+        @foreach (var item in Model.Phones) {
+            <tr>
+                <td width="20px">
+                    <input type="radio" name='TrackingPhoneId' value="@item.Id" />                            
+                </td>
+                <td>
+                    @item.PhoneNumberText
+                </td>
+            </tr>
+        }
+        </table>
+    </td>
+</table>
+
+<p><input type="submit" value="" class="form-submit"/></p>
+}
+<br><br>
+<br><br>
+<p><a href='@("Partner?PartnerId=" + Session["CurrentPartnerId"])' class='back-link'>Back to Partner Details</a></p>
+

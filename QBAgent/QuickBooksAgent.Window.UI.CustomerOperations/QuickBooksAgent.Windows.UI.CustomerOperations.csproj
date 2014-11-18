@@ -1,0 +1,167 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2EF54623-08B6-401C-AB6C-CDD4F1C5BA07}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QuickBooksAgent.Windows.UI.CustomerOperations</RootNamespace>
+    <AssemblyName>qagent.customeroperations</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>QuickBooksAgent.Window.UI.CustomerOperations</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SpDebug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\SP\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SMARTPHONE</DefineConstants>
+    <FileAlignment>512</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CSLMailCF_PPC2K3_V2, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\!Distr\Pocket PC tools\cslmail\Setup\Assemblies\CSLMailCF_PPC2K3_V2.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsMobile.PocketOutlook, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="InvoiceSelection\InvoiceSelectionController.cs" />
+    <Compile Include="InvoiceSelection\InvoiceSelectionModel.cs" />
+    <Compile Include="InvoiceSelection\InvoiceSelectionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InvoiceSelection\InvoiceSelectionView.Designer.cs">
+      <DependentUpon>InvoiceSelectionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Invoice\InvoiceController.cs" />
+    <Compile Include="Invoice\InvoiceLineController.cs" />
+    <Compile Include="Invoice\InvoiceLineModel.cs" />
+    <Compile Include="Invoice\InvoiceLineView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Invoice\InvoiceLineView.Designer.cs">
+      <DependentUpon>InvoiceLineView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Invoice\InvoiceModel.cs" />
+    <Compile Include="Invoice\InvoiceView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Invoice\InvoiceView.Designer.cs">
+      <DependentUpon>InvoiceView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Invoice\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickBooksAgent.Domain\QuickBooksAgent.Domain.csproj">
+      <Project>{9E79227D-559C-4098-A37F-B43F87A756E2}</Project>
+      <Name>QuickBooksAgent.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows.UI.Controls\QuickBooksAgent.Windows.UI.Controls.csproj">
+      <Project>{6B1B2BE3-E169-4B7A-8350-C9418385276E}</Project>
+      <Name>QuickBooksAgent.Windows.UI.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows\QuickBooksAgent.Windows.csproj">
+      <Project>{44411246-FF53-488A-AA72-1F887E823BB8}</Project>
+      <Name>QuickBooksAgent.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent\QuickBooksAgent.csproj">
+      <Project>{951A1DEB-1305-4D9A-B280-99C667F48248}</Project>
+      <Name>QuickBooksAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="InvoiceSelection\InvoiceSelectionView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InvoiceSelectionView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Invoice\InvoiceLineView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InvoiceLineView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Invoice\InvoiceView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>InvoiceView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Invoice\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Invoice\Resources\Selected.png" />
+    <Content Include="Invoice\Resources\Unselected.png" />
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

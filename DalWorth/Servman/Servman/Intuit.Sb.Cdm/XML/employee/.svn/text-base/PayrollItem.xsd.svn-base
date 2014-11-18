@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2"
+	targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<xs:include schemaLocation="../common/IntuitCustomFieldCdmTypes.xsd"/>
+	<xs:element name="PayrollItem" type="PayrollItem"/>
+	<xs:group name="PayrollItemReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>Payroll item reference group. Consists of the payroll item id and  name.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PayItemId" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference to the Payroll Item object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PayItemName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the payroll item.
+[b][i]QuickBooks Note[/i][/b] [br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="PayrollItem">
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Name" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>User recognizable name for the Payroll Item.[br /]
+[b][i]QuickBooks Note[/i][/b] [br /]
+Required for the Add request. [br /]
+Max Length: 31
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="Active" type="xs:boolean"/>
+					<xs:element minOccurs="0" name="Type" type="PayrollItemTypeEnum">
+						<xs:annotation>
+							<xs:documentation>
+[b][i]QuickBooks Note[/i][/b] [br /]
+Required for the Add request. [br /]
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PayrollItems">
+		<xs:annotation>
+			<xs:documentation>Provides the definition that allows bulk data transfer of Payroll Items</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmCollections">
+				<xs:sequence>
+					<xs:element name="PayrollItem" type="PayrollItem" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="PayrollItemTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Addition"/>
+			<xs:enumeration value="Bonus"/>
+			<xs:enumeration value="Commission"/>
+			<xs:enumeration value="Company Contribution"/>
+			<xs:enumeration value="Deduction"/>
+			<xs:enumeration value="Direct Deposit"/>
+			<xs:enumeration value="Hourly Rate"/>
+			<xs:enumeration value="Salary"/>
+			<xs:enumeration value="Tax"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:web="truetract.web.*" xmlns:client="truetract.web.client.*" xmlns:project="truetract.web.client.project.*" xmlns:search="truetract.web.client.search.*" xmlns:document="truetract.web.client.document.*" xmlns:document1="truetract.web.client.project.document.*">
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.web.dashboard.events.ProjectEvent;
+        	import truetract.web.dashboard.events.DocumentEvent;
+        	import truetract.domain.Project;
+        	
+        	public function init():void 
+        	{
+        		controller.init();
+        	}
+        	
+        	private function openDocumentRequestHandler(event:DocumentEvent):void 
+        	{
+        		controller.openDocument(event.document);
+        	}
+
+        	private function openReferenceRequestHandler(event:DocumentEvent):void 
+        	{
+        		controller.openReference(event.document);
+        	}
+
+        	private function openHistoryDocRequestHandler(event:DocumentEvent):void 
+        	{
+        		controller.openHistoryDocument(event.document);
+        	}
+
+        	private function openProjectRequestHandler(event:ProjectEvent):void 
+        	{
+        		controller.openProject(event.project);
+        	}
+
+			private function btnSearchClickHandler():void 
+			{
+				controller.searchByClient(txtSearchString.text);
+			}
+        ]]>
+    </mx:Script>
+
+    <web:AppController id="appController"/>
+
+    <client:ClientController id="controller" view="{this}"/>
+	
+	<mx:ApplicationControlBar 
+		width="100%"  verticalAlign="middle"
+		paddingLeft="10" paddingRight="10" paddingTop="0" paddingBottom="0"
+		fillColors="[#f0f0f0, #dddddd]" fillAlphas="[1, 1]">
+
+        <mx:LinkBar dataProvider="{vsHubPart}"/>
+
+        <mx:Spacer width="100%"/>
+        
+		<mx:HBox horizontalGap="2" verticalAlign="middle">
+	        <mx:VRule height="15"/>
+
+			<mx:Label text="Search:"/>
+
+			<mx:TextInput id="txtSearchString" width="200" enter="btnSearchClickHandler()"/>
+	
+			<mx:Button id="btnSearch"
+				icon="@Embed(source='/assets/magnifier.png')" height="{txtSearchString.height}" width="{txtSearchString.height}"
+				horizontalCenter="0" verticalCenter="0"
+	            styleName="toolButton"
+	            click="btnSearchClickHandler()"/>
+		</mx:HBox>
+
+    	<mx:HBox horizontalGap="0">
+	        <mx:VRule height="15"/>
+	        <mx:Label text="Welcome, " selectable="false"/>
+	        <mx:Label text="{controller.appModel.user.Login}" fontWeight="bold" selectable="false"/>
+    	</mx:HBox>
+
+        <mx:LinkButton 
+            label="Logout" color="#2e39b7" fontSize="11" click="appController.logOut()"/>
+    </mx:ApplicationControlBar>
+    
+    <mx:ViewStack id="vsHubPart" width="100%" height="100%">
+		<mx:VBox id="viewSummary"
+			label="Home"
+    		width="100%" height="100%" backgroundColor="#e0ebfd" borderStyle="solid" 
+            borderColor="#7599ee" 
+            paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+			<mx:Text text="Summary information" width="100%" height="100%"/>
+		</mx:VBox>
+		
+		<mx:ViewStack id="vsProjects" width="100%" height="100%"
+ 			label="My Projects">
+	 		<project:ProjectsView id="viewProjects"
+	 			dataProvider="{controller.model.projects}" 
+	 			width="100%" height="100%"
+	 			openDocument="openDocumentRequestHandler(event)"/>
+	
+			<document:DocumentView id="viewDocuments" 
+				width="100%" height="100%"
+				docum="{controller.model.currentDocument}"
+				project="{controller.model.currentProject}"
+				historyList="{controller.model.historyList}"
+				openProject="openProjectRequestHandler(event)"
+				openReference="openReferenceRequestHandler(event)"
+				openHistoryDoc="openHistoryDocRequestHandler(event)"/>
+		</mx:ViewStack>
+		
+		<search:SearchView id="viewSearch" 
+			label="Search" width="100%" height="100%"
+			searchResult="{controller.model.searchResult}"
+			searchString="{controller.model.searchString}"
+			openDocument="openDocumentRequestHandler(event)"
+			openProject="openProjectRequestHandler(event)"/>
+    </mx:ViewStack>
+</mx:VBox>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollapsiblePanel 
+    title="Well Plan"
+    xmlns="truetract.web.dashboard.projectPanel.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.web.dashboard.file.FileEditor;
+            import mx.controls.Button;
+            import truetract.domain.*;
+
+            private static const WELL_PLAN_ATTACHMENT_TYPE:String = "Well Plan";
+
+            private var dictionaries:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] private var wellPlanAttachment:ProjectAttachment;
+
+            [Bindable]
+            [Embed(source="/assets/note_edit.png")]
+            private var editIcon:Class;
+
+            private var _project:Project;
+            [Bindable] public function get project():Project { return _project; }
+            public function set project(value:Project):void
+            {
+                _project = value;
+                
+                parseProjectAttachments();
+            }
+
+            private var editButton:Button;
+            private var createButton:Button;
+
+            private function parseProjectAttachments():void
+            {
+                if (!project.Attachments) return;
+                
+                for each (var attachment:ProjectAttachment in project.Attachments)
+                {
+                    if (attachment.TypeName == WELL_PLAN_ATTACHMENT_TYPE) {
+                        wellPlanAttachment = attachment;
+                        break;
+                    }
+                }
+
+                createButton.visible = createButton.includeInLayout = (null == wellPlanAttachment);
+                editButton.visible = editButton.includeInLayout = (null != wellPlanAttachment);
+            }
+
+            private function doOpenFile():void
+            {
+                var urlRequest:URLRequest = new URLRequest(wellPlanAttachment.FileRef.FileUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+
+            private function creationCompleteHandler():void
+            {
+                createButton = addHeaderToolButton(editIcon, "Create");
+                createButton.addEventListener(MouseEvent.CLICK, createButton_clickHandler);
+
+                editButton = addHeaderToolButton(editIcon, "Edit");
+                editButton.addEventListener(MouseEvent.CLICK, editButton_clickHandler);
+            }
+
+            private function createButton_clickHandler(event:MouseEvent):void
+            {
+                var attachment:ProjectAttachment = new ProjectAttachment();
+                attachment.ProjectAttachmentTypeId = dictionaries.projectAttachmentTypes.AttachmentType.
+                    (@Name == WELL_PLAN_ATTACHMENT_TYPE).@Id;
+                attachment.ProjectId = project.ProjectId;
+                attachment.ProjectRef = project;
+
+                var popup:FileEditor = FileEditor.open(this, true);
+                popup.attachmentTypes = dictionaries.projectAttachmentTypes;
+                popup.attachment = attachment;
+                popup.showAttachmentTypes = false;
+            }
+
+            private function editButton_clickHandler(event:MouseEvent):void
+            {
+                var popup:FileEditor = FileEditor.open(this, true);
+                popup.attachmentTypes = dictionaries.projectAttachmentTypes;
+                popup.attachment = wellPlanAttachment;
+                popup.showAttachmentTypes = false;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:HBox 
+        width="100%" visible="{null == wellPlanAttachment}" includeInLayout="{null == wellPlanAttachment}">
+        <mx:Label text="Not specified"/>
+    </mx:HBox>
+
+    <mx:Form 
+        visible="{null != wellPlanAttachment}" includeInLayout="{null != wellPlanAttachment}"
+        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="-3"
+        width="100%" verticalScrollPolicy="off">
+
+        <mx:FormItem label="Reference Name :" width="100%">
+            <mx:LinkButton 
+                label="{wellPlanAttachment.FileRef.Description}" width="100%" height="16"
+                click="doOpenFile()"
+                textAlign="left" />
+        </mx:FormItem>
+
+        <mx:FormItem label="Created :" width="100%">
+            <mx:HBox>
+                <mx:Label text="{df.format(wellPlanAttachment.FileRef.Created)}" fontWeight="bold"/>
+                <mx:Label text="Added By :"/>
+                <mx:Label text="{wellPlanAttachment.FileRef.CreatedByName}" fontWeight="bold"/>
+            </mx:HBox>
+        </mx:FormItem>
+
+    </mx:Form>
+    
+</CollapsiblePanel>

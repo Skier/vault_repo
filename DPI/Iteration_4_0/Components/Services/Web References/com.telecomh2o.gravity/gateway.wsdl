@@ -1,0 +1,3165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://localhost/oc.portal.gravity/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://localhost/oc.portal.gravity/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://localhost/oc.portal.gravity/">
+      <s:element name="HelloWorld">
+        <s:complexType />
+      </s:element>
+      <s:element name="HelloWorldResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="HelloWorldResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchByDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchByDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchByDateRangeResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfFax_Log_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Fax_Log_Information" nillable="true" type="tns:Fax_Log_Information" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Fax_Log_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Fax_Log_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Client_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Order_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="TransId" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsComplete" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsSuccessful" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="NotifyEmail" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="FaxNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="StatusCode" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="StatusMessage" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseInformation" />
+      <s:element name="FaxSearchByPON">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchByPONResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchByPONResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchErrorsByDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchErrorsByDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchErrorsByDateRangeResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchSuccessByDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchSuccessByDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchSuccessByDateRangeResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchPendingByDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchPendingByDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchPendingByDateRangeResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchPending">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FaxSearchPendingResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FaxSearchPendingResult" type="tns:ArrayOfFax_Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Availability">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:Availability_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Availability_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="LineList" type="tns:Line_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="CustomerClass" type="tns:Enum_Customer_Class" />
+              <s:element minOccurs="0" maxOccurs="1" name="CLLI" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NPANXX" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="HoursAge" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="DontReturnAvailable" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="AvailableFilter" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="RefPon" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="RefVersion" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="LogId" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="myProfile" type="tns:Profile_Information" />
+              <s:element minOccurs="0" maxOccurs="1" name="Auth" type="tns:AuthenticationResponse" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Profile_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Profile_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Shared_Client_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IA_Config_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Test_IA_Config_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Certificate_ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Application_ID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Application_Password" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CLEC_ID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="User_Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Company_Code" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CCNA" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ECNA" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="URL" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Local_Service_Freeze_Flag" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="LD_Service_Freeze" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Notifications_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Acknowledge_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Process_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Backup_Status_Check_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Carrier_Code" type="tns:Enum_Carrier_Code" />
+              <s:element minOccurs="1" maxOccurs="1" name="Log_Flag" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="SEF_File" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Preorder_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Order_Flag" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Receiver_ID" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Test_Mode_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="DoNotSend" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Verizon_Region" type="tns:Enum_Verizon_Region" />
+              <s:element minOccurs="0" maxOccurs="1" name="StateList" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="DefaultProductType" type="tns:Enum_Product_Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Carrier_Code">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="ANDIAMO" />
+          <s:enumeration value="ATX" />
+          <s:enumeration value="BAYOU_INTERNET" />
+          <s:enumeration value="BELLSOUTH" />
+          <s:enumeration value="BROADVIEW" />
+          <s:enumeration value="BROADWING" />
+          <s:enumeration value="CLEARTEL" />
+          <s:enumeration value="COVAD" />
+          <s:enumeration value="ECI" />
+          <s:enumeration value="EMAIL" />
+          <s:enumeration value="FDN" />
+          <s:enumeration value="GLOBAL_CROSSING" />
+          <s:enumeration value="GULFTEL" />
+          <s:enumeration value="INHOUSE" />
+          <s:enumeration value="INTELECOM" />
+          <s:enumeration value="LEVEL3" />
+          <s:enumeration value="MCI" />
+          <s:enumeration value="NECA" />
+          <s:enumeration value="OTHER" />
+          <s:enumeration value="PAETEC" />
+          <s:enumeration value="PREMIER_GLOBAL" />
+          <s:enumeration value="QWEST" />
+          <s:enumeration value="RADIUS" />
+          <s:enumeration value="RED_RIVER" />
+          <s:enumeration value="RED_RIVER_PREPAID" />
+          <s:enumeration value="REUNION" />
+          <s:enumeration value="REUNION_DEBIT" />
+          <s:enumeration value="SPRINT" />
+          <s:enumeration value="SBC" />
+          <s:enumeration value="TMC" />
+          <s:enumeration value="TXLINK" />
+          <s:enumeration value="UNIFIED_ARTS" />
+          <s:enumeration value="USLEC" />
+          <s:enumeration value="VERIZON" />
+          <s:enumeration value="XO" />
+          <s:enumeration value="CORDIA" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Verizon_Region">
+        <s:restriction base="s:string">
+          <s:enumeration value="NA" />
+          <s:enumeration value="EAST" />
+          <s:enumeration value="WEST" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Product_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="OTHER" />
+          <s:enumeration value="UNEP" />
+          <s:enumeration value="LWC" />
+          <s:enumeration value="RESALE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="AuthenticationResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Client" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="RequestIP" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="URL" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="TimeZoneOffset" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="TimeZoneDST" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="ConnH2O" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ConnGravity" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ConnShared" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="AuthLogId" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Passed" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="ErrorReason" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Line_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Action" type="tns:Enum_Service_Action" />
+              <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="TN_New" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="TN_Voicemail" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PIC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LPIC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LTOS" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Class_of_Service" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="LD_Freeze_Type" type="tns:Enum_LD_Freeze_Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="Service_Type" type="tns:Enum_Service_Type" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="ProductList" type="tns:Product_Information" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="ListingList" type="tns:Listing_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="Hunt_Sequence" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Hunt_Identifier" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Hunt_Type" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Hunt_Action" type="tns:Enum_Hunt_Action" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Service_Action">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="ACTIVATE" />
+          <s:enumeration value="CHANGE" />
+          <s:enumeration value="DISCONNECT" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_LD_Freeze_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="BOTH" />
+          <s:enumeration value="INTRALATA" />
+          <s:enumeration value="INTERLATA" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Service_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="SPLIT_LINE" />
+          <s:enumeration value="ANALOG" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="Product_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Action" type="tns:Enum_Service_Action" />
+              <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type_Code" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code3" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code4" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Activity_Date" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="FidArray" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Product_Type_Code">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="RECURRING_PIC_LPIC" />
+          <s:enumeration value="RECURRING_COMMISSION1" />
+          <s:enumeration value="RECURRING_COMMISSION2" />
+          <s:enumeration value="RECURRING_REMOTE_CALL_FORWARDING" />
+          <s:enumeration value="RECURRING_LOCAL" />
+          <s:enumeration value="RECURRING_LOCAL_BUNDLED" />
+          <s:enumeration value="RECURRING_DIALUP" />
+          <s:enumeration value="RECURRING_FEATURE" />
+          <s:enumeration value="RECURRING_LD_PREPAID" />
+          <s:enumeration value="RECURRING_DIRECTORY_LISTING" />
+          <s:enumeration value="RECURRING_BLOCK" />
+          <s:enumeration value="RECURRING_LD_POSTPAID" />
+          <s:enumeration value="RECURRING_NONTAX" />
+          <s:enumeration value="RECURRING_FCC_SLC" />
+          <s:enumeration value="RECURRING_FCC_PICC" />
+          <s:enumeration value="RECURRING_COLOCATION" />
+          <s:enumeration value="RECURRING_PAGING" />
+          <s:enumeration value="RECURRING_FREE_MINS_INTERSTATE" />
+          <s:enumeration value="RECURRING_FREE_MINS_INTRALATA_LOCAL" />
+          <s:enumeration value="RECURRING_FREE_MINS_INTRASTATE" />
+          <s:enumeration value="RECURRING_FREE_MINS_DOMESTIC" />
+          <s:enumeration value="RECURRING_FREE_MINS_INTRALATA" />
+          <s:enumeration value="RECURRING_FREE_MINS_LOCAL" />
+          <s:enumeration value="RECURRING_FREE_MINS_ALL" />
+          <s:enumeration value="RECURRING_FREE_MINS_INTERNATIONAL" />
+          <s:enumeration value="RECURRING_GENERAL_SALES" />
+          <s:enumeration value="RECURRING_DSL" />
+          <s:enumeration value="RECURRING_VOICE_DSL" />
+          <s:enumeration value="RECURRING_FEATURE_NON_COMM" />
+          <s:enumeration value="RECURRING_VOICEMAIL" />
+          <s:enumeration value="RECURRING_LD_PREPAID_UNLIMITED" />
+          <s:enumeration value="RECURRING_LD_POSTPAID_UNLIMITED" />
+          <s:enumeration value="RECURRING_T1" />
+          <s:enumeration value="RECURRING_VOICE_T1" />
+          <s:enumeration value="RECURRING_INTEGRATED_T1" />
+          <s:enumeration value="RECURRING_DATA_T1" />
+          <s:enumeration value="RECURRING_DATA_P2P" />
+          <s:enumeration value="RECURRING_VOICE_P2P" />
+          <s:enumeration value="RECURRING_PRI" />
+          <s:enumeration value="RECURRING_ISDN" />
+          <s:enumeration value="RECURRING_DATA_ISDN" />
+          <s:enumeration value="RECURRING_VOICE_ISDN" />
+          <s:enumeration value="RECURRING_CONFERENCE_CALLING" />
+          <s:enumeration value="RECURRING_USAGE_LOCAL" />
+          <s:enumeration value="RECURRING_USAGE_INTRALATA" />
+          <s:enumeration value="RECURRING_USAGE_INTRASTATE" />
+          <s:enumeration value="RECURRING_USAGE_INTERSTATE" />
+          <s:enumeration value="USAGE_DIRECTORY_ASSISTANCE" />
+          <s:enumeration value="USAGE_DIRECTORY_INTRALATA" />
+          <s:enumeration value="USAGE_DIRECTORY_INTRASTATE" />
+          <s:enumeration value="USAGE_DIRECTORY_INTERSTATE" />
+          <s:enumeration value="USAGE_CALL_COMPLETION" />
+          <s:enumeration value="USAGE_CALL_RETURN" />
+          <s:enumeration value="USAGE_COLLECT" />
+          <s:enumeration value="USAGE_OPERATOR_ASSISTED" />
+          <s:enumeration value="USAGE_REPEAT_DIALING" />
+          <s:enumeration value="USAGE_BUSY_LINE_VERIFICATION" />
+          <s:enumeration value="USAGE_BUSY_LINE_INTERRUPTION" />
+          <s:enumeration value="USAGE_LOCAL" />
+          <s:enumeration value="USAGE_0_PLUS" />
+          <s:enumeration value="USAGE_INTL_OPERATOR" />
+          <s:enumeration value="USAGE_CONFERENCE_CALLING" />
+          <s:enumeration value="USAGE_CALL_TRACE" />
+          <s:enumeration value="USAGE_OPERATOR_VERIFIED" />
+          <s:enumeration value="USAGE_E911" />
+          <s:enumeration value="USAGE_E511" />
+          <s:enumeration value="USAGE_LD_INTERSTATE" />
+          <s:enumeration value="USAGE_LD_INTRASTATE" />
+          <s:enumeration value="USAGE_LD_INTRALATA" />
+          <s:enumeration value="USAGE_LD_INTERNATIONAL" />
+          <s:enumeration value="USAGE_LD_CELLULAR_INTERNATIONAL" />
+          <s:enumeration value="USAGE_LD_800_LOCAL" />
+          <s:enumeration value="USAGE_LD_800_INTERSTATE" />
+          <s:enumeration value="USAGE_LD_800_INTRASTATE" />
+          <s:enumeration value="USAGE_LD_800_INTRALATA" />
+          <s:enumeration value="USAGE_LD_800_INTERNATIONAL" />
+          <s:enumeration value="ONETIME_GENERAL_SALES" />
+          <s:enumeration value="ONETIME_LOCAL" />
+          <s:enumeration value="ONETIME_LATE_FEE" />
+          <s:enumeration value="ONETIME_REPAIR" />
+          <s:enumeration value="ONETIME_BALANCE_ADJUSTMENT" />
+          <s:enumeration value="ONETIME_NONTAX" />
+          <s:enumeration value="ONETIME_DSL" />
+          <s:enumeration value="ONETIME_DIALUP" />
+          <s:enumeration value="ONETIME_RESTORE_FEE" />
+          <s:enumeration value="ONETIME_TRANSFER_FEE" />
+          <s:enumeration value="ONETIME_CHANGE_FEE" />
+          <s:enumeration value="ONETIME_CONNECTION_FEE" />
+          <s:enumeration value="ONETIME_CONVERSION_FEE" />
+          <s:enumeration value="ONETIME_DEPOSIT" />
+          <s:enumeration value="ONETIME_DEPOSIT_REFUND" />
+          <s:enumeration value="ONETIME_REFUND" />
+          <s:enumeration value="ONETIME_LONG_DISTANCE" />
+          <s:enumeration value="ONETIME_DISCONNECT_FEE" />
+          <s:enumeration value="ONETIME_RETURNED_CHECK" />
+          <s:enumeration value="ONETIME_RETURNED_CHECK_FEE" />
+          <s:enumeration value="ONETIME_PAYMENT_ARRANGEMENT_ADJUSTMENT" />
+          <s:enumeration value="ONETIME_EQUIPMENT" />
+          <s:enumeration value="RECURRING_HANDSET" />
+          <s:enumeration value="ONETIME_HANDSET" />
+          <s:enumeration value="RECURRING_SEAT" />
+          <s:enumeration value="ONETIME_CONVENIENCE_FEE" />
+          <s:enumeration value="RECURRING_HOSTING" />
+          <s:enumeration value="RECURRING_AUTO_DEBIT_CREDIT" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="Listing_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Action" type="tns:Enum_Listing_Action" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Company" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Nickname" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Prefix" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_First" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Middle" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Last" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Suffix" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Address" type="tns:Address_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="Listing_Type" type="tns:Enum_Listing_Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Style_Code" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Type_Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Location" type="tns:Enum_Listing_Location" />
+              <s:element minOccurs="0" maxOccurs="1" name="Degree_of_Indention" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Yellow_Page_Heading" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Yellow_Page_Heading_Verbiage" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Listing_Instruction" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Listing_Action">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="NEW" />
+          <s:enumeration value="DELETE" />
+          <s:enumeration value="CHANGE_INSERT" />
+          <s:enumeration value="CHANGE_REMOVE" />
+          <s:enumeration value="NO_CHANGE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="Address_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Number" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Number_Suffix" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Pre_Direction" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Name_Suffix" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Street_Post_Direction" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Designation" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Number" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Designation2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Number2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Designation3" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Secondary_Number3" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Additional_Address_Information" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Geocode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Zip" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Zip_4" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Line_1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Line_2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="AccessInformation" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LEC_NPANXX" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LEC_CLLI" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Is_Parsed" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Range_Min" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Range_Max" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsRange" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Listing_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="LISTED" />
+          <s:enumeration value="UNLISTED" />
+          <s:enumeration value="NON_PUBLISHED" />
+          <s:enumeration value="OMIT_ADDRESS" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Listing_Location">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="FOREIGN" />
+          <s:enumeration value="LOCAL" />
+          <s:enumeration value="SECONDARY" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Hunt_Action">
+        <s:restriction base="s:string">
+          <s:enumeration value="NONE" />
+          <s:enumeration value="ADD" />
+          <s:enumeration value="EXISTING" />
+          <s:enumeration value="REMOVE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Customer_Class">
+        <s:restriction base="s:string">
+          <s:enumeration value="Business" />
+          <s:enumeration value="Residential" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="AvailabilityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AvailabilityResult" type="tns:Availability_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Availability_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="UnavailableList" type="tns:Product_Information" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="AvailableList" type="tns:Product_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="All_Available_Flag" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LogId" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Valid" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="MessageCode" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="MessageType" type="tns:Enum_Message_Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReferenceNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Message_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="_NOT_SPECIFIED" />
+          <s:enumeration value="INVALID_INPUT" />
+          <s:enumeration value="SUCCESSFUL" />
+          <s:enumeration value="SYSTEM_ILEC" />
+          <s:enumeration value="SYSTEM_GRAVITY" />
+          <s:enumeration value="UNSUCCESSFUL" />
+          <s:enumeration value="WARNING" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="AvailableTNs">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:AvailableTNs_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="AvailableTNs_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Quantity" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="myAddress" type="tns:Address_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="Special_Option" type="tns:Enum_TN_Special_Option" />
+              <s:element minOccurs="1" maxOccurs="1" name="CustomerClass" type="tns:Enum_Customer_Class" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_TN_Special_Option">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="AvailableTNsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AvailableTNsResult" type="tns:AvailableTNs_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="AvailableTNs_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Reserved" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReservationNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CancelTN">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:CancelTN_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CancelTN_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ReservationNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CLLI" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CancelTNResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CancelTNResult" type="tns:CancelTN_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CancelTN_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ReservationNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CancelOrder">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProfileId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Pon" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Tn" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type" />
+            <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="OrderType" type="tns:Enum_Order_Type" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:simpleType name="Enum_Order_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="NEW" />
+          <s:enumeration value="CONVERSION" />
+          <s:enumeration value="MIGRATION" />
+          <s:enumeration value="TRANSFER" />
+          <s:enumeration value="CHANGE_FEATURE" />
+          <s:enumeration value="CHANGE_TN" />
+          <s:enumeration value="DISCONNECT" />
+          <s:enumeration value="DENY" />
+          <s:enumeration value="SUSPEND" />
+          <s:enumeration value="RESTORE" />
+          <s:enumeration value="LD_BLOCK" />
+          <s:enumeration value="LD_RESTORE" />
+          <s:enumeration value="CHANGE_LISTING" />
+          <s:enumeration value="ADD_LINE" />
+          <s:enumeration value="PORT" />
+          <s:enumeration value="CONVERSION_AS_IS" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="CancelOrderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CancelOrderResult" type="tns:Order_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Order_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="ResponseReceived" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Due_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Dispatch_Required" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Service_Order_Number" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="EstimateDueDate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:EstimateDueDate_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="EstimateDueDate_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="myOrder" type="tns:Order_Information" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Order_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Version" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Revision_Type" type="tns:Enum_Revision_Type" />
+          <s:element minOccurs="1" maxOccurs="1" name="Appointment_Time" type="tns:Enum_Appointment_Time" />
+          <s:element minOccurs="1" maxOccurs="1" name="Requested_Due_Date" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Requested_Due_Date_Out" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Order_Type" type="tns:Enum_Order_Type" />
+          <s:element minOccurs="1" maxOccurs="1" name="Product_Type" type="tns:Enum_Product_Type" />
+          <s:element minOccurs="0" maxOccurs="1" name="AddressSerialNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Customer" type="tns:Customer_Information" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="LineList" type="tns:Line_Information" />
+          <s:element minOccurs="0" maxOccurs="1" name="Order_Options" type="tns:Order_Options_Information" />
+          <s:element minOccurs="0" maxOccurs="1" name="Remarks" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerContactName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerContactTN" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TN_New" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Billing_Account_Number" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Service_Order_Number" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="OrderId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Initiator_Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Initiator_Email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Initiator_Telephone_Number" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Initiator_Fax_Number" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Implementation_Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Implementation_Telephone_Number" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransferCallsTN" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TransferCallsOption_Indicator" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="TOS" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SuspendType" type="tns:Enum_Suspend_Type" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="HuntList" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Migration_Indicator" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ListingsAsAdditionalMain" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ChangePIC" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="Enum_Revision_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="CANCEL" />
+          <s:enumeration value="CHANGE_DUE_DATE" />
+          <s:enumeration value="OTHER_CHANGE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Appointment_Time">
+        <s:restriction base="s:string">
+          <s:enumeration value="DEFAULT" />
+          <s:enumeration value="AM" />
+          <s:enumeration value="PM" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="Customer_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Company" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_First" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name_Last" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Class" type="tns:Enum_Customer_Class" />
+              <s:element minOccurs="0" maxOccurs="1" name="SIC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Address" type="tns:Address_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="Deny_Indicator" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Deny_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Inactive" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Yellow_Page_Heading" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Yellow_Page_Heading_Verbiage" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Order_Options_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="New_Unit_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="New_Service_Address_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Abandoned_Station_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Local_Freeze_Type" type="tns:Enum_Local_Freeze_Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="Retain_Listing_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Expedite_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Additional_Line_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Omit_From_Mailing_List_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Paper_Order_Indicator_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Convert_As_Is" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Convert_And_Change_PIC" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Local_Freeze_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="NONE" />
+          <s:enumeration value="ADD" />
+          <s:enumeration value="REMOVE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Suspend_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="ALL" />
+          <s:enumeration value="INCOMING" />
+          <s:enumeration value="OUTGOING" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="EstimateDueDateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="EstimateDueDateResult" type="tns:EstimateDueDate_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="EstimateDueDate_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Due_Date" type="s:dateTime" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="LookupProfile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CarrierCode" type="tns:Enum_Carrier_Code" />
+            <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Preorder" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LookupProfileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LookupProfileResult" type="tns:Profile_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="StatusChangeOrderWithBAN">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CarrierCode" type="tns:Enum_Carrier_Code" />
+            <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Customer" type="tns:Customer_Information" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type" />
+            <s:element minOccurs="1" maxOccurs="1" name="OrderType" type="tns:Enum_Order_Type" />
+            <s:element minOccurs="0" maxOccurs="1" name="oState" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oPON" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="oDueDate" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="oAdditionalTNs" type="tns:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="oAllowDuplicates" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="oBAN" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="StatusChangeOrderWithBANResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="StatusChangeOrderWithBANResult" type="tns:Order_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="StatusChangeOrder">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CarrierCode" type="tns:Enum_Carrier_Code" />
+            <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Customer" type="tns:Customer_Information" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type" />
+            <s:element minOccurs="1" maxOccurs="1" name="OrderType" type="tns:Enum_Order_Type" />
+            <s:element minOccurs="0" maxOccurs="1" name="oState" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oPON" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="oDueDate" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="oAdditionalTNs" type="tns:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="oAllowDuplicates" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="StatusChangeOrderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="StatusChangeOrderResult" type="tns:Order_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OrderStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:OrderStatus_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="OrderStatus_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="OrderStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="OrderStatusResult" type="tns:OrderStatus_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="OrderStatus_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Status" type="tns:Enum_Notification_Type" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Notification_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="UNKNOWN" />
+          <s:enumeration value="CLARIFY" />
+          <s:enumeration value="COMPLETED" />
+          <s:enumeration value="BILLING_COMPLETION" />
+          <s:enumeration value="FOC" />
+          <s:enumeration value="CANCELED" />
+          <s:enumeration value="JEOPARDY" />
+          <s:enumeration value="REJECTED" />
+          <s:enumeration value="PENDING" />
+          <s:enumeration value="VOID" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetNotificationCSOTS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetNotificationCSOTSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetNotificationCSOTSResult" type="tns:Notification_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Notification_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Notification_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Profile_ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LEO_Message" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Notification_Type" type="tns:Enum_Notification_Type" />
+              <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MessageCode" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsAcknowledged" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsProcessed" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Notification_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Due_Date" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="Service_Order_Number" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="OrderStatusSimple">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="ProfileId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OrderStatusSimpleResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="OrderStatusSimpleResult" type="tns:OrderStatus_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CustomerServiceRecord">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:CustomerServiceRecord_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CustomerServiceRecord_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="BAN" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="ProductType" type="tns:Enum_Product_Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="CarrierRecord" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CustomerServiceRecordResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerServiceRecordResult" type="tns:CustomerServiceRecord_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CustomerServiceRecord_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="CSR" type="tns:CSR_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="Unparsed" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="UnparsedData" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="CSR_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Customer" type="tns:Customer_Information" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="LineList" type="tns:Line_Information" />
+              <s:element minOccurs="0" maxOccurs="1" name="Billing_Telephone_Number" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Local_Service_Freeze" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Billing_Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Billing_Address1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Billing_Address2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Billing_Address3" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Remarks" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="RSID" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="LineCount" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="ClassOfService" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Exchange" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="TypeOfService" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="LookupResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="LogId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LookupResponseResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LookupResponseResult" type="tns:BaseResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCertificate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCertificateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCertificateResult" type="tns:Certificate_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Certificate_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Certificate_ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Public_Key" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="LocalMachineName" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Expiration_Date" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="PFX_Path" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PFX_Password" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetProfile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetProfileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetProfileResult" type="tns:Profile_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetProfiles">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetProfilesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetProfilesResult" type="tns:ArrayOfProfile_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfProfile_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Profile_Information" nillable="true" type="tns:Profile_Information" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetLoss">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CarrierCode" type="tns:Enum_Carrier_Code" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetLossResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetLossResult" type="tns:Loss_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Loss_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="LossList" type="tns:ArrayOfLoss_Information" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfLoss_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Loss_Information" nillable="true" type="tns:Loss_Information" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Loss_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Loss_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Profile_ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="New_TN" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Event_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Loss_Type" type="tns:Enum_Loss_Type" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsProcessed" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Loss_Type">
+        <s:restriction base="s:string">
+          <s:enumeration value="DISCONNECT" />
+          <s:enumeration value="CHANGE_TN" />
+          <s:enumeration value="MOVE" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetUnprocessedNotifications">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="AutoProcess" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="CarrierCode" type="tns:Enum_Carrier_Code" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUnprocessedNotificationsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUnprocessedNotificationsResult" type="tns:Notifications_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Notifications_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="NotificationList" type="tns:ArrayOfNotification_Information" />
+              <s:element minOccurs="0" maxOccurs="1" name="LossList" type="tns:ArrayOfLoss_Information" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfNotification_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Notification_Information" nillable="true" type="tns:Notification_Information" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ProcessNotification">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="myNotification" type="tns:Notification_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ProcessNotificationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ProcessNotificationResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReserveTN">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:ReserveTN_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ReserveTN_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CLLI" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NPANXX" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Special_Option" type="tns:Enum_TN_Special_Option" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="ReserveTNResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReserveTNResult" type="tns:ReserveTN_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ReserveTN_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReservationNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="SearchLogDateRange">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateStart" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="DateEnd" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchLogDateRangeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchLogDateRangeResult" type="tns:ArrayOfLog_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfLog_Information">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Log_Information" nillable="true" type="tns:Log_Information" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Log_Information">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInformation">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Log_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Profile_ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IA_Config_ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="PON" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PONVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Reference_Number" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="AckData" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Sent" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Sent_Translated" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Received" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Received_Translated" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created_Date" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Status" type="tns:Enum_Log_Status" />
+              <s:element minOccurs="1" maxOccurs="1" name="Inbound_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="To_Be_Processed_Flag" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="To_Be_Acked" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Translated_Out" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Translated_In" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Received" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Acked" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Sent" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Send_Receipt" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReceiptOutData" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReceiptInData" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Receipt_Sent" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Date_Receipt_Received" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="RequestType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MessageCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MessageType" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="FaxLogId" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="FaxStatus" type="tns:Enum_Fax_Status" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="Enum_Log_Status">
+        <s:restriction base="s:string">
+          <s:enumeration value="NOT_SPECIFIED" />
+          <s:enumeration value="COMPLETE" />
+          <s:enumeration value="ERROR" />
+          <s:enumeration value="SEND_IA" />
+          <s:enumeration value="SENDING_IA" />
+          <s:enumeration value="SENT_IA" />
+          <s:enumeration value="TRANSLATE_IN" />
+          <s:enumeration value="TRANSLATING_IN" />
+          <s:enumeration value="TRANSLATE_OUT" />
+          <s:enumeration value="TRANSLATING_OUT" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="Enum_Fax_Status">
+        <s:restriction base="s:string">
+          <s:enumeration value="NA" />
+          <s:enumeration value="PRE_ERROR" />
+          <s:enumeration value="SENDING" />
+          <s:enumeration value="FAILED" />
+          <s:enumeration value="COMPLETED" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="SearchLogMostRecent">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Quantity" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchLogMostRecentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchLogMostRecentResult" type="tns:ArrayOfLog_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendOrder">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:Order_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Order_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="myOrder" type="tns:Order_Information" />
+              <s:element minOccurs="1" maxOccurs="1" name="AllowDuplicates" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="SendOrderResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendOrderResult" type="tns:Order_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidateAddress">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:ValidateAddress_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ValidateAddress_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="myAddress" type="tns:Address_Information" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="ValidateAddressResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ValidateAddressResult" type="tns:ValidateAddress_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ValidateAddress_Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="AddressList" type="tns:Address_Information" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="ListedNames" type="tns:ListedName" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List_Working" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List_Inactive" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="TN_List_Quick_Service" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="WorkingService" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="QuickService" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ListedName">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ClassOfService" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ValidateAddressByTN">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:ValidateAddressByTN_Request" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ValidateAddressByTN_Request">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseRequest">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="TN" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="ValidateAddressByTNResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ValidateAddressByTNResult" type="tns:ValidateAddress_Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ViewLogEntry">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="LogId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ViewLogEntryResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ViewLogEntryResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetLog">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecureKey" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="LogId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetLogResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetLogResult" type="tns:Log_Information" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BellSouthEmailPDF">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="myRequest" type="tns:Order_Request" />
+            <s:element minOccurs="0" maxOccurs="1" name="EmailTo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BellSouthEmailPDFResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BellSouthEmailPDFResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="ArrayOfFax_Log_Information" nillable="true" type="tns:ArrayOfFax_Log_Information" />
+      <s:element name="Order_Response" nillable="true" type="tns:Order_Response" />
+      <s:element name="Profile_Information" nillable="true" type="tns:Profile_Information" />
+      <s:element name="Notification_Information" nillable="true" type="tns:Notification_Information" />
+      <s:element name="OrderStatus_Response" nillable="true" type="tns:OrderStatus_Response" />
+      <s:element name="BaseResponse" nillable="true" type="tns:BaseResponse" />
+      <s:element name="Certificate_Information" nillable="true" type="tns:Certificate_Information" />
+      <s:element name="ArrayOfProfile_Information" nillable="true" type="tns:ArrayOfProfile_Information" />
+      <s:element name="Loss_Response" nillable="true" type="tns:Loss_Response" />
+      <s:element name="Notifications_Response" nillable="true" type="tns:Notifications_Response" />
+      <s:element name="ArrayOfLog_Information" nillable="true" type="tns:ArrayOfLog_Information" />
+      <s:element name="Log_Information" nillable="true" type="tns:Log_Information" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="HelloWorldSoapIn">
+    <wsdl:part name="parameters" element="tns:HelloWorld" />
+  </wsdl:message>
+  <wsdl:message name="HelloWorldSoapOut">
+    <wsdl:part name="parameters" element="tns:HelloWorldResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchByDateRange" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchByDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchByPON" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchByPONResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchErrorsByDateRange" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchErrorsByDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchSuccessByDateRange" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchSuccessByDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchPendingByDateRange" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchPendingByDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingSoapIn">
+    <wsdl:part name="parameters" element="tns:FaxSearchPending" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingSoapOut">
+    <wsdl:part name="parameters" element="tns:FaxSearchPendingResponse" />
+  </wsdl:message>
+  <wsdl:message name="AvailabilitySoapIn">
+    <wsdl:part name="parameters" element="tns:Availability" />
+  </wsdl:message>
+  <wsdl:message name="AvailabilitySoapOut">
+    <wsdl:part name="parameters" element="tns:AvailabilityResponse" />
+  </wsdl:message>
+  <wsdl:message name="AvailableTNsSoapIn">
+    <wsdl:part name="parameters" element="tns:AvailableTNs" />
+  </wsdl:message>
+  <wsdl:message name="AvailableTNsSoapOut">
+    <wsdl:part name="parameters" element="tns:AvailableTNsResponse" />
+  </wsdl:message>
+  <wsdl:message name="CancelTNSoapIn">
+    <wsdl:part name="parameters" element="tns:CancelTN" />
+  </wsdl:message>
+  <wsdl:message name="CancelTNSoapOut">
+    <wsdl:part name="parameters" element="tns:CancelTNResponse" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderSoapIn">
+    <wsdl:part name="parameters" element="tns:CancelOrder" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderSoapOut">
+    <wsdl:part name="parameters" element="tns:CancelOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="EstimateDueDateSoapIn">
+    <wsdl:part name="parameters" element="tns:EstimateDueDate" />
+  </wsdl:message>
+  <wsdl:message name="EstimateDueDateSoapOut">
+    <wsdl:part name="parameters" element="tns:EstimateDueDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileSoapIn">
+    <wsdl:part name="parameters" element="tns:LookupProfile" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileSoapOut">
+    <wsdl:part name="parameters" element="tns:LookupProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="StatusChangeOrderWithBANSoapIn">
+    <wsdl:part name="parameters" element="tns:StatusChangeOrderWithBAN" />
+  </wsdl:message>
+  <wsdl:message name="StatusChangeOrderWithBANSoapOut">
+    <wsdl:part name="parameters" element="tns:StatusChangeOrderWithBANResponse" />
+  </wsdl:message>
+  <wsdl:message name="StatusChangeOrderSoapIn">
+    <wsdl:part name="parameters" element="tns:StatusChangeOrder" />
+  </wsdl:message>
+  <wsdl:message name="StatusChangeOrderSoapOut">
+    <wsdl:part name="parameters" element="tns:StatusChangeOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:OrderStatus" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:OrderStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSSoapIn">
+    <wsdl:part name="parameters" element="tns:GetNotificationCSOTS" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSSoapOut">
+    <wsdl:part name="parameters" element="tns:GetNotificationCSOTSResponse" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleSoapIn">
+    <wsdl:part name="parameters" element="tns:OrderStatusSimple" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleSoapOut">
+    <wsdl:part name="parameters" element="tns:OrderStatusSimpleResponse" />
+  </wsdl:message>
+  <wsdl:message name="CustomerServiceRecordSoapIn">
+    <wsdl:part name="parameters" element="tns:CustomerServiceRecord" />
+  </wsdl:message>
+  <wsdl:message name="CustomerServiceRecordSoapOut">
+    <wsdl:part name="parameters" element="tns:CustomerServiceRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseSoapIn">
+    <wsdl:part name="parameters" element="tns:LookupResponse" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseSoapOut">
+    <wsdl:part name="parameters" element="tns:LookupResponseResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCertificate" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCertificateResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileSoapIn">
+    <wsdl:part name="parameters" element="tns:GetProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileSoapOut">
+    <wsdl:part name="parameters" element="tns:GetProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetProfiles" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetProfilesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetLossSoapIn">
+    <wsdl:part name="parameters" element="tns:GetLoss" />
+  </wsdl:message>
+  <wsdl:message name="GetLossSoapOut">
+    <wsdl:part name="parameters" element="tns:GetLossResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUnprocessedNotifications" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUnprocessedNotificationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ProcessNotificationSoapIn">
+    <wsdl:part name="parameters" element="tns:ProcessNotification" />
+  </wsdl:message>
+  <wsdl:message name="ProcessNotificationSoapOut">
+    <wsdl:part name="parameters" element="tns:ProcessNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReserveTNSoapIn">
+    <wsdl:part name="parameters" element="tns:ReserveTN" />
+  </wsdl:message>
+  <wsdl:message name="ReserveTNSoapOut">
+    <wsdl:part name="parameters" element="tns:ReserveTNResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchLogDateRange" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchLogDateRangeResponse" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentSoapIn">
+    <wsdl:part name="parameters" element="tns:SearchLogMostRecent" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentSoapOut">
+    <wsdl:part name="parameters" element="tns:SearchLogMostRecentResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendOrderSoapIn">
+    <wsdl:part name="parameters" element="tns:SendOrder" />
+  </wsdl:message>
+  <wsdl:message name="SendOrderSoapOut">
+    <wsdl:part name="parameters" element="tns:SendOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddressSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateAddress" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddressSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddressByTNSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateAddressByTN" />
+  </wsdl:message>
+  <wsdl:message name="ValidateAddressByTNSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateAddressByTNResponse" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntrySoapIn">
+    <wsdl:part name="parameters" element="tns:ViewLogEntry" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntrySoapOut">
+    <wsdl:part name="parameters" element="tns:ViewLogEntryResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetLogSoapIn">
+    <wsdl:part name="parameters" element="tns:GetLog" />
+  </wsdl:message>
+  <wsdl:message name="GetLogSoapOut">
+    <wsdl:part name="parameters" element="tns:GetLogResponse" />
+  </wsdl:message>
+  <wsdl:message name="BellSouthEmailPDFSoapIn">
+    <wsdl:part name="parameters" element="tns:BellSouthEmailPDF" />
+  </wsdl:message>
+  <wsdl:message name="BellSouthEmailPDFSoapOut">
+    <wsdl:part name="parameters" element="tns:BellSouthEmailPDFResponse" />
+  </wsdl:message>
+  <wsdl:message name="HelloWorldHttpGetIn" />
+  <wsdl:message name="HelloWorldHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="PON" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="ProfileId" type="s:string" />
+    <wsdl:part name="Pon" type="s:string" />
+    <wsdl:part name="Tn" type="s:string" />
+    <wsdl:part name="ProductType" type="s:string" />
+    <wsdl:part name="State" type="s:string" />
+    <wsdl:part name="OrderType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderHttpGetOut">
+    <wsdl:part name="Body" element="tns:Order_Response" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+    <wsdl:part name="State" type="s:string" />
+    <wsdl:part name="Preorder" type="s:string" />
+    <wsdl:part name="ProductType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileHttpGetOut">
+    <wsdl:part name="Body" element="tns:Profile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSHttpGetIn">
+    <wsdl:part name="PON" type="s:string" />
+    <wsdl:part name="Username" type="s:string" />
+    <wsdl:part name="Password" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSHttpGetOut">
+    <wsdl:part name="Body" element="tns:Notification_Information" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleHttpGetIn">
+    <wsdl:part name="PON" type="s:string" />
+    <wsdl:part name="ProfileId" type="s:string" />
+    <wsdl:part name="SecureKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleHttpGetOut">
+    <wsdl:part name="Body" element="tns:OrderStatus_Response" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseHttpGetOut">
+    <wsdl:part name="Body" element="tns:BaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Id" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateHttpGetOut">
+    <wsdl:part name="Body" element="tns:Certificate_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Id" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileHttpGetOut">
+    <wsdl:part name="Body" element="tns:Profile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfProfile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetLossHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLossHttpGetOut">
+    <wsdl:part name="Body" element="tns:Loss_Response" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="AutoProcess" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsHttpGetOut">
+    <wsdl:part name="Body" element="tns:Notifications_Response" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfLog_Information" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Quantity" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfLog_Information" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntryHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntryHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLogHttpGetIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLogHttpGetOut">
+    <wsdl:part name="Body" element="tns:Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="HelloWorldHttpPostIn" />
+  <wsdl:message name="HelloWorldHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="PON" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchByPONHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchErrorsByDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchSuccessByDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingByDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="FaxSearchPendingHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfFax_Log_Information" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="ProfileId" type="s:string" />
+    <wsdl:part name="Pon" type="s:string" />
+    <wsdl:part name="Tn" type="s:string" />
+    <wsdl:part name="ProductType" type="s:string" />
+    <wsdl:part name="State" type="s:string" />
+    <wsdl:part name="OrderType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CancelOrderHttpPostOut">
+    <wsdl:part name="Body" element="tns:Order_Response" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+    <wsdl:part name="State" type="s:string" />
+    <wsdl:part name="Preorder" type="s:string" />
+    <wsdl:part name="ProductType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LookupProfileHttpPostOut">
+    <wsdl:part name="Body" element="tns:Profile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSHttpPostIn">
+    <wsdl:part name="PON" type="s:string" />
+    <wsdl:part name="Username" type="s:string" />
+    <wsdl:part name="Password" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetNotificationCSOTSHttpPostOut">
+    <wsdl:part name="Body" element="tns:Notification_Information" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleHttpPostIn">
+    <wsdl:part name="PON" type="s:string" />
+    <wsdl:part name="ProfileId" type="s:string" />
+    <wsdl:part name="SecureKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OrderStatusSimpleHttpPostOut">
+    <wsdl:part name="Body" element="tns:OrderStatus_Response" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LookupResponseHttpPostOut">
+    <wsdl:part name="Body" element="tns:BaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Id" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetCertificateHttpPostOut">
+    <wsdl:part name="Body" element="tns:Certificate_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Id" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetProfileHttpPostOut">
+    <wsdl:part name="Body" element="tns:Profile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetProfilesHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfProfile_Information" />
+  </wsdl:message>
+  <wsdl:message name="GetLossHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLossHttpPostOut">
+    <wsdl:part name="Body" element="tns:Loss_Response" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="AutoProcess" type="s:string" />
+    <wsdl:part name="CarrierCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetUnprocessedNotificationsHttpPostOut">
+    <wsdl:part name="Body" element="tns:Notifications_Response" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="DateStart" type="s:string" />
+    <wsdl:part name="DateEnd" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogDateRangeHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfLog_Information" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="Quantity" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SearchLogMostRecentHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfLog_Information" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntryHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ViewLogEntryHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLogHttpPostIn">
+    <wsdl:part name="SecureKey" type="s:string" />
+    <wsdl:part name="LogId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetLogHttpPostOut">
+    <wsdl:part name="Body" element="tns:Log_Information" />
+  </wsdl:message>
+  <wsdl:portType name="GatewaySoap">
+    <wsdl:operation name="HelloWorld">
+      <wsdl:input message="tns:HelloWorldSoapIn" />
+      <wsdl:output message="tns:HelloWorldSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status for a given DATE RANGE</documentation>
+      <wsdl:input message="tns:FaxSearchByDateRangeSoapIn" />
+      <wsdl:output message="tns:FaxSearchByDateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status by PON</documentation>
+      <wsdl:input message="tns:FaxSearchByPONSoapIn" />
+      <wsdl:output message="tns:FaxSearchByPONSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an error condition for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchErrorsByDateRangeSoapIn" />
+      <wsdl:output message="tns:FaxSearchErrorsByDateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes that successfully completed for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchSuccessByDateRangeSoapIn" />
+      <wsdl:output message="tns:FaxSearchSuccessByDateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchPendingByDateRangeSoapIn" />
+      <wsdl:output message="tns:FaxSearchPendingByDateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status</documentation>
+      <wsdl:input message="tns:FaxSearchPendingSoapIn" />
+      <wsdl:output message="tns:FaxSearchPendingSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Availability">
+      <wsdl:input message="tns:AvailabilitySoapIn" />
+      <wsdl:output message="tns:AvailabilitySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AvailableTNs">
+      <wsdl:input message="tns:AvailableTNsSoapIn" />
+      <wsdl:output message="tns:AvailableTNsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelTN">
+      <wsdl:input message="tns:CancelTNSoapIn" />
+      <wsdl:output message="tns:CancelTNSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Constructs a simple order transaction to cancel an order with the carrier.  Returns an Order_Response object.</documentation>
+      <wsdl:input message="tns:CancelOrderSoapIn" />
+      <wsdl:output message="tns:CancelOrderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="EstimateDueDate">
+      <wsdl:input message="tns:EstimateDueDateSoapIn" />
+      <wsdl:output message="tns:EstimateDueDateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <wsdl:input message="tns:LookupProfileSoapIn" />
+      <wsdl:output message="tns:LookupProfileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="StatusChangeOrderWithBAN">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Constructs a simple order transaction to deny/restore/disconnect a TN with the carrier.  Returns an Order_Response object.</documentation>
+      <wsdl:input message="tns:StatusChangeOrderWithBANSoapIn" />
+      <wsdl:output message="tns:StatusChangeOrderWithBANSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="StatusChangeOrder">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Constructs a simple order transaction to deny/restore/disconnect a TN with the carrier.  Returns an Order_Response object.</documentation>
+      <wsdl:input message="tns:StatusChangeOrderSoapIn" />
+      <wsdl:output message="tns:StatusChangeOrderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatus">
+      <wsdl:input message="tns:OrderStatusSoapIn" />
+      <wsdl:output message="tns:OrderStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <wsdl:input message="tns:GetNotificationCSOTSSoapIn" />
+      <wsdl:output message="tns:GetNotificationCSOTSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <wsdl:input message="tns:OrderStatusSimpleSoapIn" />
+      <wsdl:output message="tns:OrderStatusSimpleSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CustomerServiceRecord">
+      <wsdl:input message="tns:CustomerServiceRecordSoapIn" />
+      <wsdl:output message="tns:CustomerServiceRecordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <wsdl:input message="tns:LookupResponseSoapIn" />
+      <wsdl:output message="tns:LookupResponseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <wsdl:input message="tns:GetCertificateSoapIn" />
+      <wsdl:output message="tns:GetCertificateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <wsdl:input message="tns:GetProfileSoapIn" />
+      <wsdl:output message="tns:GetProfileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <wsdl:input message="tns:GetProfilesSoapIn" />
+      <wsdl:output message="tns:GetProfilesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <wsdl:input message="tns:GetLossSoapIn" />
+      <wsdl:output message="tns:GetLossSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <wsdl:input message="tns:GetUnprocessedNotificationsSoapIn" />
+      <wsdl:output message="tns:GetUnprocessedNotificationsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ProcessNotification">
+      <wsdl:input message="tns:ProcessNotificationSoapIn" />
+      <wsdl:output message="tns:ProcessNotificationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReserveTN">
+      <wsdl:input message="tns:ReserveTNSoapIn" />
+      <wsdl:output message="tns:ReserveTNSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <wsdl:input message="tns:SearchLogDateRangeSoapIn" />
+      <wsdl:output message="tns:SearchLogDateRangeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <wsdl:input message="tns:SearchLogMostRecentSoapIn" />
+      <wsdl:output message="tns:SearchLogMostRecentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendOrder">
+      <wsdl:input message="tns:SendOrderSoapIn" />
+      <wsdl:output message="tns:SendOrderSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddress">
+      <wsdl:input message="tns:ValidateAddressSoapIn" />
+      <wsdl:output message="tns:ValidateAddressSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddressByTN">
+      <wsdl:input message="tns:ValidateAddressByTNSoapIn" />
+      <wsdl:output message="tns:ValidateAddressByTNSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <wsdl:input message="tns:ViewLogEntrySoapIn" />
+      <wsdl:output message="tns:ViewLogEntrySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <wsdl:input message="tns:GetLogSoapIn" />
+      <wsdl:output message="tns:GetLogSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="BellSouthEmailPDF">
+      <wsdl:input message="tns:BellSouthEmailPDFSoapIn" />
+      <wsdl:output message="tns:BellSouthEmailPDFSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="GatewayHttpGet">
+    <wsdl:operation name="HelloWorld">
+      <wsdl:input message="tns:HelloWorldHttpGetIn" />
+      <wsdl:output message="tns:HelloWorldHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status for a given DATE RANGE</documentation>
+      <wsdl:input message="tns:FaxSearchByDateRangeHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchByDateRangeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status by PON</documentation>
+      <wsdl:input message="tns:FaxSearchByPONHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchByPONHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an error condition for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchErrorsByDateRangeHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchErrorsByDateRangeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes that successfully completed for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchSuccessByDateRangeHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchSuccessByDateRangeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchPendingByDateRangeHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchPendingByDateRangeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status</documentation>
+      <wsdl:input message="tns:FaxSearchPendingHttpGetIn" />
+      <wsdl:output message="tns:FaxSearchPendingHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Constructs a simple order transaction to cancel an order with the carrier.  Returns an Order_Response object.</documentation>
+      <wsdl:input message="tns:CancelOrderHttpGetIn" />
+      <wsdl:output message="tns:CancelOrderHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <wsdl:input message="tns:LookupProfileHttpGetIn" />
+      <wsdl:output message="tns:LookupProfileHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <wsdl:input message="tns:GetNotificationCSOTSHttpGetIn" />
+      <wsdl:output message="tns:GetNotificationCSOTSHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <wsdl:input message="tns:OrderStatusSimpleHttpGetIn" />
+      <wsdl:output message="tns:OrderStatusSimpleHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <wsdl:input message="tns:LookupResponseHttpGetIn" />
+      <wsdl:output message="tns:LookupResponseHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <wsdl:input message="tns:GetCertificateHttpGetIn" />
+      <wsdl:output message="tns:GetCertificateHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <wsdl:input message="tns:GetProfileHttpGetIn" />
+      <wsdl:output message="tns:GetProfileHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <wsdl:input message="tns:GetProfilesHttpGetIn" />
+      <wsdl:output message="tns:GetProfilesHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <wsdl:input message="tns:GetLossHttpGetIn" />
+      <wsdl:output message="tns:GetLossHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <wsdl:input message="tns:GetUnprocessedNotificationsHttpGetIn" />
+      <wsdl:output message="tns:GetUnprocessedNotificationsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <wsdl:input message="tns:SearchLogDateRangeHttpGetIn" />
+      <wsdl:output message="tns:SearchLogDateRangeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <wsdl:input message="tns:SearchLogMostRecentHttpGetIn" />
+      <wsdl:output message="tns:SearchLogMostRecentHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <wsdl:input message="tns:ViewLogEntryHttpGetIn" />
+      <wsdl:output message="tns:ViewLogEntryHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <wsdl:input message="tns:GetLogHttpGetIn" />
+      <wsdl:output message="tns:GetLogHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="GatewayHttpPost">
+    <wsdl:operation name="HelloWorld">
+      <wsdl:input message="tns:HelloWorldHttpPostIn" />
+      <wsdl:output message="tns:HelloWorldHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status for a given DATE RANGE</documentation>
+      <wsdl:input message="tns:FaxSearchByDateRangeHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchByDateRangeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes, the associated PON's, and the status by PON</documentation>
+      <wsdl:input message="tns:FaxSearchByPONHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchByPONHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an error condition for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchErrorsByDateRangeHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchErrorsByDateRangeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes that successfully completed for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchSuccessByDateRangeHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchSuccessByDateRangeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status for the given date range</documentation>
+      <wsdl:input message="tns:FaxSearchPendingByDateRangeHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchPendingByDateRangeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Gets a list of faxes with an PENDING status</documentation>
+      <wsdl:input message="tns:FaxSearchPendingHttpPostIn" />
+      <wsdl:output message="tns:FaxSearchPendingHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Constructs a simple order transaction to cancel an order with the carrier.  Returns an Order_Response object.</documentation>
+      <wsdl:input message="tns:CancelOrderHttpPostIn" />
+      <wsdl:output message="tns:CancelOrderHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <wsdl:input message="tns:LookupProfileHttpPostIn" />
+      <wsdl:output message="tns:LookupProfileHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <wsdl:input message="tns:GetNotificationCSOTSHttpPostIn" />
+      <wsdl:output message="tns:GetNotificationCSOTSHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <wsdl:input message="tns:OrderStatusSimpleHttpPostIn" />
+      <wsdl:output message="tns:OrderStatusSimpleHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <wsdl:input message="tns:LookupResponseHttpPostIn" />
+      <wsdl:output message="tns:LookupResponseHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <wsdl:input message="tns:GetCertificateHttpPostIn" />
+      <wsdl:output message="tns:GetCertificateHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <wsdl:input message="tns:GetProfileHttpPostIn" />
+      <wsdl:output message="tns:GetProfileHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <wsdl:input message="tns:GetProfilesHttpPostIn" />
+      <wsdl:output message="tns:GetProfilesHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <wsdl:input message="tns:GetLossHttpPostIn" />
+      <wsdl:output message="tns:GetLossHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <wsdl:input message="tns:GetUnprocessedNotificationsHttpPostIn" />
+      <wsdl:output message="tns:GetUnprocessedNotificationsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <wsdl:input message="tns:SearchLogDateRangeHttpPostIn" />
+      <wsdl:output message="tns:SearchLogDateRangeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <wsdl:input message="tns:SearchLogMostRecentHttpPostIn" />
+      <wsdl:output message="tns:SearchLogMostRecentHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <wsdl:input message="tns:ViewLogEntryHttpPostIn" />
+      <wsdl:output message="tns:ViewLogEntryHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <wsdl:input message="tns:GetLogHttpPostIn" />
+      <wsdl:output message="tns:GetLogHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="GatewaySoap" type="tns:GatewaySoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <wsdl:operation name="HelloWorld">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/HelloWorld" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchByDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchByPON" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchErrorsByDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchSuccessByDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchPendingByDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/FaxSearchPending" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Availability">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/Availability" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AvailableTNs">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/AvailableTNs" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelTN">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/CancelTN" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/CancelOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EstimateDueDate">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/EstimateDueDate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/LookupProfile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="StatusChangeOrderWithBAN">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/StatusChangeOrderWithBAN" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="StatusChangeOrder">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/StatusChangeOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatus">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/OrderStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetNotificationCSOTS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/OrderStatusSimple" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CustomerServiceRecord">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/CustomerServiceRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/LookupResponse" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetCertificate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetProfile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetProfiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetLoss" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetUnprocessedNotifications" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProcessNotification">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/ProcessNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReserveTN">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/ReserveTN" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/SearchLogDateRange" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/SearchLogMostRecent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendOrder">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/SendOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddress">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/ValidateAddress" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateAddressByTN">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/ValidateAddressByTN" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/ViewLogEntry" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/GetLog" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BellSouthEmailPDF">
+      <soap:operation soapAction="http://localhost/oc.portal.gravity/BellSouthEmailPDF" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GatewayHttpGet" type="tns:GatewayHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="HelloWorld">
+      <http:operation location="/HelloWorld" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <http:operation location="/FaxSearchByDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <http:operation location="/FaxSearchByPON" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <http:operation location="/FaxSearchErrorsByDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <http:operation location="/FaxSearchSuccessByDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <http:operation location="/FaxSearchPendingByDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <http:operation location="/FaxSearchPending" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <http:operation location="/CancelOrder" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <http:operation location="/LookupProfile" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <http:operation location="/GetNotificationCSOTS" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <http:operation location="/OrderStatusSimple" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <http:operation location="/LookupResponse" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <http:operation location="/GetCertificate" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <http:operation location="/GetProfile" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <http:operation location="/GetProfiles" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <http:operation location="/GetLoss" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <http:operation location="/GetUnprocessedNotifications" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <http:operation location="/SearchLogDateRange" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <http:operation location="/SearchLogMostRecent" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <http:operation location="/ViewLogEntry" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <http:operation location="/GetLog" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GatewayHttpPost" type="tns:GatewayHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="HelloWorld">
+      <http:operation location="/HelloWorld" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByDateRange">
+      <http:operation location="/FaxSearchByDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchByPON">
+      <http:operation location="/FaxSearchByPON" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchErrorsByDateRange">
+      <http:operation location="/FaxSearchErrorsByDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchSuccessByDateRange">
+      <http:operation location="/FaxSearchSuccessByDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPendingByDateRange">
+      <http:operation location="/FaxSearchPendingByDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FaxSearchPending">
+      <http:operation location="/FaxSearchPending" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOrder">
+      <http:operation location="/CancelOrder" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupProfile">
+      <http:operation location="/LookupProfile" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationCSOTS">
+      <http:operation location="/GetNotificationCSOTS" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderStatusSimple">
+      <http:operation location="/OrderStatusSimple" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupResponse">
+      <http:operation location="/LookupResponse" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <http:operation location="/GetCertificate" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfile">
+      <http:operation location="/GetProfile" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProfiles">
+      <http:operation location="/GetProfiles" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLoss">
+      <http:operation location="/GetLoss" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUnprocessedNotifications">
+      <http:operation location="/GetUnprocessedNotifications" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogDateRange">
+      <http:operation location="/SearchLogDateRange" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SearchLogMostRecent">
+      <http:operation location="/SearchLogMostRecent" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ViewLogEntry">
+      <http:operation location="/ViewLogEntry" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLog">
+      <http:operation location="/GetLog" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Gateway">
+    <wsdl:port name="GatewaySoap" binding="tns:GatewaySoap">
+      <soap:address location="http://gravity.telecomh2o.com/gateway.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GatewayHttpGet" binding="tns:GatewayHttpGet">
+      <http:address location="http://gravity.telecomh2o.com/gateway.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GatewayHttpPost" binding="tns:GatewayHttpPost">
+      <http:address location="http://gravity.telecomh2o.com/gateway.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	creationComplete="Controller.OnCreationComplete()"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.states.State;
+			import UI.AppController;
+			
+			[Bindable]
+			public var Controller:DocumentListController;
+
+			[Bindable]
+			private var Model:DocumentListModel;
+			
+			public function set Parent(parent:AppController):void{
+				Controller = new DocumentListController(this as DocumentListView, parent);
+				Model = Controller.Model;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%">
+	
+		<mx:HDividedBox width="100%" height="100%" horizontalGap="4">
+			
+			<mx:VBox width="60%" height="100%" backgroundColor="#eeeeee"
+				paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+				borderColor="#dddddd" borderStyle="solid" cornerRadius="5">
+				
+				<mx:DataGrid id="documentList" width="100%" height="100%"
+					dataProvider="{Model.Documents}"
+					change="Controller.OnDocListChange()"
+					>
+					<mx:columns>
+		                <mx:DataGridColumn headerText="Id" dataField="DocID" width="50"/>
+		                <mx:DataGridColumn headerText="Document No" dataField="DocumentNo" width="100"/>
+		                <mx:DataGridColumn headerText="Volume" dataField="Vol" width="80"/>
+		                <mx:DataGridColumn headerText="Page" dataField="Pg" width="80"/>
+		                <mx:DataGridColumn headerText="State" dataField="State" width="120"/>
+		                <mx:DataGridColumn headerText="County" dataField="County" width="120"/>
+					</mx:columns>
+				</mx:DataGrid>
+
+			</mx:VBox>
+			
+			<mx:VBox width="40%" height="100%" backgroundColor="#eeeeee"
+				paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+				borderColor="#dddddd" borderStyle="solid" cornerRadius="5">
+				<mx:Label text="Document Info:" fontWeight="bold"/>
+				<mx:Canvas width="100%" height="100%" backgroundColor="#ffffff"	
+					borderColor="#dddddd" borderStyle="solid" horizontalScrollPolicy="off">
+
+					<mx:Form id="formView" width="100%" height="100%">
+						<mx:FormItem label="Document ID:">
+							<mx:Label text="{Controller.Model.CurrentDocument.DocID}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Document type Id:">
+							<mx:Label text="{Controller.Model.CurrentDocument.DocTypeId}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:Spacer height="10"/>
+						<mx:FormItem label="State:">
+							<mx:Label text="{Controller.Model.CurrentDocument.State}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="County:">
+							<mx:Label text="{Controller.Model.CurrentDocument.County}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:Spacer height="10"/>
+						<mx:FormItem label="RPR">
+							<mx:Label text="{Controller.Model.CurrentDocument.IsPublic ? 'yes' : 'no'}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Doc No:">
+							<mx:Label text="{Controller.Model.CurrentDocument.DocumentNo}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Volume:">
+							<mx:Label text="{Controller.Model.CurrentDocument.Vol}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Page:">
+							<mx:Label text="{Controller.Model.CurrentDocument.Pg}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Date Filed:">
+							<mx:Label text="{Controller.Model.CurrentDocument.DateFiled.toDateString()}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Date Signed:">
+							<mx:Label text="{Controller.Model.CurrentDocument.DateSigned.toDateString()}" fontWeight="bold"/>
+						</mx:FormItem>
+						<mx:FormItem label="Research Note:" height="100%" width="100%">
+							<mx:TextArea width="100%" height="100%" editable="false" text="{Controller.Model.CurrentDocument.ResearchNote}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Document Image:">
+							<mx:LinkButton label="Show"/>
+						</mx:FormItem>
+					</mx:Form>
+					
+				</mx:Canvas>
+			</mx:VBox>
+
+		</mx:HDividedBox>
+		
+		<mx:ControlBar width="100%">
+			<mx:Spacer width="100%"/>
+<!--			<mx:Button id="btnNew" label="Create new" click="Controller.OnCreateNewDoc()" enabled="false"/>
+			<mx:Button id="btnCopy" label="Copy" enabled="{documentList.selectedItem != null}" click="Controller.OnCopyDoc()"/>
+			<mx:Button id="btnDelete" label="Delete" enabled="{documentList.selectedItem != null}" click="Controller.OnDeleteDoc()"/>
+			<mx:Button id="btnEdit" label="Edit" enabled="{documentList.selectedItem != null}" click="Controller.OnEditDoc()"/>
+ -->		</mx:ControlBar>
+
+	</mx:VBox>
+
+</mx:Canvas>

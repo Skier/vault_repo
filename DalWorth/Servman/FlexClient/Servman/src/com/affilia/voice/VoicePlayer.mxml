@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="initComponent()">
+    
+	<mx:Script>
+		<![CDATA[
+		    import mx.collections.XMLListCollection;
+		    import mx.collections.ArrayCollection;
+		    import mx.rpc.events.ResultEvent;
+		    import flash.utils.Timer;
+		    
+		    [Embed(source="/assets/icons16/control.png")]
+		    [Bindable]
+		    private var iconPlay:Class;
+		    
+		    [Embed(source="/assets/icons16/control-pause.png")]
+		    [Bindable]
+		    private var iconPause:Class;
+		    
+		    [Embed(source="/assets/icons16/control-stop-square.png")]
+		    [Bindable]
+		    private var iconStop:Class;
+		    
+		    [Bindable]
+		    public var showHeader:Boolean = true;
+			
+		    private var _layout:String = "vertical";
+		    [Bindable] 
+		    [Inspectable(category="General", enumeration="vertical,horizontal", defaultValue="vertical")]
+		    public function get layout():String { return _layout; }
+		    public function set layout(value:String):void 
+		    {
+		    	_layout = value;
+		    	if (boxContent != null)
+		    		boxContent.direction = value;
+		    }
+			
+		    private var _voiceFileUrl:String;
+		    [Bindable] 
+		    public function get voiceFileUrl():String { return _voiceFileUrl; }
+		    public function set voiceFileUrl(value:String):void 
+		    {
+		    	_voiceFileUrl = value;
+		    	loadVoice();
+		    }
+			
+			[Bindable] private var isLoading:Boolean = false;
+			[Bindable] private var isPlaying:Boolean = false;
+			
+			private var s:SoundFacade;
+			
+			private var positionTimer:Timer;
+            			
+			private function initComponent():void
+			{
+                SoundMixer.bufferTime = 5000;
+			}
+			
+			private function loadVoice():void
+			{
+				if (voiceFileUrl && voiceFileUrl.length > 0)
+				{
+					boxContent.enabled = true;
+
+				    pbVoice.setProgress(0, 1);
+				    pbVoice.label = "Loading";
+
+					if (s != null && s.isPlaying)
+					{
+					    s.stop();
+					}
+					
+    				btnPlay.enabled = false;
+    				btnPause.enabled = false;
+    				btnStop.enabled = false;
+
+					s = new SoundFacade(voiceFileUrl, true, false, true, 100000);
+					
+					s.addEventListener(flash.events.ProgressEvent.PROGRESS, onLoadProgress);
+					s.addEventListener(flash.events.Event.COMPLETE, onLoadComplete);
+
+					s.addEventListener("playProgress", onPlayProgress);
+					s.addEventListener(flash.events.Event.SOUND_COMPLETE, onPlayComplete);
+				} else 
+				{
+					boxContent.enabled = false;
+				}
+			}
+
+			private function onLoadProgress(evt:ProgressEvent):void
+			{
+				pbVoice.setProgress(evt.bytesLoaded, evt.bytesTotal);
+			}
+			
+			private function onLoadComplete(evt:Event):void
+			{
+   				btnPlay.enabled = true;
+			    pbVoice.setProgress(0, 1);
+			    pbVoice.label = "";
+			}
+			
+			private function onPlayProgress(evt:ProgressEvent):void
+			{
+				pbVoice.setProgress(evt.bytesLoaded, evt.bytesTotal);
+			}
+			
+			private function onPlayComplete(evt:Event):void
+			{
+				btnPlay.enabled = true;
+				btnPause.enabled = false;
+				btnStop.enabled = false;
+				pbVoice.setProgress(0, 1);
+			}
+				
+			private function onPlayBtn(evt:Event):void
+			{
+				if (s.isPaused) 
+					s.resume();
+				else 
+					s.play();
+
+   				btnPlay.enabled = false;
+   				btnPause.enabled = true;
+   				btnStop.enabled = true;
+			}
+
+			private function onPauseBtn(evt:Event):void
+			{
+				s.pause();
+				
+   				btnPlay.enabled = true;
+   				btnPause.enabled = false;
+   				btnStop.enabled = true;
+			}
+			
+			public function stopPlaying():void 
+			{
+				if (s != null && s.isPlaying)
+				    s.stop();
+				pbVoice.setProgress(0, 1);
+			}
+			
+			private function onStopBtn(evt:Event):void
+			{
+				stopPlaying();
+				
+				btnPlay.enabled = true;
+				btnPause.enabled = false;
+				btnStop.enabled = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Box id="boxContent" width="100%" height="100%" verticalAlign="middle"
+		direction="{layout}"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		borderColor="#BBBBBB" borderStyle="solid" cornerRadius="2" backgroundColor="#FFEEAA"
+		enabled="false" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+		<mx:Label width="100%" fontSize="12" text="Phone call:" color="#666666"
+			visible="{showHeader}" includeInLayout="{showHeader}"/>
+
+		<mx:ProgressBar id="pbVoice"  
+		    width="100%" mode="manual" labelPlacement="center"/>
+		
+		<mx:HBox horizontalAlign="center" width="100%">
+			<mx:Button id="btnPlay" icon="{iconPlay}" toolTip="Play" height="24" width="100%" click="onPlayBtn(event)"/>
+	        <mx:Button id="btnPause" icon="{iconPause}" toolTip="Pause" height="24" width="100%" click="onPauseBtn(event)"/>
+			<mx:Button id="btnStop" icon="{iconStop}" toolTip="Stop" height="24" width="100%" click="onStopBtn(event)"/>
+		</mx:HBox>
+	</mx:Box>
+	
+</mx:VBox>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreate()" xmlns:test="com.ebs.eroof.view.test.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DynamicEvent;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.binding.utils.ChangeWatcher;
+			import com.ebs.eroof.control.test.TestSectionsDataGridController;
+			import com.ebs.eroof.model.test.TestSectionDataGridModel;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.view.section.SectionEditPopup;
+			import com.ebs.eroof.view.section.SectionDetailPanel;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+	        [Embed(source="/assets/icons16/plus.png")]
+	        [Bindable]
+	        private var iconPlus:Class;
+        
+			public function init():void 
+			{
+				controller.initModel();
+			}
+			
+			[Bindable]
+			public var selectedSection:Section;
+
+			[Bindable]
+			private var model:TestSectionDataGridModel = TestSectionDataGridModel.getInstance();
+			private var controller:TestSectionsDataGridController;
+			
+			private function openSection(section:Section):void 
+			{
+				SectionEditPopup.open(this, section).addEventListener("closeRequest", 
+					function (event:Event):void 
+					{
+						if (!model.collection.contains(section))
+							model.collection.addItem(section);
+						
+						dgSections.selectedIndex = model.collection.getItemIndex(section);
+						dgSections.scrollToIndex(model.collection.getItemIndex(section));
+					}); 
+			}
+			
+			private function deleteSection(section:Section):void 
+			{
+				if (model.collection.contains(section))
+					model.collection.removeItemAt(model.collection.getItemIndex(section));
+			}
+			
+			private function onFirstClick():void 
+			{
+				controller.getFirstPage();
+			}
+			
+			private function onPrevClick():void 
+			{
+				controller.getPrevPage();
+			}
+			
+			private function onNextClick():void 
+			{
+				controller.getNextPage();
+			}
+			
+			private function onLastClick():void 
+			{
+				controller.getLastPage();
+			}
+
+			private function onCreate():void 
+			{
+				controller = new TestSectionsDataGridController(this as UIComponent);
+                ChangeWatcher.watch(dgSections, "selectedItem", 
+	                function(event:*):void 
+	                {
+                        selectedSection = dgSections.selectedItem as Section;
+	                });
+	            dgSections.addEventListener("deleteSection", deleteSectionHandler);
+			}
+			
+			private function deleteSectionHandler(event:DynamicEvent):void 
+			{
+        		var section:Section = event.section as Section;
+        		
+        		if (section == null)
+        			return;
+        			
+				event.stopPropagation();
+				event.preventDefault();
+				
+        		Alert.show("Do you really want to delete selected Section?", "Delete Section", 
+        			Alert.YES | Alert.NO, null,
+        			function (event:CloseEvent):void 
+        			{
+        				if (event.detail == Alert.YES)
+        					deleteSection(section);
+        			});
+			}
+			
+			private function onAddClick():void 
+			{
+				var section:Section = new Section(new Sections_DTO());
+				section.sectionDTO.RelatedFacility = 150;
+
+				openSection(section);
+			}
+			
+			private function onGridDoubleClick():void 
+			{
+				var section:Section = dgSections.selectedItem as Section;
+				openSection(section);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox width="400" height="100%" verticalGap="0">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Sections:" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+				<mx:Button height="100%" width="30" cornerRadius="0" label="" icon="{iconPlus}" click="onAddClick()"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgSections" width="100%" height="100%"
+				dataProvider="{model.collection}" doubleClickEnabled="true" itemDoubleClick="onGridDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn id="colFacility" dataField="complexName" headerText="Roof Name"/>
+					<mx:DataGridColumn id="colRoofSqFt" dataField="sqFt" headerText="Sq Ft" textAlign="center"/>
+					<mx:DataGridColumn id="colEstCostPerSqFt" dataField="estCostPerSqFt" headerText="Est.Cost per Sq Ft" textAlign="right"/>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.ebs.eroof.view.test.SectionActionIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#dddddd" borderStyle="solid" cornerRadius="0" horizontalAlign="center">
+				<mx:Button label="First" click="onFirstClick()" enabled="{model.currentPageNo != 1}"/>
+				<mx:Button label="Prev" click="onPrevClick()" enabled="{model.currentPageNo != 1}"/>
+				<mx:Button label="Next" click="onNextClick()" enabled="{model.currentPageNo != model.pages}"/>
+				<mx:Button label="Last" click="onLastClick()" enabled="{model.currentPageNo != model.pages}"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox width="100%" height="100%" backgroundColor="#ffffff">
+			<test:TestSectionDetailCustom width="100%" height="100%" section="{dgSections.selectedItem as Section}"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

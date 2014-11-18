@@ -1,0 +1,66 @@
+﻿@using Dalworth.LeadCentral.Service
+@using Dalworth.LeadCentral.Web.Controllers
+@{
+    var request = HttpContext.Current.Request;
+    var response = new HttpResponse(new StringWriter());
+    var httpContext = new HttpContext(request, response);
+    var routeData = RouteTable.Routes.GetRouteData(new HttpContextWrapper(httpContext));
+
+    var currentUser = ContextHelper.GetCurrentUser();
+
+    var controllerName = string.Empty;
+    if (routeData != null)
+    {
+        var values = routeData.Values;
+        controllerName = (string)values["controller"];
+    }
+
+    var homeClass = (controllerName == "Home") ? "selected" : "";
+    var leadsClass = (controllerName == "Leads") ? "selected" : "";
+    var campaignsClass = (controllerName == "Campaigns") ? "selected" : "";
+    var partnersClass = (controllerName == "Partners") ? "selected" : "";
+    var usersClass = (controllerName == "Users") ? "selected" : "";
+    var phonesClass = (controllerName == "Phones") ? "selected" : "";
+/*
+    var billingClass = (controllerName == "Billing") ? "selected" : "";
+    var companyClass = (controllerName == "Company") ? "selected" : "";
+*/
+    var reportsClass = (controllerName == "Reports") ? "selected" : "";
+    var profileClass = (controllerName == "Profile") ? "selected" : "";
+}
+
+<div id="menu">
+  <ul class="nav left">
+    <li id="home" class="@homeClass">@Html.ActionLink("Home", "Dashboard", new { controller = "Home" }, new { @class = "top" })</li>
+    <li id="leads" class="@leadsClass">@Html.ActionLink("Leads", "Index", new { controller = "Leads" }, new { @class = "top" })</li>
+@if (!currentUser.IsBusinessPartner)
+{
+    <li id="partners" class="@partnersClass">@Html.ActionLink("Partners", "Index", new { controller = "Partners" }, new { @class = "top" })</li>
+}
+    <li id="campaigns" class="@campaignsClass">@Html.ActionLink("Campaigns", "Index", new { controller = "Campaigns" }, new { @class = "top" })</li>
+@if (!currentUser.IsBusinessPartner)
+{
+    <li id="users" class="@usersClass">@Html.ActionLink("Users", "Index", new { controller = "Users" }, new { @class = "top" })</li>
+}
+    <li id="phones" class="@phonesClass">@Html.ActionLink("Phones", "Index", new { controller = "Phones" }, new { @class = "top" })</li>
+
+@*
+@if (currentUser.IsAdmin())
+{
+    <li id="billing" class="@billingClass">@Html.ActionLink("Billing", "Index", new { controller = "Billing" }, new { @class = "top" })</li>
+    <li id="company" class="@companyClass">@Html.ActionLink("Company profile", "Index", new { controller = "Company" }, new { @class = "top" })</li>
+}
+*@
+@if (currentUser.IsAdmin() || currentUser.IsAccounter())
+{
+    <li id="reports" class="@reportsClass">@Html.ActionLink("Reports", "Index", new { controller = "Reports" }, new { @class = "top" })</li>
+}
+@if (currentUser.IsAdmin())
+{
+    <li id="profile" class="@profileClass">@Html.ActionLink("Admin", "Index", new { controller = "Profile" }, new { @class = "top" })</li>
+}
+  </ul>
+  <ul class="nav right">
+    <li id="store"><a class="top" onclick="window.open('http://www.theleadcentral.com');">Help</a></li>
+  </ul>
+</div>

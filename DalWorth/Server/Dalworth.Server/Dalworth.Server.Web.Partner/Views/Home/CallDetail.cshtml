@@ -1,0 +1,96 @@
+﻿@using Dalworth.Server.Web.Partner.Models
+@model Dalworth.Server.Web.Partner.Models.CallDetail
+
+@{
+    ViewBag.Title = "Partner In Profit - Call Detail";
+    ViewBag.Header = "Call Detail";
+    ViewBag.ActiveTopMenu = "Home";
+
+    bool isOwner = PartnerMembershipProvider.GetCurrentUser().IsOwner;
+}
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/player/player.js")"></script>
+<script type="text/javascript">
+    var apiReadyHandler = function () {
+        YAHOO.MediaPlayer.onProgress.subscribe(onProgressHandler)
+    }
+
+    var playerFlag = false;
+
+    var onProgressHandler = function (param) {
+        if (param.elapsed < 1000 && playerFlag == true) {
+            YAHOO.MediaPlayer.stop();
+            playerFlag = false;
+        }
+
+        if (param.duration > 0 && param.elapsed > param.duration - 2000) {
+            YAHOO.MediaPlayer.play(YAHOO.MediaPlayer.controller.mediaengine.currentMedia, 0);
+            playerFlag = true;
+        }
+    }
+
+    YAHOO.MediaPlayer.onAPIReady.subscribe(apiReadyHandler);
+</script>
+
+<table>
+    <tr>
+        <td width="120px" height="25px"><h4>Call Date</h4></td>
+        <td>@String.Format("{0:g}", Model.Call.CallDate)</td>
+    </tr>
+@if (isOwner){
+    <tr>
+        <td height="25px"><h4>User Name</h4></td>
+        <td>@Model.Call.UserName</td>
+    </tr>
+}
+    <tr>
+        <td height="25px"><h4>Extension</h4></td>
+        <td>@Model.Call.Extension</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Caller ID</h4></td>
+        <td>@Model.Call.CallerIdName</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>@(isOwner ? "External Number" : "Caller Number")</h4></td>
+        <td>@Model.Call.CallerNumberText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>@(isOwner ? "Incoming Did" : "Tracking Phone")</h4></td>
+        <td>@Model.Call.IncomingDidText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Call Source</h4></td>
+        <td>@Model.Call.CallSource</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Action</h4></td>
+        <td>@Model.Call.Action</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Ticket Number</h4></td>
+        <td>@Model.Call.TicketNumber</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Ticket Status</h4></td>
+        <td>@Model.Call.TicketStatusText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Closed Amount</h4></td>
+        <td>@Model.Call.ClosedAmountText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Call Duration</h4></td>
+        <td>@Model.Call.CallDurationText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Call Record</h4></td>
+        <td>
+            @(Model.Call.WavFileUrl == "" ? MvcHtmlString.Empty : MvcHtmlString.Create(string.Format("<a href='{0}' class='back-link'>Play</a>", @Model.Call.WavFileUrl)))
+        </td>        
+    </tr>
+
+</table>
+<br><br>
+<a href='@("CallLog" + Model.BackLinkQueryString)' class='back-link'>Back to Call Log</a>
+

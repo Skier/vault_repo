@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{75203AD2-1657-4574-A938-CE923D5E66C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Windows</RootNamespace>
+    <AssemblyName>Dalworth.Windows</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>Dalworth.Windows</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsCE.Forms" />
+    <Reference Include="Microsoft.WindowsMobile.Telephony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenNETCF.Windows.Forms, Version=2.1.0.0, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL" />
+    <Reference Include="system, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.dll</HintPath>
+    </Reference>
+    <Reference Include="system.data, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.data.dll</HintPath>
+    </Reference>
+    <Reference Include="system.drawing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="system.windows.forms, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.windows.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="system.xml, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="BaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BaseEvents.cs" />
+    <Compile Include="BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BaseForm.Designer.cs">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommonResources.cs" />
+    <Compile Include="CommonUIResources.Designer.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="IApplication.cs" />
+    <Compile Include="IModel.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainFormController.cs" />
+    <Compile Include="MessageDialog.cs" />
+    <Compile Include="MessageErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageErrorDialog.Designer.cs">
+      <DependentUpon>MessageErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageInformationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageInformationDialog.Designer.cs">
+      <DependentUpon>MessageInformationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageQuestionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageQuestionDialog.Designer.cs">
+      <DependentUpon>MessageQuestionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageWarningDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageWarningDialog.Designer.cs">
+      <DependentUpon>MessageWarningDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PendingTransactionDetails\PendingTransactionDetailsController.cs" />
+    <Compile Include="PendingTransactionDetails\PendingTransactionDetailsModel.cs" />
+    <Compile Include="PendingTransactionDetails\PendingTransactionDetailsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PendingTransactionDetails\PendingTransactionDetailsView.Designer.cs">
+      <DependentUpon>PendingTransactionDetailsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PendingTransactions\PendingTransactionController.cs" />
+    <Compile Include="PendingTransactions\PendingTransactionModel.cs" />
+    <Compile Include="PendingTransactions\PendingTransactionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PendingTransactions\PendingTransactionView.Designer.cs">
+      <DependentUpon>PendingTransactionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SingleFormController.cs" />
+    <Compile Include="WaitCursor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseForm.resx">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommonUIResources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommonUIResources.ru.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageErrorDialog.resx">
+      <DependentUpon>MessageErrorDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageInformationDialog.resx">
+      <DependentUpon>MessageInformationDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageQuestionDialog.resx">
+      <DependentUpon>MessageQuestionDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageWarningDialog.resx">
+      <DependentUpon>MessageWarningDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.ConnectionMonitor\Dalworth.ConnectionMonitor.csproj">
+      <Project>{7C6A4FB8-3AAD-406A-9FCA-55D0FA4DCE9B}</Project>
+      <Name>Dalworth.ConnectionMonitor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Controls\Dalworth.Controls.csproj">
+      <Project>{8EBF48CF-4143-4DF5-A822-626F566D3858}</Project>
+      <Name>Dalworth.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Domain\Dalworth.Domain.csproj">
+      <Project>{A5C21082-985A-4B11-8487-2649A442751B}</Project>
+      <Name>Dalworth.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.GPS\Dalworth.GPS.csproj">
+      <Project>{058D9291-56A2-4769-96C2-C2C1126E4D7B}</Project>
+      <Name>Dalworth.GPS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth\Dalworth.csproj">
+      <Project>{DB694166-7403-425C-912B-A9D33014299C}</Project>
+      <Name>Dalworth</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

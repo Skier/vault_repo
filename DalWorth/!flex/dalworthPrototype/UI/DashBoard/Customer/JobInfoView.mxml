@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="Job Info" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	width="400" height="300" showCloseButton="true"
+	 close="saveJob()">
+	 <mx:Binding source="txtDescription.text" destination="_newJob.description"/>
+	 
+<mx:Script>
+	<![CDATA[
+		import mx.managers.PopUpManager;
+		import Domain.*;
+		import Service.JobService;
+		
+		private var _currentCustomer:Customer;
+		
+		[Bindable]
+		private var _newJob:Job;
+		
+		public function  init(customer:Customer):void{
+			_newJob = new Job();
+			_currentCustomer = customer;
+		}
+		private function saveJob():void {
+			
+			_newJob.type = Job.JOB_TYPE_CLEAN_RUG;
+			_newJob.customer = _currentCustomer;
+			_currentCustomer.jobs.addItem(_newJob);
+			Service.JobService.createJob(_newJob);
+			PopUpManager.removePopUp(this);
+		}
+		
+		/*
+		public var jobNumber:int;
+		public var type:String;
+		public var customer:Customer;
+		public var serviceAddress:Address;
+		public var status:String;
+		public var description:String;
+		*/
+	]]>
+</mx:Script>
+	<mx:Form>
+		<mx:FormItem label="JobType">
+			<mx:Label id="lblJobType" width="100%" text="{Job.JOB_TYPE_CLEAN_RUG}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Description">
+			<mx:TextInput id="txtDescription" width="100%" text="{_newJob.description}"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:Button  label="Save" click="saveJob()"/>
+</mx:TitleWindow>

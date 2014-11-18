@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:widgets="com.quickbase.idn.widgets.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<widgets:IDNForm width="100%" height="100%"
+		dto="{section}">
+		<widgets:IDNField fieldName="RoofName" fieldLabel="Roof Name" required="true" width="100%"/>
+		<widgets:IDNField fieldName="Age" fieldLabel="Age" required="false" width="100%"/>
+		<widgets:IDNField fieldName="Height" fieldLabel="Height" required="false" width="100%"/>
+		<widgets:IDNField fieldName="SqFt" fieldLabel="SqFt" required="false" width="100%"/>
+		<widgets:IDNField fieldName="Designation" fieldLabel="Designation" required="false" width="100%"/>
+	</widgets:IDNForm>
+
+</mx:Canvas>

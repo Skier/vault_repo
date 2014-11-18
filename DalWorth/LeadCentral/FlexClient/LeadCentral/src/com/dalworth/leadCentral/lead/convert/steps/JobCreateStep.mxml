@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:telephony="com.dalworth.servman.telephony.*" 
+	xmlns:steps="com.dalworth.servman.main.lead.convert.steps.*" 
+	xmlns:job="com.dalworth.servman.main.job.*" 
+	xmlns:controls="com.affilia.controls.*"
+	implements="com.dalworth.leadCentral.lead.convert.steps.IWizardStep">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.lead.convert.ConvertLeadToJobModel;
+			import mx.events.ValidationResultEvent;
+			import Intuit.Sb.Cdm.vo.JobType;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import Intuit.Sb.Cdm.vo.IdType;
+			import Intuit.Sb.Cdm.vo.JobInfo;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			import Intuit.Sb.Cdm.vo.Job
+			
+			[Bindable]
+			private var jobTypes:ArrayCollection;
+			
+			[Bindable]
+			private var jobs:ArrayCollection;
+			
+			[Bindable]
+			public var job:Job;
+			
+			[Bindable]
+			private var model:ConvertLeadToJobModel;
+			
+			public function init(model:ConvertLeadToJobModel):void 
+			{
+				this.model = model;
+				
+				if (job == null)
+				{
+					model.currentJob.RelatedIdsJob = new Job();
+					job = model.currentJob.RelatedIdsJob as Job;
+					job.JobInfo = new JobInfo();
+				}
+				
+				var customer:Customer = model.currentJob.RelatedIdsCustomer;
+				job.CustomerName = customer.Name;
+				job.Name = customer.Name;
+				job.GivenName = customer.GivenName;
+				job.FamilyName = customer.FamilyName;
+				
+				//initJobTypes();
+			}
+/* 			
+            private function initJobTypes():void 
+            {
+            	var service:IDSJobTypeService = IDSJobTypeService.getInstance();
+            	service.addEventListener("jobTypesLoaded", 
+            		function (event:Event):void 
+            		{
+            			comboJobType.enabled = true;
+            		});
+            	service.addEventListener("jobTypesLoadFailed", 
+            		function (event:Event):void 
+            		{
+            			comboJobType.enabled = false;
+            		});
+            	jobTypes = service.getAll();
+            }
+ */            
+			public function get isValid():Boolean 
+			{
+				var result:Boolean = true;
+/* 				
+				if (vType.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+ */					
+				if (vShowAs.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+					
+				return result;
+			} 
+			
+			public function updateModel():void
+			{
+				applyFields();
+			}
+			
+			private function applyFields():void 
+			{
+				job.Name = txtName.text;
+				job.GivenName = txtFirstName.text;
+				job.FamilyName = txtLastName.text;
+				
+//				job.JobInfo.JobTypeName = JobType(comboJobType.selectedItem).Name;
+
+				job.JobInfo.StartDate = new Date();
+				job.JobInfo.StartDateSpecified = true;
+				job.JobInfo.Description = txtDescription.text;
+			}
+			
+			private function startRemoting():void 
+			{
+				
+			}
+			
+			private function stopRemoting():void 
+			{
+				
+			}
+			
+		]]>
+	</mx:Script>
+<!--	
+	<mx:StringValidator id="vType" source="{comboJobType}" property="text" required="true"/>
+-->	
+	<mx:StringValidator id="vShowAs" source="{txtName}" property="text" required="true"/>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:VBox width="100%" 
+			paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+			backgroundColor="#EEEEEE" verticalGap="0">
+			<mx:Label text="Create new Job" fontSize="12" fontWeight="bold" color="#999999"/>
+			<mx:Label text="Create new Job for Customer: {model.currentJob.RelatedIdsCustomer.Name}" fontSize="9"/>
+		</mx:VBox>
+		
+		<mx:Grid width="100%" height="100%" 
+			paddingLeft="8" paddingRight="8" paddingBottom="8">
+<!--
+			<mx:GridRow width="100%">
+				<mx:GridItem>
+					<mx:Label text="Job Type:" fontSize="12" textAlign="right"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" colSpan="3">
+					<controls:ComboBox id="comboJobType" prompt=""
+						dataProvider="{jobTypes}" labelField="Name"						
+						width="100%" fontSize="12"/>
+				</mx:GridItem>
+			</mx:GridRow>
+-->			
+			<mx:GridRow width="100%">
+				<mx:GridItem>
+					<mx:Label text="Name:" fontSize="12" textAlign="right"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" colSpan="3">
+					<mx:TextInput id="txtName" text="" fontSize="12" width="100%"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			
+			<mx:GridRow width="100%">
+				<mx:GridItem>
+					<mx:Label text="First Name:" fontSize="12" textAlign="right"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%">
+					<mx:TextInput id="txtFirstName" text="{job.GivenName}" fontSize="12" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Label text="Last Name:" fontSize="12" textAlign="right"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%">
+					<mx:TextInput id="txtLastName" text="{job.FamilyName}" fontSize="12" width="100%"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<mx:GridRow width="100%" height="100%">
+				<mx:GridItem>
+					<mx:Label text="Job Description:" fontSize="12" textAlign="right"/>
+				</mx:GridItem>
+				<mx:GridItem colSpan="3" width="100%" height="100%">
+					<mx:TextArea id="txtDescription" width="100%" height="100%"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:VBox>
+	
+</mx:Canvas>

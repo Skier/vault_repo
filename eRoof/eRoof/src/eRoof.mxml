@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+   xmlns:core="com.quickbase.idn.core.*" 
+   xmlns:view="com.ebs.eroof.view.*" xmlns:control="com.ebs.eroof.control.*"
+   xmlns:idscontrol="com.intuit.sb.control.*"
+   creationComplete="initApp()">
+    <mx:Script>
+       <![CDATA[
+         import mx.controls.Alert;
+         import com.ebs.eroof.model.eRoofModel;
+         import mx.core.Container;
+         import com.quickbase.idn.model.QuickBaseMSAModel;
+   
+                           
+         [Bindable]
+         private var model : eRoofModel = eRoofModel.getInstance();
+           
+         private function initApp():void 
+         {
+            model.quickbaseModel.initModelFromApp(Application.application, Environment.appBase, SchemaVersion.version);
+         }
+       ]]>
+    </mx:Script>
+
+<!-- ========================================================================== -->
+    
+    <!-- the Controller, containing Commands specific to this application -->
+    <control:eRoofController id="controller"/>
+    <idscontrol:IDSController id="idsController"/>
+    
+<!-- ========================================================================== -->    
+
+   <core:QBApp appRegEx=".*" msaRegEx=".*" useNativeUserMgmt="true" useMSA="{Environment.useMSA}" useIDS="{Environment.useIDS}" devKey="{Environment.devKey}">
+         <core:readyView>
+               <view:eRoofView id="eRoofView" model="{model}"/>
+         </core:readyView>
+   </core:QBApp>
+</mx:Application>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.fxcomponents.controls.*" xmlns:dalworth="com.dalworth.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.SWFLoader;
+		
+			public function openVideo(url:String):void 
+			{
+				frameVideo.source = url;
+				frameVideo.visible = true;
+				//frameVideo.source = "http://localhost/Servman.Intuit/001.html";
+				//fxVideoPlayer.source = "/LeadCentral/assets/flv/tdf_dynafuser_smoke_changingmodes.flv";
+
+/* 				
+				var swfLoader:SWFLoader = new SWFLoader();
+				swfLoader.width = 480;
+				swfLoader.height = 385;
+				swfLoader.scaleContent = false;
+				boxContent.addChild(swfLoader);
+				
+				url = "http://www.youtube.com/v/4rb8aOzy9t4?fs=1&amp;hl=en_US";
+                Security.allowDomain(url);
+				swfLoader.load(url);
+ */
+			}
+			
+			public function closeVideo():void 
+			{
+				frameVideo.source = "";
+				frameVideo.visible = false;
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="boxContent" label="Video Tutorial" verticalAlign="middle" horizontalAlign="center" width="100%" height="100%">
+		<dalworth:IFrame id="frameVideo" width="100%" height="100%" source="http://www.google.com/" borderStyle="solid" borderColor="#FF0000"/>
+	</mx:VBox>
+
+</mx:Canvas>

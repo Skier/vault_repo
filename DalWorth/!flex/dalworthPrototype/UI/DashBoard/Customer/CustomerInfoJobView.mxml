@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import Domain.Job;
+		import mx.collections.ArrayCollection;
+		import mx.states.State;
+		import Domain.Customer;
+		
+ 			[Bindable]
+ 			private  var _controller:CustomerController;
+ 			
+ 			[Bindable]
+ 			private var _selectedJob:Job;
+ 		
+ 		
+ 			[Bindable]
+ 			public var currentCustomer:Customer;
+ 			public var jobs:ArrayCollection;
+ 			
+ 			public function set customerController(controller:CustomerController):void {
+ 				this._controller = controller;
+ 			 
+ 			}
+ 			
+ 			private function onGridDoubleClick():void{
+ 				
+ 				_selectedJob =  dgJobs.selectedItem  as Job;
+			} 
+			
+ 		]]>
+ 	</mx:Script>
+ 
+ 	<mx:Panel width="100%" height="40%" title="Jobs" layout="vertical">
+ 		  <mx:DataGrid id="dgJobs" width="100%" height="100%" rowCount="5" dataProvider="{currentCustomer.jobs}" click="onGridDoubleClick()">
+            <mx:columns>
+                <mx:DataGridColumn  headerText="Number" dataField="jobNumber"/>
+                <mx:DataGridColumn  headerText="Status" dataField="status"/>
+                <mx:DataGridColumn  headerText="Type" dataField="type"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:HBox>
+        	<mx:Button label="Edit Job"/> 
+        	<mx:Button label="Add Ticket"/>
+        </mx:HBox>
+ 	</mx:Panel>
+ 	<mx:Panel width="100%" height="60%" title = "Tickets"  layout="vertical">
+ 		<mx:DataGrid id="dgTickets" width="100%" height="100%" rowCount="5" dataProvider="{_selectedJob.tickets}">
+            <mx:columns>
+                <mx:DataGridColumn  headerText="Number"  dataField="ticketNumber"/>
+                <mx:DataGridColumn 	headerText="Status"  dataField="status"/>
+                <mx:DataGridColumn  headerText="Type"    dataField ="type"/>
+                <mx:DataGridColumn  headerText="Created DT"  dataField="createDate"/>
+                <mx:DataGridColumn  headerText="Service DT"  dataField="serviceDate"/>
+            </mx:columns>
+        </mx:DataGrid>
+         <mx:HBox>
+        	<mx:Button label="Edit Ticket"/> 
+        </mx:HBox>
+ 	</mx:Panel>
+ 		
+</mx:VBox>

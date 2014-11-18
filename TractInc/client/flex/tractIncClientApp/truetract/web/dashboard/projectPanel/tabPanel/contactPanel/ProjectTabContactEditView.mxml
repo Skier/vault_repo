@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="truetract.plotter.validators.*"
+    title="Edit Contact Info" layout="vertical">
+
+    <mx:Metadata>
+        [Event(name="commit", type="flash.events.Event")]
+        [Event(name="cancel", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.states.State;
+        	import truetract.domain.ProjectTabContact;
+            import truetract.domain.DictionaryRegistry;
+            import mx.events.DynamicEvent;
+            import mx.managers.PopUpManager;
+            import truetract.domain.ProjectTab;
+
+			[Bindable] private var isTypeOther:Boolean;
+			
+            private var _projectTabContact:ProjectTabContact;
+            [Bindable] public function get projectTabContact():ProjectTabContact {return _projectTabContact;}
+            public function set projectTabContact(value:ProjectTabContact):void
+            {
+                _projectTabContact = value;
+
+            	if (value.IsEntity) 
+            	{
+	            	focusManager.setFocus(txtContactName);
+            	} else {
+	            	focusManager.setFocus(txtFirstName);
+            	}
+            	
+            	isTypeOther = dictionary.getProjectTabContactType(projectTabContact.ContactType).length() == 0;
+            }
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            private function doSubmit():void
+            {
+                if (!isFormValid()) return;
+                
+                if (comboType.selectedItem == dictionary.getProjectTabContactType(ProjectTabContact.CONTACT_TYPE_OTHER)) 
+                {
+					projectTabContact.ContactType = txtOtherType.text;
+                } else 
+                {
+					projectTabContact.ContactType = comboType.selectedItem.@Value;
+                }
+
+                projectTabContact.ContactName = txtContactName.text;
+                projectTabContact.FirstName = txtFirstName.text;
+                projectTabContact.MiddleName = txtMiddleName.text;
+                projectTabContact.LastName = txtLastName.text;
+                projectTabContact.EntityRelationship = txtEntityRelationship.text;
+
+				projectTabContact.PhysicalAddress.Address1 = txtPhysicalAddress1.text;
+				projectTabContact.PhysicalAddress.Address2 = txtPhysicalAddress2.text;
+				projectTabContact.PhysicalAddress.City = txtPhysicalCity.text;
+				projectTabContact.PhysicalAddress.State = comboPhysicalState.selectedItem.@StateId;
+				projectTabContact.PhysicalAddress.Zip = txtPhysicalZip.text;
+
+				projectTabContact.MailingAddress.Address1 = txtMailingAddress1.text;
+				projectTabContact.MailingAddress.Address2 = txtMailingAddress2.text;
+				projectTabContact.MailingAddress.City = txtMailingCity.text;
+				projectTabContact.MailingAddress.State = comboMailingState.selectedItem.@StateId;
+				projectTabContact.MailingAddress.Zip = txtMailingZip.text;
+
+                projectTabContact.PhoneNumber = txtPhoneNumber.text;
+                projectTabContact.Email = txtEmail.text;
+
+            	dispatchEvent(new Event("commit"));
+            }
+            
+            private function doCancel():void
+            {
+                dispatchEvent(new Event("cancel"));
+                close();
+            }
+
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            public static function open(parent:DisplayObject, modal:Boolean):ProjectTabContactEditView
+            {
+                var popup:ProjectTabContactEditView = new ProjectTabContactEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+            
+            private function radioIsPerson_clickHandler():void 
+            {
+            	projectTabContact.IsEntity = !projectTabContact.IsEntity;
+            }
+            
+            private function comboTypeChangeHandler():void 
+            {
+            	if (comboType.selectedItem == dictionary.getProjectTabContactType(ProjectTabContact.CONTACT_TYPE_OTHER)) 
+            	{
+            		focusManager.setFocus(txtOtherType);
+            	}
+            }
+            
+            private function btnCopyAddressClickHandler():void
+            {
+            	txtMailingAddress1.text = txtPhysicalAddress1.text;
+            	txtMailingAddress2.text = txtPhysicalAddress2.text;
+            	txtMailingCity.text = txtPhysicalCity.text;
+            	txtMailingZip.text = txtPhysicalZip.text;
+            	comboMailingState.selectedItem = 
+            		dictionary.statesAndCounties.state.(@StateId == comboPhysicalState.selectedItem.@StateId);
+            }
+ 
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{comboType}" property="text" required="true"/>
+        <mx:StringValidator source="{txtOtherType}" property="text" maxLength="25"
+        	required="{comboType.selectedItem == dictionary.getProjectTabContactType(ProjectTabContact.CONTACT_TYPE_OTHER)}"/>
+
+        <mx:StringValidator source="{txtContactName}" property="text" maxLength="50" required="{projectTabContact.IsEntity}"/>
+        <mx:StringValidator source="{txtFirstName}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{txtLastName}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{txtEntityRelationship}" property="text" maxLength="50" required="{projectTabContact.IsEntity}"/>
+
+        <mx:StringValidator source="{txtPhysicalAddress1}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{txtPhysicalCity}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{comboPhysicalState}" property="text" required="true"/>
+        <mx:StringValidator source="{txtPhysicalZip}" property="text" maxLength="10" required="true"/>
+
+        <mx:StringValidator source="{txtMailingAddress1}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{txtMailingCity}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{comboMailingState}" property="text" maxLength="50" required="true"/>
+        <mx:StringValidator source="{txtMailingZip}" property="text" maxLength="10" required="true"/>
+
+        <mx:StringValidator source="{txtPhoneNumber}" property="text" maxLength="15" required="true"/>
+        
+        <mx:EmailValidator source="{txtEmail}" property="text" required="false"/>
+    </validators:ValidatorsGroup>
+
+	<mx:VBox styleName="popupPanel" width="100%">
+		<mx:HBox>
+		    <mx:Form width="100%" labelWidth="80">
+		        <mx:FormItem label="Contact Type:">
+		            <mx:ComboBox id="comboType"
+		                labelField="@Name"
+		                dataProvider="{dictionary.projectTabContactTypes.ProjectTabContactType}"
+		                selectedItem="{isTypeOther  ? dictionary.getProjectTabContactType(ProjectTabContact.CONTACT_TYPE_OTHER) 
+		                							: dictionary.getProjectTabContactType(projectTabContact.ContactType)}" 
+		                width="100%"
+		                change="comboTypeChangeHandler()"
+		                />
+		        </mx:FormItem>
+		        
+		        <mx:FormItem>
+		            <mx:CheckBox id="radioIsPerson" 
+		            	height="{txtOtherType.height}"
+		            	label="Is Person" selected="{!projectTabContact.IsEntity}"
+		            	click="radioIsPerson_clickHandler()"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="First Name:">
+		            <mx:TextInput id="txtFirstName" text="{projectTabContact.FirstName}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Middle Name:">
+		            <mx:TextInput id="txtMiddleName" text="{projectTabContact.MiddleName}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Last Name:">
+		            <mx:TextInput id="txtLastName" text="{projectTabContact.LastName}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		    </mx:Form>
+	    
+			<mx:Form labelWidth="80">
+	        	<mx:TextInput id="txtOtherType" 
+	        		text="{projectTabContact.ContactType}"
+	        		visible="{comboType.selectedItem == dictionary.getProjectTabContactType(ProjectTabContact.CONTACT_TYPE_OTHER)}"/>
+		
+		        <mx:FormItem label="Entity Name:" 
+		        	visible="{projectTabContact.IsEntity}" includeInLayout="{projectTabContact.IsEntity}">
+		            <mx:TextInput id="txtContactName" text="{projectTabContact.ContactName}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Relationship:" 
+		        	visible="{projectTabContact.IsEntity}" includeInLayout="{projectTabContact.IsEntity}">
+		            <mx:TextInput id="txtEntityRelationship" text="{projectTabContact.EntityRelationship}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Phone:" >
+		            <mx:TextInput id="txtPhoneNumber" text="{projectTabContact.PhoneNumber}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		
+		        <mx:FormItem label="Email:">
+		            <mx:TextInput id="txtEmail" text="{projectTabContact.Email}" width="{comboType.width}"/>
+		        </mx:FormItem>
+			</mx:Form>
+		</mx:HBox>
+	    
+	    <mx:HRule width="100%"/>
+	    
+	    <mx:HBox id="boxAddresses" width="100%">
+		    <mx:Form labelWidth="80">
+		        <mx:FormHeading label="Physical address"/>
+		        
+		        <mx:FormItem label="Address1:">
+		            <mx:TextInput id="txtPhysicalAddress1" text="{projectTabContact.PhysicalAddress.Address1}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Address2:">
+		            <mx:TextInput id="txtPhysicalAddress2" text="{projectTabContact.PhysicalAddress.Address2}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="City:">
+		            <mx:TextInput id="txtPhysicalCity" text="{projectTabContact.PhysicalAddress.City}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="State:">
+		            <mx:ComboBox id="comboPhysicalState"
+		                labelField="@Name"
+		                dataProvider="{dictionary.statesAndCounties.state}"
+		                selectedItem="{dictionary.statesAndCounties.state.(@StateId == projectTabContact.PhysicalAddress.State)}" 
+		                width="100%"/>
+		        </mx:FormItem>
+		
+		        <mx:FormItem label="Zip:">
+		            <mx:TextInput id="txtPhysicalZip" text="{projectTabContact.PhysicalAddress.Zip}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		    </mx:Form>
+		    
+		    <mx:Box height="100%" verticalAlign="middle">
+		    	<mx:Button id="btnCopyAddress" 
+		    		label="&gt;&gt;" width="30"
+		    		toolTip="Copy Phisical address to Mailing address"
+		    		click="btnCopyAddressClickHandler()" />
+		    </mx:Box>
+		        
+			<mx:Form labelWidth="80">
+		        <mx:FormHeading label="Mailing address"/>
+		        
+		        <mx:FormItem label="Address1:">
+		            <mx:TextInput id="txtMailingAddress1" text="{projectTabContact.MailingAddress.Address1}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="Address2:">
+		            <mx:TextInput id="txtMailingAddress2" text="{projectTabContact.MailingAddress.Address2}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="City:">
+		            <mx:TextInput id="txtMailingCity" text="{projectTabContact.MailingAddress.City}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		        
+		        <mx:FormItem label="State:">
+		            <mx:ComboBox id="comboMailingState"
+		                labelField="@Name"
+		                dataProvider="{dictionary.statesAndCounties.state}"
+		                selectedItem="{dictionary.statesAndCounties.state.(@StateId == projectTabContact.MailingAddress.State)}" 
+		                width="100%"/>
+		        </mx:FormItem>
+		
+		        <mx:FormItem label="Zip:">
+		            <mx:TextInput id="txtMailingZip" text="{projectTabContact.MailingAddress.Zip}" width="{comboType.width}"/>
+		        </mx:FormItem>
+		    </mx:Form>
+	    </mx:HBox> 
+	</mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Submit" click="doSubmit()"/>
+        <mx:Button label="Cancel" click="doCancel()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

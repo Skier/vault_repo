@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="36"
+	borderColor="#999999" backgroundColor="#ffff99" borderStyle="solid" cornerRadius="2" verticalGap="0"
+	fontSize="8">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentActor;
+			
+			[Bindable] public var actor:DocumentActor;
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" fontSize="9">
+		<mx:Label text="{actor.name}" fontWeight="bold"/>
+		<mx:Label text="({actor.phonesStr})"/>
+	</mx:HBox>
+	
+	<mx:Text width="100%" text="{actor.addressStr}"/>
+</mx:VBox>

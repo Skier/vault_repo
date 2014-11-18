@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" 
+	dataChange="onDataChanged()"
+	text="{CatalogItemUI(data).qtyNeeded}"
+	focusIn="onFocusIn()"
+	focusOut="onFocusOut()"
+	keyDown="onKeyDown(event)">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import AerSysCo.UI.Catalog.CatalogController;
+			import AerSysCo.UI.Models.InventoryUI;
+			import AerSysCo.UI.Models.CatalogItemUI;
+			import AerSysCo.UI.MainController;
+			import AerSysCo.UI.Models.CustomerUI;
+
+			[Bindable] private var maximum:int = 0;
+			[Bindable] private var step:int = 1;
+
+			private function onDataChanged():void 
+			{
+				if (data == null) 
+				{
+					return;
+				}
+				
+				var currentCustomer:CustomerUI = MainController.getInstance().model.currentCustomer;
+					
+				for each (var i:InventoryUI in CatalogItemUI(data).inventories) 
+				{
+					if (currentCustomer != null && i.warehouseId == CatalogController.getInstance().model.currentWarehouse.warehouseId) 
+					{
+						maximum = i.qty;
+						break;
+					}
+				}
+				
+				step = CatalogItemUI(data).modelItem.item.qtyIncrement;
+			}
+			
+			private function onFocusOut():void 
+			{
+				var result:String = validate();
+				if (result != null) 
+				{
+					Alert.show(result);
+				}
+			}
+			
+			private function validate():String 
+			{
+				var result:String = null;
+				
+				if (isNaN(Number(this.text))) 
+				{
+					CatalogItemUI(data).qtyNeeded = 0;
+				} else 
+				{
+					var inputQty:int = int(Number(this.text));
+
+					if (inputQty > CatalogItemUI(data).qtyAvailable) 
+					{
+						result = "You can not add into the shopping cart more quantity than we have in the warehouse.";
+						return result;
+					}
+
+					var qtyPackets:int = int(inputQty / step);
+
+					if ((qtyPackets * step) != inputQty) 
+					{
+						result = "SKU [" + CatalogItemUI(data).modelItem.item.sku + "] can only be sold in increments of " + step + ". Please adjust the Quantity to be ordered.";
+						return result;
+					}
+
+					CatalogItemUI(data).qtyNeeded = qtyPackets * step;
+					this.text = CatalogItemUI(data).qtyNeeded.toString();
+				}
+				
+				return result;
+			}
+			
+			private function onFocusIn():void 
+			{
+				this.selectionBeginIndex = -1;
+				this.selectionEndIndex = 256;
+			}
+			
+			private function onKeyDown(event:KeyboardEvent):void
+			{
+			    if(!event.ctrlKey)
+				{
+				    if(event.keyCode == Keyboard.UP && validate() == null)
+					{
+						dispatchEvent( new Event("upKeyPressed", true));
+					}
+				    else if(event.keyCode == Keyboard.DOWN && validate() == null)
+					{
+						dispatchEvent( new Event("downKeyPressed", true));
+					}
+			 	}
+			}
+	
+			
+		]]>
+	</mx:Script>
+	
+</mx:TextInput>

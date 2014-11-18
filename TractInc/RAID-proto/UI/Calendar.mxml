@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	initialize="onInit()"
+	xmlns:UI="UI.*"
+	backgroundColor="#999999"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] public var weeks:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] public var daysOne:ArrayCollection = new ArrayCollection();
+			[Bindable] public var daysTwo:ArrayCollection = new ArrayCollection();
+			[Bindable] public var daysThree:ArrayCollection = new ArrayCollection();
+	
+			private function onInit():void 
+			{
+				daysOne.addItem(null);
+				daysOne.addItem(null);
+				daysOne.addItem(null);
+				daysOne.addItem(new Date(2007, 8, 1));
+				daysOne.addItem(new Date(2007, 8, 2));
+				daysOne.addItem(new Date(2007, 8, 3));
+				daysOne.addItem(new Date(2007, 8, 4));
+				
+				daysTwo.addItem(new Date(2007, 8, 5));
+				daysTwo.addItem(new Date(2007, 8, 6));
+				daysTwo.addItem(new Date(2007, 8, 7));
+				daysTwo.addItem(new Date(2007, 8, 8));
+				daysTwo.addItem(new Date(2007, 8, 9));
+				daysTwo.addItem(new Date(2007, 8, 10));
+				daysTwo.addItem(new Date(2007, 8, 11));
+				
+				daysThree.addItem(new Date(2007, 8, 12));
+				daysThree.addItem(new Date(2007, 8, 13));
+				daysThree.addItem(new Date(2007, 8, 14));
+				daysThree.addItem(new Date(2007, 8, 15));
+				daysThree.addItem(null);
+				daysThree.addItem(null);
+				daysThree.addItem(null);
+				
+				weeks.addItem(daysOne);
+				weeks.addItem(daysTwo);
+				weeks.addItem(daysThree);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Grid width="100%" height="100%" verticalGap="2" horizontalGap="2">
+		
+		<mx:Repeater id="rptWeeks" dataProvider="{weeks}">
+			
+			<mx:GridRow width="100%" height="100%">
+				
+				<mx:Repeater id="rptDays" dataProvider="{rptWeeks.currentItem}">
+				
+					<mx:GridItem width="100%" height="100%">
+						
+						<UI:DayRenderer date="{rptDays.currentItem}"/>
+					
+					</mx:GridItem>
+				
+				</mx:Repeater>
+				
+			</mx:GridRow>
+			
+		</mx:Repeater>
+	
+	</mx:Grid>
+
+</mx:VBox>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.ebs.eroof.model.wrapper.Segment;
+			import com.ebs.eroof.dto.Segments_DTO;
+			import com.ebs.eroof.view.segment.SegmentEditPopup;
+			import com.ebs.eroof.model.company.Company;
+			
+			[Bindable]
+			private var model:Company;
+			
+			public function init(model:Company):void 
+			{
+				this.model = model;
+			}
+			
+			private function btnNewSegmentClickHandler():void 
+			{
+				var segment:Segment = new Segment(new Segments_DTO());
+				segment.company = model;
+				SegmentEditPopup.open(Application.application as DisplayObject, segment);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#ffffee"
+		borderColor="#999999" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%"
+			paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+			backgroundColor="#e8e8e8" borderColor="#999999" borderStyle="solid" cornerRadius="2">
+			<mx:Label text="Company summary" fontSize="16" fontWeight="bold" color="#AA0000" width="100%" textAlign="left"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button width="150" height="100%" label="New Segment" click="btnNewSegmentClickHandler()" fillAlphas="[0.6, 0.4, 0.6, 0.6]" fillColors="[#C9FDC9, #0E990E]"/>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" 
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			horizontalAlign="right" 
+			backgroundColor="#F8F8F8" borderStyle="solid" borderColor="#CCCCCC" cornerRadius="2">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Company Name:"/>
+				<mx:Label width="100%" text="{model.name}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:LinkButton label="edit"/>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

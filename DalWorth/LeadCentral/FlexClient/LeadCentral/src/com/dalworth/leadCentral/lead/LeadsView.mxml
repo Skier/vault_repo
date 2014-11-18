@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:lead="com.dalworth.leadCentral.lead.*" 
+	xmlns:leadConnection="com.dalworth.leadCentral.lead.leadConnection.*"
+	creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.lead.match.MatchInvoiceToLeadPopup;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.domain.User;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.Responder;
+			import com.dalworth.leadCentral.service.LeadService;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import com.dalworth.leadCentral.domain.Lead;
+			import com.dalworth.leadCentral.events.LeadEvent;
+			import mx.events.ItemClickEvent;
+			
+			[Bindable]
+			public var isEditMode:Boolean = false;
+
+			[Bindable]
+			public var isReadOnly:Boolean;
+			
+			public function init():void 
+			{
+				if (vsLeads != null)
+					vsLeads.selectedChild = viewLeadsList;
+				
+				if (viewLeadsList != null)
+					viewLeadsList.init();
+			}
+			
+			private function openLead(lead:Lead, isReadOnly:Boolean = false):void 
+			{
+				vsLeads.selectedChild = viewLead;
+				viewLead.setLead(lead);
+
+				isEditMode = true;
+			}
+			
+			private function matchInvoiceToLead(lead:Lead):void 
+			{
+				var popup:MatchInvoiceToLeadPopup = MatchInvoiceToLeadPopup.open(Application.application as DisplayObject, lead);
+				popup.addEventListener("jobMatchComplete", 
+					function (event:*):void 
+					{
+						commitMatching(lead);
+					});
+			}
+			
+			private function commitMatching(lead:Lead):void
+			{ 
+				vsLeads.enabled = false;
+				LeadService.getInstance().getLead(lead.Id, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void
+						{
+							vsLeads.enabled = true;
+							lead.applyFields(event.result);
+							lead.AmountSummary = null;
+							
+							vsLeads.selectedIndex = 0;
+						}, 
+						function (event:FaultEvent):void 
+						{
+							vsLeads.enabled = true;
+							Alert.show(event.fault.message);
+						})); 
+			}
+			
+			private function onCreate():void 
+			{
+				viewLeadsList.addEventListener(LeadEvent.LEAD_OPEN, onLeadOpen);
+				viewLeadsList.addEventListener(LeadEvent.LEAD_MATCH, onLeadMatch);
+
+				viewLead.addEventListener(LeadEvent.LEAD_MATCH, onLeadMatch);
+				viewLead.addEventListener(LeadEvent.LEAD_SAVE, onLeadSave);
+				viewLead.addEventListener("closeLeadEditor",
+					function(event:*):void 
+					{
+						vsLeads.selectedChild = viewLeadsList;
+						viewLead.setLead(null);
+						
+						isEditMode = false;
+					});
+			}
+			
+			private function onLeadOpen(event:LeadEvent):void 
+			{
+				openLead(event.lead);
+			}
+			
+			private function onLeadSave(event:LeadEvent):void 
+			{
+				viewLeadsList.selectLead(event.lead);
+			}
+			
+			private function onLeadMatch(event:LeadEvent):void 
+			{
+				if (!isReadOnly)
+					matchInvoiceToLead(event.lead);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="vsLeads" width="100%" height="100%" creationPolicy="all">
+		<lead:LeadsManageView id="viewLeadsList" width="100%" height="100%" isReadOnly="{isReadOnly}"/>
+		<lead:LeadEditView id="viewLead" width="100%" height="100%" isReadOnly="{isReadOnly}"/>
+	</mx:ViewStack>
+</mx:Canvas>

@@ -1,0 +1,36 @@
+DROP TABLE IF EXISTS `projectlog`;
+CREATE TABLE  `projectlog` (
+  `ID` int(10) NOT NULL auto_increment,
+  `EmployeeId` int(10) default NULL,
+  `DateCreated` datetime NOT NULL,
+  `Trace` longtext,
+  `ProjectId` int(10) default NULL,
+  `ParentProdjectId` int(10) default NULL,
+  `ProjectTypeId` int(10) NOT NULL,
+  `CustomerId` int(10) default NULL,
+  `ServiceAddressId` int(10) default NULL,
+  `ProjectStatusId` int(10) NOT NULL,
+  `LeadId` int(10) default NULL,
+  `Description` varchar(2000) character set utf8 NOT NULL,
+  `InsuranceCompany` varchar(50) character set utf8 default NULL,
+  `InsuranceAgency` varchar(50) character set utf8 default NULL,
+  `InsuranceAgencyPhone` varchar(20) character set utf8 default NULL,
+  `InsuranceAgent` varchar(50) character set utf8 default NULL,
+  `InsuranceAdjustor` varchar(50) character set utf8 default NULL,
+  `InsuranceAdjustorPhone` varchar(20) character set utf8 default NULL,
+  `ClaimNumber` varchar(20) character set utf8 default NULL,
+  `PolicyNumber` varchar(20) character set utf8 default NULL,
+  `DeductibleAmount` decimal(19,4) default NULL,
+  `AdvertisingSourceId` int(10) default NULL,
+  `AdvertisingTechnicianId` int(10) default NULL,
+  `DumpedProjectId` int(10) default NULL,
+  `DumpWorkTransactionId` int(10) default NULL,
+  `ClosedAmount` decimal(19,4) NOT NULL,
+  `PaidAmount` decimal(19,4) NOT NULL,
+  `CreateDate` datetime NOT NULL,
+  `QbCustomerTypeListId` varchar(50) default NULL,
+  `QbSalesRepListId` varchar(50) default NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `sysversion` (`Version`) VALUES (39);

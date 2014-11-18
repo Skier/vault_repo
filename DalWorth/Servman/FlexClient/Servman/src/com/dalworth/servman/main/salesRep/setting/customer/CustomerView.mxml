@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+
+	<mx:Script>
+		<![CDATA[
+			import com.intuit.sb.cdm.v2.IDSCustomer;
+			
+			private var _customer:IDSCustomer;
+			[Bindable]
+			public function get customer():IDSCustomer { return _customer; }
+			public function set customer(value:IDSCustomer):void 
+			{
+				_customer = value;
+			}
+			
+			private function onUpdateClick():void 
+			{
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#ffffcc">
+		<mx:HBox width="100%">
+			<mx:Label text="Customer Name:"/>
+			<mx:TextInput id="txtShowAs" width="100%" text="{''}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox height="100%" verticalAlign="top">
+		<mx:Button width="120" label="{customer.Id == 0 ? 'Create' : 'Update'}" click="onUpdateClick()" enabled="false"/>
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Rafal Bolinski (Intuit) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<xs:simpleType name="ColTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ids_Amount"/>
+			<xs:enumeration value="ids_Date"/>
+			<xs:enumeration value="ids_IdType"/>
+			<xs:enumeration value="ids_Number"/>
+			<xs:enumeration value="ids_String"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ReportNameEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AccountBalances"/>
+			<xs:enumeration value="BalanceSheet"/>
+			<xs:enumeration value="CustomersWhoOweMe"/>
+			<xs:enumeration value="IncomeBreakdown"/>
+			<xs:enumeration value="ProfitAndLoss"/>
+			<xs:enumeration value="SalesSummary"/>
+			<xs:enumeration value="TopCustomersBySales"/>
+			<xs:enumeration value="VendorsToPay"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ColDesc">
+		<xs:sequence>
+			<xs:element name="ColTitle" type="xs:string"/>
+			<xs:element name="ColType" type="ColTypeEnum"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ColDataType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="idDomain" type="idDomainEnum" use="optional" default="QB"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="Data">
+		<xs:sequence>
+			<xs:element name="DataRow" type="DataRow" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DataRow">
+		<xs:sequence>
+			<xs:element name="ColData" type="ColDataType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Report">
+		<xs:complexContent>
+			<xs:extension base="CdmComplexBase">
+				<xs:sequence>
+					<xs:element name="ColDesc" type="ColDesc" maxOccurs="unbounded"/>
+					<xs:element name="Data" type="Data"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="ReportNameEnum"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="ReportExample" type="Report">
+		<xs:annotation>
+			<xs:documentation>added here to be able to generate the sample XML. The Report element is defined in RestDataFilter.xsd</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

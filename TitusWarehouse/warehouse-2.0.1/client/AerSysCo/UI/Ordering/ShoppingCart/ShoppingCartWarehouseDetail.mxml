@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:components="com.affilia.components.*"
+	verticalGap="0"
+	label="{CatalogController.getInstance().getWarehouse(shipment.warehouseId).warehouseName}" >
+	
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Catalog.CatalogController;
+			import AerSysCo.UI.Models.ShoppingCartShipmentUI;
+			
+			[Bindable] public var shipment:ShoppingCartShipmentUI;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:DataGrid id="dgDetails" width="100%" height="100%" minWidth="906" sortableColumns="false"
+			dataProvider="{shipment != null ? shipment.details : null}" 
+			borderThickness="0">
+			<mx:columns>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['SKU'])}"
+					dataField="sku" textAlign="center"
+					width="65" minWidth="65"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Model'])}"
+					dataField="modelName" textAlign="center"
+					width="75" minWidth="75"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Configuration'])}"
+					dataField="configuration"
+					width="220" minWidth="220"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Description'])}"
+					dataField="description"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Price'])}"
+					dataField="priceString" textAlign="right"
+					width="65" minWidth="65"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Inventory','Available'])}"
+					dataField="qtyAvailable" textAlign="right"
+					width="75" minWidth="75"/>
+				<components:MultiLinesHeaderColumn 
+					headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+					lines="{new ArrayCollection(['Order','QTY'])}"
+					itemRenderer="AerSysCo.UI.Ordering.ShoppingCart.ProductQtyIR"
+					rendererIsEditor="true" textAlign="right" sortable="false"
+					width="45" minWidth="45"/>
+				<mx:DataGridColumn headerText=" " width="75" minWidth="75"
+					itemRenderer="AerSysCo.UI.Ordering.ShoppingCart.DeleteProductIR"
+					sortable="false"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+
+	<mx:HBox width="100%"
+		styleName="shoppingCartTotalBar">
+		<mx:Spacer width="100%"/>
+		<mx:Label text="Total for {CatalogController.getInstance().getWarehouse(shipment.warehouseId).warehouseName}" 
+			fontWeight="bold" textAlign="right"/>
+		<mx:Label id="lblTotalPerWarehouse" text="${shipment.total.toFixed(2)}" 
+			width="120" fontWeight="bold"/>
+	</mx:HBox>
+</mx:VBox>

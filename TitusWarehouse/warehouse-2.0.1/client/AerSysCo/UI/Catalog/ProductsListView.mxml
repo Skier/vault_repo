@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" width="550" height="350"
+	title="Product List" keyDown="onKeyDown(event)"
+	creationComplete="onCreate()">
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CatalogItemUI;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var productsList:ArrayCollection;
+			
+			[Bindable]
+			public var messageText:String = " ";
+			
+            public static function open(parent:DisplayObject, productsList:ArrayCollection, modal:Boolean = true):ProductsListView
+            {
+                var popup:ProductsListView = new ProductsListView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                popup.productsList = productsList;
+                
+                return popup;
+            }
+            
+            public function close():void
+            {
+				for each (var item:CatalogItemUI in productsList) 
+				{
+					item.qtyNeeded = 0;
+				}
+			
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onKeyUp(event:KeyboardEvent):void 
+            {
+			    if(!event.ctrlKey
+			    	&& (event.keyCode == Keyboard.ENTER || event.keyCode == Keyboard.ESCAPE))
+				{
+					close();
+			 	}
+            }
+            
+            private function onKeyDown(event:KeyboardEvent):void 
+            {
+			    if(!event.ctrlKey
+			    	&& (event.keyCode == Keyboard.ENTER || event.keyCode == Keyboard.ESCAPE))
+				{
+					close();
+			 	}
+            }
+            
+            private function onCreate():void 
+            {
+            	btnClose.setFocus();
+            }
+            
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		styleName="confirmedProductListBox">
+		
+		<mx:Box width="100%" 
+			visible="{messageText.length > 0}"
+			includeInLayout="{messageText.length > 0}"
+			styleName="confirmedProductListMessage">
+			<mx:Text width="100%" maxHeight="50"
+				text="{messageText}"/>
+		</mx:Box>
+		
+		<mx:DataGrid id="dgSummary" width="100%" height="100%"
+			dataProvider="{productsList}" sortableColumns="false" draggableColumns="false"
+			keyDown="onKeyDown(event)">
+			<mx:columns>
+				<mx:DataGridColumn headerText=" " width="20" minWidth="20"
+					itemRenderer="AerSysCo.UI.Catalog.ProductIsAvailableIR"/>
+				<mx:DataGridColumn headerText="Model" width="75" minWidth="75" 
+					dataField="modelName"/>
+				<mx:DataGridColumn headerText="Configuration"
+					dataField="configuration"/>
+				<mx:DataGridColumn headerText="SKU" width="65" minWidth="65" textAlign="center"
+					dataField="sku"/>
+				<mx:DataGridColumn headerText="Qty" width="40" minWidth="40" textAlign="right" 
+					dataField="qtyNeeded"/>
+				<mx:DataGridColumn headerText="Amount" width="60" minWidth="60" textAlign="right"
+					dataField="amountString"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button id="btnClose" height="24" label="Close" click="close()" keyDown="onKeyDown(event)"/>
+	</mx:ControlBar>
+
+</mx:TitleWindow>

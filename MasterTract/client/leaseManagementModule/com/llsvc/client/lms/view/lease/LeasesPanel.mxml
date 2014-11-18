@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    label="Lease List" icon="@Embed('assets/icons16/page.png')"
+    xmlns:report="com.llsvc.client.lms.view.lease.report.*" 
+    xmlns:summary="com.llsvc.client.lms.view.lease.summary.*">
+    
+    <mx:Metadata>
+        [Event(name="closeTabRequest", type="flash.events.Event")]
+        [Event(name="openLeaseRequest", type="mx.events.DynamicEvent")]
+        [Event(name="openLeaseCopyRequest", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.SortField;
+        	import mx.collections.Sort;
+        	import com.llsvc.domain.LeaseTract;
+        	import flash.net.navigateToURL;
+        	import com.llsvc.client.lms.view.lease.report.LeaseRenderer;
+        	import mx.events.ItemClickEvent;
+            import flash.net.FileReference;
+
+            import com.llsvc.client.lms.control.TabManager;
+            import mx.events.DynamicEvent;
+            import com.llsvc.domain.Lease;
+            import mx.controls.Alert;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.events.FaultEvent;
+            import com.llsvc.client.lm.storage.Storage;
+            import mx.collections.ArrayCollection;
+            import mx.rpc.Responder;
+
+            private var fileInput:FileReference = null;
+            private var fileDownload:FileReference = null;
+
+            public function init():void 
+            {
+            	viewLeasesSummary.init();
+            }
+
+            public function createLease(lease:Lease):void 
+            {
+            	viewLeasesSummary.viewLeaseList.refresh();
+            }
+
+            public function updateLease(lease:Lease):void 
+            {
+            	var l:Lease = getLease(lease.document.id);
+            	if (l != null) 
+            	{
+            		l.populate(lease);
+            	}
+            }
+            
+            public function removeLease(lease:Lease):void 
+            {
+            	viewLeasesSummary.viewLeaseList.refresh();
+            }
+            
+            private function getLease(docId:int):Lease 
+            {
+            	return this.viewLeasesSummary.viewLeaseList.getLease(docId); 
+            	
+            	for each (var l:Lease in leases) 
+            	{
+            		if (l.document.id == docId)
+            			return l;
+            	}
+            	
+            	return null;
+            }
+
+			private function openLease(lease:Lease):void 
+			{
+                TabManager.openLease(lease);
+			}
+
+            private function onCloseClick():void 
+            {
+                dispatchEvent(new Event("closeTabRequest"));
+            }
+            
+            private function onCreateNewClick():void 
+            {
+            	openLease(null);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <summary:LeasesSummary id="viewLeasesSummary" label="New Leases Panel" width="100%" height="100%"/>
+
+    <mx:VBox width="100%" verticalGap="0">
+        <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+    
+        <mx:HBox width="100%" horizontalAlign="right" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4">
+            <mx:Button width="100" label="Close Tab" icon="@Embed('assets/icon_close16.png')" toolTip="Close Tab" 
+                horizontalCenter="0" verticalCenter="0" click="onCloseClick()"/>
+
+            <mx:Spacer width="100%"/>
+
+            <mx:Button width="150" label="Create New" icon="@Embed('assets/icons16/page_add.png')" toolTip="Create New Lease" 
+                horizontalCenter="0" verticalCenter="0" click="onCreateNewClick()"/>
+        </mx:HBox>
+    </mx:VBox>
+</mx:VBox>

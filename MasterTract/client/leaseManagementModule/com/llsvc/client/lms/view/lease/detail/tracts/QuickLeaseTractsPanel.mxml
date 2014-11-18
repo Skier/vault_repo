@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.listClasses.IDropInListItemRenderer;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import com.llsvc.client.lms.events.TractEvent;
+			import mx.core.Application;
+			import mx.controls.TextInput;
+			import mx.events.DataGridEvent;
+			import com.llsvc.domain.LeaseTract;
+			import mx.controls.dataGridClasses.DataGridColumn;
+		
+			import com.llsvc.domain.Lease;
+			
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+            
+            public function getSelectedIndex():int 
+            {
+            	return dgTracts.selectedIndex;
+            }
+
+            public function setSelectedIndex(index:int):void 
+            {
+            	dgTracts.selectedIndex = index;
+            	dgTracts.scrollToIndex(index);
+            }
+
+			private function addTractHandler(event:TractEvent):void 
+			{
+				addTract();
+			}
+			
+			private function addTract():void 
+			{
+				var t:LeaseTract = new LeaseTract();
+				t.lease = lease;
+				var popup:TractEditView = TractEditView.open(Application.application as DisplayObject, t, true);
+				popup.addEventListener("commitRequest", 
+					function (event:*):void 
+					{
+						popup.tract.leaseBurden = lease.royalty;
+						lease.tracts.addItem(popup.tract);
+						lease.isDirty = true;
+						popup.close();
+					}
+				);
+			}
+			
+			private function editTractHandler(event:TractEvent):void 
+			{
+				var popup:TractEditView = TractEditView.open(Application.application as DisplayObject, event.leaseTract, true);
+				popup.addEventListener("commitRequest", 
+					function (event:*):void 
+					{
+						lease.isDirty = true;
+						popup.close();
+					}
+				);
+			}
+			
+			private function deleteTractHandler(event:TractEvent):void 
+			{
+                Alert.show("Do you really want to delete this Tract ?", 
+                   "Delete Tract", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES)
+                        {
+							var idx:int = lease.tracts.getItemIndex(event.leaseTract);
+							if (idx > -1) 
+							{
+								lease.tracts.removeItemAt(idx);
+								lease.isDirty = true;
+							}
+                        }
+                    });
+			}
+			
+			private function getLabel(item:LeaseTract, column:DataGridColumn):String
+			{
+				if (column.dataField == "leaseInterest") {
+					return LeaseTract(item).leaseInterestStr; 
+				} else {
+					return ""; 
+				}
+			} 
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="boxContent" 
+		width="100%" height="100%" verticalGap="0">
+    	<mx:HBox width="100%" horizontalAlign="right" 
+    		paddingLeft="4" paddingRight="4" paddingBottom="2" paddingTop="2" horizontalGap="2"
+        	borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+        	backgroundColor="#eeeeee">
+        	<mx:Button width="28" height="20"  
+        		icon="@Embed('assets/icons16/add.png')" toolTip="Add new Tract" 
+        		click="addTractHandler(new TractEvent(TractEvent.CREATE_TRACT, null))"/> 
+
+        	<mx:Button width="28" height="20"  
+        		icon="@Embed('assets/icons16/pencil.png')" toolTip="Edit selected Tract" 
+        		click="editTractHandler(new TractEvent(TractEvent.UPDATE_TRACT, dgTracts.selectedItem as LeaseTract))"
+        		enabled="{dgTracts.selectedItem != null}"/> 
+
+        	<mx:Button width="28" height="20"  
+        		icon="@Embed('assets/icons16/delete.png')" toolTip="Remove selected Tract" 
+        		click="deleteTractHandler(new TractEvent(TractEvent.REMOVE_TRACT, dgTracts.selectedItem as LeaseTract))"
+        		enabled="{dgTracts.selectedItem != null}"/> 
+    	</mx:HBox>
+		
+		<mx:DataGrid id="dgTracts" width="100%" height="100%" borderThickness="0" 
+			dataProvider="{lease.tracts}" verticalScrollPolicy="on"
+			sortableColumns="false" draggableColumns="false" resizableColumns="false">
+			<mx:columns>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="40" headerText="ID" dataField="id"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					headerText="Tract" dataField="tract" 
+					itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseTractDescriptionIR"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Gross Acres" headerWordWrap="true" dataField="grossAcres" textAlign="right"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Net Acres" headerWordWrap="true" dataField="netAcres" textAlign="right"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Interest" dataField="leaseInterest" textAlign="right"
+					labelFunction="getLabel"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>	
+</mx:Canvas>

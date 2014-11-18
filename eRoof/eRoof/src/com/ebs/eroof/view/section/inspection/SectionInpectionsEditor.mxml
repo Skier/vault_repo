@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="endEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Inspections_DTO;
+			import com.ebs.eroof.model.wrapper.Inspection;
+			import mx.events.CloseEvent;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import mx.controls.Alert;
+			import mx.events.DynamicEvent;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import com.ebs.eroof.model.wrapper.CorePhoto;
+			import com.ebs.eroof.dto.CorePhotos_DTO;
+			import com.adobe.cairngorm.model.ModelLocator;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+	        [Embed(source="/assets/icons16/plus.png")]
+	        [Bindable]
+	        private var iconPlus:Class;
+        
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+			}
+			
+			private function onCreate():void 
+			{
+	            dgInspections.addEventListener("deleteInspection", deleteInspectionHandler);
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			private function openInspection(inspection:Inspection):void 
+			{
+				InspectionEditPopup.open(this, inspection).addEventListener("closeRequest", 
+					function (event:Event):void 
+					{
+						if (!section.inspectionsCollection.contains(inspection))
+							section.inspectionsCollection.addItem(inspection);
+						
+						dgInspections.selectedIndex = section.inspectionsCollection.getItemIndex(inspection);
+						dgInspections.scrollToIndex(section.inspectionsCollection.getItemIndex(inspection));
+					}); 
+			}
+			
+			private function deleteInspection(inspection:Inspection):void 
+			{
+				if (section.inspectionsCollection.contains(inspection))
+					section.inspectionsCollection.removeItemAt(section.inspectionsCollection.getItemIndex(inspection));
+			}
+			
+			private function deleteInspectionHandler(event:DynamicEvent):void 
+			{
+        		var inspection:Inspection = event.inspection as Inspection;
+        		
+        		if (inspection == null)
+        			return;
+        			
+				event.stopPropagation();
+				event.preventDefault();
+				
+        		Alert.show("Do you really want to delete selected Layer?", "Delete Layer", 
+        			Alert.YES | Alert.NO, null,
+        			function (event:CloseEvent):void 
+        			{
+        				if (event.detail == Alert.YES)
+        					deleteInspection(inspection);
+        			});
+			}
+			
+			private function onAddInspectionClick():void 
+			{
+				var inspection:Inspection = new Inspection(new Inspections_DTO());
+				inspection.inspectionDTO.RelatedSection = Number(section.sectionDTO.rid);
+
+				openInspection(inspection);
+			}
+			
+			private function onInspectionGridDoubleClick():void 
+			{
+				var inspection:Inspection = dgInspections.selectedItem as Inspection;
+				openInspection(inspection);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Label id="lblRoofSystem" y="10" fontSize="14" text="{section.sectionDTO.RoofSystem}" left="10" width="635"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:VBox width="100%" height="100%" verticalGap="5">
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+			borderColor="#cccccc" borderStyle="solid" cornerRadius="1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Inspections" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+				<mx:Button height="100%" cornerRadius="1" label="Add New" icon="{iconPlus}" click="onAddInspectionClick()"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgInspections" width="100%" height="100%"
+				dataProvider="{section.inspectionsCollection}" doubleClickEnabled="true" itemDoubleClick="onInspectionGridDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="dateStr" headerText="Date" textAlign="center"/>
+					<mx:DataGridColumn dataField="typeStr" headerText="Inspection Type"/>
+					<mx:DataGridColumn dataField="companyStr" headerText="Inspecting Company"/>
+					<mx:DataGridColumn dataField="nameStr" headerText="Inspector Name"/>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.ebs.eroof.view.section.inspection.InspectionActionIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+			borderColor="#cccccc" borderStyle="solid" cornerRadius="1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Overal roof inspections assessment" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+			</mx:HBox>
+			<mx:TextArea id="txtAssessment" width="100%" height="100%" text="{Inspection(dgInspections.selectedItem).assessment}"/>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

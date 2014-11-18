@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle" horizontalAlign="center"
+	tabEnabled="false">
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.Events.CatalogItemEvent;
+			import AerSysCo.UI.Models.CatalogItemUI;
+			
+			private function onItemClick():void 
+			{
+				var currentItem:CatalogItemUI = CatalogItemUI(data);
+				ProductsPanel(parentDocument).addCatalogItemFromMultiWarehouses(currentItem);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:LinkButton height="22" width="100%" 
+		styleName="{CatalogItemUI(data).multiWarehouseAvailable ? 'multiWarehouseAvaliableButton' : 'multiWarehouseAvaliableButtonDisable'}"
+		enabled="{CatalogItemUI(data).multiWarehouseAvailable}"
+		click="onItemClick()" tabEnabled="false" />
+</mx:Box>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CallPropertiesView 
+    xmlns="truetract.plotter.components.tractViewClasses.call.propertyViews.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:Geo="truetract.plotter.utils.*" xmlns:validators="truetract.plotter.validators.*"
+    creationComplete="{tInBearingTxt.setFocus()}" xmlns:components="truetract.plotter.components.*">
+        
+    <mx:Script>
+        <![CDATA[
+        	import truetract.plotter.domain.TractCall;
+            import truetract.plotter.utils.UnitOfMeasure;
+            import truetract.plotter.utils.UOMUtil;
+            import truetract.plotter.domain.callparams.*;
+            import truetract.plotter.utils.GeoBearing;
+        
+            import mx.events.ValidationResultEvent;
+
+            public var radiusUom:UnitOfMeasure;
+
+            private function onCreationComplete():void
+            {
+                radiusUomList.selectedItem = radiusUom;
+                tInBearingTxt.setFocus();
+            }
+
+            override protected function getParameters():ParamCollection
+            {
+                if (!isFormValid())
+                    return null;
+                
+                var tInBearing:GeoBearing = GeoBearing.Parse(tInBearingTxt.text);
+                var tOutBearing:GeoBearing = GeoBearing.Parse(tOutBearingTxt.text);
+                var radius:Number = Number(radiusTxt.text);
+
+                var params:ParamCollection = new ParamCollection();
+                
+                params.addItem(new TangentInBearingParam(tInBearing));
+                params.addItem(new TangentOutBearingParam(tOutBearing));
+                params.addItem(new RadiusParam(radius, UnitOfMeasure(radiusUomList.selectedItem)));
+                
+                return params;
+            }
+             
+            override protected function getType():String
+            {
+                return TractCall.CALL_TYPE_CURVE;
+            }
+
+            private function isFormValid():Boolean
+            {
+                var result:Boolean = true;
+                
+                if (radiusV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (inBearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (outBearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                
+                return result;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:NumberValidator id="radiusV" 
+        source="{radiusTxt}" minValue="0.001" property="text" required="true" allowNegative="false"/>
+        
+    <validators:GeoBearingValidator id="inBearingV" 
+        source="{tInBearingTxt}" property="text" required="true"/>
+        
+    <validators:GeoBearingValidator id="outBearingV" 
+        source="{tOutBearingTxt}" property="text" required="true"/>
+    
+    <subComponents>
+    
+        <mx:Form verticalGap="3" paddingBottom="0" paddingLeft="0"
+            paddingRight="0" paddingTop="0" indicatorGap="5"
+            >
+            
+            <mx:FormItem label="Tan In" toolTip="Tangent In Bearing">
+                <mx:TextInput id="tInBearingTxt"
+                    toolTip="Tangent In Bearing"
+                    text="{TangentInBearing.toInputString()}" width="100" enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Tan Out" toolTip="Tangent Out Bearing">
+                <mx:TextInput id="tOutBearingTxt" 
+                    toolTip="Tangent Out Bearing" width="100" enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Radius">
+                <mx:HBox horizontalGap="3">
+                    <mx:TextInput id="radiusTxt" 
+                        toolTip="Radius" width="100" enter="commit()"/>
+                    
+                    <components:ExtendedComboBox id="radiusUomList" 
+                        toolTip="Radius Units" showDataTips="true"
+                        labelField="Name" width="75"
+                        dataProvider="{UOMUtil.Instance().UnitList}" enter="commit()"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+        </mx:Form>        
+    
+    </subComponents>
+    
+</CallPropertiesView>

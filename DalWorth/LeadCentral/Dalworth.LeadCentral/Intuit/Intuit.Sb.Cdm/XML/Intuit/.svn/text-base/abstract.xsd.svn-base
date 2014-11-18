@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:sb="http://www.intuit.com/sb/cdm/v2"
+           xmlns:qbo="http://www.intuit.com/sb/cdm/qbo"
+           xmlns="http://www.intuit.com/sb/cdm/baseexceptionmodel/xsd"
+           targetNamespace="http://www.intuit.com/sb/cdm/baseexceptionmodel/xsd"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:element name="FaultInfo" type="FaultInfo"/>
+  
+  <xs:complexType name="FaultInfo">
+    <xs:sequence>
+      <xs:element name="Message" type="xs:string" minOccurs="0">
+      </xs:element>
+      <xs:element name="ErrorCode" type="xs:string" minOccurs="0">
+      </xs:element>
+      <xs:element name="Cause" type="xs:string" minOccurs="0">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

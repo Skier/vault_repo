@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Document Record Edit" xmlns:component="com.llsvc.component.*">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentAttachment;
+			import com.llsvc.domain.DocumentRecordAttachment;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+
+			private var _docRecord:DocumentRecord;
+			[Bindable]
+			public function get docRecord():DocumentRecord { return _docRecord; }
+			public function set docRecord(value:DocumentRecord):void 
+			{
+				_docRecord = value;
+			}
+			
+			[Bindable] private var stateList:ArrayCollection = LocalCash.getInstance().getStates();
+			[Bindable] private var errorMessage:String = "";
+			
+            public static function open(parent:DisplayObject, modal:Boolean):DocRecordEditView
+            {
+                var popup:DocRecordEditView = new DocRecordEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	if (cbState.selectedItem != null && cbCounty.selectedItem != null
+            			&& (txtDocNo.text.length > 0 || (txtVolume.text.length > 0 && txtPage.text.length > 0))
+            			&& !boxAttachment.inProcess
+            		)
+            	{
+            		if (validators.validate(true))
+            			return true;
+            		else 
+            			return false;
+            	} else 
+            	{
+            		return false;
+            	}
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+            	errorMessage = "";
+
+	        	if (isFormValid()) 
+	        	{
+			        docRecord.county = cbCounty.selectedItem as County;
+			        docRecord.state = cbState.selectedItem as State;
+			        docRecord.docNo = txtDocNo.text;
+			        docRecord.volume = txtVolume.text;
+			        docRecord.page = txtPage.text;
+			        docRecord.docDate = dateRecorded.selectedDate;
+			        
+			        if (boxAttachment.file != null) 
+			        {
+			        	docRecord.attachment.type = DocumentAttachment.RECORDED_TYPE; 
+			        	docRecord.attachment.file = boxAttachment.file;
+			        	docRecord.attachment.name = boxAttachment.fileName;
+			        }
+			        
+			        dispatchEvent(new Event("commitRequest"));
+	        	} else if ( boxAttachment.inProcess ) 
+	        	{
+            		errorMessage = "File uploading in process !";
+	        	} else 
+	        	{
+            		errorMessage = "Not all required fields selected !";
+	        	}
+	        }
+	        
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+	        private function removeAttachment():void 
+	        {
+	        	boxAttachment.file = null;
+	        }
+        
+		]]>
+	</mx:Script>
+	
+	<component:ValidatorsGroup id="validators">
+		<mx:DateValidator id="vRecorder" source="{dateRecorded}" property="selectedDate" required="false"/>
+	</component:ValidatorsGroup>
+	
+	<mx:Form width="100%" labelWidth="60" 
+		borderColor="#999999" borderStyle="solid" borderThickness="1"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+		verticalGap="4">
+		<mx:FormItem direction="horizontal" width="100%">
+			<controls:ComboBox id="cbState" prompt="State"  
+				valueField="fips" value="{docRecord.state.fips}" labelField="name"
+				dataProvider="{stateList}"/>
+		
+			<controls:ComboBox id="cbCounty" prompt="County" width="100%" 
+				valueField="fips" value="{docRecord.county.fips}" labelField="name"
+				dataProvider="{cbState.selectedItem == null ? null : State(cbState.selectedItem).counties}"/>
+		</mx:FormItem>
+		
+		<mx:HBox width="100%">
+			<mx:FormItem label="BK/Vol">
+				<component:SelectableInput id="txtVolume" text="{docRecord.volume}" width="80"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="PG">
+				<component:SelectableInput id="txtPage" text="{docRecord.page}" width="{dateRecorded.width}"/>
+			</mx:FormItem>
+		</mx:HBox>
+		
+		<mx:HBox width="100%">
+			<mx:FormItem label="File No">
+				<component:SelectableInput id="txtDocNo" text="{docRecord.docNo}" width="80"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="Rec">
+				<mx:DateField id="dateRecorded" yearNavigationEnabled="true" selectedDate="{docRecord.docDate}" editable="true"/>
+			</mx:FormItem>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" backgroundColor="#ffff99">
+			<document:DocAttachmentBox id="boxAttachment" 
+				width="100%" 
+				file="{docRecord.attachment.file}"
+				fileName="{docRecord.attachment.name}"
+				fileType="{DocumentAttachment.RECORDED_TYPE}"
+				removeOriginalAttachmentRequest="removeAttachment()"/>
+		</mx:HBox>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+		<mx:Label fontSize="12" color="#ff0000" text="{errorMessage}" minWidth="200"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

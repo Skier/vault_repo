@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    width="400" title="Export" showCloseButton="true" paddingLeft="10" paddingTop="10"
+    paddingRight="10" paddingBottom="10" close="closeHandler(event)">
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.controls.Alert;
+        import mx.events.FileEvent;
+            
+        import flash.filesystem.File;
+        import mx.core.Application;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+        import mx.managers.PopUpManager;
+
+        [Bindable]
+        public var cancelLabel:String = "Cancel";
+
+        [Bindable]
+        public var openLabel:String = "Open";
+
+        [Bindable]
+        public var saveLabel:String = "Save";
+
+        public static function Open(directory:File = null, name:String = null):FileSaveDialog {
+            
+            var panel:FileSaveDialog = FileSaveDialog(PopUpManager.createPopUp(
+                DisplayObject(mx.core.Application.application), FileSaveDialog, true));
+            
+            PopUpManager.centerPopUp(panel);
+            
+            panel.Init(directory, name);
+            
+            return panel;
+
+        }
+
+        public function Init(directory:File = null, fileName:String = null):void {
+
+            if (!directory) {
+                directory = File.documentsDirectory;
+            }
+
+            fileSystemList.directory = directory;
+            fileSystemList.resetHistory(directory);
+
+            if (fileName) {
+                fileNameTextInput.text = fileName;
+            }
+
+        }
+        
+        private function updateSaveButton():void {
+
+            var listHasFocus:Boolean = fileSystemList.focusManager.getFocus() == fileSystemList;
+
+            saveButton.label = listHasFocus && fileSystemList.canNavigateDown ? openLabel : saveLabel;
+            saveButton.enabled = fileSystemList.directory != FileSystemList.COMPUTER && fileNameTextInput.text != "";
+
+        }
+        
+        private function dispatchSelectEvent(file:File):void {
+
+            var selectEvent:FileEvent = new FileEvent(FileEvent.SELECT);
+            selectEvent.file = file;
+            dispatchEvent(selectEvent);
+
+        }
+
+        private function ConfirmSaving(file:File):void {
+            
+            var currentPanel:FileSaveDialog = this;
+            
+            Alert.show("File " + file.name + "  already exists. Overwrite ?", "File exists", 
+                Alert.YES | Alert.NO, null, 
+                function (event:CloseEvent):void 
+                {
+                    if (event.detail == Alert.YES) {
+                        dispatchSelectEvent(file);
+			            PopUpManager.removePopUp(currentPanel);
+                    } else {
+                    	return;
+                    }
+
+                }, null, Alert.YES);
+        }
+
+        private function closeHandler(event:CloseEvent):void {
+
+            dispatchEvent(new Event(Event.CANCEL));
+
+            PopUpManager.removePopUp(this);
+
+        }
+
+        private function fileSystemComboBox_changeHandler(event:Event):void {
+
+            fileSystemList.navigateTo(File(fileSystemComboBox.selectedItem));
+
+        }
+
+        private function upButton_clickHandler(event:MouseEvent):void {
+
+            fileSystemList.navigateUp();
+
+        }
+
+        private function fileSystemList_directoryChangeHandler(event:FileEvent):void {
+
+            updateSaveButton();
+
+        }
+
+        private function fileSystemList_focusInHandler(event:FocusEvent):void {
+
+            updateSaveButton();
+
+        }
+        
+        private function fileSystemList_focusOutHandler(event:FocusEvent):void {
+
+            updateSaveButton();
+ 
+        }
+        
+        private function fileNameTextInput_changeHandler(event:Event):void {
+
+            updateSaveButton();
+
+        }
+        
+        private function fileNameTextInput_enterHandler(event:Event):void {
+
+            var file:File = fileSystemList.directory.resolve(fileNameTextInput.text);
+            if (!file.exists) {
+	            dispatchSelectEvent(file);
+	            PopUpManager.removePopUp(this);
+            } else {
+            	ConfirmSaving(file);
+            }
+
+        }
+        
+        private function saveButton_clickHandler(event:MouseEvent):void {
+
+            var file:File = fileSystemList.directory.resolve(fileNameTextInput.text);
+            if (!file.exists) {
+	            dispatchSelectEvent(file);
+	            PopUpManager.removePopUp(this);
+            } else {
+            	ConfirmSaving(file);
+            }
+
+        }
+ 
+        private function cancelButton_clickHandler(event:MouseEvent):void {
+
+            dispatchEvent(new Event(Event.CANCEL));
+            PopUpManager.removePopUp(this);
+
+        }
+
+        private function fileSelected():void {
+
+            if (fileSystemList.selectedItem && !fileSystemList.selectedItem.isDirectory) {
+                fileNameTextInput.text = fileSystemList.selectedItem.name;
+            } else {
+                fileNameTextInput.text = "";
+            }
+
+            updateSaveButton();
+
+        }
+    ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%">
+
+        <mx:FileSystemComboBox id="fileSystemComboBox" width="100%" toolTip="Current Directory"
+        	directory="{fileSystemList.directory}"
+        	change="fileSystemComboBox_changeHandler(event)"/>
+
+        <mx:Button id="upButton" width="22" label="^" toolTip="Up"
+        	enabled="{fileSystemList.canNavigateUp}"
+        	click="upButton_clickHandler(event)"/>
+
+    </mx:HBox>
+
+    <mx:FileSystemList id="fileSystemList" width="100%" rowCount="10"
+    	directoryChange="fileSystemList_directoryChangeHandler(event)"
+    	focusIn="fileSystemList_focusInHandler(event)"
+    	focusOut="fileSystemList_focusOutHandler(event)"
+    	click="fileSelected()" />
+    	
+	<mx:HBox width="100%">
+
+		<mx:VBox width="100%">
+		    <mx:HBox width="100%">
+		        <mx:Label text="File name:" width="100"/>
+		        <mx:TextInput id="fileNameTextInput" width="100%" 
+		        	change="fileNameTextInput_changeHandler(event)"
+		        	enter="fileNameTextInput_enterHandler(event)"/>
+		    </mx:HBox>
+		    <mx:HBox width="100%">
+		        <mx:Label text="File format:" width="100"/>
+		        <mx:ComboBox id="fileFormatComboBox" width="100%" enabled="false"/>
+		    </mx:HBox>
+		</mx:VBox>
+
+	    <mx:VBox width="100%" horizontalAlign="center">
+	        <mx:Button id="saveButton" width="80"
+	        	click="saveButton_clickHandler(event)"/>
+	        <mx:Button id="cancelButton" width="80" label="{cancelLabel}"
+	        	click="cancelButton_clickHandler(event)"/>
+	    </mx:VBox>
+
+	</mx:HBox>
+
+</mx:TitleWindow>

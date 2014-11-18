@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:tabPanel="truetract.web.dashboard.projectPanel.tabPanel.*" 
+	xmlns:containers="truetract.web.containers.*">
+	
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+        [Event(name="addDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import truetract.web.services.ProjectService;
+			import mx.events.DynamicEvent;
+			import mx.controls.Alert;
+			import truetract.domain.ProjectTab;
+			import truetract.web.dashboard.projectPanel.tabPanel.IProjectTabUI;
+			import truetract.domain.Project;
+			
+			private const WORK_STATE_TABS_LIST:String = "WORK_STATE_TABS_LIST";
+			private const WORK_STATE_TAB_DETAIL:String = "WORK_STATE_TAB_DETAIL";
+			
+			[Bindable] public var project:Project;
+			
+			[Bindable] public var readOnly:Boolean = false;
+
+			public function openProjectTab(projectTab:ProjectTab):void 
+			{
+				if (projectTab != null) {
+					setWorkState(WORK_STATE_TAB_DETAIL);
+					viewTabDetail.projectTab = projectTab;
+					viewTabDetail.readOnly = readOnly;
+					viewTabDetail.initDocListener();
+				}
+			}
+			
+			public function closeProjectTab(projectTab:ProjectTab = null):void 
+			{
+				setWorkState(WORK_STATE_TABS_LIST);
+				viewTilePanel.setSelected(projectTab);
+			}
+			
+			private function deleteProjectTab(projectTab:ProjectTab):void 
+			{
+                Alert.show("Are you really want to remove current Tab from Project ?", 
+                   "Remove Document", Alert.YES | Alert.NO, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+			                ProjectService.getInstance().deleteProjectTab(projectTab);
+					
+							viewTilePanel.setSelected(null);
+                        }
+                    });
+			}
+
+			private function setWorkState(state:String):void 
+			{
+				if (state == WORK_STATE_TABS_LIST) 
+				{
+					vsTabs.selectedChild = viewTabsList;
+					viewTabDetail.projectTab = null;
+				} else if (state == WORK_STATE_TAB_DETAIL) 
+				{
+					vsTabs.selectedChild = viewTabDetail;
+				}
+			}
+
+			private function openProjectTabRequestHandler(event:DynamicEvent):void 
+			{
+				openProjectTab(event.projectTab as ProjectTab);
+			}
+			
+			private function deleteProjectTabRequestHandler(event:DynamicEvent):void 
+			{
+				var projectTab:ProjectTab = event.projectTab as ProjectTab;
+				
+				deleteProjectTab(projectTab);
+			}
+			
+			private function saveOrderClickHandler():void 
+			{
+				ProjectService.getInstance().saveOrderedTabs(project);
+			}
+			
+			private function tiledClickHandler():void 
+			{
+				vsTabsList.selectedChild = viewTilePanel;
+				viewTilePanel.setSelected(null);
+			}
+			
+			private function detailsClickHandler():void 
+			{
+				vsTabsList.selectedChild = viewDetailPanel;
+				viewDetailPanel.setSelected(null);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsTabs" width="100%" height="100%">
+		<mx:VBox id="viewTabsList" width="100%" height="100%" 
+			borderColor="#333399" borderStyle="solid" borderThickness="1"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			backgroundColor="#eeeeee" >
+			<mx:HBox width="100%" 
+				paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+				backgroundColor="#dddddd" borderColor="#bbbbbb" borderStyle="solid">
+				<mx:Label text="Project Tabs" fontWeight="bold"/>
+
+				<mx:HBox includeInLayout="{!readOnly}" visible="{!readOnly}">
+					<mx:VRule height="20"/>
+	
+			        <mx:Button 
+			            icon="@Embed(source='/assets/tab_add.png')" width="20" height="20" 
+			            styleName="toolButton" toolTip="Add New Tab"
+			            click="ProjectPanel(parentDocument).createProjectTab(null)"/>
+	
+			        <mx:Button 
+			            icon="@Embed(source='/assets/index.png')" width="20" height="20" 
+			            styleName="toolButton" toolTip="Save Tab's order"
+			            click="saveOrderClickHandler()"/>
+				</mx:HBox>
+
+				<mx:VRule height="20"/>
+
+		        <mx:Button 
+		            icon="@Embed(source='/assets/view_tile.png')" width="20" height="20" 
+ 					enabled="{vsTabsList.selectedIndex != 0}"
+		            styleName="toolButton" toolTip="Tiled view"
+		            click="tiledClickHandler()"/>
+
+		        <mx:Button 
+		            icon="@Embed(source='/assets/view_detail.png')" width="20" height="20" 
+ 					enabled="{vsTabsList.selectedIndex != 1}"
+		            styleName="toolButton" toolTip="Detail list"
+		            click="detailsClickHandler()"/>
+			</mx:HBox>
+
+			<mx:ViewStack id="vsTabsList" width="100%" height="100%"
+				selectedIndex="0">
+ 				<tabPanel:ProjectTabsTilePanel id="viewTilePanel"
+ 					width="100%" height="100%" label="Tiles" 
+ 					project="{project}" readOnly="{readOnly}"
+ 					openProjectTab="openProjectTabRequestHandler(event as DynamicEvent)"
+ 					deleteProjectTab="deleteProjectTabRequestHandler(event as DynamicEvent)"/>
+ 					
+ 				<tabPanel:ProjectTabsDetailPanel id="viewDetailPanel"
+ 					width="100%" height="100%" label="Details" 
+ 					project="{project}" readOnly="{readOnly}"
+ 					openProjectTab="openProjectTabRequestHandler(event as DynamicEvent)"
+ 					deleteProjectTab="deleteProjectTabRequestHandler(event as DynamicEvent)"/>
+			</mx:ViewStack>
+		</mx:VBox>
+
+		<tabPanel:ProjectTabDetailView id="viewTabDetail" 
+			width="100%" height="100%"
+			openDocument="dispatchEvent(event)"
+			addDocument="dispatchEvent(event)"/>
+	</mx:ViewStack>
+</mx:Canvas>

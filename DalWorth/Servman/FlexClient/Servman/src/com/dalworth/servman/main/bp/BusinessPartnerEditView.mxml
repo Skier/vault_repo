@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:voice="com.affilia.voice.*" xmlns:controls="com.affilia.controls.*" xmlns:bp="com.dalworth.servman.main.bp.*" xmlns:user="com.dalworth.servman.main.owner.setting.user.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import com.dalworth.servman.domain.SalesRep;
+			import com.dalworth.servman.domain.User;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.service.LeadService;
+			import com.dalworth.servman.domain.Lead;
+			
+			public function setBusinessPartner(businessPartner:BusinessPartner):void 
+			{ 
+				controller.initModel(businessPartner); 
+			}
+			
+			[Bindable]
+			private var model:BusinessPartnerEditModel;
+			private var controller:BusinessPartnerEditController;
+			
+			private function onInit():void 
+			{
+				model = BusinessPartnerEditModel.getInstance();
+				controller = new BusinessPartnerEditController(this);
+			}
+			
+			private function onCloseClick():void 
+			{
+				dispatchEvent(new Event("closeBusinessPartnerEditor"));
+			}
+			
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				if (!cbCanLogin.selected)
+					return result;
+					
+				if (!viewUserInfo.isValid())
+					result = false;
+				
+				return result;
+			}
+			
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var newPartner:BusinessPartner =  model.businessPartner.prepareToSend();
+				newPartner.ShowAs = txtName.text;
+				newPartner.IsActive = cbIsActive.selected;
+				
+				if (cbCanLogin.selected) 
+					newPartner.RelatedUser = viewUserInfo.getUser();
+				
+				controller.saveBusinessPartner(newPartner, viewPhones.getOwnPhones(), viewPhones.getCompanyPhones());
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{model.businessPartner.Id == 0}" enabled="false"/>
+	
+	<mx:HBox width="100%" height="100%" backgroundColor="#FFFFFF"
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" borderColor="#EEEEEE" borderStyle="solid">
+		<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5"
+			borderColor="#CCCCCC" borderStyle="solid">
+			<mx:Form width="100%" minWidth="250" labelWidth="120"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+				<mx:FormItem label="Business Partner" width="100%" required="true">
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:TextInput id="txtName" width="100%" text="{model.businessPartner.ShowAs}"/>
+						<mx:CheckBox id="cbIsActive" label="is active" selected="{model.businessPartner.IsActive}"/>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+
+			<mx:CheckBox id="cbCanLogin" label="can login" selected="{model.businessPartner.CanLogin}"/>
+
+			<user:UserEditView id="viewUserInfo" width="100%" user="{model.businessPartner.RelatedUser}"
+				visible="{cbCanLogin.selected}" includeInLayout="{cbCanLogin.selected}"/>
+
+			<bp:BusinessPartnerPhonesView id="viewPhones" width="100%" height="100%" businessPartner="{model.businessPartner}"/>
+		</mx:VBox>
+		
+		<mx:VBox height="100%" width="150" horizontalAlign="center">
+			<mx:Button label="Update" 
+				click="onSaveClick()" fontSize="12"
+				width="100%" height="35"/>
+	        <mx:Button label="Close" click="onCloseClick()" fontSize="12"
+	        	width="100%" height="35"/>
+
+			<mx:Spacer height="100%"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

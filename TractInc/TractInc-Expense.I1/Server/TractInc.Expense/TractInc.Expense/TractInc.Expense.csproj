@@ -1,0 +1,80 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69568EB7-CE14-4D09-BE67-31AE3B79A739}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.Expense</RootNamespace>
+    <AssemblyName>TractInc.Expense</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="weborb, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\weborb.dll</HintPath>
+    </Reference>
+    <Reference Include="Weborb.Data.Management, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Weborb.Data.Management.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\Afe.cs" />
+    <Compile Include="Domain\AfeDataMapper.cs" />
+    <Compile Include="Domain\Afestatus.cs" />
+    <Compile Include="Domain\AfestatusDataMapper.cs" />
+    <Compile Include="Domain\Asset.cs" />
+    <Compile Include="Domain\Assetassignment.cs" />
+    <Compile Include="Domain\AssetassignmentDataMapper.cs" />
+    <Compile Include="Domain\AssetDataMapper.cs" />
+    <Compile Include="Domain\Assettype.cs" />
+    <Compile Include="Domain\AssettypeDataMapper.cs" />
+    <Compile Include="Domain\Billitem.cs" />
+    <Compile Include="Domain\BillitemDataMapper.cs" />
+    <Compile Include="Domain\Billitemstatus.cs" />
+    <Compile Include="Domain\BillitemstatusDataMapper.cs" />
+    <Compile Include="Domain\Client.cs" />
+    <Compile Include="Domain\ClientDataMapper.cs" />
+    <Compile Include="Domain\Rate.cs" />
+    <Compile Include="Domain\RateDataMapper.cs" />
+    <Compile Include="Domain\Subafe.cs" />
+    <Compile Include="Domain\SubafeDataMapper.cs" />
+    <Compile Include="Domain\Subafestatus.cs" />
+    <Compile Include="Domain\SubafestatusDataMapper.cs" />
+    <Compile Include="Domain\Synclog.cs" />
+    <Compile Include="Domain\SynclogDataMapper.cs" />
+    <Compile Include="Domain\tractexpense.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\ExpenseService.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

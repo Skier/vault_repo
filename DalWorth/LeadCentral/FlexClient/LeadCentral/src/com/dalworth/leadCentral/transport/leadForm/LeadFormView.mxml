@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:transport="com.dalworth.leadCentral.transport.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.LeadForm;
+			import com.dalworth.leadCentral.domain.PhoneSms;
+			import mx.utils.StringUtil;
+			import mx.core.UIComponent;
+			import mx.controls.Alert;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.service.registry.TrackingPhoneRegistry;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import com.dalworth.leadCentral.domain.TrackingPhoneRotation;
+			import mx.rpc.events.FaultEvent;
+			import mx.collections.SortField;
+			import mx.collections.Sort;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.Responder;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.leadCentral.domain.PhoneCall;
+			
+			[Bindable]
+			private var model:LeadFormModel;
+			private var controller:LeadFormController;
+
+			public function setLeadForm(value:LeadForm):void 
+			{
+				controller.setLeadForm(value);
+			}
+			
+			private function onInit():void 
+			{
+				model = LeadFormModel.getInstance();
+				controller = new LeadFormController(this as UIComponent);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:PhoneFormatter id="fPhone" formatString="##(###)###-####"/>
+	
+	<mx:HDividedBox width="100%" height="100%" backgroundColor="#FFFFDD"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:VBox width="100%">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Lead was created by Web Form from:"/>
+				<mx:Label text="{model.callFrom}" fontWeight="bold" color="#666666"/>
+			</mx:HBox>
+			
+			<mx:Grid width="100%">
+				<mx:GridRow width="100%" verticalAlign="middle">
+					<mx:GridItem verticalAlign="middle">
+						<mx:Label text="First Name:" width="100%" textAlign="right" color="#666666"/>
+					</mx:GridItem>
+					<mx:GridItem verticalAlign="middle" width="100%">
+						<mx:Label text="{model.leadForm.FirstName}" width="100%" minWidth="50" color="#333333" fontWeight="bold"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" verticalAlign="middle">
+					<mx:GridItem verticalAlign="middle">
+						<mx:Label text="Last Name:" width="100%" textAlign="right" color="#666666"/>
+					</mx:GridItem>
+					<mx:GridItem verticalAlign="middle" width="100%">
+						<mx:Label text="{model.leadForm.LastName}" width="100%" minWidth="50" color="#333333" fontWeight="bold"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" verticalAlign="middle">
+					<mx:GridItem verticalAlign="middle">
+						<mx:Label text="Phone:" width="100%" textAlign="right" color="#666666"/>
+					</mx:GridItem>
+					<mx:GridItem verticalAlign="middle" width="100%">
+						<mx:Label text="{model.leadForm.Phone}" width="100%" minWidth="50" color="#333333" fontWeight="bold"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="100%" verticalAlign="top">
+					<mx:GridItem verticalAlign="middle">
+						<mx:Label text="Message:" width="100%" textAlign="right" color="#666666"/>
+					</mx:GridItem>
+					<mx:GridItem verticalAlign="middle" width="100%" height="100%">
+						<mx:Text text="{model.leadForm.Message}" width="100%" minWidth="50" color="#333333" fontWeight="bold"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+
+			<mx:Label text="Message:"/>
+			<mx:TextArea text="{model.leadForm.Message}" width="100%" height="100%"/>
+		</mx:VBox>
+
+		<mx:VBox width="100%" height="100%" 
+			visible="{model.rotations.length &gt; 0}" includeInLayout="{model.rotations.length &gt; 0}">
+			<mx:LinkBar dataProvider="{vsPhoneCall}"/>
+			<mx:ViewStack id="vsPhoneCall" width="100%" height="100%">
+				<mx:VBox width="100%" height="100%" label="Summary" backgroundColor="#FFFFFF"
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+					<mx:Grid width="100%">
+						<mx:GridRow width="100%" verticalAlign="middle">
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="Came From:" width="100%" textAlign="right"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle" width="100%">
+								<mx:Label text="{model.cameFrom}" width="100%" minWidth="50"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" verticalAlign="middle">
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="Call From:" width="100%" textAlign="right"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle" width="100%">
+								<mx:Label text="{model.callFrom}" width="100%" minWidth="50"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" verticalAlign="middle">
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="at:" width="100%" textAlign="right"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle" width="100%">
+								<mx:Label text="{DateUtil.getDateTimeStr(model.callTime)}" width="100%" minWidth="50"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" verticalAlign="middle">
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="Pages visited:" width="100%" textAlign="right"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle" width="100%">
+								<mx:Label text="{model.pagesVisited}" width="100%" minWidth="50"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow width="100%" verticalAlign="middle">
+							<mx:GridItem verticalAlign="middle">
+								<mx:Label text="Search string:" width="100%" textAlign="right"/>
+							</mx:GridItem>
+							<mx:GridItem verticalAlign="middle" width="100%">
+								<mx:Label text="{model.searchQuery}" width="100%" minWidth="50"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+				</mx:VBox>
+
+				<transport:WebHistoryView width="100%" height="100%" rotations="{model.rotations}"/>				
+			</mx:ViewStack>
+		</mx:VBox>
+	</mx:HDividedBox>
+</mx:Canvas>

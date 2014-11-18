@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import truetract.plotter.domain.DocAttachment;
+			import truetract.plotter.domain.Document;
+
+			[Bindable]
+			private var controller:AttachmentController;
+			
+			public function get value():DocAttachment 
+			{
+				return controller.model.currentAttachment;
+			}
+			
+			public function set doc(docum:Document):void 
+			{
+				if (docum) {
+					controller = new AttachmentController(this as AttachmentView, docum);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="boxNewAttachment" width="100%"
+		visible="{controller.model.currentAttachment == null &amp;&amp; !controller.model.uploadingInProgress}"
+		>
+		<mx:Button label="Upload PDF" click="controller.onUpload_clickHandler()" fontWeight="normal"/>
+	</mx:HBox>
+	
+	<mx:HBox id="boxAttachment" width="100%"
+		visible="{controller.model.currentAttachment != null &amp;&amp; !controller.model.uploadingInProgress}"
+		>
+		<mx:LinkButton label="{controller.model.currentAttachment.OriginalFileName}" 
+			click="controller.onOpen_clickHandler()" 
+			maxWidth="150" 
+			toolTip="{controller.model.currentAttachment.OriginalFileName}"/>
+		<mx:Button label="Change" 
+			click="controller.onUpload_clickHandler()" fontWeight="normal"/>
+		<mx:Button label="Remove" 
+			click="controller.onRemove_clickHandler()" fontWeight="normal"/>
+	</mx:HBox>
+	
+	<mx:HBox id="boxUploading" width="100%"
+		visible="{controller.model.uploadingInProgress}"
+		>
+		<mx:ProgressBar id="pbUpload" labelPlacement="center" mode="manual" width="100"
+			/>
+		<mx:Button id="cancel" label="Cancel" 
+			click="controller.onCancelUpload_clickHandler()" fontWeight="normal"/>
+	</mx:HBox>
+	
+</mx:Canvas>

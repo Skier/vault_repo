@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:login="UI.login.*" 
+	xmlns:dashboard="UI.dashboard.*"
+	xmlns:UI="UI.*"
+	>
+	
+    <UI:AppController id="controller" view="{this}"/>
+	
+	<mx:ViewStack id="mainViewStack" width="100%" height="100%" 
+		selectedIndex="{controller.model.loggedOut ? 0 : 1}">
+		
+		<login:LoginView id="viewLogin" 
+			width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
+			loginComplete="controller.onLogin_resultHandler(event)"
+			loginFailed="controller.onLogin_faultHandler(event)"
+			/>
+		
+		<dashboard:DashboardView id="viewDashboard" 
+			width="100%" height="100%"
+			logoutEvent="controller.logout_eventHandler(event)"
+			/>
+		
+	</mx:ViewStack>
+
+</mx:Canvas>

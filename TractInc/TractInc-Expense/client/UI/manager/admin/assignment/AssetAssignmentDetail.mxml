@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	creationComplete="onCreationComplete()"
+    title="{(0 == assetAssignment.AssetAssignmentId)? 'Create Assignment': 'Edit Assignment Rates'}"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ListCollectionView;
+        	import App.Entity.ProjectDataObject;
+        	import App.Entity.AssetDataObject;
+        	import App.Entity.DefaultBillRateDataObject;
+        	import App.Entity.BillItemTypeDataObject;
+        	import App.Entity.RateByAssignmentDataObject;
+        	import App.Entity.DefaultInvoiceRateDataObject;
+        	import App.Entity.InvoiceItemTypeDataObject;
+        	import common.TypesRegistry;
+        	import mx.controls.Alert;
+        	import App.Entity.AFEDataObject;
+        	import App.Entity.ClientDataObject;
+        	import App.Entity.AssetAssignmentDataObject;
+        	import mx.events.PropertyChangeEvent;
+        	import mx.events.DynamicEvent;
+        	import mx.events.CollectionEvent;
+        	import mx.binding.utils.ChangeWatcher;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+
+            [Bindable]
+            public var assetAssignment:AssetAssignmentDataObject;
+            
+            [Bindable]
+            private var model:AssignmentsModel;
+            
+            public static function Open(assetAssignment:AssetAssignmentDataObject, parent:DisplayObject, model:AssignmentsModel):AssetAssignmentDetail 
+            {
+                var popup:AssetAssignmentDetail = new AssetAssignmentDetail();
+                popup.assetAssignment = assetAssignment;
+                popup.model = model;
+                
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function onCreationComplete():void {
+           		PopUpManager.centerPopUp(this);
+           		
+       			loadRates();
+            }
+            
+            private function onClientChanged():void {
+            	assetAssignment.ClientId = ClientDataObject(cbClients.selectedItem).ClientId;
+            	
+       			loadRates();
+       			
+       			if (null == model.afesByClient[ClientDataObject(cbClients.selectedItem).ClientId]) {
+       				return;
+       			}
+       			
+       			var afes:ArrayCollection = new ArrayCollection(ArrayCollection(model.afesByClient[ClientDataObject(cbClients.selectedItem).ClientId]).toArray());
+       			afes.filterFunction = function(obj:Object):Boolean {
+       				var hasNotAssigned:Boolean = false;
+           			for each (var project:String in ArrayCollection(model.projectsByAfe[obj])) {
+           				var isAssigned:Boolean = false;
+            			for each (var assignment:AssetAssignmentDataObject in ListCollectionView(model.projectsByAsset[assetAssignment.AssetId])) {
+            				if (assignment.SubAFE == project) {
+            					isAssigned = true;
+            					break;
+            				}
+            			}
+            			if (!isAssigned) {
+            				hasNotAssigned = true;
+            				break;
+            			}
+           			}
+           			return hasNotAssigned;
+       			}
+       			afes.refresh();
+       			
+            	cbAfes.dataProvider = afes;
+            	cbSubAfes.dataProvider = null;
+            }
+            
+            private function onAfeChanged():void {
+            	var projects:ArrayCollection = new ArrayCollection(ArrayCollection(model.projectsByAfe[cbAfes.selectedItem]).toArray());
+            	projects.filterFunction = function(obj:Object):Boolean {
+            		for each (var assignment:AssetAssignmentDataObject in ListCollectionView(model.projectsByAsset[assetAssignment.AssetId])) {
+            			if ((assignment.AFE == String(cbAfes.selectedItem))
+            					&& (assignment.SubAFE == String(obj))) {
+            				return false;
+            			}
+            		}
+            		return true;
+            	};
+            	projects.refresh();
+            	cbSubAfes.dataProvider = projects;
+            }
+            
+            private function loadRates():void {
+            	if (0 == assetAssignment.AssetAssignmentId) {
+            		loadDefaultRates();
+            	} else {
+	            	var rates:ArrayCollection = new ArrayCollection(assetAssignment.Rates);
+	            	assetAssignment.ratesHash = new Array();
+            		
+            		for each (var rate:RateByAssignmentDataObject in rates) {
+            			assetAssignment.ratesHash[rate.BillItemTypeId] = rate;
+            			rate.toTempFields();
+            		}
+            		
+            		for each (var itemType:BillItemTypeDataObject in TypesRegistry.instance.getAllBillItemTypes) {
+            			if (null == assetAssignment.ratesHash[itemType.BillItemTypeId]) {
+            				var newRate:RateByAssignmentDataObject = new RateByAssignmentDataObject();
+            				newRate.BillItemTypeId = itemType.BillItemTypeId;
+            				rates.addItem(newRate);
+            			}
+            		}
+            		
+            		dgRates.dataProvider = rates;
+            	}
+            }
+            
+            private function loadDefaultRates():void {
+            	if (0 == assetAssignment.ClientId) {
+            		return;
+            	}
+            	
+            	var rates:ArrayCollection = new ArrayCollection();
+            	var rate:RateByAssignmentDataObject;
+            	
+           		var client:ClientDataObject = null;
+           		for each (client in model.clients) {
+           			if (client.ClientId == assetAssignment.ClientId) {
+           				break;
+           			}
+           		}
+            		
+				for each (var billItemType:BillItemTypeDataObject in TypesRegistry.instance.getAllBillItemTypes) {
+					var defaultInvoiceRate:DefaultInvoiceRateDataObject = null;
+					for each (defaultInvoiceRate in client.DefaultRates) {
+						if (defaultInvoiceRate.InvoiceItemTypeId == billItemType.InvoiceItemTypeId) {
+							break;
+						}
+					}
+					
+					var defaultBillRate:DefaultBillRateDataObject = null;
+					for each (defaultBillRate in model.currentAsset.DefaultRates) {
+						if (defaultBillRate.BillItemTypeId == billItemType.BillItemTypeId) {
+							break;
+						}
+					}
+					
+					if ((null != defaultInvoiceRate)
+							&& (null != assetAssignment.ratesHash[billItemType.BillItemTypeId])) {
+						rate = RateByAssignmentDataObject(assetAssignment.ratesHash[billItemType.BillItemTypeId]);
+						
+						rate.InvoiceRate = defaultInvoiceRate.InvoiceRate;
+						rate.BillRate = defaultBillRate.BillRate;
+            			rate.toTempFields();
+						
+						rates.addItem(rate);
+					}
+				}
+				
+				dgRates.dataProvider = rates;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox
+    	width="100%"
+    	visible="{0 == assetAssignment.AssetAssignmentId}"
+    	includeInLayout="{0 == assetAssignment.AssetAssignmentId}">
+	    <mx:VBox width="100%">
+    	    <mx:HBox>
+        	    <mx:Label text="Client:" width="120" textAlign="right"/>
+            	<mx:ComboBox
+            		id="cbClients"
+	            	width="200"
+    	        	labelField="ClientName"
+        	        dataProvider="{model.clients}"
+            	    change="onClientChanged()"
+                	prompt=" "
+	                />
+    	    </mx:HBox>
+    	    
+    	    <mx:HRule width="100%"/>
+    	    
+        	<mx:HBox>
+            	<mx:Label text="AFE:" width="120" textAlign="right"/>
+	            <mx:ComboBox
+    	        	id="cbAfes"
+        	    	width="200"
+            		labelField="AFEName"
+            		change="onAfeChanged()"
+	                prompt=" "
+    	            />
+        	</mx:HBox>
+	        <mx:HBox>
+    	        <mx:Label text="Project:" width="120" textAlign="right"/>
+        	    <mx:ComboBox
+            		id="cbSubAfes"
+            		width="250"
+	            	labelField="SubAFE"
+                	prompt=" "
+            	    />
+        	</mx:HBox>
+    	</mx:VBox>
+    	
+	    <mx:HRule width="100%"/>
+   	
+    </mx:VBox>
+    
+	<mx:VBox
+		width="100%">
+	    <mx:DataGrid
+    		id="dgRates"
+    	   	width="100%"
+	       	height="{(0 == assetAssignment.AssetAssignmentId)? 75: 300}"
+        	editable="true">
+        	<mx:columns>
+    	   		<mx:DataGridColumn
+	       			dataField="BillItemTypeName"
+        			headerText="Item Type"
+        			editable="false"
+        			fontWeight="bold"
+    	   			/>
+	       		<mx:DataGridColumn
+        			dataField="BillRateTemp"
+        			headerText="Bill Rate"
+        			editable="true">
+        			<mx:itemRenderer>
+        				<mx:Component>
+        					<mx:Label text="{(isNaN(data.BillRateTemp) || (0 == data.BillRateTemp))? '---': data.BillRateTemp.toFixed(3)}" />
+        				</mx:Component>
+        			</mx:itemRenderer>
+        			<mx:itemEditor>
+        				<mx:Component>
+        					<mx:TextInput text="{(isNaN(data.BillRateTemp) || (0 == data.BillRateTemp))? '0': data.BillRateTemp.toFixed(3)}" />
+        				</mx:Component>
+        			</mx:itemEditor>
+        		</mx:DataGridColumn>
+    	   		<mx:DataGridColumn
+	       			dataField="InvoiceRateTemp"
+        			headerText="Invoice Rate"
+        			editable="true">
+        			<mx:itemRenderer>
+        				<mx:Component>
+        					<mx:Label text="{(isNaN(data.InvoiceRateTemp) || (0 == data.InvoiceRateTemp))? '---': data.InvoiceRateTemp.toFixed(3)}" />
+        				</mx:Component>
+        			</mx:itemRenderer>
+        			<mx:itemEditor>
+        				<mx:Component>
+        					<mx:TextInput text="{(isNaN(data.InvoiceRateTemp) || (0 == data.InvoiceRateTemp))? '0': data.InvoiceRateTemp.toFixed(3)}" />
+        				</mx:Component>
+        			</mx:itemEditor>
+    	   		</mx:DataGridColumn>
+    	   		<mx:DataGridColumn
+	       			dataField="ShouldNotExceedRateTemp"
+        			headerText="Not Exceed"
+        			editable="true"
+        			rendererIsEditor="true"
+        			visible="{0 != assetAssignment.AssetAssignmentId}"
+        			textAlign="center"
+        			editorDataField="selected">
+        			<mx:itemRenderer>
+        				<mx:Component>
+       						<mx:CheckBox
+       							width="100%"
+       							textAlign="center"
+       							enabled="{data.BillItemTypeId != 1 &amp;&amp; data.BillItemTypeId != 2}"/>
+        				</mx:Component>
+        			</mx:itemRenderer>
+    	   		</mx:DataGridColumn>
+        	</mx:columns>
+    	</mx:DataGrid>
+	</mx:VBox>
+        
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%">
+    	<mx:Button label="Defaults"
+    		click="loadDefaultRates()"/>
+	    <mx:HBox width="100%" horizontalAlign="right">
+    	    <mx:Button
+        		id="btnSubmit"
+        		label="Ok"
+	            enabled="{cbSubAfes.selectedItem != null || 0 != assetAssignment.AssetAssignmentId}"/>
+    	    <mx:Button
+        		id="btnCancel"
+        		label="Cancel"/>
+        </mx:HBox>
+    </mx:HBox>
+    
+</mx:TitleWindow>

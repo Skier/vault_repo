@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="IntuitCdmBaseTypes.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Specifies the CustomField definitions and strongly typed values that can be associated with any top level CDM </xs:documentation>
+	</xs:annotation>
+	<!-- Element definitions -->
+	<xs:simpleType name="objectNameEnumType">
+		<xs:annotation>
+			<xs:documentation>Supported CDM Object Names </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Account"/>
+			<xs:enumeration value="Bill"/>
+			<xs:enumeration value="BillPayment"/>
+			<xs:enumeration value="Charge"/>
+			<xs:enumeration value="Check"/>
+			<xs:enumeration value="Class"/>
+			<xs:enumeration value="Company"/>
+			<xs:enumeration value="CreditMemo"/>
+			<xs:enumeration value="Customer"/>
+			<xs:enumeration value="Discount"/>
+			<xs:enumeration value="Employee"/>
+			<xs:enumeration value="Estimate"/>
+			<xs:enumeration value="InventoryAdjustment"/>
+			<xs:enumeration value="Invoice"/>
+			<xs:enumeration value="Item"/>
+			<xs:enumeration value="ItemReceipt"/>
+			<xs:enumeration value="Job"/>
+			<xs:enumeration value="JournalEntry"/>
+			<xs:enumeration value="Payment"/>
+			<xs:enumeration value="PaymentMethod"/>
+			<xs:enumeration value="Preferences"/>
+			<xs:enumeration value="PurchaseOrder"/>
+			<xs:enumeration value="SalesOrder"/>
+			<xs:enumeration value="SalesReceipt"/>
+			<xs:enumeration value="SalesRep"/>
+			<xs:enumeration value="SalesTax"/>
+			<xs:enumeration value="SalesTaxCode"/>
+			<xs:enumeration value="SalesTaxGroup"/>
+			<xs:enumeration value="SalesTaxPaymentCheck"/>
+			<xs:enumeration value="ShipMethod"/>
+			<xs:enumeration value="Term"/>
+			<xs:enumeration value="TimeActivity"/>
+			<xs:enumeration value="UOM"/>
+			<xs:enumeration value="Vendor"/>
+			<xs:enumeration value="VendorCredit"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="CustomField" type="CustomField"/>
+	<xs:element name="BooleanTypeCustomFieldDefinition" type="BooleanTypeCustomFieldDefinition" substitutionGroup="CdmObject"/>
+	<xs:element name="CustomFieldDefinition" type="CustomFieldDefinition" substitutionGroup="CdmObject"/>
+	<xs:element name="DateTypeCustomFieldDefinition" type="DateTypeCustomFieldDefinition" substitutionGroup="CdmObject"/>
+	<xs:element name="NumberTypeCustomFieldDefinition" type="NumberTypeCustomFieldDefinition" substitutionGroup="CdmObject"/>
+	<xs:element name="StringTypeCustomFieldDefinition" type="StringTypeCustomFieldDefinition" substitutionGroup="CdmObject"/>
+	<!-- Type definitions -->
+	<xs:complexType name="CustomFieldDefinitions">
+		<xs:annotation>
+			<xs:documentation>Provides the definition that allows bulk data transfer of custom field definitions</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmCollections">
+				<xs:sequence>
+					<xs:element ref="CdmObject" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="StringTypeCustomFieldDefinition">
+		<xs:annotation>
+			<xs:documentation>Specifies the strongly typed version of StringTypeCustomFieldDefinition </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomFieldDefinition">
+				<xs:sequence>
+					<xs:element name="DefaultString" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the default string that will be substituted for the StringTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="RegularExpression" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the RegularExpression in the form of string that can be used to verify the validity of the StringTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MaxLength" type="xs:int" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Max length that will be allowed for the string when creating/updating StringTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NumberTypeCustomFieldDefinition">
+		<xs:annotation>
+			<xs:documentation>Specifies the strongly typed version of Number type custom field definition </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomFieldDefinition">
+				<xs:sequence>
+					<xs:element name="DefaultValue" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the default value of the decimal that will be substituted for the NumberTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MinValue" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the minimum value of the decimal value which will be validated when NumberTypeCustomField is created/updated </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MaxValue" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the maximum value of decimal value which will be validated when NumberTypeCustomField is created/updated </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DateTypeCustomFieldDefinition">
+		<xs:annotation>
+			<xs:documentation>Specifies the strongly typed DateTypeCustomFieldDefintion </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomFieldDefinition">
+				<xs:sequence>
+					<xs:element name="DefaultDate" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the default date value for the DateTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MinDate" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the minimum value for the date allowed for the DateTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MaxDate" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the maximum value of date allowed for the DateTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BooleanTypeCustomFieldDefinition">
+		<xs:annotation>
+			<xs:documentation>Specifies the strongly typed BooleanTypeCustomFieldDefinition </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomFieldDefinition">
+				<xs:sequence>
+					<xs:element name="DefaultValue" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Default Value of the boolean field definition </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="StringTypeCustomField">
+		<xs:annotation>
+			<xs:documentation>If StringTypeCustomFieldDefinition is defined, the StringTypeCustomField specifies the strongly typed field value </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomField">
+				<xs:sequence>
+					<xs:element name="Value" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Value of the String field as strongly typed data </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NumberTypeCustomField">
+		<xs:annotation>
+			<xs:documentation>If NumberTypeCustomFieldDefinition is defined, the NumberTypeCustomField specifies the strongly typed field value </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomField">
+				<xs:sequence>
+					<xs:element name="Value" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the strongly typed Value for NumberTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DateTypeCustomField">
+		<xs:annotation>
+			<xs:documentation>If DateTypeCustomFieldDefinition is defined, the DateTypeCustomField specifies the strongly typed field value </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomField">
+				<xs:sequence>
+					<xs:element name="Value" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the strongly typed Value for DateTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BooleanTypeCustomField">
+		<xs:annotation>
+			<xs:documentation>If BooleanTypeCustomFieldDefinition is defined, the BooleanTypeCustomField specifies the strongly typed field value </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CustomField">
+				<xs:sequence>
+					<xs:element name="Value" type="xs:boolean" default="false" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the strongly typed Value for BooleanTypeCustomField </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

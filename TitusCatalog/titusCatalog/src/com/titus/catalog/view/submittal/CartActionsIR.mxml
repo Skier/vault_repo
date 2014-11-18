@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center"
+    verticalAlign="middle"
+    horizontalGap="2"
+    paddingLeft="2"
+    paddingRight="2"
+    horizontalScrollPolicy="off"
+    verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.titus.catalog.model.cart.Cart;
+        	import com.titus.catalog.storage.DBStorage;
+        	import flash.net.sendToURL;
+        	import com.titus.catalog.model.Submittal;
+        	
+            [Embed(source="assets/icons16/remove.png")]
+            [Bindable]
+            private var imgRemove:Class;
+            
+            private function onRemoveSubmittal():void 
+            {
+            	Cart.getInstance().removeItem(data);
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Image
+    	source="{imgRemove}"
+    	width="16"
+    	height="16"
+    	toolTip="Remove from cart"
+    	click="onRemoveSubmittal()"/>
+</mx:HBox>

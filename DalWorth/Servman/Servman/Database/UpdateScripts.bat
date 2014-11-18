@@ -1,0 +1,3 @@
+"C:\Program Files\MySQL\MySQL Server 5.0\bin\mysqldump" --user=root --password=gfhjkm --complete-insert --ignore-table=servman_customer_dbo.dtproperties --single-transaction --extended-insert=FALSE --databases --no-create-db --no-data --skip-add-locks servman_customer_dbo --result-file=MySQL_Schema_Only.sql
+"C:\Program Files\MySQL\MySQL Server 5.0\bin\mysqldump" --user=root --password=gfhjkm --complete-insert --ignore-table=servman_customer_dbo.dtproperties --single-transaction --databases --no-create-db --extended-insert --skip-add-locks --routines --triggers --net_buffer_length=60000 servman_customer_dbo --result-file=MySQL_Schema_And_Data.sql
+ssr 0 ),( ),/SSR_NL/( MySQL_Schema_And_Data.sql

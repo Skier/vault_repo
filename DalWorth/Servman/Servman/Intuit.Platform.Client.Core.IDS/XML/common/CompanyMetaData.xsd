@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<xs:element name="CompanyMetaData" type="CompanyMetaData" substitutionGroup="CdmObject">
+		<xs:annotation>
+			<xs:documentation>See CompanyMetaData complexType</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ============================================================================== -->
+	<!--Complex Types definitions-->
+	<!-- ============================================================================== -->
+	<xs:complexType name="Offering">
+		<xs:annotation>
+			<xs:documentation>definition of one or many offerings associated with each company</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OfferingId" type="offeringId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Required offering id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OfferingName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActivationDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering activation date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TrialExpiryDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering trial expiration date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CancelationDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering cancel date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Seats" type="xs:positiveInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering licensed seats allowed</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SeatType" type="seatType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering licensed seat type allowed</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CompanyMetaData">
+		<xs:annotation>
+			<xs:documentation>company specific collection of attributes</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmObject">
+				<xs:sequence>
+					<xs:element name="ExternalRealmId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Unique company string assigned by QBN system</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="QBNRegisteredCompanyName" type="CompanyNameType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Name as it appears in the QBN system entered by sign up process</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CompanySignUpDateTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>DateTime when this COMPANY signed up for QB data sync services</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="LatestUploadDateTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>DateTime when company data was last uploaded to data sync server</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="LatestWritebackDateTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>DateTime when company data was last written back to QB desktop</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="QBVersion" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>QB company file latest version</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CompanyFileName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>QB company file name on the PC</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="FlavorStratum" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>QB software flavor being used on the file on the PC</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SampleFile" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>if the QB desktop file is a sample file</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="QBNCompanyUserAdminIdNumber" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>IAM or QBN admin users id sequence number to group many external realms for this user under his id number</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="QBNCompanyUserAdminEmail" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>IAM or QBN admin users email</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SyncEnabled" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>if company file has been signed up for data sync</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="LatestForcedSyncDateTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Latest forced sync dat and time stamp</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SyncEnvironmentName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Intuit Internal use only: env name for sync as a service ETL feature, required during sign up</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Offering" type="Offering" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Many offerings could be associated with each company</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="AddressGroup" minOccurs="0"/>
+					<xs:element name="LegalAddress" type="PhysicalAddress" minOccurs="0"/>
+					<xs:element name="IndustryType" type="xs:string" minOccurs="0"/>
+					<xs:element name="FiscalYearStart" type="xs:int" minOccurs="0"/>
+					<xs:element name="IncomeTaxYearStart" type="xs:int" minOccurs="0"/>
+					<xs:element name="TaxForm" type="TaxFormEnum" minOccurs="0"/>
+					<xs:element name="TaxIdentifier" type="xs:string" minOccurs="0"/>
+					<xs:element name="CustomField" type="CustomField" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Specifies the Custom Field (aka Data Extension). As of CDM V2 only the String type is supported.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CompaniesMetaData">
+		<xs:annotation>
+			<xs:documentation>Provides basic meta data information on QB company files and their data sync status</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmCollections">
+				<xs:sequence>
+					<xs:element name="CompanyMetaData" type="CompanyMetaData" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="offeringId">
+		<xs:annotation>
+			<xs:documentation>all requestors MUST provide self identifying string. The default value is "ipp".</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ipp"/>
+			<xs:enumeration value="cmo"/>
+			<xs:enumeration value="esbsync"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="seatType">
+		<xs:annotation>
+			<xs:documentation>concurrent vs named</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="concurrent"/>
+			<xs:enumeration value="named"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CompanyNameType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TaxFormEnum">
+		<xs:annotation>
+			<xs:documentation>describes possible values for the Tax Forms used in the company file</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Form1040"/>
+			<xs:enumeration value="Form1065"/>
+			<xs:enumeration value="Form1120"/>
+			<xs:enumeration value="Form1120S"/>
+			<xs:enumeration value="Form990"/>
+			<xs:enumeration value="Form990PF"/>
+			<xs:enumeration value="Form990T"/>
+			<xs:enumeration value="OtherOrNone"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="AddressGroup">
+		<xs:annotation>
+			<xs:documentation>Contact information group of properties</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Address" type="PhysicalAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged postal addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Phone" type="TelephoneNumber" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged phone number, possibly include pagers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Email" type="EmailAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged email addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="WebSite" type="WebSiteAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged web addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!--The End.-->
+</xs:schema>

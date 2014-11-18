@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%"
+	verticalAlign="middle"
+	horizontalScrollPolicy="off"
+	horizontalAlign="center"
+	paddingLeft="5"
+	paddingRight="5"
+	initialize="onInitialize()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import App.Entity.BillItemAttachmentDataObject;
+			import App.Entity.BillItemDataObject;
+			
+			private function onInitialize():void {
+			}
+			
+			private function onClickAttach(billItem:BillItemDataObject):void 
+			{
+				BillItemAttachmentsView.Open(billItem, parentDocument.parentDocument, !billItem.isBillItemEditableOld());
+			}
+			
+			private function onClickView(billItem:BillItemDataObject):void 
+			{
+				var attachment:BillItemAttachmentDataObject = BillItemAttachmentDataObject(BillItemDataObject(data).AttachmentInfo);
+				
+				var url:URLRequest = new URLRequest(AppController.storageBaseUrl + AppController.BILL_ITEMS_STORAGE_DIRECTORY + "/" + attachment.FileName);
+				navigateToURL(url, "_blank");
+			}
+			
+			private function onClickDetach(billItem:BillItemDataObject):void 
+			{
+	            Alert.show("Are you really want to remove attachment?", "Delete",
+				    Alert.YES | Alert.NO , null, 
+        	    	function (event:CloseEvent):void {
+				        if (event.detail == Alert.YES) {
+							var attachment:BillItemAttachmentDataObject = BillItemAttachmentDataObject(BillItemDataObject(data).AttachmentInfo);
+							attachment.IsDeleted = true;
+            			}
+	            	}, null, Alert.NO
+    	   		);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_attachment.png')"
+    	visible="{null != data.AttachmentInfo &amp;&amp; !data.AttachmentInfo.IsDeleted &amp;&amp; !data.IsMarkedToRemove}"
+    	includeInLayout="{null != data.AttachmentInfo &amp;&amp; !data.AttachmentInfo.IsDeleted &amp;&amp; !data.IsMarkedToRemove}"
+        click="onClickView(data as BillItemDataObject)"/>
+	<mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_add.png')"
+		click="onClickAttach(data as BillItemDataObject)"
+    	visible="{data.AttachmentInfo == null &amp;&amp; data.BillItemTypeId != 0 &amp;&amp; 0 == data.BillItemCompositionId &amp;&amp; data.isBillItemEditableOld() &amp;&amp; !data.IsMarkedToRemove}"
+    	includeInLayout="{data.AttachmentInfo == null &amp;&amp; data.BillItemTypeId != 0 &amp;&amp; 0 == data.BillItemCompositionId &amp;&amp; data.isBillItemEditableOld() &amp;&amp; !data.IsMarkedToRemove}"
+		/>
+	<mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_delete.png')"
+		click="onClickDetach(data as BillItemDataObject)"
+    	visible="{null != data.AttachmentInfo &amp;&amp; !data.AttachmentInfo.IsDeleted &amp;&amp; 0 == data.BillItemCompositionId &amp;&amp; data.isBillItemEditableOld() &amp;&amp; !data.IsMarkedToRemove}"
+    	includeInLayout="{null != data.AttachmentInfo &amp;&amp; !data.AttachmentInfo.IsDeleted &amp;&amp; 0 == data.BillItemCompositionId &amp;&amp; data.isBillItemEditableOld() &amp;&amp; !data.IsMarkedToRemove}"
+		/>
+
+</mx:HBox>

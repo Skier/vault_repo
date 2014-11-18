@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	 paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" 
+	 xmlns:Management="UI.Management.*" 
+	 xmlns:TestDrive="UI.Management.TestDrive.*"
+	 xmlns:CodeGen="UI.Management.CodeGen.*"
+	 xmlns:Exposure="UI.Management.Exposure.*"
+	 xmlns:Monitoring="UI.Management.Monitoring.*"
+	 xmlns:Security="UI.Management.Security.*"
+	 xmlns:ServiceBrowser="UI.Management.ServiceBrowser.*"
+	 creationComplete="Controller.OnCreated()">
+    <mx:Script>
+        <![CDATA[
+        	import UI.AppSettings;
+		    import mx.rpc.events.*; 
+		    import mx.controls.Alert; 
+		    import mx.managers.CursorManager; 
+
+
+            [Bindable]
+            public var Controller:ManagementController = new ManagementController(ManagementView(this));      
+            
+
+        ]]>
+    </mx:Script>
+    
+    
+	<mx:RemoteObject id="service" destination="WeborbManagement" showBusyCursor="true"> 
+	  <mx:method name="getServices" result="Controller.OnServicesRecieved(event)" fault="Controller.OnFault(event)"/>  
+	</mx:RemoteObject> 
+	
+    <mx:HDividedBox height="100%" width="100%">
+    	<ServiceBrowser:ServiceBrowserView width="20%" Services="{Controller.Model.Services}" nodeChanged="{Controller.OnCurrentNodeChanged(event)}" serviceRequest="{Controller.OnRefresh()}" />
+        <mx:TabNavigator height="100%" id="m_tabs" width="80%" change="{Controller.OnTabChanged(event)}">
+        	<Exposure:ExposureView id="m_exposure" width="100%" height="100%" label="Exposure" enabled="{Controller.IsExposureEnabled}" />
+        	<CodeGen:CodegeneratorView id="m_codegen" ParentController="{Controller}" label="Code Generator" enabled="{Controller.IsCodegeneratorEnabled}" width="100%" height="100%" />
+        	<TestDrive:TestDriveView id="m_testDrive" ParentController="{Controller}" label="Test Drive" enabled="{Controller.IsTestDriveEnabled}"  width="100%" />
+        	<Security:SecurityView id="m_security" label="Security" enabled="{Controller.IsSecurityEnabled}" />
+        	<Monitoring:MonitoringView id="m_moniring" label="Monitoring" enabled="{Controller.IsMonitoringEnabled}" />
+        </mx:TabNavigator>
+    </mx:HDividedBox>  
+
+</mx:Canvas>

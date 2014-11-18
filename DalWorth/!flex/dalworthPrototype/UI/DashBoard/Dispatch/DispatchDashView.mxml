@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel title = "Dispatch" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
+	height="100%" layout="vertical"   creationComplete="init()" xmlns:Dispatch="UI.DashBoard.Dispatch.*">
+<mx:Script>
+	<![CDATA[
+		import mx.core.DragSource;
+		import Domain.Technician;
+		import Domain.RouteStop;
+		import Domain.Route;
+		import mx.events.CollectionEvent;
+		import Domain.JobTicket;
+	
+		import mx.collections.ArrayCollection;
+		import mx.managers.DragManager;
+		import mx.events.DragEvent;
+		
+		import Service.Database;
+		import Service.TechService;
+		import Domain.Employee;
+		import mx.controls.dataGridClasses.DataGridColumn;
+		
+		[Bindable]
+		private var _techs:ArrayCollection = new ArrayCollection();
+		
+		
+		[Bindable]
+		private var _headerNames:ArrayCollection = new ArrayCollection();
+		
+		[Bindable]
+		private var _route0:Route = new Route();
+		
+		[Bindable]
+		private var _route1:Route = new Route();
+		[Bindable]
+		private var _route2:Route = new Route();
+		[Bindable]
+		private var _route3:Route = new Route();
+		[Bindable]
+		private var _route4:Route = new Route();
+		[Bindable]
+		private var _route5:Route = new Route();
+		[Bindable]
+		private var _route6:Route = new Route();
+		[Bindable]
+		private var _route7:Route = new Route();
+		[Bindable]
+		private var _route8:Route = new Route();
+		[Bindable]
+		private var _route9:Route = new Route();
+		
+		
+		public  function init():void{
+			_techs = TechService.getAllTechs();
+			
+			for (var i:int = 0; i< 10; i++){
+				if (i < _techs.length){
+					_headerNames.addItem(Employee(_techs.getItemAt(i)).firstName + " " + Employee(_techs.getItemAt(i)).lastName);
+				}
+				else{
+					_headerNames.addItem("");
+				}
+			}
+			
+		
+		
+			_route0 = TechService.getRoute(Technician(_techs[0]));	
+			_route1 = TechService.getRoute(Technician(_techs[1]));
+			_route2 = TechService.getRoute(Technician(_techs[2]));
+			_route3 = TechService.getRoute(Technician(_techs[3]));
+			_route4 = TechService.getRoute(Technician(_techs[4]));
+			_route5 = TechService.getRoute(Technician(_techs[5]));
+			_route6 = TechService.getRoute(Technician(_techs[6]));
+			_route7 = TechService.getRoute(Technician(_techs[7]));
+			_route8 = TechService.getRoute(Technician(_techs[8]));
+			_route9 = TechService.getRoute(Technician(_techs[9]));
+			
+			if (_route0 == null){
+				_route0 =  new Route();
+				
+			}
+			if (_route1 == null){
+				_route1 =  new Route();
+				
+			}
+			if (_route2 == null){
+				_route2 =  new Route();
+				
+			}
+			if (_route3 == null){
+				_route3 =  new Route();
+				
+			}
+			if (_route4 == null){
+				_route4 =  new Route();
+				
+			}
+			if (_route5 == null){
+				_route5 =  new Route();
+				
+			}
+			if (_route6 == null){
+				_route6 =  new Route();
+				
+			}
+			if (_route7 == null){
+				_route7 =  new Route();
+				
+			}
+			if (_route8 == null){
+				_route8 =  new Route();
+				
+			}
+			if (_route9 == null){
+				_route9 =  new Route();
+				
+			}
+			
+		
+			
+		}
+		
+		// Drag and drop
+		
+		
+	]]>
+</mx:Script>
+	<mx:HBox height="90%" width="100%">
+	
+	
+			<mx:Grid  width="100%"  height="100%">
+				<mx:GridRow width="100%" height="100%" >
+					<Dispatch:TechGridItem dataProvider="{_route0}" technician="{Technician(_techs.getItemAt(0))}" headerName="{_headerNames.getItemAt(0)}" />
+					<Dispatch:TechGridItem dataProvider="{_route1}" technician="{Technician(_techs.getItemAt(1))}" headerName="{_headerNames.getItemAt(1)}" />
+					<Dispatch:TechGridItem dataProvider="{_route2}" technician="{Technician(_techs.getItemAt(2))}" headerName="{_headerNames.getItemAt(2)}" />
+					<Dispatch:TechGridItem dataProvider="{_route3}" technician="{Technician(_techs.getItemAt(3))}" headerName="{_headerNames.getItemAt(3)}" />
+					<Dispatch:TechGridItem dataProvider="{_route4}" technician="{Technician(_techs.getItemAt(4))}" headerName="{_headerNames.getItemAt(4)}" />
+					<Dispatch:TechGridItem dataProvider="{_route5}" technician="{Technician(_techs.getItemAt(5))}" headerName="{_headerNames.getItemAt(5)}" />
+					<Dispatch:TechGridItem dataProvider="{_route6}" technician="{Technician(_techs.getItemAt(6))}" headerName="{_headerNames.getItemAt(6)}" />
+					<Dispatch:TechGridItem dataProvider="{_route7}" technician="{Technician(_techs.getItemAt(7))}" headerName="{_headerNames.getItemAt(7)}" />
+					<Dispatch:TechGridItem dataProvider="{_route8}" technician="{Technician(_techs.getItemAt(8))}" headerName="{_headerNames.getItemAt(8)}" />
+					<Dispatch:TechGridItem dataProvider="{_route9}" technician="{Technician(_techs.getItemAt(9))}" headerName="{_headerNames.getItemAt(9)}" />
+					<Dispatch:PendingTicketsGridItem/>
+				</mx:GridRow>
+			</mx:Grid>
+		 
+		
+	</mx:HBox>
+	<mx:HBox height="10%" width="100%">
+		<mx:Label text="{_techs.length}"/>
+	</mx:HBox>
+</mx:Panel>

@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+ 	showCloseButton="true" close="closePopup()"
+ 	width="600" height="350"
+	title="Attach current tract to document"
+	initialize="onInit()"
+	creationComplete="onCreationComplete()"
+ 	currentState="createNew">
+
+    <mx:states>
+
+        <mx:State name="createNew">
+            <mx:SetProperty name="title" value="Create new attached tract"/>
+        </mx:State>
+
+        <mx:State name="open">
+            <mx:SetProperty name="title" value="Open attached tract"/>
+        </mx:State>
+
+        <mx:State name="attach">
+            <mx:AddChild relativeTo="{tractButtons}" position="lastChild">
+                <mx:Button id="btnAttach" label="Attach to selected document" click="onAttach()"/>
+            </mx:AddChild>
+            <mx:RemoveChild target="{btnCreateNew}"/>
+            <mx:RemoveChild target="{btnOpen}"/>
+        </mx:State>
+
+    </mx:states>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.XMLListCollection;
+        	import src.deedplotter.domain.User;
+        	import src.deedplotter.domain.dictionary.DictionaryRegistry;
+        	import mx.events.CloseEvent;
+        	import src.deedplotter.domain.DocumentWO;
+        	import src.deedplotter.domain.TractWO;
+        	import src.deedplotter.domain.Document;
+        	import src.deedplotter.domain.Tract;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.remoting.RemoteObject;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.states.State;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.events.ValidationResultEvent;
+            import mx.collections.ItemResponder;
+            import mx.managers.PopUpManager;
+            import mx.collections.ArrayCollection;
+        
+			private var statesAndCounties:XML;
+			private var documentTypes:XML;
+			private var units:XML;
+
+			[Bindable]
+			private var _usStates:XMLList;
+			[Bindable]
+			private var _usCounties:XMLList;
+			[Bindable]
+			private var _documentTypes:XMLList;
+			[Bindable]
+			private var _units:XMLList;
+			
+			private var _docService:RemoteObject;
+			
+			[Bindable]
+			private var _canCreate:Boolean = false;
+			
+			[Bindable]
+			private var _documentList:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+            private var _currentDoc:Document;
+
+            public var responder:ItemResponder;
+
+			[Bindable]
+            public var currentTract:Tract;
+            
+            public var currentUser:User;
+
+            public static function Open(parent:DisplayObject, modal:Boolean = false):AttachTractDialog {
+                var dialog:AttachTractDialog = new AttachTractDialog();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+                
+                return dialog;
+            }
+            
+            private function onInit():void {
+	            _docService = new RemoteObject( "GenericDestination" );
+	            _docService.source = "TractInc.ScopeScetch.DocService";
+	            _docService.FindDocumentsByTemplate.addEventListener(ResultEvent.RESULT, findDocumentsByTemplate_onResultHandler);
+	            _docService.FindDocumentsByTemplate.addEventListener(FaultEvent.FAULT, onFaultHandler);
+	            _docService.CreateDocument.addEventListener(ResultEvent.RESULT, createDocument_onResultHandler);
+	            _docService.CreateDocument.addEventListener(FaultEvent.FAULT, onFaultHandler);
+	            
+				var dics:DictionaryRegistry = DictionaryRegistry.getInstance();
+				
+				statesAndCounties = dics.statesAndCounties;
+				documentTypes = dics.documentTypes;
+				units = dics.units;
+
+            }
+            
+            private function onCreationComplete():void {
+
+            	_documentTypes = documentTypes.DocumentType;
+            	comboDocType.dataProvider = _documentTypes.attribute('Name');
+
+				_usStates = statesAndCounties.state;
+				comboState.dataProvider = _usStates.attribute('Name');
+				
+				_units = units.Unit;
+//				comboUnits.dataProvider = _units.attribute('Name');
+				
+				comboCounty.dataProvider = null;
+            }
+
+            private function onStateChanged():void {
+				txtDocumentNo.text = "";
+				txtVolume.text = "";
+				txtPage.text = "";
+				_usCounties = _usStates.(@StateId == _usStates[comboState.selectedIndex].@StateId).county;
+				comboCounty.dataProvider = _usCounties.attribute('Name');
+				onKeyFieldChanged();
+			}
+            
+            private function onKeyFieldChanged():void {
+				viewStackTracts.selectedChild = itemTractGrid;
+				_canCreate = false;
+				_documentList.removeAll();
+            }
+            
+            private function onFind():void {
+            	
+            	filterPanel.enabled = false;
+            	
+            	var template:DocumentWO = new DocumentWO();
+            	
+            	template.DocTypeId = int(_documentTypes[comboDocType.selectedIndex].@DocTypeID);
+            	template.State = int(_usStates[comboState.selectedIndex].@StateId);
+            	if (_usCounties){
+	            	template.County = int(_usCounties[comboCounty.selectedIndex].@CountyId);
+            	} else {
+	            	template.County = 0;
+            	}
+            	template.DocumentNo = txtDocumentNo.text;
+            	template.Volume = txtVolume.text;
+            	template.Page = txtPage.text;
+            	
+            	_docService.FindDocumentsByTemplate(template, true);
+            }
+            
+            private function createNewDocument():void {
+            	
+	            Alert.show("Document not found. Would you like to create new Document ?", "Create Document", 
+	                Alert.YES | Alert.NO | Alert.CANCEL, null, 
+	                function (event:CloseEvent):void 
+	                {
+	                    if (event.detail == Alert.YES) {
+            	var newDoc:Document = new Document();
+            	
+            	newDoc.DocTypeId = int(_documentTypes[comboDocType.selectedIndex].@DocTypeID);
+            	newDoc.State = int(_usStates[comboState.selectedIndex].@StateId);
+            	if (_usCounties){
+	            	newDoc.County = int(_usCounties[comboCounty.selectedIndex].@CountyId);
+            	} else {
+	            	newDoc.County = 0;
+            	}
+            	newDoc.DocumentNo = txtDocumentNo.text;
+            	newDoc.Volume = txtVolume.text;
+            	newDoc.Page = txtPage.text;
+            	
+			           		_documentList = new ArrayCollection();
+			           		_documentList.addItem(newDoc);
+			           		dgDocuments.selectedItem = newDoc;
+			
+							viewStackTracts.selectedChild = itemTractDetail;
+            }
+            
+	                    return;
+	
+	                }, null, Alert.YES);
+
+            }
+            
+			private function fillFilterLabels():void {
+				lblState.text = _usStates.(@StateId == _currentDoc.State).@Name;
+				lblCounty.text = _usStates.(@StateId == _currentDoc.State).county.(@CountyId == _currentDoc.County).@Name;
+				lblDocType.text = _documentTypes.(@DocTypeID == _currentDoc.DocTypeId).@Name;
+				lblDocumentNo.text = _currentDoc.DocumentNo.toString();
+				lblVolume.text = _currentDoc.Volume.toString();
+				lblPage.text = _currentDoc.Page.toString();
+			}
+
+
+            private function onCreateNewTract():void {
+
+				viewStackTracts.selectedChild = itemTractDetail;
+				viewStackFilter.selectedChild = filterLabelPanel;
+            
+				dgDocuments.enabled = false;
+
+				_currentDoc = dgDocuments.selectedItem as Document;
+				fillFilterLabels();
+			}
+
+			private function onCancelCreateTract():void {
+				viewStackTracts.selectedChild = itemTractGrid;
+				viewStackFilter.selectedChild = filterPanel;
+				dgDocuments.enabled = true;
+            }
+            
+            public function onOpen():void {
+            	currentTract = dgTracts.selectedItem as Tract;
+            	responder.result(currentTract);
+            	closePopup();
+            }
+            
+            public function onAttach(doc:Document = null):void {
+
+				if (!doc) {
+					var doc:Document = Document(dgDocuments.selectedItem);
+				}
+
+            	if (doc) {
+					if (doc.DocID == 0) {
+		            	filterPanel.enabled = false;
+		            	resultPanel.enabled = false;
+		            	_docService.CreateDocument(doc.ToDocumentWO(), currentUser.UserId);
+					} else {
+						currentTract.ParentDocument = doc;
+		            	currentTract.DocId = doc.DocID;
+		            	currentTract.Description = txtReferenceName.text;
+		            	currentTract.CalledAC = isNaN(Number(txtCalledAC.text)) ? 0 : Number(txtCalledAC.text);
+		            	currentTract.UnitId = comboUnits.selectedItem.@UnitId;
+		            	responder.result(currentTract);
+		            	closePopup();
+					}
+            	} else {
+            		Alert.show("Please select parent document");
+            	}
+            }
+            
+            private function closePopup():void {
+                PopUpManager.removePopUp(this);
+            }
+           
+			private function setDocLabels(item:Document, column:DataGridColumn):String {
+           		
+           		if (column.dataField == "DocTypeId") {
+					return _documentTypes.(@DocTypeID == item.DocTypeId).@Name;
+           		} else if (column.dataField == "State") {
+					return  _usStates.(@StateId == item.State).@Name;
+           		} else if (column.dataField == "County") {
+					return  _usStates.(@StateId == item.State).county.(@CountyId == item.County).@Name;
+           		} else {
+           			return "_undefined_";
+           		}
+
+           	}
+           	
+			private function setTractLabels(item:Tract, column:DataGridColumn):String {
+				return item.CalledAC.toString() + " " + _units.(@UnitId == item.UnitId).@Name;
+           	}
+           	
+           	private function isKeyFieldsFilled():Boolean {
+           		if (comboDocType.selectedIndex > 0 
+           			&& comboState.selectedIndex > 0
+           			&& comboCounty.selectedIndex > 0
+           			&& ( txtDocumentNo.text.length > 0 || (txtPage.text.length > 0 && txtVolume.text.length > 0) ) ) {
+           			return true;
+           		} else {
+           			return false;
+           		}
+           	}
+           	
+           	private function findDocumentsByTemplate_onResultHandler(event:ResultEvent):void {
+
+            	filterPanel.enabled = true;
+            	resultPanel.enabled = true;
+
+           		_documentList = new ArrayCollection();
+           		
+           		var result:Array = event.result as Array;
+           		
+           		for each (var doc:DocumentWO in result) {
+					_documentList.addItem(doc.ToDocument());
+           		}
+           		
+           		if (_documentList.length == 0 && isKeyFieldsFilled()) {
+           			createNewDocument();
+           		}
+           	}
+           	
+           	private function createDocument_onResultHandler(event:ResultEvent):void {
+
+            	filterPanel.enabled = true;
+            	resultPanel.enabled = true;
+
+           		var doc:Document = DocumentWO(event.result).ToDocument();
+
+				onAttach(doc);
+
+            	closePopup();
+           	}
+           	
+	        private function onFaultHandler(event:FaultEvent):void {
+            	filterPanel.enabled = true;
+            	resultPanel.enabled = true;
+	            _documentList = null;
+	            _canCreate = false;
+	            Alert.show(event.fault.faultString);
+	        }
+        
+            
+        ]]>
+    </mx:Script>
+
+	<mx:VBox left="0" right="0" top="0" bottom="0"
+		paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		>
+
+		<mx:ViewStack id="viewStackFilter" creationPolicy="all">
+			
+			<mx:HBox id="filterPanel" height="62" width="100%"
+			paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+			borderColor="#999999" borderStyle="solid" cornerRadius="4"
+			>
+
+			<mx:VBox width="100%" height="100%">
+
+				<mx:HBox width="100%" verticalAlign="middle">
+					<mx:Text text="State:" textAlign="right" width="60"/>
+					<mx:ComboBox id="comboState" width="150" change="onStateChanged()"/>
+					<mx:Text text="County:" textAlign="right" width="60"/>
+					<mx:ComboBox id="comboCounty" width="210" change="onKeyFieldChanged()"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle">
+					<mx:Text text="DocType:" textAlign="right" width="60"/>
+					<mx:ComboBox id="comboDocType" width="100" change="onKeyFieldChanged()"/>
+					<mx:Text text="DocNo:" textAlign="right" width="50"/>
+					<mx:TextInput id="txtDocumentNo" width="60" change="onKeyFieldChanged()"/>
+					<mx:Text text="Vol:" textAlign="right" width="40"/>
+					<mx:TextInput id="txtVolume" width="50" change="onKeyFieldChanged()"/>
+					<mx:Text text="Page:" textAlign="right" width="40"/>
+					<mx:TextInput id="txtPage" width="50" change="onKeyFieldChanged()"/>
+				</mx:HBox>
+
+			</mx:VBox>
+
+				<mx:VBox width="60" height="100%" horizontalAlign="right" verticalAlign="bottom">
+				<mx:HBox width="100%" verticalAlign="middle">
+					<mx:Button id="btnFind" label="Find" width="100%" click="onFind()"/>
+	<!--					<mx:CheckBox id="chbAutoFind" label="auto"/>
+ -->				</mx:HBox>
+			</mx:VBox>
+
+		</mx:HBox>
+
+			<mx:HBox id="filterLabelPanel" height="62" width="100%"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+				borderColor="#999999" borderStyle="solid" cornerRadius="4"
+				>
+	
+				<mx:VBox width="100%" height="100%">
+	
+					<mx:HBox width="100%" height="100%" verticalAlign="middle">
+						<mx:Text text="State:" textAlign="right" width="60"/>
+						<mx:Text id="lblState" fontWeight="bold"/>
+						<mx:Text text="County:" textAlign="right" width="60"/>
+						<mx:Text id="lblCounty" fontWeight="bold"/>
+					</mx:HBox>
+	
+					<mx:HBox width="100%" height="100%" verticalAlign="middle">
+						<mx:Text text="DocType:" textAlign="right" width="60"/>
+						<mx:Text id="lblDocType" fontWeight="bold"/>
+						<mx:Text text="DocNo:" textAlign="right" width="50"/>
+						<mx:Text id="lblDocumentNo" fontWeight="bold"/>
+						<mx:Text text="Vol:" textAlign="right" width="40"/>
+						<mx:Text id="lblVolume" fontWeight="bold"/>
+						<mx:Text text="Page:" textAlign="right" width="40"/>
+						<mx:Text id="lblPage" fontWeight="bold"/>
+					</mx:HBox>
+	
+				</mx:VBox>
+	
+			</mx:HBox>
+
+		</mx:ViewStack>
+
+		<mx:VBox id="resultPanel" width="100%" height="100%"
+			paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+			borderColor="#999999" borderStyle="solid" cornerRadius="4"
+			>
+			
+			<mx:DataGrid id="dgDocuments" dataProvider="{_documentList}" width="100%" height="80" 
+				change="viewStackTracts.selectedChild = itemTractGrid">
+				<mx:columns>
+					<mx:DataGridColumn dataField="DocTypeId" headerText="Type" width="120" labelFunction="setDocLabels"/>
+					<mx:DataGridColumn dataField="State" headerText="State" width="90" labelFunction="setDocLabels"/>
+					<mx:DataGridColumn dataField="County" headerText="County" labelFunction="setDocLabels"/>
+					<mx:DataGridColumn dataField="DocumentNo" headerText="Doc No" width="60"/>
+					<mx:DataGridColumn dataField="Volume" headerText="Vol" width="50"/>
+					<mx:DataGridColumn dataField="Page" headerText="Page" width="50"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			<mx:ViewStack id="viewStackTracts" width="100%" height="100%" creationPolicy="all">
+				
+				<mx:VBox id="itemTractGrid" width="100%" height="100%">
+					
+					<mx:HBox width="100%" height="100%">
+						
+						<mx:Label text="Tracts:" fontWeight="bold"/>
+						
+						<mx:DataGrid id="dgTracts" dataProvider="{Document(dgDocuments.selectedItem).Tracts}" width="100%" height="100%">
+							<mx:columns>
+								<mx:DataGridColumn headerText="Reference name" dataField="Description"/>
+								<mx:DataGridColumn headerText="Called AC" dataField="CalledAC" width="160" 
+									labelFunction="setTractLabels"/>
+							</mx:columns>
+						</mx:DataGrid>
+
+					</mx:HBox>
+					
+					<mx:HBox id="tractButtons" width="100%" horizontalAlign="right">
+						<mx:Button id="btnOpen" label="Open selected" textAlign="center" 
+							enabled="{dgTracts.selectedItem != null}"
+							click="onOpen()"/>
+						<mx:Button id="btnCreateNew" label="Create New" textAlign="center" 
+							enabled="{dgDocuments.selectedItem != null}"
+							click="onCreateNewTract()"/>
+					</mx:HBox>
+
+				</mx:VBox>
+
+				<mx:VBox id="itemTractDetail" width="100%" height="100%"
+					paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+					borderColor="#999999" borderStyle="solid" cornerRadius="4"
+					>
+					
+					<mx:HBox width="100%">
+						
+						<mx:Label text="Details:" fontWeight="bold"/>
+						
+						<mx:VBox width="100%">
+							
+							<mx:HBox width="100%">
+								<mx:Label text="Reference Name:" width="150" textAlign="right"/>
+								<mx:TextInput id="txtReferenceName" text="{currentTract.Description}" width="100%"/>
+							</mx:HBox>
+							
+							<mx:HBox width="100%">
+								<mx:Label text="Called AC:" width="150" textAlign="right"/>
+								<mx:TextInput id="txtCalledAC" text="{currentTract.CalledAC.toString()}"/>
+								<mx:ComboBox id="comboUnits" labelField="@Name"
+								    dataProvider="{DictionaryRegistry.getInstance().units.Unit.(@UnitId > 0)}"
+								    selectedIndex="{currentTract.UnitId}"/>
+							</mx:HBox>
+			
+							<mx:Spacer height="100%"/>
+		
+							<mx:HBox width="100%" horizontalAlign="right">
+								<mx:Button label="Submit" click="onAttach()" enabled="{txtReferenceName.text.length > 0}"/>
+								<mx:Button label="Cancel" click="onCancelCreateTract()"/>
+							</mx:HBox>
+
+						</mx:VBox>
+	
+					</mx:HBox>
+
+				</mx:VBox>
+
+			</mx:ViewStack>
+			
+		</mx:VBox>
+		
+<!--		<mx:HBox width="100%"
+			paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+			>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Close" click="closePopup()"/>
+		</mx:HBox>
+ -->		
+	</mx:VBox>
+	
+</mx:TitleWindow>

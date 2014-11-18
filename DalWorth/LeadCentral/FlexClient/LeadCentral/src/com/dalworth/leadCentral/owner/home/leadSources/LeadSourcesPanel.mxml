@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Lead Sources for last 7 days" 
+	verticalGap="10" borderColor="#000099" borderStyle="solid" borderThickness="1"
+	backgroundColor="#FFFFee" xmlns:daily="com.dalworth.leadCentral.owner.home.leads.daily.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.domain.Lead;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] public var startDate:Date;
+			[Bindable] public var endDate:Date;
+
+	        private var leads:ArrayCollection;
+	        [Bindable]
+	        private var leadSources:ArrayCollection;
+			
+			public function setLeads(value:ArrayCollection):void 
+			{
+				leads = value;
+				updateLeadSources();
+			}
+			
+			private function updateLeadSources():void 
+			{
+				if (leadSources == null)
+					leadSources = new ArrayCollection();
+				
+				var sources:Array = new Array();
+				
+				for each (var lead:Lead in leads)
+				{
+					var sourceObj:Object = getSourceById(lead.LeadSourceId, sources);
+					sourceObj["leadsTotal"]++;
+					if (lead.LeadStatusId == LeadStatusEnum.CONVERTED)
+						sourceObj["leadsConverted"]++;
+				}
+				
+				leadSources.source = sources;
+
+				if (leadSources.length == 0)
+				{
+					txtHeader.text = "No Leads created for period from" + DateUtil.getDateStr(startDate) + " to " + DateUtil.getDateStr(endDate);
+					dgLeadSources.visible = dgLeadSources.includeInLayout = false;
+				} else 
+				{
+					txtHeader.text = "Lead Sources for period from" + DateUtil.getDateStr(startDate) + " to " + DateUtil.getDateStr(endDate);
+					dgLeadSources.visible = dgLeadSources.includeInLayout = true;
+				}
+			}
+			
+			private function getSourceById(sourceId:int, collection:Array):Object
+			{
+				for each (var obj:Object in collection)
+				{
+					if (obj["id"] == sourceId)
+						return obj;
+				}
+				var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(sourceId) as LeadSource;
+				if (leadSource == null) 
+				{
+					leadSource = new LeadSource();
+					leadSource.Id = sourceId;
+					leadSource.Name = "[undefined]";
+				}
+				var newSource:Object = {id:leadSource.Id, leadSource:leadSource.Name, leadsTotal:0, leadsConverted:0};
+				collection.push(newSource);
+				return newSource;
+			} 
+			
+			private function onLeadSourcesDetail():void 
+			{
+				dispatchEvent(new Event("selectLeadSourcesDetail", true));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Text id="txtHeader" width="100%" fontSize="14" color="#666666"/>
+	
+	<mx:DataGrid id="dgLeadSources" width="100%" height="120" dataProvider="{leadSources}" 
+		draggableColumns="false" sortableColumns="false" editable="false"
+		selectable="false" fontSize="11">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Lead Source" dataField="leadSource" fontWeight="bold"/>
+			<mx:DataGridColumn headerText="Total Leads" dataField="leadsTotal" width="100" minWidth="100" textAlign="right"/>
+			<mx:DataGridColumn headerText="Converted" dataField="leadsConverted" width="100" minWidth="100" textAlign="right"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="Details" click="onLeadSourcesDetail()" fontSize="12"/>
+	</mx:ControlBar>
+</mx:Panel>

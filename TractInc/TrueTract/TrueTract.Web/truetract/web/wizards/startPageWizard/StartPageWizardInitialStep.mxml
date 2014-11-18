@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceStep 
+    xmlns="truetract.web.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="openResentRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.domain.TractListInfo;
+
+            import mx.controls.Alert;
+            import mx.collections.ArrayCollection;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            
+            public var userId:Number;
+            public var tractInfo:TractListInfo;
+
+            [Bindable] private var recentTracts:ArrayCollection;
+            
+            private var isRefreshRequired:Boolean = true;
+
+            private function creationCompleteHandler():void
+            {
+                if (service)
+                {
+                    service.GetRecentUserTractList.addEventListener(
+                        ResultEvent.RESULT, GetRecentUserTractList_resultHandler);
+    
+                    service.GetRecentUserTractList.addEventListener(
+                        FaultEvent.FAULT, GetRecentUserTractList_faultHandler);
+    
+                    callLater(loadRecentTractList);
+                }
+            }
+            
+            override public function activate():void
+            {
+                loadRecentTractList();
+            }
+            
+            private function loadRecentTractList():void
+            {
+                if (isRefreshRequired && userId)
+                {
+                    service.GetRecentUserTractList(userId);
+                }
+            }
+
+            private function GetRecentUserTractList_resultHandler(event:ResultEvent):void
+            {
+                recentTracts = new ArrayCollection(event.result as Array);
+                isRefreshRequired = false;
+            }
+
+            private function GetRecentUserTractList_faultHandler(event:FaultEvent):void
+            {
+                Alert.show(event.fault.faultString);
+            }
+
+            private function labelFunction(item:Object, column:DataGridColumn):String
+            {
+                return TractListInfo(item).docId > 0 ? "Tract" : "Drawing";
+            }
+            
+            public function tractLinkButton_clickHandler(tract:TractListInfo):void
+            {
+                tractInfo = tract;
+
+                dispatchEvent(new Event("openResentRequest"));
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <mx:VBox>
+            <mx:RadioButtonGroup id="actionTypeRBGroup" selectedValue="0" />
+            <mx:RadioButton value="0" label="Create New" selected="true" group="{actionTypeRBGroup}"/>
+            <mx:RadioButton value="1" label="Open Existing" group="{actionTypeRBGroup}"/>
+        </mx:VBox>
+
+        <mx:ComboBox id="tractTypeCmb">
+            <mx:Array>
+                <mx:String>Tract</mx:String>
+                <mx:String>Drawing</mx:String>
+            </mx:Array>
+        </mx:ComboBox>
+
+    </mx:HBox>
+
+    <mx:Label text="Recent:" width="100%" fontSize="12" fontWeight="bold"/>
+
+    <mx:DataGrid id="recentTractList" width="100%" height="100%" dataProvider="{recentTracts}" 
+        selectable="false">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Type" labelFunction="labelFunction" width="75"/>
+            <mx:DataGridColumn headerText="Reference Name" dataField="referenceName">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:LinkButton 
+                            label="{data.referenceName}" width="100%" textAlign="left"
+                            fontWeight="normal"
+                            rollOverColor="#bad4ec" color="#000066" textDecoration="underline"
+                            click="parentDocument.tractLinkButton_clickHandler(data)"/>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+        </mx:columns>
+    </mx:DataGrid>
+
+</ServiceStep>

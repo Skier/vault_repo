@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+    paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5"
+    xmlns:MessageTree="UI.MessageBox.MessageTree.*" xmlns:MessageDetail="UI.MessageBox.MessageDetail.*">
+    <mx:Script>
+        <![CDATA[
+            import UI.AppModel;
+            import Domain.Message;
+            import UI.AppController;
+
+            [Bindable]
+            public var Controller:MessageBoxController;
+            
+            [Bindable]
+            private var ParentModel:AppModel;
+            
+            //Property BoxName identify name of Message Box wich it works with (e.g "inbox", "outbox")
+            public var BoxName:String;
+           
+            public function set ParentController(parent:AppController):void{
+                Controller = new MessageBoxController(MessageBoxView(this), parent);
+                ParentModel = parent.Model;
+            }
+        ]]>
+    </mx:Script>
+	
+    <mx:Component id="attachmentColumnHeaderIcon">
+        <mx:VBox horizontalAlign="center">    
+            <mx:Image source="@Embed(source='/Images/attachment_icon.gif')"/>
+        </mx:VBox>
+    </mx:Component>
+
+    <mx:Component id="attachmentColumnIcon">
+        <mx:VBox horizontalAlign="center">
+            <mx:Image source="@Embed(source='/Images/attachment_icon.gif')"
+                visible="{data.hasAttachments}"/>
+        </mx:VBox>
+    </mx:Component>
+	
+    <mx:ControlBar width="100%">
+        <mx:Button label="Reply" click="Controller.OnReply()" 
+            enabled="{Controller.Model.CurrentMessage &amp;&amp; Controller.Model.CurrentMessage.Body}"/>
+        <mx:Button label="Forward" click="Controller.OnForward()" 
+            enabled="{Controller.Model.CurrentMessage &amp;&amp; Controller.Model.CurrentMessage.Body}"/>
+        <mx:Button label="Delete" click="Controller.OnDelete()" 
+            enabled="{!Controller.Parent.IsPop3Busy &amp;&amp; m_inboxGrid.selectedItems.length > 0}"/>
+        <mx:Spacer width="100%"/>
+        <mx:HBox visible="{ParentModel.inbox.length &lt; ParentModel.mailBoxStatus.TotalMessages}">
+            <mx:Label id="getMoreStatusLabel" 
+                text="{'Loaded ' + ParentModel.inbox.length + ' of ' + ParentModel.mailBoxStatus.TotalMessages}" />
+            <mx:Button label="Get More" click="Controller.OnGetMore()" 
+                enabled="{!Controller.Parent.IsPop3Busy}" id="getMoreButton"/>
+        </mx:HBox>
+    </mx:ControlBar>
+    
+    <mx:CheckBox id="m_threadView" label="Show As Threads"
+        selected="{Controller.Model.Messages.ShowMessageGroups}"
+        change="{Controller.Model.Messages.ShowMessageGroups = m_threadView.selected}"/>
+    <mx:VDividedBox height="100%" width="100%">
+        
+        <MessageTree:DataGridEx id="m_inboxGrid" width="100%" height="100%" 
+    	    enabled="{!Controller.Parent.IsPop3Busy}"        
+            draggableColumns="false" verticalGridLines="false"
+            dataProvider="{Controller.Model.Messages}"
+            allowMultipleSelection="true"
+            change="Controller.OnCurrentMessageChanged()">
+            
+             <MessageTree:columns>
+    
+                <mx:DataGridColumn  sortable="false" resizable="false" width="20" 
+                    itemRenderer="UI.MessageBox.MessageTree.DataGridThreatIR"
+                    fontWeight="bold" headerText=""/>
+                    
+                <mx:DataGridColumn dataField="hasAttachments" width="20" headerText=""
+                    sortable="false"
+                    headerRenderer="{attachmentColumnHeaderIcon}"
+                    itemRenderer="{attachmentColumnIcon}"/>
+                    
+                <mx:DataGridColumn headerText="From" showDataTips="true"
+                    dataTipField="messageFromTipValue"
+                    dataField="messageFromDisplayValue"/>
+    
+                <mx:DataGridColumn sortable="true" headerText="Subject" 
+                    dataField="messageSubjectDisplayValue" />
+                    
+                <mx:DataGridColumn headerText="Sent" 
+                    dataField="messageSentDisplayValue" />
+                    
+                <mx:DataGridColumn headerText="Size" textAlign="right" 
+                    dataField="messageSizeDisplayValue" width="80" />
+    
+            </MessageTree:columns>
+            
+        </MessageTree:DataGridEx>
+        
+        <MessageDetail:MessageDetailView styleName="composeSection" 
+            ParentController = "{Controller}"/>
+        
+    </mx:VDividedBox>
+    
+</mx:VBox>

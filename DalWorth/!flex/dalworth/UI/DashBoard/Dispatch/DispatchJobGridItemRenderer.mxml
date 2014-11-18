@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox  height="100%" width="100%" dataChange="onDataChanged()" xmlns:mx="http://www.adobe.com/2006/mxml" backgroundColor="{_color}"
+	click="onBoxClick()">
+	<mx:Script>
+		<![CDATA[
+			import Domain.Employee;
+			import UI.DashBoard.MainView;
+			import Domain.Ticket;
+			import mx.rpc.events.ResultEvent;
+			import Service.ServerSyncService;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+		import Domain.WorkDetail;
+		
+		[Bindable]
+		private var _color:uint;
+				
+		[Bindable]
+		private var _ticket:Ticket;
+		
+		private function onDataChanged():void{
+			if (data != null){
+				
+				_ticket = Ticket(data);
+				if (_ticket != null){
+					
+					lblTicketNumber.text = _ticket.Number.toString();
+					
+					if (_ticket.TicketStatusId == 3)//Assigned - green
+						_color = 0x00ff40;
+					else if (_ticket.TicketStatusId == 4) //AssignedForExecution - yellow
+						_color = 0xF2EA12;
+					else if (_ticket.TicketStatusId == 2) //Completed - gray
+						_color = 0x7A8A7E;	
+					else if (_ticket.TicketStatusId == 5) //Accepted - blue
+						_color = 0x008AFF;	
+					else if (_ticket.TicketStatusId == 6) //Declined - red
+						_color = 0xFF0000;	
+					else if (_ticket.TicketStatusId == 7) //Arrived - purple
+						_color = 0xDC40EE;							
+					else if (_ticket.TicketStatusId == 8) //NoGo - orange
+						_color = 0xFFA800;							
+						
+				}
+				else
+				{
+					_color = 0x0080ff;
+				}
+			}			
+		}
+		
+		private function onBoxClick():void{								
+			if (_ticket.TicketStatusId == 3 && (parentDocument as TechGridItem).work.WorkStatusId == 2){
+				Alert.show("Do you want to dispatch this ticket?", "Dispatch Ticket", 3, this, onDispatchConfirmBoxClosed);
+			}			
+		}
+		
+		private function onDispatchConfirmBoxClosed(event:CloseEvent):void{
+			if (event.detail == 1){
+				
+				var service:ServerSyncService = new ServerSyncService();
+				
+				var dispatcher:Employee 
+					= (parentDocument.parentDocument.parentDocument.parentDocument as MainView)._appController.CurrentEmployee;
+				
+				service.AssignTicketExecution(dispatcher.ID, (parentDocument as TechGridItem).technician.ID, 
+					_ticket.ID, OnAssignTicketExecutionOk, OnFail);								
+			}
+		}
+		
+		private function OnAssignTicketExecutionOk(event:ResultEvent):void{
+				var dispController:DispatchController = (parentDocument as TechGridItem).controller;
+				dispController.refreshDashborad();							
+		}
+		
+		private function OnFail(msg:String):void{
+			Alert.show(msg);
+		}
+				
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="lblTicketNumber"/>
+	
+	
+</mx:VBox>
+

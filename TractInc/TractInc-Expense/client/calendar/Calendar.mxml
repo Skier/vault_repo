@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Grid
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="buildWeeks()"
+    horizontalGap="2"
+    verticalGap="2"
+    borderColor="#D0D0D0"
+    borderThickness="1"
+    backgroundColor="#D0D0D0">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.core.Container;
+        import mx.core.UIComponent;
+        import mx.events.CollectionEventKind;
+        import mx.events.CollectionEvent;
+        import mx.events.DragEvent;
+        import mx.events.DynamicEvent;
+        import mx.events.PropertyChangeEvent;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Label;
+        import mx.containers.GridItem;
+        import mx.containers.GridRow;
+        import mx.binding.utils.ChangeWatcher;
+        
+        private const _DAY_NAMES:Object = {1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat"};
+        
+        private var _startIndex:int = 0;
+        private var _endIndex:int = 0;
+        private var _startDate:Date = null;
+        [Bindable]
+        public function get startDate():Date {
+            return _startDate;
+        }
+        public function set startDate(value:Date):void {
+            _startDate = value;
+            
+            var started:Boolean = (0 == startDate.day);
+            var days:int = startDate.day + endDate.date - startDate.date;
+            var weeks:int = ((days + 1) / 7) + ((0 == (days + 1) % 7)? 0: 1);
+            
+            var current:Date = startDate;
+            var finished:Boolean = false;
+            var cellIndex:int = 0;
+            
+            for (var ci:int = 0; ci < _cells.length; ci++) {
+            	_cells[ci].data = null;
+            }
+            
+            _startIndex = 0;
+            for (var week:int = 0; week < 3; week ++) {
+                for (var i:int = 0; i < 7; i ++) {
+                    if ((i == current.day)
+                            && !started) {
+                        _startIndex = cellIndex;
+                        started = true;
+                    }
+                    
+                    if (started && !finished) {
+                        if (current.date == endDate.date) {
+                            finished = true;
+                            _endIndex = cellIndex;
+                        }
+                        current = getNextDay(current);
+                    }
+                    
+                    cellIndex ++;
+                }
+            }
+            
+            _lastRow.visible = _lastRow.includeInLayout = (3 == weeks);
+        }
+        
+        private var _itemRenderer:IFactory;
+        
+        [Bindable("itemRendererChanged")]
+        public function get itemRenderer():IFactory {
+            return _itemRenderer;
+        }
+        
+        public function set itemRenderer(value:IFactory):void {
+            _itemRenderer = value;
+            buildWeeks();
+            dispatchEvent(new Event("itemRendererChanged"));
+        }
+        
+        private var _lastRow:GridRow;
+        
+        public function get endDate():Date {
+            if (1 == _startDate.date) {
+                return new Date(_startDate.fullYear, _startDate.month, 15);
+            } else if (16 == _startDate.date) {
+                var endDate:Date;
+                try {
+                    endDate = new Date(_startDate.fullYear, _startDate.month + 1, 1);
+                } catch (ex:Error) {
+                    endDate = new Date(_startDate.fullYear + 1, 0, 1);
+                }
+                return new Date(endDate.time - 1);
+            } else {
+                throw new Error("Internal error. Please contact administrator.");
+            }
+        }
+        
+        private var _dataProvider:ArrayCollection = null;
+        public function get dataProvider():ArrayCollection {
+            return _dataProvider;
+        }
+        public function set dataProvider(value:ArrayCollection):void {
+            if (null != _dataProvider) {
+                _dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onDataProviderChange);
+                if (null != value) {
+                	value.addEventListener(CollectionEvent.COLLECTION_CHANGE, onDataProviderChange);
+                }
+            }
+            
+            _dataProvider = value;
+            
+            if ((null != dataProvider)
+                    && (null != startDate)) {
+                for each (var dataObject:CalendarDay in _dataProvider) {
+                    _cells[_startIndex + dataObject.getDate().date - startDate.date].data = dataObject;
+                }
+            }
+            this.invalidateDisplayList();
+        }
+        
+        private function onDataProviderChange(evt:CollectionEvent):void {
+            if (CollectionEventKind.ADD == evt.kind) {
+                var dataObject:CalendarDay = CalendarDay(_dataProvider[evt.location]);
+                var renderer:Container = Container(_cells[_startIndex + dataObject.getDate().date - startDate.date]);
+                renderer.data = dataObject;
+            }
+        }
+        
+        private var _cells:ArrayCollection;
+        
+        private function buildWeeks():void {
+            this.removeAllChildren();
+            _cells = new ArrayCollection();
+            
+            var i:int;
+            var row:GridRow;
+            var label:Label;
+            var item:GridItem;
+            row = new GridRow();
+            row.percentWidth = 100;
+            row.height = 18;
+            
+            for (i = 1; i <= 7; i ++) {
+                var weekItem:GridItem = new GridItem();
+                weekItem.percentWidth = 100;
+                weekItem.percentHeight = 100;
+                
+                label = new Label();
+                label.text = _DAY_NAMES[i];
+                label.percentWidth = 100;
+                label.setStyle("textAlign", "center");
+                weekItem.addChild(label);
+                weekItem.setStyle("backgroundColor", 0xFFFFFF);
+                row.addChild(weekItem);
+            }
+            addChild(row);
+            
+            for (var week:int = 0; week < 3; week ++) {
+                row = new GridRow();
+                row.percentWidth = 100;
+                row.percentHeight = 100;
+            
+                for (i = 0; i < 7; i ++) {
+                    
+                    item = new GridItem();
+
+                    if (null != itemRenderer) {
+                        var renderer:DisplayObject = itemRenderer.newInstance();
+                        item.addChild(renderer);
+                    }
+                    
+                    row.addChild(item);
+                    _cells.addItem(renderer);
+                }
+
+                addChild(row);
+                
+                if (2 == week) {
+                    _lastRow = row;
+                }
+            }
+        }
+
+        private function getNextDay(date:Date):Date {
+            try {
+                return new Date(date.fullYear, date.month, date.date + 1);
+            } catch (ex:Error) {
+                try {
+                    return new Date(date.fullYear, date.month + 1, 1);
+                } catch (ex:Error) {
+                    return new Date(date.fullYear + 1, 0, 1);
+                }
+            }
+            return null;
+        }
+        
+        ]]>
+    </mx:Script>
+
+</mx:Grid>

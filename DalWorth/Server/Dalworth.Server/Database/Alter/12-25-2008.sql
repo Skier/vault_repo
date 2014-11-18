@@ -1,0 +1,1 @@
+ALTER TABLE `Visit` ADD COLUMN `IsWillCall` TINYINT(1) NOT NULL AFTER `SyncToolPrintDate`;

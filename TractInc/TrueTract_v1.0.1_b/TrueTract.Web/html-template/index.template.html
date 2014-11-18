@@ -1,0 +1,91 @@
+<!-- saved from url=(0014)about:internet -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>${title}</title>
+<script src="AC_OETags.js" language="javascript"></script>
+<style>
+body { margin: 0px; overflow:hidden }
+</style>
+
+<script>
+<!--
+function moveIFrame(x,y,w,h) {
+    var frameRef=document.getElementById("myFrame");
+    frameRef.style.left=x + "px";
+    frameRef.style.top=y + "px";
+    frameRef.style.width=w + "px";
+    frameRef.style.height=h + "px";
+    frameRef.style.zIndex = 999;
+}
+
+function hideIFrame(){
+    document.getElementById("myFrame").style.visibility="hidden";
+}
+
+function showIFrame(){
+    document.getElementById("myFrame").style.visibility="visible";
+}
+
+function loadIFrame(url){
+    myFrame.location = url;
+}
+
+function isMSIE(){
+    agent = navigator.userAgent;
+    opera = (agent.indexOf('Opera')!=-1);
+    return ((agent.indexOf('MSIE')!=-1) && !opera);
+}
+-->
+</script>
+
+</head>
+
+<body scroll='no'>
+<script language="JavaScript" type="text/javascript">
+<!--
+        AC_FL_RunContent(
+                    "src", "${swf}",
+                    "width", "${width}",
+                    "height", "${height}",
+                    "align", "middle",
+                    "id", "${application}",
+                    "quality", "high",
+                    "bgcolor", "${bgcolor}",
+                    "name", "${application}",
+                    "wmode", "opaque",
+                    "allowScriptAccess","sameDomain",
+                    "type", "application/x-shockwave-flash",
+                    "onMouseDown", "'document.body.focus();'",
+                    "pluginspage", "http://www.adobe.com/go/getflashplayer"
+    );
+// -->
+</script>
+<noscript>
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+            id="${application}" width="${width}" height="${height}"
+            codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+            <param name="movie" value="${swf}.swf" />
+            <param name="quality" value="high" />
+            <param name="bgcolor" value="${bgcolor}" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <param name="wmode" value="opaque">
+            <embed src="${swf}.swf" quality="high" bgcolor="${bgcolor}"
+                width="${width}" height="${height}" name="${application}" align="middle"
+                play="true"
+                loop="false"
+                quality="high"
+                allowScriptAccess="sameDomain"
+                type="application/x-shockwave-flash"
+                pluginspage="http://www.adobe.com/go/getflashplayer">
+            </embed>
+    </object>
+</noscript>
+
+
+<iframe id="myFrame" name="myFrame" frameborder="0" 
+     style="position:absolute;background-color:transparent;border:0px;visibility:hidden;">
+</iframe>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Domain.Campaign
+
+@{
+    ViewBag.Title = "Details";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+@*
+        @Html.ActionLink("Back To List", "Index", new{controller="Campaigns"}, new{@class="button"})
+*@
+        @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter()
+            && (Model.RelatedBusinessPartner == null || !Model.RelatedBusinessPartner.IsRemoved))
+        {
+            <span>@Html.ActionLink("Edit", "Edit", new {controller = "Campaigns", id = Model.Id},
+                            new {@class = "button primary"})</span>
+        }
+        </div>
+      <h1>Campaign [@Model.CampaignName]</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Name</td>
+              <td><b>@Model.CampaignName</b></td>
+            </tr>
+            @if (Model.BusinessPartnerId != null && !currentUser.IsBusinessPartner)
+            {
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>
+                  @Html.ActionLink(Model.PartnerName, "Details", new { controller = "Partners" , id = Model.BusinessPartnerId })
+              </td>
+            </tr>
+            }
+            <tr>
+              <td style="text-align:right;"> Assigned to</td>
+              <td>
+                @if(!currentUser.IsBusinessPartner)
+                {
+                    <span>@Html.ActionLink(Model.UserName, "Details", new {controller = "Users", id = Model.UserId})</span>
+                } else
+                {
+                    <span>@Model.UserName</span>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"> Started</td>
+              <td>@String.Format("{0:d}", Model.DateStart)</td>
+            </tr>
+            @if (Model.DateEnd != null)
+            {
+            <tr>
+              <td style="text-align:right;">Closed</td>
+              <td>@String.Format("{0:d}", Model.DateEnd)
+                @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter() 
+                    && (Model.RelatedBusinessPartner == null || !Model.RelatedBusinessPartner.IsRemoved))
+                {
+                    <span>@Html.ActionLink("Activate Campaign", "Activate", new { controller = "Campaigns", id = Model.Id })</span>
+                }
+              </td>
+            </tr>
+            } else if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+            {
+            <tr>
+              <td style="text-align:right;">&nbsp;</td>
+              <td>@Html.ActionLink("Stop Campaign", "Stop", new { controller = "Campaigns", id = Model.Id }, new{@class="button"})
+                <div style="margin-left:10px;display:inline;"><i>All assigned phone numbers will be removed from current Campaign</i></div>
+              </td>
+            </tr>
+            }
+          </table>
+        </div>
+
+        <br/>
+        
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Tracking Phones</div>
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px; overflow: hidden;">
+          @if (Model.TrackingPhones != null && Model.TrackingPhones.Count > 0)
+          {
+@*
+          <div style="width: 250px; float:right;">
+            <div style="background: #EEEEEE; padding:8px;">
+              <h4>How to embed phones rotation into your website:</h4>
+              <p>Insert script<br/><textarea rows="2" readonly="readonly" style="width:230px;">how to embed phone rotation into your website</textarea></p>
+              <p>Insert phone number<br/><textarea rows="4" readonly="readonly" style="width:230px;">how to embed phone rotation into your website</textarea></p>
+            </div>
+          </div>
+*@          
+          <div style="margin-right: 260px;">
+              <table class="form">
+                <tr>
+                  <td style="text-align: left;"><b>Phone</b></td>
+                  <td style="text-align: left;"><b>Redirect Phone</b></td>
+                  <td style="text-align: left;"><b>Description</b></td>
+                  @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+                  {
+                  <td style="text-align: right;">&nbsp;</td>
+                  }
+                </tr>
+                @foreach (var phone in Model.TrackingPhones)
+                {
+                <tr>
+                  <td style="text-align: left;"><b>@phone.FriendlyNumber</b></td>
+                  <td style="text-align: left;"><b>@phone.RedirectPhoneNumber</b></td>
+                  <td style="text-align: left;">@phone.Description</td>
+                  @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter() && Model.DateEnd == null)
+                  {
+                  <td style="text-align: right;">@Html.ActionLink("Remove", "RemovePhone",
+                                                        new { controller = "Campaigns", trackingPhoneId = phone.Id, campaignId = Model.Id },
+                                                        new { @class = "button" })</td>
+                  }
+                </tr>
+                }
+              </table>
+          </div>
+          }
+          else
+          {
+              <div>No assigned tracking phones to current campaign</div>
+          }
+          @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter() && Model.DateEnd == null)
+          {
+            <div style="text-align: right; margin-right:260px; padding: 10px;">
+              @Html.ActionLink("Add Tracking Phone", "AssignPhone", new { controller = "Campaigns", id = Model.Id }, new { @class = "button" })
+            </div>
+          }
+        </div>
+    </div>
+  </div>
+

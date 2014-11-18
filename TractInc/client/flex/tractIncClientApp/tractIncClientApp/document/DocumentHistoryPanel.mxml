@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    dropShadowEnabled="true"
+    borderColor="#cccccc" borderStyle="solid"
+    horizontalGap="3" verticalAlign="middle"
+    backgroundColor="#ccffff" 
+    backgroundAlpha="0.3" 
+    shadowDistance="1" 
+    shadowDirection="center"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import tractIncClientApp.project.ProjectEvent;
+            import truetract.domain.Project;
+            import mx.controls.LinkButton;
+            import tractIncClientApp.document.DocumentEvent;
+            import mx.collections.ArrayCollection;
+            import truetract.domain.Document;
+            
+            [Bindable]
+            public var project:Project;
+            
+            private var _historyList:ArrayCollection;
+            [Bindable]
+            public function get historyList():ArrayCollection {return _historyList;}
+            public function set historyList(value:ArrayCollection):void 
+            {
+                _historyList = value;
+            }
+            
+            private function onDocumentClick(event:MouseEvent):void 
+            {
+                var linkButton:LinkButton = event.currentTarget as LinkButton;
+                var doc:Document = linkButton.repeater.dataProvider[linkButton.repeaterIndex] as Document;
+                
+                dispatchEvent(new DocumentEvent(DocumentEvent.OPEN_DOCUMENT, doc));
+            }
+            
+            private function onProjectClick(event:MouseEvent):void 
+            {
+                dispatchEvent(new ProjectEvent(ProjectEvent.OPEN_PROJECT, project));
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Metadata>
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+        [Event(name="openProject", type="tractIncClientApp.project.ProjectEvent")]
+    </mx:Metadata>
+
+    <mx:LinkButton 
+        minWidth="20" maxWidth="150"
+        label="{project.ShortName}" icon="@Embed(source='/assets/report.png')"
+        includeInLayout="{project != null}" visible="{project != null}"
+        fontWeight="bold" color="#0000bb" textDecoration="underline"
+        click="onProjectClick(event)"/>
+
+    <mx:Repeater id="rptHistory" dataProvider="{historyList}" width="100%">
+        <mx:Image source="@Embed(source='/assets/navigate_right.png')"/>
+        <mx:LinkButton 
+            minWidth="20" maxWidth="150"
+            label="{Document(rptHistory.currentItem).Instrument}" 
+            icon="@Embed(source='/assets/page.png')"
+            fontWeight="normal" color="#0000bb" textDecoration="underline"
+            click="onDocumentClick(event)"/>
+    </mx:Repeater>
+</mx:HBox>

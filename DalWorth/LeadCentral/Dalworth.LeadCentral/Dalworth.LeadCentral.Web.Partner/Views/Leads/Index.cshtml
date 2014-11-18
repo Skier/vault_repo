@@ -1,0 +1,33 @@
+﻿@model Dalworth.LeadCentral.Web.Partner.Models.LeadsList
+
+@{
+    ViewBag.Title = "Leads List";
+    ViewBag.ContentTitle = "Current Leads";
+    ViewBag.ContentHeading = "Something at the heading";
+    ViewBag.CurrentTabName = "Leads";
+}
+
+@{
+    var grid = new WebGrid(source: Model.LeadItems, rowsPerPage: 30);
+    var columns = new List<WebGridColumn>();
+    columns.Add(grid.Column("RecordingUrl", "", canSort: false, format:@<text> @if (!String.IsNullOrEmpty(@item.RecordingUrl))
+                                                                               { <a href="@item.RecordingUrl">Play</a> } </text>));
+    columns.Add(grid.Column("LeadSource", "Lead Source", canSort: false));
+    columns.Add(grid.Column("Customer", "Customer", canSort: false));
+    columns.Add(grid.Column("DateCreated", "Created", canSort: false));
+    columns.Add(grid.Column("PhoneFrom", "Phone From", canSort: false));
+    columns.Add(grid.Column("LeadStatus", "Status", canSort: false));
+    columns.Add(grid.Column("ClosedAmount", "Closed Amount", canSort: false));
+}
+    @grid.Pager(WebGridPagerModes.All, "First", "Prev", "Next", "Last", 30)
+
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 30
+    )
+

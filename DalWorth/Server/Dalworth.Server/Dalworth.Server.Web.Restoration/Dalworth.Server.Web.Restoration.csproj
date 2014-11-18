@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ECF25580-8424-4345-8A5D-DA7082E8B40C}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.Web.Restoration</RootNamespace>
+    <AssemblyName>Dalworth.Server.Web.Restoration</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="Service.aspx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ErrorPage.aspx.cs">
+      <DependentUpon>ErrorPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorPage.aspx.designer.cs">
+      <DependentUpon>ErrorPage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FeedbackReceipt.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>FeedbackReceipt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FeedbackReceipt.aspx.designer.cs">
+      <DependentUpon>FeedbackReceipt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FooterControl.ascx.cs">
+      <DependentUpon>FooterControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FooterControl.ascx.designer.cs">
+      <DependentUpon>FooterControl.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Head.ascx.cs">
+      <DependentUpon>Head.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Head.ascx.designer.cs">
+      <DependentUpon>Head.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="HeaderControl.ascx.cs">
+      <DependentUpon>HeaderControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HeaderControl.ascx.designer.cs">
+      <DependentUpon>HeaderControl.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Index.aspx.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Index.aspx.designer.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LandingPage.aspx.cs">
+      <DependentUpon>LandingPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LandingPage.aspx.designer.cs">
+      <DependentUpon>LandingPage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LatestArticlesControl.ascx.cs">
+      <DependentUpon>LatestArticlesControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LatestArticlesControl.ascx.designer.cs">
+      <DependentUpon>LatestArticlesControl.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="NewsFlashControl.ascx.cs">
+      <DependentUpon>NewsFlashControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewsFlashControl.ascx.designer.cs">
+      <DependentUpon>NewsFlashControl.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service.aspx.cs">
+      <DependentUpon>Service.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Service.aspx.designer.cs">
+      <DependentUpon>Service.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SiteMapPage.aspx.cs">
+      <DependentUpon>SiteMapPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SiteMapPage.aspx.designer.cs">
+      <DependentUpon>SiteMapPage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SiteMapXml.aspx.cs">
+      <DependentUpon>SiteMapXml.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SiteMapXml.aspx.designer.cs">
+      <DependentUpon>SiteMapXml.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ThankYou.aspx.cs">
+      <DependentUpon>ThankYou.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ThankYou.aspx.designer.cs">
+      <DependentUpon>ThankYou.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Server.Domain\Dalworth.Server.Domain.csproj">
+      <Project>{5E8A7EFF-721F-401F-993E-D464C4EFFDEA}</Project>
+      <Name>Dalworth.Server.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server.Web.Common\Dalworth.Server.Web.Common.csproj">
+      <Project>{FA1AAC9A-C91F-466A-81B1-F3B9D967E2F7}</Project>
+      <Name>Dalworth.Server.Web.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{FA543470-1332-48A2-A600-0BEE5BC1CF86}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ErrorPage.aspx" />
+    <Content Include="Feedback.aspx" />
+    <Content Include="FeedbackReceipt.aspx" />
+    <Content Include="FooterControl.ascx" />
+    <Content Include="Head.ascx" />
+    <Content Include="HeaderControl.ascx" />
+    <Content Include="ie.css" />
+    <Content Include="ie6.css" />
+    <Content Include="img\add-this.png" />
+    <Content Include="img\arrow1.png" />
+    <Content Include="img\arrow2.png" />
+    <Content Include="img\arrow3.png" />
+    <Content Include="img\article_bg.png" />
+    <Content Include="img\ask_bg.png" />
+    <Content Include="img\ask_bg_hover.png" />
+    <Content Include="img\attention.png" />
+    <Content Include="img\bbb.png" />
+    <Content Include="img\bbb_logo.gif" />
+    <Content Include="img\bbb_logo.png" />
+    <Content Include="img\bbb_red.png" />
+    <Content Include="img\body_bg.png" />
+    <Content Include="img\call-now-nonr.png" />
+    <Content Include="img\call-now.png" />
+    <Content Include="img\content_bg.png" />
+    <Content Include="img\content_bg2.png" />
+    <Content Include="img\dalworth-restoration.png" />
+    <Content Include="img\dki.png" />
+    <Content Include="img\forma-big-bottom.png" />
+    <Content Include="img\forma-big-top.png" />
+    <Content Include="img\forma-big.png" />
+    <Content Include="img\forma-big_01.png" />
+    <Content Include="img\forma-big_02.png" />
+    <Content Include="img\forma-big_03.png" />
+    <Content Include="img\forma-small_01.png" />
+    <Content Include="img\forma-small_02.png" />
+    <Content Include="img\forma-small_03.png" />
+    <Content Include="img\header.png" />
+    <Content Include="img\hover.png" />
+    <Content Include="img\input_bg.png" />
+    <Content Include="img\inst.png" />
+    <Content Include="img\institute_certification_green.png" />
+    <Content Include="img\marker.png" />
+    <Content Include="img\menu-some_bg.png" />
+    <Content Include="img\menu_active_bg.png" />
+    <Content Include="img\next.png" />
+    <Content Include="img\ria.png" />
+    <Content Include="img\separator.png" />
+    <Content Include="img\serving.png" />
+    <Content Include="img\submit1.png" />
+    <Content Include="img\support.gif" />
+    <Content Include="img\video.png" />
+    <Content Include="img\water-fire-experts.png" />
+    <Content Include="Index.aspx" />
+    <Content Include="Index.html" />
+    <Content Include="LandingPage.aspx" />
+    <Content Include="LatestArticlesControl.ascx" />
+    <Content Include="NewsFlashControl.ascx" />
+    <Content Include="photo\1.jpg" />
+    <Content Include="photo\commercial_img.jpg" />
+    <Content Include="photo\photo_article_1.jpg" />
+    <Content Include="sitemap.xml" />
+    <Content Include="SiteMapPage.aspx" />
+    <Content Include="SiteMapXml.aspx" />
+    <Content Include="slideshow.js" />
+    <Content Include="style.css" />
+    <Content Include="ThankYou.aspx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>3093</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/Dalworth.Server.Web.Restoration</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

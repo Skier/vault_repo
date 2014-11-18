@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Document;
+			import truetract.domain.DocumentReference;
+        	[Embed(source="/assets/page_go.png")]
+        	[Bindable]
+        	private var imgDocOpen:Class;
+        	
+			private function openDocClickHandler():void 
+			{
+				var doc:Document = DocumentReference(data).ReferencedDoc;
+				
+				if (doc != null) 
+				{
+					DocumentDetailView(parentDocument).openDocument(doc);
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{DocumentReference(data).ReferencedDoc == null ? null : imgDocOpen}" 
+		toolTip="Open Document" 
+        click="openDocClickHandler()"/>
+</mx:HBox>

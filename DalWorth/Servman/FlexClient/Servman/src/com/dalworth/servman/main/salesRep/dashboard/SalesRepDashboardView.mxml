@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:leads="com.dalworth.servman.dashboard.leads.*" xmlns:controls="com.affilia.controls.*" xmlns:daily="com.dalworth.servman.dashboard.leads.daily.*" xmlns:projectTypes="com.dalworth.servman.dashboard.leads.projectTypes.*"
+	creationComplete="onCreate()" xmlns:dashboard="com.dalworth.servman.main.owner.dashboard.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.UIComponent;
+			import com.dalworth.servman.service.registry.LeadTypeRegistry;
+			import com.dalworth.servman.domain.Lead;
+			import com.dalworth.servman.service.LeadTypeService;
+			import com.dalworth.servman.domain.LeadType;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.dalworth.servman.domain.SalesRep;
+			
+			[Bindable]
+			private var model:SalesRepDashboardModel;
+			private var controller:OwnerDashboardController;
+			
+			public function init():void 
+			{
+				if (controller != null)
+					controller.initModel();
+				
+				reset();
+			}
+			
+			private function onCreate():void 
+			{
+				model = OwnerDashboardModel.getInstance();
+				controller = new OwnerDashboardController(this as UIComponent);
+				controller.initModel();
+				viewContent.setContent(null);
+			}
+			
+			private function onSalesRepChange(e:Event):void 
+			{
+				selectContent(lstSalesReps.selectedItem as SalesRep);
+			}
+			
+			private function onSalesRepBusinessPartnerChange(e:Event):void 
+			{
+				if (dgSalesRepsBusinessPartners.selectedItem != null)
+					selectContent(dgSalesRepsBusinessPartners.selectedItem as BusinessPartner);
+				else
+					selectContent(lstSalesReps.selectedItem as SalesRep);				
+			}
+			
+			private function onBusinessPartnerChange(e:Event):void 
+			{
+				selectContent(dgBusinessPartners.selectedItem as BusinessPartner);
+			}
+			
+			private function selectContent(object:Object):void 
+			{
+				if (viewContent != null)
+					viewContent.setContent(object);
+			}
+			
+			private function reset():void 
+			{
+				if (lstSalesReps != null)
+					lstSalesReps.selectedIndex = -1
+
+				if (dgSalesRepsBusinessPartners != null)
+					dgSalesRepsBusinessPartners.selectedIndex = -1
+
+				if (dgBusinessPartners != null)
+					dgBusinessPartners.selectedIndex = -1;
+
+				selectContent(null);
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Dashboard > All";
+			}
+			
+			
+		]]>
+	</mx:Script>
+
+	<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+		<mx:VBox width="300" height="100%">
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:LinkButton label="All leads" click="reset()"/>
+			</mx:HBox>
+	
+			<mx:TabNavigator id="tnUsers" width="100%" height="100%" fontSize="12"
+				historyManagementEnabled="false" creationPolicy="all"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4">
+				<mx:VBox width="100%" height="100%" label="Sales Reps" horizontalAlign="right">
+					<mx:VBox width="100%" height="100%" horizontalAlign="right">
+						<mx:List id="lstSalesReps" width="100%" height="100%" dataProvider="{model.salesReps}"
+							 itemRenderer="com.dalworth.servman.main.owner.dashboard.SalesRepIR"
+							 change="onSalesRepChange(event)"/>
+						<mx:VBox width="100%" height="150"
+							backgroundColor="#FFFFCC" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+							<mx:Label text="His Business Partners:" fontSize="12" fontWeight="bold" width="100%"/>
+							
+							<mx:DataGrid id="dgSalesRepsBusinessPartners" width="100%" height="100%"
+								dataProvider="{SalesRep(lstSalesReps.selectedItem).BusinessPartners}"
+								change="onSalesRepBusinessPartnerChange(event)">
+								<mx:columns>
+									<mx:DataGridColumn headerText="Name" dataField="ShowAs"/>
+								</mx:columns>
+							</mx:DataGrid>
+						</mx:VBox>
+					</mx:VBox>
+				</mx:VBox>
+				
+				<mx:VBox width="100%" height="100%" label="Business Partners" horizontalAlign="right">
+					<mx:DataGrid id="dgBusinessPartners" width="100%" height="100%" dataProvider="{model.businessPartners}"
+						change="onBusinessPartnerChange(event)">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Name" dataField="ShowAs"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:TabNavigator>
+		</mx:VBox>
+		
+		<dashboard:DashboardContentView id="viewContent" width="100%" height="100%"/>
+	</mx:HDividedBox>
+</mx:VBox>

@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D499A154-EE50-4C41-845B-F402198C0516}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.Servman.Domain</RootNamespace>
+    <AssemblyName>Dalworth.Server.Servman.Domain</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{FA543470-1332-48A2-A600-0BEE5BC1CF86}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ad_src.cs" />
+    <Compile Include="area.cs" />
+    <Compile Include="city_tax.cs" />
+    <Compile Include="codegen\ad_src.Generator.cs" />
+    <Compile Include="codegen\area.Generator.cs" />
+    <Compile Include="codegen\city_tax.Generator.cs" />
+    <Compile Include="codegen\company.Generator.cs" />
+    <Compile Include="codegen\contmast.Generator.cs" />
+    <Compile Include="codegen\custmast.Generator.cs" />
+    <Compile Include="codegen\CustomerCounter.Generator.cs" />
+    <Compile Include="codegen\ddeflood.Generator.cs" />
+    <Compile Include="codegen\dept.Generator.cs" />
+    <Compile Include="codegen\df_dt.Generator.cs" />
+    <Compile Include="codegen\disp_que.Generator.cs" />
+    <Compile Include="codegen\Export.Codegen.cs" />
+    <Compile Include="codegen\hdeflood.Generator.cs" />
+    <Compile Include="codegen\h_order.Generator.cs" />
+    <Compile Include="codegen\Import.Codegen.cs" />
+    <Compile Include="codegen\mapsco.Generator.cs" />
+    <Compile Include="codegen\m_alt_ad.Generator.cs" />
+    <Compile Include="codegen\pages.Generator.cs" />
+    <Compile Include="codegen\page_svc.Generator.cs" />
+    <Compile Include="codegen\rights.Generator.cs" />
+    <Compile Include="codegen\techmast.Generator.cs" />
+    <Compile Include="codegen\techschd.Generator.cs" />
+    <Compile Include="codegen\TicketCounter.Generator.cs" />
+    <Compile Include="codegen\timeslot.Generator.cs" />
+    <Compile Include="codegen\truck.Generator.cs" />
+    <Compile Include="codegen\trucknum.Generator.cs" />
+    <Compile Include="codegen\zip_data.Generator.cs" />
+    <Compile Include="company.cs" />
+    <Compile Include="contmast.cs" />
+    <Compile Include="custmast.cs" />
+    <Compile Include="CustomerCounter.cs" />
+    <Compile Include="ddeflood.cs" />
+    <Compile Include="dept.cs" />
+    <Compile Include="df_dt.cs" />
+    <Compile Include="disp_que.cs" />
+    <Compile Include="hdeflood.cs" />
+    <Compile Include="h_order.cs" />
+    <Compile Include="intermediate\Address.cs" />
+    <Compile Include="intermediate\Customer.cs" />
+    <Compile Include="intermediate\Deflood.cs" />
+    <Compile Include="intermediate\Order.cs" />
+    <Compile Include="intermediate\OrderExport.cs" />
+    <Compile Include="mapsco.cs" />
+    <Compile Include="m_alt_ad.cs" />
+    <Compile Include="pages.cs" />
+    <Compile Include="page_svc.cs" />
+    <Compile Include="rights.cs" />
+    <Compile Include="techmast.cs" />
+    <Compile Include="techschd.cs" />
+    <Compile Include="TicketCounter.cs" />
+    <Compile Include="timeslot.cs" />
+    <Compile Include="truck.cs" />
+    <Compile Include="trucknum.cs" />
+    <Compile Include="zip_data.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+</Project>

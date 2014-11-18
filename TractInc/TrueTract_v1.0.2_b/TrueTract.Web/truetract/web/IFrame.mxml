@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%"
+    resize="callLater(moveIFrame)"
+    move="callLater(moveIFrame)">
+
+    <mx:Script>
+    	import flash.net.navigateToURL;
+
+        private var _source: String;
+
+        private function moveIFrame():void {
+            var pt:Point = new Point(0, 0);
+            pt = this.localToGlobal(pt);
+            ExternalInterface.call("moveIFrame", pt.x, pt.y, this.width, this.height);
+        }
+
+        public function set source(url: String):void {
+            if (_source != url) {
+                _source = url;
+	            ExternalInterface.call("loadIFrame", url);
+            }
+        }
+
+        public function get source():String {
+            return _source;
+        }
+
+        public override function set visible(visible: Boolean):void {
+            super.visible = visible;
+            
+            if (visible){
+    	        ExternalInterface.call("showIFrame");
+            } else {
+	            ExternalInterface.call("hideIFrame");
+            }
+        }
+
+    </mx:Script>
+</mx:Canvas>

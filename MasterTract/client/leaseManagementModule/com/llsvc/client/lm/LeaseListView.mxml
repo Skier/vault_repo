@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.controls.Alert;
+        	
+        	import com.llsvc.domain.Lease;
+        	
+        	[Bindable]
+        	public var controller:LeaseManagerController;
+        	
+            private function onStateChange(event:Event):void {
+//                this.cbCounty.dataProvider = this.cbState.selectedItem.counties;
+            }
+            
+            private function getLessorList(item:Lease, column:DataGridColumn):String {
+                return "lessor: to do";
+            }
+            
+            private function getLesseeList(item:Lease, column:DataGridColumn):String {
+                return "lessee: to do";
+            }
+            
+            private function getStateName(item:Lease, column:DataGridColumn):String {
+//                return item.document.state.name;
+				return "";
+            }
+            
+            private function getCountyName(item:Lease, column:DataGridColumn):String {
+//                return item.document.county.name;
+				return "";
+            }
+            
+            private function getDocNo(item:Lease, column:DataGridColumn):String {
+//                return item.document.docNo;
+				return "";
+            }
+            
+            private function onGridDoubleClick():void{
+                var lease:Lease = this.dgLeaseList.selectedItem as Lease;
+                if ( null != lease ){
+                    controller.doEditLease(lease);
+                }
+            } 
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox height="100%" width="100%">
+        <mx:Button label="Add Lease" click="{controller.onAddLPRClick()}"/>
+        <mx:DataGrid id="dgLeaseList" 
+            left="10" 
+            right="10" 
+            top="0" 
+            bottom="10" 
+            width="100%" 
+            height="100%" 
+            doubleClick="onGridDoubleClick()" 
+            doubleClickEnabled="true"
+            >
+            <mx:columns>
+                <mx:DataGridColumn id="dgcLessor" headerText="Lessor" labelFunction="getLessorList" width="130" resizable="false"/>
+                <mx:DataGridColumn id="dgcLessee" headerText="Lessee" labelFunction="getLesseeList" width="130" resizable="false"/>
+                <mx:DataGridColumn id="columnState" headerText="State" labelFunction="getStateName" width="110" resizable="false"/>
+                <mx:DataGridColumn id="columnCounty" headerText="County" labelFunction="getCountyName" width="158" resizable="false"/>
+                <mx:DataGridColumn id="columnDocNumber" headerText="Document No" labelFunction="getDocNo" width="88" resizable="false"/>
+                <mx:DataGridColumn id="columnVolume" headerText="Volume" dataField="volume" width="68" resizable="false"/>
+                <mx:DataGridColumn id="columnPage" headerText="Page" dataField="page" width="68" resizable="false"/>
+                <mx:DataGridColumn id="columnDate" headerText="Lease Date" dataField="leaseDate"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:VBox>
+    
+</mx:Canvas>

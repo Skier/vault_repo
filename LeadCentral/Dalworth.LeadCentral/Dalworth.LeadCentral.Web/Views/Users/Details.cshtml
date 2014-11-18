@@ -1,0 +1,112 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Domain.User
+
+@{
+    ViewBag.Title = "Details";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+@*
+        @Html.ActionLink("Users List", "Index", new{controller = "Users"}, new{@class="button"})
+*@
+        @if (!currentUser.IsAccounter() && Model.IsActive)
+        {
+        <span>@Html.ActionLink("Edit", "Edit", new { controller = "Users", id = Model.Id }, new { @class = "button primary" })</span>
+        }
+      </div>  
+      <h1>User [@Model.ScreenName]
+        @if (!Model.IsActive)
+        {<i><span style="color:#C00;">Inactive</span></i>}</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">First Name</td>
+              <td><b>@Model.FirstName</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Last Name</td>
+              <td><b>@Model.LastName</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Status</td>
+              <td>
+                @if (!Model.IsActive)
+                {
+                    <b><span style="color:#C00;">Inactive</span></b>
+                    if (!currentUser.IsAccounter() && (Model.RelatedBusinessPartner == null || !Model.RelatedBusinessPartner.IsRemoved))
+                    {
+                        <span>@Html.ActionLink("Activate", "Activate", new { controller = "Users", id = Model.Id }, new { @class = "button" })</span>
+                    }
+                }
+                else
+                {
+                    <b><span style="color:#0C0;">Active</span></b>
+                    if (!currentUser.IsAccounter())
+                    {
+                        <span>@Html.ActionLink("Deactivate", "Deactivate", new { controller = "Users", id = Model.Id }, new { @class = "button" })</span>
+                    }
+                }</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone</td>
+              <td><b>@Model.Phone</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Email</td>
+              <td><b>@Model.Email</b>
+                @if (!currentUser.IsAccounter())
+                {
+                    <span>@Html.ActionLink("Send invitation", "Reinvite", new { controller = "Users", id = Model.Id }, new { @class = "button" })</span>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">User Role</td>
+              <td><b>@Model.QbRoleName</b></td>
+            </tr>
+            @if (Model.BusinessPartnerId != null)
+            {
+            <tr>
+              <td style="text-align:right;">Business partner</td>
+              <td>@Html.ActionLink(Model.PartnerName, "Details", new { controller = "Partners", id = Model.BusinessPartnerId.Value })</td>
+            </tr>
+            }
+          </table>
+        </div>
+    </div>
+
+@if (Model.Activities != null && Model.Activities.Count > 0)
+{
+    <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Activity Log</div>
+    <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+@{
+    var grid = new WebGrid(source: Model.Activities, rowsPerPage: 30);
+    var columns = new List<WebGridColumn>
+                      {
+                          grid.Column("DateCreated", "Created", canSort : false),
+                          grid.Column("ActivityNotes", "Notes", canSort : false),
+                      };
+}
+    @grid.Pager(WebGridPagerModes.All, "First", "Prev", "Next", "Last", 30)
+
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 30,
+            tableStyle: "list"
+    )
+
+    </div>
+}
+  </div>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:local="*"
+    width="100%" height="100%"
+    label="{Controller.Model.ConnectionInfo.Host + ' - ' + Controller.Model.ConnectionInfo.User}"
+    creationComplete="Controller.OnCreationComplete()">
+    
+    <mx:Script>
+        <![CDATA[
+        	import UI.ConnectionManager.ConnectionManagerController;
+            
+            public function set ParentController(parent:ConnectionManagerController):void {
+            	Controller =  new FtpConnectionController(FtpConnectionView(this), parent);
+            }
+            
+            [Bindable]
+            public var Controller:FtpConnectionController;
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="100%">
+        <mx:HBox width="100%">
+            <mx:LinkButton label="Current dir: {Controller.Model.ConnectionInfo.CurrentDir}"/>
+            <mx:Spacer width="100%"/>
+            <mx:Button label="Refresh" id="btnRefresh" click="Controller.OnRefresh();"/>
+            <mx:Button label="Close Connection" id="btnClose" click="Controller.CloseConnection();"/>
+        </mx:HBox>
+        <mx:VBox id="content" width="100%" height="100%">
+	        <mx:HDividedBox width="100%" height="100%" horizontalGap="5" liveDragging="true">
+	            <mx:Tree 
+	                id="dirTree" labelField="Name"
+	                width="30%" height="100%" showRoot="true"
+	                dataProvider="{Controller.Model.Root}" 
+	                change="Controller.OnDirTreeChange(event)"
+	                dataDescriptor="{new DirTreeDataDescriptor()}"
+	                dropEnabled="false"
+	                dragEnter="Controller.OnTreeDragEnter(event)"
+	                dragOver="Controller.OnTreeDragOver(event)"
+	                dragDrop="Controller.OnTreeDragDrop(event)"
+	                />
+	            <mx:DataGrid width="70%" height="100%" rowHeight="22"
+	                id="dgCurrentDir" sortableColumns="false"
+	                variableRowHeight="false" 
+	                allowMultipleSelection="true" 
+	                dragEnabled="true"
+	                dataProvider="{Controller.Model.CurrentDirectory.Files}"
+	                doubleClickEnabled="true" doubleClick="Controller.OnCurrentDirDoubleClick(event)"
+	                keyUp="Controller.OnCurrentDirKeyUp(event)"
+	                itemEditEnd="Controller.OnEditEnd(event);"
+	                mouseOver="Controller.CreateContextMenu()"
+	                focusOut="Controller.ClearContextMenu()"
+	                dropEnabled="false"
+	                dragEnter="Controller.OnGridDragEnter(event)"
+	                dragDrop="Controller.OnGridDragDrop(event)"
+	                >
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText="Filename" dataField="FileName"
+	                        itemEditor="{new mx.core.ClassFactory(UI.ConnectionManager.FtpConnection.FilenameEditor)}" 
+	                        editorDataField="FileName"
+	                        itemRenderer="{new mx.core.ClassFactory(UI.ConnectionManager.FtpConnection.FilenameRenderer)}"/>
+	                    <mx:DataGridColumn id="sizeColumn" dataField="Size" headerText="Size" 
+	                        width="80" labelFunction="Controller.FormatSize" textAlign="right" 
+	                        editable="false"/>
+	                    <mx:DataGridColumn dataField="FileDate" headerText="Date" 
+	                        width="150" editable="false"/>
+	                </mx:columns>
+	            </mx:DataGrid>
+	        </mx:HDividedBox>
+	
+	        <mx:ControlBar width="100%">
+	            <mx:Spacer width="100%"/>
+	            <mx:Button label="Download" id="btnDownload" 
+	                click="Controller.OnDownload();" enabled="{(dgCurrentDir.selectedItems.length>0)}"/>
+	            <mx:Button label="Upload" id="btnUpload" 
+	                click="Controller.OnUpload();"/>
+	            <mx:Button label="Rename" id="btnRename" 
+	                click="Controller.OnRename(event)" enabled="{(dgCurrentDir.selectedItems.length>0)}"/>
+	            <mx:Button label="Move" id="btnMove" 
+	                click="Controller.OnMoveClick(event)" enabled="{(dgCurrentDir.selectedItems.length>0)}"/>
+	            <mx:Button label="Delete" id="btnDelete" 
+	                click="Controller.OnDelete(event);" enabled="{(dgCurrentDir.selectedItems.length>0)}"/>
+	            <mx:Button label="Create Directory" id="btnMakeDir" 
+	                click="Controller.OnCreateDirectoryClick()"/>
+	        </mx:ControlBar>
+        </mx:VBox>
+    </mx:VBox>
+
+</mx:Canvas>

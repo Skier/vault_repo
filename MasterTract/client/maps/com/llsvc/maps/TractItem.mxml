@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GeometryGroup xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:geometry="com.degrafa.geometry.*" 
+    xmlns="http://www.degrafa.com/2007"
+    buttonMode="true" 
+    useHandCursor="true" 
+    mouseOver="onMouseOver(event)" 
+    mouseOut="onMouseOut(event)"
+    >
+    <mx:Script>
+        <![CDATA[
+        	import mx.controls.Alert;
+            
+            private var glowfilter:GlowFilter = new GlowFilter(0x8EB3E7,.5,6,6,2,1,true,false);
+            
+            private function onMouseOver(event:MouseEvent):void{
+                if(!_isSelected){
+                    super.geometry[0].fill=fillcolor1;
+                }
+                
+                var tempArray:Array=[];
+                glowfilter.color = 0x00ff00;
+                tempArray.push(glowfilter);
+                filters=tempArray;
+                                
+            }
+            
+            private function onMouseOut(event:MouseEvent):void{
+                if(!isSelected){
+                    super.geometry[0].fill=fillcolor;
+                }
+                var tempArray:Array=[];
+                filters=tempArray;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.formatters.NumberFormatter;
+            import mx.events.DragEvent;
+            
+            [Bindable]
+            public var leaseName:String="";
+            
+            [Bindable]
+            private var _tooltip:String;
+            public function get tooltip():String{
+                return _tooltip;
+            }
+            public function set tooltip(value:String):void {
+            	_tooltip = value;
+            }
+            
+			[Bindable]
+            public var itemFillColor:uint = 0xcccc00;
+            
+			private var _isSelected:Boolean;
+            public function get isSelected():Boolean{
+                return _isSelected;
+            } 
+            public function set isSelected(value:Boolean):void{
+                _isSelected=value;
+                
+                if(_isSelected){
+                    super.geometry[0].fill=selectedColor;
+                }
+                else{
+                    super.geometry[0].fill=fillcolor;
+                }
+            }
+            
+            override public function set geometry(value:Array):void{
+                super.geometry = value;
+//                super.geometry[0].fill=fillcolor;
+            }
+                    
+        ]]>
+    </mx:Script>    
+    <fills>
+        <SolidFill color="{itemFillColor}" id="fillcolor"/>
+        <SolidFill color="#FFFFFF" alpha=".8" id="fillcolor1"/>
+        <SolidFill color="#FFFFFF" alpha="1" id="selectedColor" />
+    </fills>
+    <strokes>
+        <SolidStroke color="Yellow" weight="1" alpha="1" id="selectedlineStroke"/>
+        <SolidStroke color="Blue" alpha="1" id="lineStroke"/>
+    </strokes>
+        
+</GeometryGroup>

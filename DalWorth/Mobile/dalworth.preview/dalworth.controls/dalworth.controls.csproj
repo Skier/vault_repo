@@ -1,0 +1,138 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9BB52A43-1104-4FFC-B56A-1785D42D53B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>dalworth.controls</RootNamespace>
+    <AssemblyName>dalworth.controls</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>dalworth.controls</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WinCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoDropDown.cs" />
+    <Compile Include="GUI.cs" />
+    <Compile Include="Host.cs" />
+    <Compile Include="ImageButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Joystick.cs" />
+    <Compile Include="MaskedEdit\CurrencyEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MaskedEdit\MaskedEdit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menu\IMenuButton.cs" />
+    <Compile Include="Menu\MenuButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="POINT.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RECT.cs" />
+    <Compile Include="Signature.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sound.cs" />
+    <Compile Include="Table\ComboboxTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\CurrencyTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\DefaultTableCellRenderer.cs" />
+    <Compile Include="Table\DefaultTableHeaderRenderer.cs" />
+    <Compile Include="Table\DragAndDrop.cs" />
+    <Compile Include="Table\DrawControl.cs" />
+    <Compile Include="Table\ImageTableCellRenderer.cs" />
+    <Compile Include="Table\ITableCellEditor.cs" />
+    <Compile Include="Table\ITableCellRenderer.cs" />
+    <Compile Include="Table\ITableModel.cs" />
+    <Compile Include="Table\ListTableModel.cs" />
+    <Compile Include="Table\MaskedTableCellEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\Table.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Table\TableCell.cs" />
+    <Compile Include="Table\TableColumn.cs" />
+    <Compile Include="TextBoxReadOnly.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinAPI.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dalworth.domain\dalworth.domain.csproj">
+      <Project>{CB131735-A748-4F80-B130-70BFE968B727}</Project>
+      <Name>dalworth.domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:controls="com.affilia.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.service.registry.UserRegistry;
+			import com.dalworth.servman.domain.User;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.servman.service.UserService;
+			import mx.controls.Alert;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.domain.LeadChangeHistory;
+			import com.dalworth.servman.domain.LeadAction;
+			import com.dalworth.servman.service.LeadActionService;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.SortField;
+			import mx.collections.Sort;
+			import com.dalworth.servman.service.LeadService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.Lead;
+			import mx.rpc.Responder;
+			
+			private static const COLUMN_ENTRY:String = "columnEntry";
+			private static const COLUMN_COMMENT:String = "columnComment";
+			private static const COLUMN_USER:String = "columnUser";
+			private static const COLUMN_DATE:String = "columnDate";
+
+			[Bindable]
+			[Inspectable(category="General", enumeration="min,hrs,days", defaultValue="minutes")]
+			public var ageUnits:String;
+			
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead { return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+				init();
+			}
+			
+			private function init():void 
+			{
+				if (txtComment)
+					txtComment.text = "";
+				getLeadChangeHistory();
+				getActionList();
+			}
+			
+			private function startRemoting(reason:String = null):void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function getLeadChangeHistory():void 
+			{
+				if (leadChangeHistory == null)
+				{
+					leadChangeHistory = new ArrayCollection();
+					
+					var sort:Sort = new Sort();
+					sort.fields = [new SortField("changed", false, true, true)];
+					leadChangeHistory.sort = sort;
+				}
+				
+				leadChangeHistory.removeAll();
+				
+				if (lead != null && lead.Id != 0) 
+				{
+					startRemoting();
+					LeadService.getInstance().getChangeHistory(lead.Id).addResponder(
+						new mx.rpc.Responder(
+							function(event:ResultEvent):void 
+							{
+								stopRemoting();
+				
+								var result:Array = event.result as Array;
+								leadChangeHistory.source = result;
+							},
+							function(event:FaultEvent):void 
+							{
+								stopRemoting();
+							}))
+				}
+			}
+
+			private function getActionList():void 
+			{
+				if (actionList == null)
+					actionList = new ArrayCollection();
+					
+				actionList.removeAll();
+				
+				if (lead != null && lead.LeadStatusId != 0) 
+				{
+					startRemoting();
+					LeadActionService.getInstance().getByLeadStatusId(lead.LeadStatusId).addResponder(
+						new mx.rpc.Responder(
+							function(event:ResultEvent):void 
+							{
+								stopRemoting();
+				
+								var result:Array = event.result as Array;
+								actionList.source = result;
+							},
+							function(event:FaultEvent):void 
+							{
+								stopRemoting();
+							}))
+				}
+			}
+			
+			private var _leadChangeHistory:ArrayCollection;
+			[Bindable]
+			public function get leadChangeHistory():ArrayCollection { return _leadChangeHistory; }
+			public function set leadChangeHistory(value:ArrayCollection):void 
+			{
+				_leadChangeHistory = value;
+				refreshUI();
+			}
+			
+			[Bindable] private var ageStr:String;
+			[Bindable] private var ageUnitsStr:String;
+			
+			private function refreshUI():void 
+			{
+			}
+			
+			[Bindable]
+			private var actionList:ArrayCollection;
+			
+			private function onSubmitAction():void 
+			{
+				var responder:mx.rpc.Responder = new mx.rpc.Responder(
+					function(event:ResultEvent):void 
+					{
+						stopRemoting();
+						init();
+					},
+					function(event:FaultEvent):void 
+					{
+						stopRemoting();
+					}); 
+
+				var action:LeadAction = comboAction.selectedItem as LeadAction;
+				var historyItems:Array = new Array();
+				var historyItem:LeadChangeHistory = new LeadChangeHistory();
+					historyItem.Action = action.Message;
+					historyItem.DateChanged = new Date();
+					historyItem.Description = txtComment.text;
+					historyItem.LeadId = lead.Id;
+					historyItem.UserId = MainAppModel.getInstance().currentUser.Id;
+				historyItems.push(historyItem);
+				
+				if (action.ToLeadStatusId > 0)
+				{
+					historyItem = new LeadChangeHistory();
+					historyItem.Action = "Change status";
+					historyItem.DateChanged = new Date();
+					historyItem.Description = "to " + LeadStatus.getStatusName(action.ToLeadStatusId);
+					historyItem.LeadId = lead.Id;
+					historyItem.UserId = MainAppModel.getInstance().currentUser.Id;
+					historyItem.LeadStatusId = action.ToLeadStatusId;
+
+					historyItems.push(historyItem);
+
+					lead.LeadStatusId = action.ToLeadStatusId;	
+				}
+				
+				startRemoting();
+				LeadService.getInstance().saveLeadChangeHistory(lead, historyItems).addResponder(
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							stopRemoting();
+							init();
+						},
+						function(event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}))
+			}
+			
+			private function getUserName(id:int):String 
+			{
+				var user:User = UserRegistry.getInstance().getLocal(id) as User;
+				if (user)
+					return user.Name;
+				else 
+					return "";
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is LeadChangeHistory) 
+				{
+					var historyItem:LeadChangeHistory = item as LeadChangeHistory;
+					
+					switch (column.dataField) 
+					{
+						case COLUMN_ENTRY :
+							return historyItem.Action;
+						
+						case COLUMN_COMMENT :
+							return historyItem.Description;
+						
+						case COLUMN_USER :
+							return getUserName(historyItem.UserId);
+						
+						case COLUMN_DATE :
+							return DateUtil.getDateTimeStr(historyItem.DateChanged);
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="105">
+		<mx:VBox width="300" height="100%" verticalGap="2">
+			<controls:ComboBox id="comboAction" width="100%" labelField="Message" dataProvider="{actionList}"/>
+			<mx:TextArea id="txtComment" width="100%" height="100%"/>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button label="Submit action" click="onSubmitAction()"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:DataGrid width="100%" height="100%" dataProvider="{leadChangeHistory}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Entry" width="100" minWidth="100" labelFunction="getLabel" dataField="{COLUMN_ENTRY}" itemRenderer="mx.controls.Label"/>
+				<mx:DataGridColumn headerText="Comment" labelFunction="getLabel" dataField="{COLUMN_COMMENT}" itemRenderer="mx.controls.Label"/>
+				<mx:DataGridColumn headerText="User" width="100" minWidth="100" labelFunction="getLabel" dataField="{COLUMN_USER}" itemRenderer="mx.controls.Label"/>
+				<mx:DataGridColumn headerText="Date" width="80" minWidth="80" labelFunction="getLabel" dataField="{COLUMN_DATE}" itemRenderer="mx.controls.Label"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:HBox>
+</mx:VBox>

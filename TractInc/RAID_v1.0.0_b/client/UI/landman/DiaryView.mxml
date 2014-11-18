@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:cal="calendar.*"
+    xmlns:notes="common.notes.*"
+    width="100%" height="100%"
+    verticalAlign="top" horizontalAlign="center"
+    enabled="false" xmlns:common="common.*">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.formatters.DateFormatter;
+
+            [Bindable]
+            public var Controller: DiaryController = new DiaryController(DiaryView(this));
+
+            private function getMonthName(date:Date):String {
+            	var formatter:DateFormatter = new DateFormatter();
+            	formatter.formatString = "MMMM";
+            	return formatter.format(date);
+            }
+            
+            [Bindable]
+            private var _isLastMonth:Boolean = true;
+            
+            [Bindable]
+	        public function get isLastMonth():Boolean {
+    	    	return _isLastMonth;
+        	}
+        
+	        public function set isLastMonth(value:Boolean):void {
+    	    	_isLastMonth = value;
+        	}
+        ]]>
+    </mx:Script>
+    
+    <mx:Component id="afeRenderer">
+        <mx:Label text="{data.RelatedAfe.AFE + ' / ' + data.RelatedSubAfe.SubAFE}" />
+    </mx:Component>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="top" horizontalAlign="center">
+	    <mx:VBox width="250" verticalScrollPolicy="off" horizontalScrollPolicy="off" horizontalAlign="center" height="100%">
+    		<mx:Panel width="100%" height="150" layout="absolute" verticalAlign="top" horizontalAlign="left" title="Month">
+	    	    <mx:VBox width="100%" horizontalAlign="center">
+        		    <mx:VBox height="40" width="100%" horizontalAlign="center" verticalAlign="middle" styleName="calendarsContainer">
+            		    <mx:HBox>
+                		    <mx:Button label="&lt;&lt;" click="Controller.Previous();" />
+                    		<mx:Button label="{getMonthName(Controller.Model.billDate)}" click="Controller.goToDate(new Date());" />
+		                    <mx:Button label="&gt;&gt;" click="Controller.Next();" enabled="{!isLastMonth}" />
+    		            </mx:HBox>
+        		    </mx:VBox>
+            		<mx:Label styleName="headerLabel" text="{'Start Date: ' + Controller.formatDate(cal.startDate)}" />
+            		<mx:Label styleName="endDateLabelLabel" text="{'End Date: ' + Controller.formatDate(cal.endDate)}" />
+		        </mx:VBox>
+		    </mx:Panel>
+    	    <mx:Panel width="100%" height="100%" layout="absolute" verticalAlign="top" horizontalAlign="left" title="AFE / Project">
+        	    <mx:DataGrid id="afeGrid" width="100%" height="100%" showHeaders="false" dataProvider="{Controller.Model.currentAssignmentsFiltered}" dragEnabled="true">
+            	    <mx:columns>
+                	    <mx:DataGridColumn width="80" itemRenderer="{afeRenderer}" />
+	                </mx:columns>
+    	        </mx:DataGrid>
+        	</mx:Panel>
+	    </mx:VBox>
+    
+    	<common:ExtendedPanel
+    		id="calendarPanel"
+    		width="100%"
+    		height="100%"
+    		layout="absolute"
+    		verticalAlign="middle"
+    		horizontalAlign="center"
+    		title="Calendar">
+	    	<mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+        		<mx:VBox width="100%" horizontalAlign="center" height="100%">
+            		<cal:MonthPeriodGrid
+            			id="cal"
+            			width="100%"
+	            		height="100%"
+						eventDragEnter="Controller.onDragEnter(event);"
+						eventDragDrop="Controller.onDragDrop(event);"
+						eventDragOver="Controller.onDragOver(event);"
+						eventClick="Controller.onEventClick(event);"
+						/>
+    		    </mx:VBox>
+	    	</mx:VBox>
+	    </common:ExtendedPanel>
+	</mx:HBox>
+    
+	<mx:ControlBar horizontalAlign="center" borderThickness="0">
+		<mx:Button label="Submit" click="Controller.callSubmitView()" />
+	</mx:ControlBar>
+
+</mx:VBox>

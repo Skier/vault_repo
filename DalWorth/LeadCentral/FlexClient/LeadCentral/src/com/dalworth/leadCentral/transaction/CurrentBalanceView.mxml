@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.leadCentral.service.BaseService;
+			import mx.rpc.Responder;
+			
+            [Embed(source="/assets/icons16/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+			private var timer:Timer;
+			
+			[Bindable]
+			public static var balance:Number = 0;
+			
+			private function onInit():void 
+			{
+				timer = new Timer(600000);
+				timer.addEventListener(TimerEvent.TIMER, onTimerTick);
+			}
+			
+			private function onCreate():void
+			{
+				timer.start();
+				updateBalance();
+			}
+			
+			private function updateBalance():void 
+			{
+				BaseService.getInstance().getCurrentBalance(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							balance = event.result as Number;
+						}, 
+						function (event:FaultEvent):void 
+						{
+							balance = 0;
+						}));
+			}
+			
+			private function onTimerTick(event:TimerEvent):void 
+			{
+				updateBalance();
+			}
+			
+			private function onAdd():void 
+			{
+				AddFundsPopup.open(Application.application as DisplayObject);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+
+	<mx:HBox height="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		backgroundColor="#000066" backgroundAlpha="0.3"
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="3">
+		<mx:Label text="Balance:" fontSize="14" color="#FFFF99"/>
+		<mx:Label text="{cf.format(balance)}" fontSize="14" color="#FFFF99" fontWeight="bold"/>
+		<mx:Button icon="{imgPlus}" label="" click="onAdd()" height="20" width="20" cornerRadius="2"/>
+	</mx:HBox>
+</mx:Canvas>

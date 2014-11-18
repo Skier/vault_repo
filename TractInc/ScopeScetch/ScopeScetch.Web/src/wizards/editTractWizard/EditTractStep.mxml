@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractStep
+    xmlns="src.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="src.deedplotter.validators.*" 
+    xmlns:components="src.deedplotter.components.*" verticalGap="5">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.DateField;
+            import src.deedplotter.domain.Participant;
+            import src.deedplotter.domain.Document;
+            import src.deedplotter.domain.Tract;
+            import src.deedplotter.domain.dictionary.DictionaryRegistry;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] private var docum:Document;
+
+            private var _tract:Tract;
+            [Bindable] public function get tract():Tract { return _tract; }
+            public function set tract(value:Tract):void
+            {
+                _tract = value;
+                
+                if (value && value.ParentDocument)
+                {
+                    docum = _tract.ParentDocument;
+                    
+                    if (!docum.Buyer)
+                    {
+                        docum.Buyer = new Participant();
+                        docum.Buyer.DocID = value.ParentDocument.DocID;
+                    }
+                    
+                    if (!docum.Seller)
+                    {
+                        docum.Seller = new Participant();
+                        docum.Seller.IsSeler = true;
+                        docum.Seller.DocID = value.ParentDocument.DocID;
+                    }
+
+                    stateCmb.validateNow();
+
+                    var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == docum.State).county;
+                    countyCmb.dataProvider = countyList;
+                    countyCmb.selectedItem = countyList.(@CountyId == docum.County);
+                }
+            }
+
+            override public function validateForm():Boolean 
+            {
+                return super.validateForm();
+            }
+
+            public function applyTractChanges():void
+            {
+                tract.Description = refNameTxt.text;
+                tract.CalledAC = Number(calledTxt.text);
+                tract.UnitId = calledUomCmb.selectedItem.@UnitId;
+
+                if (tract.ParentDocument != null)
+                {
+                    tract.ParentDocument.State = stateCmb.selectedItem.@StateId;
+                    tract.ParentDocument.County = countyCmb.selectedItem.@CountyId;
+                    tract.ParentDocument.DocTypeId = documentTypeCmb.selectedItem.@DocTypeID;
+                    tract.ParentDocument.DocumentNo = documNoTxt.text;
+                    tract.ParentDocument.Volume = volumeTxt.text;
+                    tract.ParentDocument.Page = pageTxt.text;
+                    tract.ParentDocument.Buyer.AsNamed = buyerNameTxt.text;
+                    tract.ParentDocument.Seller.AsNamed = sellerNameTxt.text;
+                    tract.ParentDocument.DateFiled = 
+                        DateField.stringToDate(filledDate.actualText, "MM/DD/YYYY");
+                    tract.ParentDocument.DateSigned = 
+                        DateField.stringToDate(signedDate.actualText, "MM/DD/YYYY");
+                }                
+            }
+
+            override public function clean():void
+            {
+                refNameTxt.text = "";
+                calledTxt.text = "";
+                calledUomCmb.selectedIndex = 0;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{refNameTxt}" property="text" required="true"/>
+
+        <mx:NumberValidator source="{calledTxt}" property="text" required="true"/>
+
+        <mx:StringValidator source="{calledUomCmb}" property="selectedLabel" required="true"/>
+
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}" enabled="{docum != null}"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}" enabled="{docum != null}"/>
+
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" 
+            required="{volumeTxt.text.length == 0 &amp;&amp; pageTxt.text.length == 0}" 
+            enabled="{docum != null}"/>
+
+        <mx:DateValidator
+            source="{filledDate}" property="actualText" required="false" enabled="{docum != null}"/>
+
+        <mx:DateValidator
+            source="{signedDate}" property="actualText" required="false" enabled="{docum != null}"/>
+
+        <mx:StringValidator
+            source="{sellerNameTxt}" property="text" required="true" enabled="{docum != null}"/>
+
+        <mx:StringValidator
+            source="{buyerNameTxt}" property="text" required="true" enabled="{docum != null}"/>
+
+        <mx:StringValidator
+            source="{documentTypeCmb}" property="selectedLabel" required="true" 
+            enabled="{docum != null}"/>
+
+        <mx:StringValidator
+            source="{stateCmb}" property="selectedLabel" required="true" 
+            enabled="{docum != null}"/>
+
+        <mx:StringValidator
+            source="{countyCmb}" property="selectedLabel" required="true"
+            enabled="{docum != null}"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form 
+        paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+        width="100%" indicatorGap="3" labelWidth="90">
+
+        <mx:FormItem label="Ref.Name :" width="100%">
+    		<mx:TextInput id="refNameTxt" text="{tract.Description}" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Called :" width="100%">
+        	<mx:HBox horizontalGap="2" width="100%">
+        		<mx:TextInput id="calledTxt" 
+        			text="{tract.CalledAC.toString()}" width="100%"/>
+
+        		<mx:ComboBox id="calledUomCmb" 
+        		    dataProvider="{dictionary.units.Unit}" labelField="@Name"
+        		    selectedItem="{dictionary.units.Unit.(@UnitId == tract.UnitId)}"/>
+        	</mx:HBox>
+
+        </mx:FormItem>
+
+    </mx:Form>
+
+	<mx:VBox visible="{null != docum}" includeInLayout="{null != docum}" verticalGap="3" >
+
+        <mx:HRule width="100%" strokeColor="#000000"/>
+
+        <mx:HBox width="100%">
+            <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="3" indicatorGap="3" labelWidth="90">
+            
+                <mx:FormItem label="State :">
+                    <mx:ComboBox id="stateCmb"
+                        labelField="@Name" width="120"
+                        dataProvider="{dictionary.statesAndCounties.state}"
+                        selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State)}"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Doc Type :">
+                    <components:ExtendedComboBox id="documentTypeCmb"
+                        labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+                        dataProvider="{dictionary.documentTypes.DocumentType}" 
+                        selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId)}"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Vol :">
+                    <mx:TextInput id="volumeTxt" width="120" text="{docum.Volume}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Date Signed :">
+                    <components:MaskedInput id="signedDate"
+                        enabled="{null != document}" width="120"
+                        inputMask="##/##/####" 
+                        text="{DateField.dateToString(docum.DateSigned, 'MMDDYYYY')}"/>
+                </mx:FormItem>
+                
+            </mx:Form>
+    
+            <mx:Spacer width="100%" />
+    
+            <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" indicatorGap="3">
+    
+                <mx:FormItem label="County :">
+                    <mx:ComboBox id="countyCmb"
+                        labelField="@Name" width="120"
+                        dataProvider="{dictionary.statesAndCounties.state.(@StateId == stateCmb.selectedItem.@StateId).county}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Doc No :">
+                    <mx:TextInput id="documNoTxt" width="120" text="{docum.DocumentNo}" />
+                </mx:FormItem>
+    
+                <mx:FormItem label="Page :">
+                    <mx:TextInput id="pageTxt" width="120" text="{docum.Page}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Date Filled :">
+                    <components:MaskedInput id="filledDate"
+                        enabled="{null != document}" width="120"
+                        inputMask="##/##/####" 
+                        text="{DateField.dateToString(docum.DateFiled, 'MMDDYYYY')}"/>
+                </mx:FormItem>
+    
+            </mx:Form>
+        </mx:HBox>
+    
+        <mx:Form 
+            paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+            width="100%" indicatorGap="3" labelWidth="90">
+    
+            <mx:FormItem label="Seller :" width="424">
+                <mx:TextInput id="sellerNameTxt" width="100%" text="{docum.Seller.AsNamed}" />
+            </mx:FormItem>
+    
+            <mx:FormItem label="Buyer :" width="100%" height="23">
+                <mx:TextInput id="buyerNameTxt" width="100%" text="{docum.Buyer.AsNamed}"/>
+            </mx:FormItem>
+    
+        </mx:Form>
+
+	</mx:VBox>
+
+</AbstractStep>

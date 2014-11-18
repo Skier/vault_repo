@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:Document="UI.Document.*"
+	width="100%"
+	autoLayout="true"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var Controller:DocumentController;
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="keyFieldsPanel" width="100%" backgroundColor="#eeeeee"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		borderColor="#dddddd" borderStyle="solid" cornerRadius="5"
+		visible="{Controller.Model.CurrentDocument.DocID != 0}"
+		includeInLayout="{Controller.Model.CurrentDocument.DocID != 0}"
+		autoLayout="true"
+		>
+		
+		<mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.DocID > 0}"
+				includeInLayout="{Controller.Model.CurrentDocument.DocID > 0}"
+				>
+				<mx:Label text="Document ID:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.DocID}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocumentType.Name != ''}"
+				includeInLayout="{Controller.Model.CurrentDocumentType.Name != ''}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="Document Type:"/>
+				<mx:Label text="{Controller.Model.CurrentDocumentType.Name}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.State != ''}"
+				includeInLayout="{Controller.Model.CurrentDocument.State != ''}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="State:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.State}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.County != ''}"
+				includeInLayout="{Controller.Model.CurrentDocument.County != ''}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="County:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.County}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:HBox>
+
+		<mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.DocumentNo != ''}"
+				includeInLayout="{Controller.Model.CurrentDocument.DocumentNo != ''}"
+				>
+				<mx:Label text="DocumentNo:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.DocumentNo}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.Vol != ''}"
+				includeInLayout="{Controller.Model.CurrentDocument.Vol != ''}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="Volume:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.Vol}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.Pg != ''}"
+				includeInLayout="{Controller.Model.CurrentDocument.Pg != ''}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="Page:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.Pg}" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox
+				visible="{Controller.Model.CurrentDocument.DateFiled != null}"
+				includeInLayout="{Controller.Model.CurrentDocument.DateFiled != null}"
+				>
+				<mx:VRule height="15"/><mx:Spacer width="15"/>
+				<mx:Label text="Date Filed:"/>
+				<mx:Label text="{Controller.Model.CurrentDocument.DateFiled.toDateString()}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:HBox>
+
+	</mx:VBox>
+
+</mx:Canvas>

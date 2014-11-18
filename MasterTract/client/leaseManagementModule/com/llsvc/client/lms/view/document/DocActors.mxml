@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:lease="com.llsvc.client.lms.view.lease.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*" 
+	xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import com.llsvc.domain.County;
+			import com.llsvc.domain.State;
+			import mx.core.IUIComponent;
+			import mx.events.DragEvent;
+			import mx.core.DragSource;
+			import mx.managers.DragManager;
+			import com.llsvc.domain.DocumentActorPhone;
+			import flash.net.registerClassAlias;
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import com.llsvc.domain.DocumentActor;
+			import com.llsvc.domain.Document;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] public var editable:Boolean = true;
+			
+			private var _docum:Document;
+			[Bindable]
+			public function get docum():Document {return _docum;}
+			public function set docum(value:Document):void 
+			{
+				_docum = value;
+			}
+			
+			private function openActor(actor:DocumentActor):void 
+			{
+				var popup:DocActorEditView = DocActorEditView.open(Application.application as DisplayObject, true);
+				popup.docActor = actor;
+				popup.actorRole = actor.isGiver ? docum.documentType.giverRole : docum.documentType.receiverRole;
+				popup.addEventListener("commitRequest",
+					function ():void 
+					{
+						if (popup.docActor.isGiver && !docum.givers.contains(popup.docActor))
+							docum.givers.addItem(popup.docActor)
+						else if (!popup.docActor.isGiver && !docum.receivers.contains(popup.docActor))
+							docum.receivers.addItem(popup.docActor);
+
+						popup.close();
+					}
+				);
+			}
+			
+			private function addGiver():void 
+			{
+				var actor:DocumentActor = new DocumentActor();
+				actor.isGiver = true;
+				actor.address = new Address();
+				openActor(actor);
+			}
+			
+			private function addReceiver():void 
+			{
+				var actor:DocumentActor = new DocumentActor();
+				actor.isGiver = false;
+				actor.address = new Address();
+				openActor(actor);
+			}
+			
+			private function deleteActorRequestHandler(evt:Event):void 
+			{
+				var actor:DocumentActor = DocActorRenderer(evt.currentTarget).actor;
+				
+                Alert.show("Do you really want to delete Actor ?", 
+                   "Delete Actor", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                        	var index:int;
+                        	if (actor.isGiver) {
+	                        	index = docum.givers.getItemIndex(actor);
+	                        	if (index != -1)
+	                        		docum.givers.removeItemAt(index);
+                        	} else {
+	                        	index = docum.receivers.getItemIndex(actor);
+	                        	if (index != -1)
+	                        		docum.receivers.removeItemAt(index);
+                        	}
+                        }
+                    });
+			}
+			
+			private function editActorRequestHandler(evt:Event):void 
+			{
+				var actor:DocumentActor = DocActorRenderer(evt.currentTarget).actor;
+				openActor(actor);
+			}
+			
+// drag-n-drop functionality ------
+
+            private function actorDragStart(event:MouseEvent):void
+            {
+                if (DragManager.isDragging == false)
+                {
+                    var actorBox:DocActorRenderer = event.target as DocActorRenderer;
+                    var ds:DragSource = new DragSource();
+                    ds.addData(actorBox.actor, "documentActor");
+                    
+                    var di:DocActorDragIR = new DocActorDragIR();
+                    di.actor = actorBox.actor;
+                    
+                    var dragInitiator:PercentBoxFixed;
+                    if (actorBox.actor.isGiver) {
+                    	dragInitiator = boxGiversContent as PercentBoxFixed;
+                    } else {
+                    	dragInitiator = boxReceiversContent as PercentBoxFixed;
+                    }
+                    
+                    DragManager.doDrag(dragInitiator, ds, event, di, -actorBox.x, 
+                                      -actorBox.y + dragInitiator.verticalScrollPosition, 
+                                       0.5, false);
+                }    
+            }
+            
+            private function dragEnterHandler(event:DragEvent):void
+            {
+            	if (!editable)
+            		return;
+                    
+                if (event.dragSource.hasFormat("documentActor"))
+                {
+                    DragManager.acceptDragDrop(IUIComponent(event.target));
+                    DragManager.showFeedback(DragManager.COPY);
+                }
+            }
+    
+            private function dragDropHandler(event:DragEvent):void
+            {
+            	if (!editable)
+            		return;
+                    
+                var draggedActor:DocumentActor = event.dragSource.dataForFormat("documentActor") as DocumentActor;
+                
+                var collection:ArrayCollection;
+				if (event.target == boxReceivers) 
+				{	
+					collection = docum.receivers;
+				} else if (event.target == boxGivers) 
+				{
+					collection = docum.givers;
+				}
+
+                if (isCollectionContains(collection, draggedActor)) 
+                {
+                    Alert.show("Participant with the same name already exists in collection! Please remove old.");
+                    return;
+                }
+                
+                var actor:DocumentActor = draggedActor.createCopy();
+				
+				if (event.target == boxReceivers) 
+				{
+					actor.isGiver = false;
+					docum.receivers.addItem(actor);
+				} else if (event.target == boxGivers) 
+				{
+					actor.isGiver = true;
+					docum.givers.addItem(actor);
+				}
+            }
+            
+            private function isCollectionContains(collection:ArrayCollection, actor:DocumentActor):Boolean 
+            {
+            	for each (var da:DocumentActor in collection) 
+            	{
+            		if (da.name == actor.name)
+            			return true;
+            	}
+            	
+            	return false;
+            }  
+     
+// drag-n-drop functionality ------
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="boxGivers" 
+		borderColor="#B9B9B9" borderStyle="solid" borderThickness="1" verticalGap="0" width="100%" height="100%"
+		dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)">
+		<mx:HBox width="100%" backgroundColor="#B9B9B9" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:Label text="{docum.documentType.giverRole}"/>
+			<mx:Spacer width="100%"/>
+	        <mx:Button toolTip="Add new {docum.documentType.giverRole}"
+	        	visible="{editable}" includeInLayout="{editable}" 
+	        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')" click="addGiver()"/>
+		</mx:HBox>
+
+		<controls:PercentBoxFixed id="boxGiversContent" direction="vertical" width="100%" height="100%"
+			paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2" verticalGap="2" 
+			backgroundColor="#ffffff">
+			<mx:Repeater id="rptGivers" dataProvider="{docum.givers}">
+				<document:DocActorRenderer 
+					actor="{DocumentActor(rptGivers.currentItem)}" width="100%" editable="{editable}"
+					editActorRequest="editActorRequestHandler(event)"
+					deleteActorRequest="deleteActorRequestHandler(event)"
+					dragStart="actorDragStart(event)"/>
+			</mx:Repeater>
+		</controls:PercentBoxFixed>
+	</mx:VBox>
+	
+	<mx:VBox id="boxReceivers" 
+		borderColor="#B9B9B9" borderStyle="solid" borderThickness="1" verticalGap="0" width="100%" height="100%"
+		dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)">
+		<mx:HBox width="100%" backgroundColor="#B9B9B9" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:Label text="{docum.documentType.receiverRole}"/>
+			<mx:Spacer width="100%"/>
+	        <mx:Button toolTip="Add new {docum.documentType.receiverRole}" 
+	        	visible="{editable}" includeInLayout="{editable}" 
+	        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')" click="addReceiver()"/>
+		</mx:HBox>
+
+		<controls:PercentBoxFixed id="boxReceiversContent" direction="vertical" width="100%" height="100%"
+			paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2" verticalGap="2"
+			backgroundColor="#ffffff">
+			<mx:Repeater id="rptReceivers" dataProvider="{docum.receivers}">
+				<document:DocActorRenderer 
+					actor="{DocumentActor(rptReceivers.currentItem)}" width="100%" editable="{editable}"
+					editActorRequest="editActorRequestHandler(event)"
+					deleteActorRequest="deleteActorRequestHandler(event)"
+					dragStart="actorDragStart(event)"/>
+			</mx:Repeater>
+		</controls:PercentBoxFixed>
+	</mx:VBox>
+</mx:VBox>

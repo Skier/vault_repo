@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Project" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+	xmlns:cmContractRate="tractIncContractManager.contract.rate.*"
+	xmlns:cmClientContact="tractIncContractManager.contract.clientContact.*"
+	xmlns:cmCompanyContact="tractIncContractManager.contract.companyContact.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        	import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Contract;
+        	import TractInc.Domain.Account;
+        	import TractInc.Domain.Project;
+        	import TractInc.Domain.ProjectStatus;
+        	import TractInc.Domain.Company;
+        	import TractInc.Domain.Client;
+        	import tractIncProjectManager.ProjectManagerController;
+            
+            [Bindable]
+            public var tabData:Array = [
+                {label:"Main", data:"Main"},
+                {label:"Contract Rates", data:"Contract Rates"},
+                {label:"Client Contacts", data:"Client Contacts"},
+                {label:"Company Contacts", data:"Company Contacts"},
+            ];
+        
+            [Bindable]
+            private var canEdit:Boolean = false;
+            [Bindable]
+            private var controller:ProjectController = null;
+            private var currentProject:Project = null;
+                
+            public static function open(ctrl:ProjectController, project:Project, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, project);
+                
+                PopUpManager.addPopUp(popup, ctrl.view, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:ProjectController, cp:Project):void
+            {
+                controller = ctrl;
+                currentProject = cp;
+            }
+            
+            public function init():void
+            {
+                canEdit = true; //controller.model.userManagerPackage.canManageUsers;
+
+                var clients:Array = [null];
+                for each (var c:Client in ProjectManagerController.getInstance().model.projectManagerPackage.ClientList) {
+                    clients.push(c);
+                }
+                this.cbClient.dataProvider = clients;
+                this.cbClient.labelField = "ClientName";
+/*                
+                this.cbContract.dataProvider =
+                        ProjectManagerController.getInstance().model.projectManagerPackage.ContractList;
+*/                        
+                this.cbContract.labelField = "ContractName";
+
+                this.cbStatus.dataProvider =
+                        ProjectManagerController.getInstance().model.projectManagerPackage.ProjectStatusList;
+                this.cbStatus.labelField = "StatusName";
+                
+                this.cbAccountItem.visible = ProjectManagerController.getInstance().model.projectManagerPackage.CanAssignAccount;
+                if ( cbAccountItem.visible ) {
+                    var accounts:Array = [null];
+                    for each (var a:Account in ProjectManagerController.getInstance().model.projectManagerPackage.AccountList) {
+                        accounts.push(a);
+                    }
+                    this.cbAccount.dataProvider = accounts;
+                    this.cbAccount.labelField = "AccountName";
+                }
+                
+                if ( null != currentProject ) {
+                    this.txtProjectName.text = currentProject.ProjectName;
+                    this.txtShortName.text = currentProject.ShortName;
+                    this.txtDescription.text = currentProject.Description;
+                    this.cbStatus.selectedItem = 
+                            getProjectStatusById(currentProject.ProjectStatusId);
+                    this.cbContract.selectedItem = 
+                            controller.getContractById(currentProject.ContractId);
+                    this.cbAccount.selectedItem = 
+                            getAccountById(currentProject.AccountId);
+                } else {
+                    currentProject = new Project();
+                    currentProject.CreatedBy = ProjectManagerController.getInstance().user.Login;
+                }
+            }
+            
+            private function getProjectStatusById(id:int):ProjectStatus
+            {
+                for each (var status:ProjectStatus in ProjectManagerController.getInstance().model.projectManagerPackage.ProjectStatusList) {
+                    if ( id == status.ProjectStatusId ) {
+                        return status;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getAccountById(id:int):Account
+            {
+                for each (var item:Account in ProjectManagerController.getInstance().model.projectManagerPackage.AccountList) {
+                    if ( id == item.AccountId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getProject():Project
+            {
+                currentProject.ProjectName = this.txtProjectName.text;
+                currentProject.ShortName = this.txtShortName.text;
+                currentProject.Description = this.txtDescription.text;
+                currentProject.ProjectStatusId = 
+                        (this.cbStatus.selectedItem as ProjectStatus).ProjectStatusId;
+                currentProject.ContractId = 
+                        (this.cbContract.selectedItem as Contract).ContractId;
+                        
+                if ( null != cbAccount.selectedItem ) {
+                    currentProject.AccountId = 
+                            (this.cbAccount.selectedItem as Account).AccountId;
+                } else {
+                    currentProject.AccountId = 0;
+                }
+                
+                return currentProject;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveProject(getProject());
+            }
+            
+            public function clientOnChangeHandler():void 
+            {
+                var client:Client = cbClient.selectedItem as Client;
+                var contracts:Array = new Array();
+                if ( null != client ) {
+                    for each(var c:Contract in ProjectManagerController.getInstance().model.projectManagerPackage.ContractList) {
+                        if ( client.ClientId == c.ClientId ) {
+                            contracts.push(c);
+                        }
+                    }
+                }
+                this.cbContract.dataProvider = contracts;
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{cbContract}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{cbStatus}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{txtProjectName}" property="text" required="true"/>
+        <mx:StringValidator source="{txtShortName}" property="text" required="true"/>
+        <mx:StringValidator source="{txtDescription}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+	<mx:VBox>
+        <mx:Form id="mainForm" enabled="{canEdit}" 
+            backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+            paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+            width="100%">
+            
+            <mx:FormItem label="Client" width="100%" required="true">
+                <mx:ComboBox id="cbClient" width="100%"
+                        change="clientOnChangeHandler()"/>
+            </mx:FormItem>
+            <mx:FormItem label="Contract" width="100%" required="true">
+                <mx:ComboBox id="cbContract" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Status" width="100%" required="true">
+                <mx:ComboBox id="cbStatus" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem id="cbAccountItem" label="Account" width="100%" required="false">
+                <mx:ComboBox id="cbAccount" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Name" width="100%" required="true">
+                <mx:TextInput id="txtProjectName" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Short Name" width="100%" required="true">
+                <mx:TextInput id="txtShortName" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Description" width="100%" required="true">
+                <mx:TextArea id="txtDescription" width="100%"/>
+            </mx:FormItem>
+        </mx:Form>
+	</mx:VBox>
+	
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

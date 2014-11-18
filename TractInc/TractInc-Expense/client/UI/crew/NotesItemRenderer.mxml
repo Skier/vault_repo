@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalScrollPolicy="off"
+	horizontalScrollPolicy="off">
+	
+	<mx:HBox width="100%" backgroundColor="#eeeeee">
+		<mx:Label text="{data.RelatedUser.Login} says:" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+		<mx:Label text="{data.Posted.toString()}" fontStyle="italic"/>
+		<mx:Spacer width="20"/>
+	</mx:HBox>
+	<mx:Text id="txtBody" width="100%" text="{data.NoteText}"/>
+	
+</mx:VBox>

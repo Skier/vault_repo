@@ -1,0 +1,58 @@
+﻿@using Dalworth.Common.SDK
+@model Dalworth.LeadCentral.Domain.Customer
+
+@{
+    ViewBag.Title = "Index";
+}
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">@Html.ActionLink("Edit", "CompanyEdit", new{controller="Profile"}, new{@class="button primary"})</div>
+      <h1>Company Info</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Company Name</td>
+              <td><b>@Model.Name</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Contact Person</td>
+              <td><b>@Model.ContactPerson</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone</td>
+              <td><b>@string.Format("{0:### (###) ###-####}", Int64.Parse(StringUtil.ExtractDigits(Model.Phone)))</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Email</td>
+              <td><b>@Model.Email</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Authorization Status</td>
+              <td>
+                @if (Model.IsOAuthInited)
+                {
+                    <b style="color:#0C0;">Authorized</b>
+                } else
+                {
+                    <b style="color:#C00;">Disabled</b> <i>This application is not authorized to use your Quickbooks data</i>
+                    <span>@Html.ActionLink("Authorize ", "Authorize", new { controller = "Profile" }, new { @class = "button" })</span>
+                }
+              </td>
+            </tr>
+          </table>
+        </div>
+
+    <div style="font-size:14px;margin-top: 5px;">
+      <ul>
+      <li>@Html.ActionLink("Balance Information", "Balance", new { controller = "Profile" })</li>
+      <li>@Html.ActionLink("Phones blacklist", "Blacklist", new { controller = "Profile" })</li>
+      <li>@Html.ActionLink("Notifications", "Notifications", new { controller = "Profile" })</li>
+      </ul>
+    </div>
+    </div>
+  </div>
+

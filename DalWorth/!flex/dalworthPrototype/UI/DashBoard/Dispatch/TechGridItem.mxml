@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:GridItem xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import Domain.*;
+			import mx.managers.DragManager;
+			import mx.events.DragEvent;
+			import mx.core.DragSource;
+		
+			[Bindable]
+			public var dataProvider:Route;
+			[Bindable]
+			public var technician:Technician;
+			[Bindable]
+			public var headerName:String;
+			
+		private function beginDragAndDrop(event:MouseEvent):void{
+			var target:DataGrid = DataGrid(event.currentTarget);
+			var routeStop:RouteStop = RouteStop(target.selectedItem);
+			
+			var dragSource:DragSource = new DragSource();
+			dragSource.addData(routeStop, "routeStop");
+			dragSource.addData(target.selectedIndex, "index");
+			
+			
+			
+			var proxy:DragProxy = new DragProxy();
+			proxy.initialize();
+			
+			proxy.lblTicketNumber.text = routeStop.jobTicket.ticketNumber.toString();
+			proxy.lblType.text = routeStop.jobTicket.type;
+			DragManager.doDrag(target, dragSource, event, proxy);
+			
+		}
+		
+		private function dragEnterHandler(event:DragEvent):void{
+			var target:DataGrid = DataGrid(event.currentTarget);
+			var initiator:DataGrid = DataGrid(event.dragInitiator);
+			var item:Object = event.draggedItem;
+			DragManager.acceptDragDrop(target);
+		}
+		
+		private function dragDropHandler(event:DragEvent):void{
+			var target:DataGrid = DataGrid(event.currentTarget);
+			var initiator:DataGrid = DataGrid(event.dragInitiator);
+			
+			var idx:int = target.calculateDropIndex(event);
+			
+			// TODO:  CHANGE Route properties to correct ones.
+			
+			var  src:Object = event.dragSource.dataForFormat("routeStop");
+			if (src != null){
+				var routeStop:RouteStop = RouteStop(src);
+				var index:int = int(event.dragSource.dataForFormat("index"));
+				ArrayCollection(initiator.dataProvider).removeItemAt(index);
+				if (idx < ArrayCollection(target.dataProvider).source.length){
+					ArrayCollection(target.dataProvider).addItemAt(routeStop, idx);
+				}
+				else{
+					ArrayCollection(target.dataProvider).addItem(routeStop);
+				}
+			}	
+			else{
+				src = event.dragSource.dataForFormat("pendingJobTicket");	
+				if (src != null){
+					var jobTicket:JobTicket = JobTicket(src);
+					jobTicket.status = JobTicket.INWORK;
+					
+					
+					
+					var routeStopNew:RouteStop = new RouteStop();
+					routeStopNew.route = dataProvider;
+					//dataProvider.routeStops.addItem(routeStopNew);
+					routeStopNew.jobTicket = jobTicket;
+					routeStopNew.status = RouteStop.PENDING_STATUS;
+					
+					index= int(event.dragSource.dataForFormat("index"));
+					ArrayCollection(initiator.dataProvider).removeItemAt(index);
+					if (idx < ArrayCollection(target.dataProvider).source.length){
+						ArrayCollection(target.dataProvider).addItemAt(routeStopNew, idx);
+					}
+					else{
+						ArrayCollection(target.dataProvider).addItem(routeStopNew);
+					}
+				}
+			}
+		}
+		
+		
+		]]>
+	</mx:Script>
+	<mx:VBox  width="100%" height="100%">
+		<mx:Label id="lblHeaderName" text="{headerName}"  fontSize="12"/>
+		<mx:DataGrid id="dbTech0Work"   showHeaders="false" width="100%" height="100%" dataProvider="{this.dataProvider.routeStops}" mouseDown="beginDragAndDrop(event)" dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)">
+			<mx:columns>
+				<mx:DataGridColumn dataField="jobTicket" itemRenderer="UI.DashBoard.Dispatch.DispatchJobGridItemRenderer" headerText="" />
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:GridItem>

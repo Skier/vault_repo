@@ -1,0 +1,103 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Web.Models.Campaign.CampaignList
+
+@{
+    ViewBag.Title = "Campaign List";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Campaign List</h1>
+@if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+{
+    <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Create New", "Create", new { controller = "Campaigns" }, new { @class = "button primary" })</div>
+}
+  </div>
+  <div class="content">
+
+    @if(!currentUser.IsBusinessPartner)
+    {
+        using (Html.BeginForm("Index", "Campaigns", FormMethod.Get))
+        {
+        <div class="filter" style="border-bottom: none;">
+        <table style="width:100%;">
+            <tr>
+            <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">Sales Rep:</span>
+                @Html.DropDownList("SalesRepId", new SelectList(Model.SalesRepList, "Id", "ScreenName", Model.SalesRepId))</td>
+            <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">Business Partner:</span>
+                @Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.PartnerId))</td>
+            <td class="left" style="white-space: nowrap;">
+                <span style="margin-left: 15px;">@Html.CheckBoxFor(model => model.ShowClosed) show closed </span></td>
+            <td class="left" style="width:100%;vertical-align:bottom;">
+                <div style="float:right;">
+                <button type="submit">Refresh</button>
+                @Html.ActionLink("Clear", "Index", new { controller = "Campaigns" }, new { @class = "button" })
+                </div>
+            </td>
+            </tr>
+        </table>
+        </div>
+        }
+    }
+
+@if (Model.Campaigns != null && Model.Campaigns.Count > 0)
+{
+      <table class="list">
+        <thead>
+          <tr>
+            <td class="left">Campaign Name</td>
+            <td class="left">Started</td>
+            @if (!currentUser.IsBusinessPartner)
+            {
+            <td class="left">Partner</td>
+            }
+            <td class="left">Status</td>
+            <td class="left">Tracking Phones</td>
+          </tr>
+        </thead>
+        <tbody>
+@foreach (var campaign in Model.Campaigns)
+{
+          <tr>
+            <td class="left">
+              @Html.ActionLink(campaign.CampaignName, "Details", new { campaign.Id })
+            </td>
+            <td class="left">
+              @String.Format("{0:g}", campaign.DateCreated)
+            </td>
+            @if (!currentUser.IsBusinessPartner)
+            {
+                if (campaign.RelatedBusinessPartner != null)
+                {
+                  <td class="left">
+                    @Html.ActionLink(campaign.RelatedBusinessPartner.PartnerName, "Details", new { controller = "Partners", id = campaign.RelatedBusinessPartner.Id })
+                  </td>
+                } else
+                {
+                  <td class="left">
+                    @campaign.PartnerName
+                  </td>
+                }
+            }
+            <td class="left">
+              @campaign.StatusStr
+            </td>
+            <td class="left">
+              @campaign.TrackingPhonesStr
+            </td>
+          </tr>
+}
+        </tbody>
+      </table>
+}
+else
+{
+    <div>No Campaigns found</div>
+}
+</div>
+</div>
+

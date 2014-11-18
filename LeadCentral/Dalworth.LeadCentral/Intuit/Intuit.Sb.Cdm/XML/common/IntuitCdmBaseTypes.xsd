@@ -1,0 +1,834 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2"
+	targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>Specifies the Intuit Base type CDMs that will be used in any domains as base types </xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="CdmComplexBase" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Defines the abstract base type that is used as a base for collection types, or objects returned by the REST service. It also serves as a base for the substitution group for the REST service allowing for having the common root element for any object returned by the service.</xs:documentation>
+		</xs:annotation>
+	</xs:complexType>
+	<xs:complexType name="CdmCollections" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="CdmComplexBase"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- Type definitions -->
+	<xs:complexType name="CdmBase" abstract="true">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specifies the CdmBase type which can be used as base type for all Intuit CDM objects that can be identified and modified as a top level CDM, example for top level CDMs are Party, Customer, Vendor in case of CMO these can extend from CdmBase. Though Physical Address, EmailAddress belong to a Party it can be manipulated as a independent object hence these also can be a "extension" of CdmBase. However CustomFields, Money is always associated with another top level CDM and will not be manipulated as independent object hence these CDMs are not considered as extension of CdmBase </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmObject">
+				<xs:sequence>
+					<xs:element name="Id" type="IdType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object across Intuit internal domains.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SyncToken" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the version number of the object for optimistic locking purpose.
+Required for the Mod request.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="MetaData" type="ModificationMetaData" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Defines the metadata of the instance of data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ExternalKey" type="IdType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object across Intuit internal domains. It is likely to contain e.g. QBDT record number.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Synchronized" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Flag indicating whether the data comes from the source of record, like QuickBooks desktop (value = true), or it is not synchronized yet, i.e. it is still stored in the provisional data base (value = false).
+R/O field.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="AlternateId" type="NameValue" minOccurs="0"
+						maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the identifier of the object in the source of origin outside of Intuit domain. Currently unsupported.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CustomField" type="CustomField" minOccurs="0"
+						maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Specifies the Custom Field (aka Data Extension).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="Draft" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>indicates whether the object is in the Draft state, or it is ready for Write Back to QuickBooks.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CdmObject" abstract="true"/>
+	<xs:complexType name="CustomField" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Specifies the custom field type that can be added to an entity, this object is not extended from CdmBase as CustomField can not be manipulated as independent object and will always be considered in association with another top level CDM object </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DefinitionId" type="IdType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier of the CustomFieldDefinition, DefinitionId should be specified for every CustomField.
+Required for the Add request.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies the Name of the Custom Field.
+Required for the Add request.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomFieldDefinition" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Specifies the CustomFieldDefinition that can be defined to a CDM to add additional columns dynamically on a existing CDM entities, this object is not extended from CdmBase as it is considered as definition that can be manipulated by specifying the definition ID </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmObject">
+				<xs:sequence>
+					<xs:element name="Id" type="IdType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the "DefinitionId" of the CustomFieldDefinition object, Id element will be used if update is needed for the CustomFieldDefinition </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SyncToken" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Specifies the version number of the object for optimistic locking purpose.
+Required for the Mod request.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="CdmType" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the CDM object type to which the CustomFieldDefinition is to be associated. Valid values are defined in the objectNameEnumType.
+Required for the Add request.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Name" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the "Name" of the CustomField object.
+Required for the Add request.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Hidden" type="xs:boolean" default="false" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies whether the Custom Field is Private (value=true) or Public (value = false) and it can be shared among different applications.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Required" type="xs:boolean" default="false" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies if the field is required to be specified for every instance of the "Parent" to which the definition is defined. The IDS services are not verifying the value of that field.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SetName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Client-provided identifier of the set of Custom Field Definitions.
+								A client can specifiy the definition as a part of the set and later reuse that set for a one-time operation
+								of custom field definition in another set using the CustomFieldDefinitionSetAdd request.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SetId" type="xs:positiveInteger" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Server provided Id for the Custom Field Definition that user designated
+								to be a part of a set by providing the SetName element.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NameValue">
+		<xs:annotation>
+			<xs:documentation>Used in elements like AlternateId to allow clients sending data that is meaningful in the source of origin.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="Value" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ModificationMetaData">
+		<xs:annotation>
+			<xs:documentation>Defines the metadata of the instance of data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreatedBy" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the user name who created the data.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreatedById" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the authentication id of user who created the data object, this information is useful to look up for additional information about the user.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the created time.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastModifiedBy" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the user name who modified the data last.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastModifiedById" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the authentication id of user who modified the data last; this information is useful to look up for additional information about the user.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastUpdatedTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the last updated time of the data.
+R/O field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Money">
+		<xs:annotation>
+			<xs:documentation>Money type describes the Money value represented in Intuit as Currency Code and decimal value. Money type is always associated with another CDM and will not be manipulated as a standalone hence it is not extended from CdmBase</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CurrencyCode" type="currencyCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the currency code that follows ISO 4217 three letter code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Amount" type="xs:decimal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the amount value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhysicalAddress">
+		<xs:annotation>
+			<xs:documentation>Specifies the Physical address type, this object is always manipulated in context of another parent object like Person, Organization etc</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Line1" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the first line of the address.
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Line2" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the second line of the address.
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Line3" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the third line of the address.
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Line4" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the fourth line of the address.
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Line5" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the fifth line of the address.
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 41
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="City" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the city name
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="County" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the County name.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountyCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the county code.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Country" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the country name
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountryCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the country code as ISO 3166.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountrySubDivisionCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the "globalized" form of representation of region. For example, this would represent "State" information in case of USA, "Province" in case of Canada
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 21
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Postal Code, essential represent ZipCode in case of USA and Canada
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 13
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCodeSuffix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Postal Code extension, in case of USA it specifies 4 letter code extension of ZipCode </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GeoCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A Geocode (Geospatial Entity Object Code) is representation format of a geospatial coordinate measurement used
+						to provide a standard representation of an exact geospatial point location at, below, or above the surface of the earth at a specified moment of time.
+Unsupported field.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the last date verified.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if default</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the tag (label). The value allowed are defined in the PhysicalAddressLabelType.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TelephoneNumber">
+		<xs:annotation>
+			<xs:documentation>TelephoneNumberType definition, this object is always manipulated in context of another parent object like Person, Organization etc </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DeviceType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the device type - LandLine, Mobile, Fax etc specified by TelephoneDeviceEnum </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountryCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the telephone country code
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AreaCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the telephone area code
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExchangeCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the telephone exchange code
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Extension" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the telephone extension code
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreeFormNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the telephone number in free form of numbers, this freeform number takes precedence over all other countrycode, areacode,
+							exchangecode, extension
+Cloud Max Length: 1024
+[b]QuickBooks Notes[/b][br /]
+Max Length: 21
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PIN" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the PIN Number associated with some of the phone devices
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the last date verified.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if default</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the tag. The value allowed are defined in the TelephoneNumberLabelType.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmailAddress">
+		<xs:annotation>
+			<xs:documentation>EmailAddressType definition, this object is always manipulated in context of another parent object like Person, Organization etc</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Email address
+Cloud Max Length: 4000
+[b]QuickBooks Notes[/b][br /]
+Max Length: 1023
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the last date verified. Time is not included.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if default</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the tag. The value allowed are defined in the EmailAddressLabelType.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WebSiteAddress">
+		<xs:annotation>
+			<xs:documentation> Describes the website address, this object is always manipulated in context of another parent object like Person, Organization etc
+Unsupported type.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Unique Identifier for an Intuit Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="URI" type="xs:anyURI" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the URI (Uniform Resource Identifier)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the last date verified.
+Unsupported field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if default</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the tag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ExternalKey">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">ExternalKey type allows to associate ExternalID like QuickBooks ID to be represented in the cloud</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="IdType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="IdType">
+		<xs:annotation>
+			<xs:documentation>Allows for strong-typing of Ids and qualifying the domain origin if the Id. The acceptable values for the domain are defined in the idDomainEnum.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="idDomain" type="idDomainEnum" use="optional" default="NG"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="CdmObject" type="CdmObject" abstract="true"/>
+	<xs:simpleType name="id">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Strongly typed "id" to specify unique Identifier for an Intuit Object</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="syncToken">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Strongly typed "SyncToken" to specify the version number of an object for optimistic locking purpose</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="quantity">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Strongly typed "quantity" to specify quantity</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="ratio">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Strongly typed "ratio" to specify ratio</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal"/>
+	</xs:simpleType>
+	<xs:simpleType name="EmailAddressLabelType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of type of email addresses that the data sync process understands. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Business"/>
+			<xs:enumeration value="Home"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PhysicalAddressLabelType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of type of addresses that the data sync process understands. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Billing"/>
+			<xs:enumeration value="Shipping"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TelephoneNumberLabelType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of type of phones that the data sync process understands. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Business"/>
+			<xs:enumeration value="Fax"/>
+			<xs:enumeration value="Home"/>
+			<xs:enumeration value="Mobile"/>
+			<xs:enumeration value="Pager"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TelephoneDevice">
+		<xs:annotation>
+			<xs:documentation>Telephone device type enumeration </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LandLine"/>
+			<xs:enumeration value="Mobile"/>
+			<xs:enumeration value="Fax"/>
+			<xs:enumeration value="Pager"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="gender">
+		<xs:annotation>
+			<xs:documentation>Gender of a person enumeration </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Male"/>
+			<xs:enumeration value="Female"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="currencyCode">
+		<xs:annotation>
+			<xs:documentation> ISO 4217 Currency Code enumeration </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AED"/>
+			<xs:enumeration value="AFA"/>
+			<xs:enumeration value="ALL"/>
+			<xs:enumeration value="ANG"/>
+			<xs:enumeration value="AOA"/>
+			<xs:enumeration value="AOK"/>
+			<xs:enumeration value="ARP"/>
+			<xs:enumeration value="ARS"/>
+			<xs:enumeration value="AMD"/>
+			<xs:enumeration value="ATS"/>
+			<xs:enumeration value="AUD"/>
+			<xs:enumeration value="AWF"/>
+			<xs:enumeration value="AWG"/>
+			<xs:enumeration value="AZM"/>
+			<xs:enumeration value="BAM"/>
+			<xs:enumeration value="BBD"/>
+			<xs:enumeration value="BDT"/>
+			<xs:enumeration value="BEF"/>
+			<xs:enumeration value="BGL"/>
+			<xs:enumeration value="BHD"/>
+			<xs:enumeration value="BIF"/>
+			<xs:enumeration value="BMD"/>
+			<xs:enumeration value="BND"/>
+			<xs:enumeration value="BOB"/>
+			<xs:enumeration value="BRC"/>
+			<xs:enumeration value="BRL"/>
+			<xs:enumeration value="BSD"/>
+			<xs:enumeration value="BTN"/>
+			<xs:enumeration value="BUK"/>
+			<xs:enumeration value="BWP"/>
+			<xs:enumeration value="BYR"/>
+			<xs:enumeration value="BYB"/>
+			<xs:enumeration value="BZD"/>
+			<xs:enumeration value="CAD"/>
+			<xs:enumeration value="CDF"/>
+			<xs:enumeration value="CHF"/>
+			<xs:enumeration value="CLP"/>
+			<xs:enumeration value="CNY"/>
+			<xs:enumeration value="COP"/>
+			<xs:enumeration value="CRC"/>
+			<xs:enumeration value="CZK"/>
+			<xs:enumeration value="CUP"/>
+			<xs:enumeration value="CVE"/>
+			<xs:enumeration value="DDM"/>
+			<xs:enumeration value="DEM"/>
+			<xs:enumeration value="DJF"/>
+			<xs:enumeration value="DKK"/>
+			<xs:enumeration value="DOP"/>
+			<xs:enumeration value="DZD"/>
+			<xs:enumeration value="ECS"/>
+			<xs:enumeration value="EEK"/>
+			<xs:enumeration value="EGP"/>
+			<xs:enumeration value="ERN"/>
+			<xs:enumeration value="ESP"/>
+			<xs:enumeration value="ETB"/>
+			<xs:enumeration value="EUR"/>
+			<xs:enumeration value="FIM"/>
+			<xs:enumeration value="FJD"/>
+			<xs:enumeration value="FKP"/>
+			<xs:enumeration value="FRF"/>
+			<xs:enumeration value="GBP"/>
+			<xs:enumeration value="GEL"/>
+			<xs:enumeration value="GHC"/>
+			<xs:enumeration value="GIP"/>
+			<xs:enumeration value="GMD"/>
+			<xs:enumeration value="GNF"/>
+			<xs:enumeration value="GRD"/>
+			<xs:enumeration value="GTQ"/>
+			<xs:enumeration value="GWP"/>
+			<xs:enumeration value="GYD"/>
+			<xs:enumeration value="HKD"/>
+			<xs:enumeration value="HNL"/>
+			<xs:enumeration value="HRK"/>
+			<xs:enumeration value="HTG"/>
+			<xs:enumeration value="HUF"/>
+			<xs:enumeration value="IDR"/>
+			<xs:enumeration value="IEP"/>
+			<xs:enumeration value="ILS"/>
+			<xs:enumeration value="INR"/>
+			<xs:enumeration value="IQD"/>
+			<xs:enumeration value="IRR"/>
+			<xs:enumeration value="ISK"/>
+			<xs:enumeration value="ITL"/>
+			<xs:enumeration value="JMD"/>
+			<xs:enumeration value="JOD"/>
+			<xs:enumeration value="KES"/>
+			<xs:enumeration value="KGS"/>
+			<xs:enumeration value="KHR"/>
+			<xs:enumeration value="KMF"/>
+			<xs:enumeration value="KPW"/>
+			<xs:enumeration value="KRW"/>
+			<xs:enumeration value="KWD"/>
+			<xs:enumeration value="KYD"/>
+			<xs:enumeration value="KZT"/>
+			<xs:enumeration value="LAK"/>
+			<xs:enumeration value="LBP"/>
+			<xs:enumeration value="LKR"/>
+			<xs:enumeration value="LRD"/>
+			<xs:enumeration value="LSL"/>
+			<xs:enumeration value="LTL"/>
+			<xs:enumeration value="LUF"/>
+			<xs:enumeration value="LVL"/>
+			<xs:enumeration value="LYD"/>
+			<xs:enumeration value="MAD"/>
+			<xs:enumeration value="MDL"/>
+			<xs:enumeration value="MGF"/>
+			<xs:enumeration value="MKD"/>
+			<xs:enumeration value="MMK"/>
+			<xs:enumeration value="MNT"/>
+			<xs:enumeration value="MOP"/>
+			<xs:enumeration value="MRO"/>
+			<xs:enumeration value="MUR"/>
+			<xs:enumeration value="MVR"/>
+			<xs:enumeration value="MWK"/>
+			<xs:enumeration value="MXN"/>
+			<xs:enumeration value="MXP"/>
+			<xs:enumeration value="MYR"/>
+			<xs:enumeration value="MZM"/>
+			<xs:enumeration value="NAD"/>
+			<xs:enumeration value="NGN"/>
+			<xs:enumeration value="NIC"/>
+			<xs:enumeration value="NIO"/>
+			<xs:enumeration value="NLG"/>
+			<xs:enumeration value="NOK"/>
+			<xs:enumeration value="NPR"/>
+			<xs:enumeration value="NZD"/>
+			<xs:enumeration value="OMR"/>
+			<xs:enumeration value="PAB"/>
+			<xs:enumeration value="PEN"/>
+			<xs:enumeration value="PES"/>
+			<xs:enumeration value="PGK"/>
+			<xs:enumeration value="PHP"/>
+			<xs:enumeration value="PKR"/>
+			<xs:enumeration value="PLN"/>
+			<xs:enumeration value="PLZ"/>
+			<xs:enumeration value="PTE"/>
+			<xs:enumeration value="PYG"/>
+			<xs:enumeration value="QAR"/>
+			<xs:enumeration value="ROL"/>
+			<xs:enumeration value="RUR"/>
+			<xs:enumeration value="RWF"/>
+			<xs:enumeration value="SAR"/>
+			<xs:enumeration value="SBD"/>
+			<xs:enumeration value="SCR"/>
+			<xs:enumeration value="SDD"/>
+			<xs:enumeration value="SDP"/>
+			<xs:enumeration value="SEK"/>
+			<xs:enumeration value="SGD"/>
+			<xs:enumeration value="SHP"/>
+			<xs:enumeration value="SIT"/>
+			<xs:enumeration value="SKK"/>
+			<xs:enumeration value="SLL"/>
+			<xs:enumeration value="SM"/>
+			<xs:enumeration value="SOS"/>
+			<xs:enumeration value="SRG"/>
+			<xs:enumeration value="STD"/>
+			<xs:enumeration value="SUR"/>
+			<xs:enumeration value="SVC"/>
+			<xs:enumeration value="SYP"/>
+			<xs:enumeration value="SZL"/>
+			<xs:enumeration value="THB"/>
+			<xs:enumeration value="TMM"/>
+			<xs:enumeration value="TND"/>
+			<xs:enumeration value="TOP"/>
+			<xs:enumeration value="TRL"/>
+			<xs:enumeration value="TTD"/>
+			<xs:enumeration value="TWD"/>
+			<xs:enumeration value="TZS"/>
+			<xs:enumeration value="UAH"/>
+			<xs:enumeration value="UGS"/>
+			<xs:enumeration value="UGX"/>
+			<xs:enumeration value="USD"/>
+			<xs:enumeration value="UYP"/>
+			<xs:enumeration value="UYU"/>
+			<xs:enumeration value="UZS"/>
+			<xs:enumeration value="VND"/>
+			<xs:enumeration value="VUV"/>
+			<xs:enumeration value="VAL"/>
+			<xs:enumeration value="WST"/>
+			<xs:enumeration value="XAF"/>
+			<xs:enumeration value="XCD"/>
+			<xs:enumeration value="XOF"/>
+			<xs:enumeration value="XPF"/>
+			<xs:enumeration value="YER"/>
+			<xs:enumeration value="YUD"/>
+			<xs:enumeration value="ZAR"/>
+			<xs:enumeration value="ZMK"/>
+			<xs:enumeration value="ZRZ"/>
+			<xs:enumeration value="ZWD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="idDomainEnum">
+		<xs:annotation>
+			<xs:documentation>Enumeration of possible Id Domains. NG- next gen (int); QB - Provisional DB id (string); QBO; BM (Billing Manager); QBSDK - ListID, TxnID, or TxnLineId.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BM"/>
+			<xs:enumeration value="NG"/>
+			<xs:enumeration value="PMT"/>
+			<xs:enumeration value="QB"/>
+			<xs:enumeration value="QBO"/>
+			<xs:enumeration value="QBSDK"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

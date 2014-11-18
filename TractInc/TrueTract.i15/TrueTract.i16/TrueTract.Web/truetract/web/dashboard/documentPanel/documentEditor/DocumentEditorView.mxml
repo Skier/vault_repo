@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    layout="vertical" title="Document Editor"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*"
+    xmlns:components="truetract.plotter.components.*">
+
+    <mx:Metadata>
+        [Event(name="commit", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.Participant;
+            import truetract.plotter.domain.Document;
+            import truetract.plotter.domain.DictionaryRegistry;
+            import truetract.web.AppModel;
+            import truetract.web.services.TrueTractService;
+            import truetract.web.util.TokenResponder;
+
+            import mx.events.DynamicEvent;
+            import mx.managers.PopUpManager;
+
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.AsyncToken;
+            import mx.rpc.remoting.mxml.RemoteObject;
+            
+            public static function open(parent:DisplayObject, modal:Boolean = false):DocumentEditorView
+            {
+                var dialog:DocumentEditorView = new DocumentEditorView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+
+                return dialog;
+            }
+
+            [Bindable] private var ttService:TrueTractService = TrueTractService.getInstance();
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            private var _docum:Document;
+            [Bindable] public function get docum():Document { return _docum };
+            public function set docum(value:Document):void 
+            {
+                _docum = value;
+
+                callLater(function():void 
+                {
+                    var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == docum.State).county;
+                    countyCmb.dataProvider = countyList;
+                    countyCmb.selectedItem = countyList.(@CountyId == docum.County);
+                });
+            }
+
+            private function validateForm():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            private function applyChanges():void
+            {
+                if (!validateForm()) return;
+
+                if (!docum.Buyer) {
+                    docum.Buyer = new Participant();
+                    docum.Buyer.IsSeler = false;
+                }
+
+                if (!docum.Seller) {
+                    docum.Seller = new Participant();
+                    docum.Seller.IsSeler = true;
+                }
+
+                docum.State = stateCmb.selectedItem.@StateId;
+                docum.County = countyCmb.selectedItem.@CountyId;
+                docum.DocTypeId = documentTypeCmb.selectedItem.@DocTypeID;
+                docum.Buyer.AsNamed = buyerNameTxt.text;
+                docum.Seller.AsNamed = sellerNameTxt.text;
+                docum.DateFiled = filledDate.value;
+                docum.DateSigned = signedDate.value;
+            	docum.DocumentNo = (documNoTxt.text.length > 0) ? documNoTxt.text : null;
+            	docum.Volume = (volumeTxt.text.length > 0) ? volumeTxt.text : null;
+            	docum.Page = (pageTxt.text.length > 0) ? pageTxt.text : null;
+
+            	var e:DynamicEvent = new DynamicEvent("commit");
+            	e.document = docum;
+            	dispatchEvent(e);
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" 
+            required="{documNoTxt.text.length == 0}"/>
+
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" 
+            required="{volumeTxt.text.length == 0 &amp;&amp; pageTxt.text.length == 0}" />
+
+        <mx:DateValidator
+            daySource="{filledDate.dayTxt}" dayProperty="text" 
+            monthSource="{filledDate.monthTxt}" monthProperty="text" 
+            yearSource="{filledDate.yearTxt}" yearProperty="text" required="true"/>
+        
+        <mx:DateValidator
+            daySource="{signedDate.dayTxt}" dayProperty="text" 
+            monthSource="{signedDate.monthTxt}" monthProperty="text" 
+            yearSource="{signedDate.yearTxt}" yearProperty="text" 
+            required="true"/>
+
+        <mx:StringValidator
+            source="{sellerNameTxt}" property="text" required="true"/>
+
+        <mx:StringValidator
+            source="{buyerNameTxt}" property="text" required="true"/>
+
+        <mx:StringValidator
+            source="{documentTypeCmb}" property="selectedLabel" required="true"/>
+
+        <mx:StringValidator
+            source="{stateCmb}" property="selectedLabel" required="true"/>
+
+        <mx:StringValidator
+            source="{countyCmb}" property="selectedLabel" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:VBox 
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        width="100%" height="100%" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <mx:HBox width="100%">
+            <mx:Form paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="3" indicatorGap="3" labelWidth="90">
+
+                <mx:FormItem label="State :">
+                    <mx:ComboBox id="stateCmb"
+                        labelField="@Name" width="120"
+                        dataProvider="{dictionary.statesAndCounties.state}"
+                        selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State)}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc Type :">
+                    <components:ExtendedComboBox id="documentTypeCmb"
+                        labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+                        dataProvider="{dictionary.documentTypes.DocumentType}" 
+                        selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId)}"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Vol :">
+                    <mx:TextInput id="volumeTxt" width="120" text="{docum.Volume}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Date Signed :">
+                    <components:CombinedDateField id="signedDate"
+                        width="120" value="{docum.DateSigned}" />
+                </mx:FormItem>
+                
+            </mx:Form>
+    
+            <mx:Spacer width="100%" />
+    
+            <mx:Form paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" indicatorGap="3">
+    
+                <mx:FormItem label="County :">
+                    <mx:ComboBox id="countyCmb"
+                        labelField="@Name" width="120"
+                        dataProvider="{dictionary.statesAndCounties.state.(@StateId == stateCmb.selectedItem.@StateId).county}"
+                        selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County)}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Doc No :">
+                    <mx:TextInput id="documNoTxt" width="120" text="{docum.DocumentNo}" />
+                </mx:FormItem>
+    
+                <mx:FormItem label="Page :">
+                    <mx:TextInput id="pageTxt" width="120" text="{docum.Page}"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Date Filled :">
+                    <components:CombinedDateField id="filledDate"
+                        width="120" value="{docum.DateFiled}" />
+                </mx:FormItem>
+    
+            </mx:Form>
+        </mx:HBox>
+    
+        <mx:Form 
+            paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+            width="100%" indicatorGap="3" labelWidth="90">
+    
+            <mx:FormItem label="{
+                documentTypeCmb.selectedItem.@GiverRoleName.length > 0
+                    ? documentTypeCmb.selectedItem.@GiverRoleName
+                    : 'Seller'}:" width="100%">
+                <mx:TextInput id="sellerNameTxt" width="100%" text="{docum.Seller.AsNamed}" />
+            </mx:FormItem>
+    
+            <mx:FormItem label="{
+                    documentTypeCmb.selectedItem.@ReceiverRoleName.length > 0
+                        ? documentTypeCmb.selectedItem.@ReceiverRoleName
+                        : 'Buyer'}:" width="100%" height="23">
+                <mx:TextInput id="buyerNameTxt" width="100%" text="{docum.Buyer.AsNamed}"/>
+            </mx:FormItem>
+    
+        </mx:Form>
+
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" click="applyChanges()" />
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

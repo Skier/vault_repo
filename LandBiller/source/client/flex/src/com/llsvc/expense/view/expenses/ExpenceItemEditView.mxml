@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Expense Edit" 
+	xmlns:controls="com.llsvc.controls.*" xmlns:attachment="com.llsvc.expense.view.attachment.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Company;
+			import mx.events.ValidationResultEvent;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.services.InvoiceItemService;
+			import com.llsvc.domain.ExpenceType;
+			import com.llsvc.domain.Project;
+			import com.llsvc.domain.Client;
+			import com.llsvc.domain.User;
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Responder;
+			import com.llsvc.domain.InvoiceItem;
+			import com.llsvc.registry.MainModel;
+			
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var closeRequest:Boolean = true;
+			[Bindable] private var createNewRequest:Boolean = true;
+			
+			[Bindable] private var user:User;
+			[Bindable] private var expenseTypes:ArrayCollection;
+			
+			[Bindable] private var companies:ArrayCollection;
+			
+			[Bindable] private var filter:ExpenseFilter;
+			
+			[Bindable] public var invoiceItem:InvoiceItem;
+			
+            public static function open(parent:DisplayObject, invoiceItem:InvoiceItem, filter:ExpenseFilter = null, modal:Boolean = true):ExpenceItemEditView
+            {
+                var popup:ExpenceItemEditView = new ExpenceItemEditView();
+                
+                popup.user = MainModel.instance.currentUser;
+                popup.expenseTypes = popup.user.expenceTypes;
+                popup.companies = popup.user.companies;
+
+                popup.invoiceItem = invoiceItem;
+                popup.callLater(popup.updateLabels);
+                
+                popup.filter = filter;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vCompany.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vClient.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vProject.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vDate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vType.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vRate.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vQty.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vTotal.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				return result;
+			}
+			
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			private function getItem():InvoiceItem 
+			{
+				invoiceItem.project = Project(comboProjects.selectedItem);
+				invoiceItem.projectid = Project(comboProjects.selectedItem).projectid;
+				invoiceItem.itemdate = dateItem.selectedDate;
+				invoiceItem.expenceType = ExpenceType(comboType.selectedItem);
+				invoiceItem.expencetypeid = ExpenceType(comboType.selectedItem).expencetypeid;
+//				invoiceItem.rate = Number(txtRate.text);
+				invoiceItem.rate = Number(currRate.currency);
+				invoiceItem.quantity = Number(txtQty.text);
+//				invoiceItem.total = Number(txtTotal.text);
+				invoiceItem.total = Number(currTotal.currency);
+				
+				return invoiceItem;
+			}
+			
+			public function save():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				var item:InvoiceItem = getItem();
+				
+				startRemoting();				
+
+				InvoiceItemService.instance.saveInvoiceItem(item).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							dispatchEvent(new Event("invoiceItemSavingComplete"));
+							if (closeRequest) 
+							{
+								close();
+							} else if (createNewRequest)
+							{
+								createNew();
+							}
+						}, faultHandler));
+			}
+			
+			private function createNew():void 
+			{
+				this.invoiceItem = new InvoiceItem();
+				comboCompanies.selectedIndex = -1;
+				comboClients.selectedIndex = -1;
+				comboProjects.selectedItem = -1;
+				comboType.selectedIndex = -1;
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Expense Item saving failed !\n" + event.fault.message); 
+			}
+				
+			private function btnCancelClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				closeRequest = true;
+				createNewRequest = false;
+				save();
+			}
+			
+			private function btnSaveNewClickHandler(event:*):void 
+			{
+				closeRequest = false;
+				createNewRequest = true;
+				save();
+			}
+/* 			
+			private function recalcTotal():void
+			{
+				if (!isNaN(Number(txtRate.text)) && !isNaN(Number(txtQty.text)) && !(txtTotal.text.length > 0)) 
+				{
+					txtTotal.text = Number(Number(txtRate.text) * Number(txtQty.text)).toString();
+				} else 
+				{
+					txtTotal.text = "";
+				}
+			}
+ */			
+			private function recalcTotal():void
+			{
+				if (!isNaN(Number(currRate.currency)) && !isNaN(Number(txtQty.text)) && !(currTotal.currency.length > 0)) 
+				{
+					currTotal.currency = Number(Number(currRate.currency) * Number(txtQty.text)).toString();
+				} else 
+				{
+					currTotal.currency = "";
+				}
+			}
+
+			private function comboTypeChangeHandler():void 
+			{
+				if (invoiceItem.rate == 0 && comboType.selectedItem != null) 
+				{
+					currRate.currency = ExpenceType(comboType.selectedItem).defaultrate.toString();
+				}
+			}
+			
+			private function updateLabels():void 
+			{
+				lblAmount.text = cf.format(Number(currRate.currency) * Number(txtQty.text));
+				lblAdjustment.text = cf.format(Number(currTotal.currency) - (Number(currRate.currency) * Number(txtQty.text)));
+			}
+			
+			private function updateTotal():void 
+			{
+				currTotal.text = cf.format((Number(currRate.currency) * Number(txtQty.text)).toString());
+			}
+			
+			private function rateChangeHandler():void 
+			{
+				updateTotal();
+				updateLabels();
+			}
+			
+			private function qtyChangeHandler():void 
+			{
+				updateTotal();
+				updateLabels();
+			}
+			
+			private function totalChangeHandler():void 
+			{
+				updateLabels();
+			}
+			
+			private function btnReceiptsClickHandler():void 
+			{
+				closeRequest = false;
+				createNewRequest = false;
+				save();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vCompany" source="{comboCompanies}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vClient" source="{comboClients}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vProject" source="{comboProjects}" property="selectedLabel" required="true"/>
+	<mx:DateValidator id="vDate" source="{dateItem}" property="selectedDate" required="true"/>
+	<mx:StringValidator id="vType" source="{comboType}" property="selectedLabel" required="true"/>
+	<mx:NumberValidator id="vRate" source="{currRate}" property="currency" required="true"/>
+	<mx:NumberValidator id="vQty" source="{txtQty}" property="text" required="true"/>
+	<mx:NumberValidator id="vTotal" source="{currTotal}" property="currency" required="true"/>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+
+	<mx:Form width="100%">
+		<mx:FormItem label="Company" width="100%" required="true">
+			<controls:ComboBox id="comboCompanies" 
+				dataProvider="{companies}" prompt=""
+				labelField="name" enabled="{filter.company == null}"
+				value="{filter.company == null ? invoiceItem.project.client.company.companyid : filter.company.companyid}" 
+				valueField="companyid"/>
+		</mx:FormItem>
+		<mx:FormItem label="Client" width="100%" required="true">
+			<controls:ComboBox id="comboClients"
+				prompt="" 
+				dataProvider="{(comboCompanies.selectedItem as Company) == null ? null : Company(comboCompanies.selectedItem).clients}" 
+				labelField="name" enabled="{filter.client == null}" 
+				value="{filter.client == null ? invoiceItem.project.client.clientid : filter.client.clientid}" 
+				valueField="clientid"/>
+		</mx:FormItem>
+		<mx:FormItem label="Project" width="100%" required="true">
+			<controls:ComboBox id="comboProjects" 
+				prompt="" 
+				dataProvider="{(comboClients.selectedItem as Client) == null ? null : Client(comboClients.selectedItem).projects}" 
+				labelField="projectname" enabled="{filter.project == null}" 
+				value="{filter.project == null ? invoiceItem.project.projectid : filter.project.projectid}" 
+				valueField="projectid"/>
+		</mx:FormItem>
+		<mx:FormItem label="Date" width="100%" required="true">
+			<mx:DateField id="dateItem" 
+				enabled="{filter.date == null}"
+				selectedDate="{filter.date == null ? invoiceItem.itemdate : filter.date}" 
+				editable="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="Expense Type" width="100%" required="true">
+			<controls:ComboBox id="comboType" 
+				prompt="" 
+				dataProvider="{expenseTypes}" labelField="itemname" 
+				value="{invoiceItem.expenceType.expencetypeid}" valueField="expencetypeid"
+				change="comboTypeChangeHandler()"/>
+		</mx:FormItem>
+		<mx:FormItem label="Rate" width="100%" required="true">
+			<controls:CurrencyInput id="currRate"
+				currency="{invoiceItem.rate == 0 ? '' : invoiceItem.rate}"
+				textAlign="right" restrict="0-9,."
+				change="rateChangeHandler()"/>
+		</mx:FormItem>
+		<mx:FormItem label="Quantity" width="100%" required="true">
+			<mx:TextInput id="txtQty" 
+				text="{invoiceItem.quantity == 0 ? '' : invoiceItem.quantity}" 
+				textAlign="right" width="{currRate.width}"
+				restrict="0-9,."
+				change="qtyChangeHandler()"/>
+		</mx:FormItem>
+		<mx:FormItem label="Amount" width="100%">
+			<mx:Label id="lblAmount"
+				width="{currRate.width}" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="Adjustment" width="100%">
+			<mx:Label id="lblAdjustment" 
+				width="{currRate.width}" textAlign="right"/>
+		</mx:FormItem>
+		<mx:FormItem label="Total" width="100%" required="true">
+			<controls:CurrencyInput id="currTotal"
+				currency="{invoiceItem.total == 0 ? '' : invoiceItem.total}"
+				textAlign="right" restrict="0-9,."
+				width="{currRate.width}"
+				change="totalChangeHandler()"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button height="22" label="Receipts" 
+			visible="{invoiceItem.invoiceitemid == 0}" includeInLayout="{invoiceItem.invoiceitemid == 0}"
+			click="btnReceiptsClickHandler()"/>
+	</mx:HBox>
+
+	<attachment:AttachmentsView width="100%" height="150" invoiceItem="{invoiceItem}"
+		visible="{invoiceItem.invoiceitemid &gt; 0}"
+		includeInLayout="{invoiceItem.invoiceitemid &gt; 0}"/>
+
+	<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+		visible="{isBusy}" includeInLayout="{isBusy}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!isBusy}" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Add Another" enabled="{!isBusy}" click="btnSaveNewClickHandler(event)"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button height="24" label="Cancel" enabled="{!isBusy}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:dashboard="com.dalworth.servman.main.owner.dashboard.*" xmlns:lead="com.dalworth.servman.main.owner.lead.*" xmlns:project="com.dalworth.servman.main.owner.project.*" xmlns:report="com.dalworth.servman.main.owner.report.*" xmlns:setting="com.dalworth.servman.main.owner.setting.*" xmlns:businessPartner="com.dalworth.servman.main.owner.businessPartner.*" xmlns:telephony="com.dalworth.servman.telephony.*" xmlns:leadConnection="com.dalworth.servman.main.lead.leadConnection.*" xmlns:breadCrumb="com.dalworth.servman.main.breadCrumb.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import mx.controls.Alert;
+			import com.dalworth.servman.main.MainAppModel;
+			import mx.events.ItemClickEvent;
+			
+			public static const MODEL_INITED:String = "ModelInited";
+			
+			private static const VIEW_NAME:String = "Owner View";
+			
+			[Bindable]
+			private var model:OwnerModel = OwnerModel.getInstance();
+			
+			[Bindable]
+			private var appModel:MainAppModel = MainAppModel.getInstance();
+			
+			private var controller:OwnerController;
+
+			public function init():void 
+			{
+				controller = new OwnerController(this);
+				addEventListener(MODEL_INITED, onModelInit);
+				controller.initModel();
+			}
+			
+			private function onModelInit(event:Event):void 
+			{
+				if (viewLeads != null)
+					viewLeads.init();
+			}
+
+			private function onTabNavigatorChange():void 
+			{
+				var index:int = tnOwner.selectedIndex;
+				
+				switch (index) 
+				{
+					case 0:
+						viewLeads.init();
+						break;
+
+					case 1:
+						viewDashboard.init();
+						break;
+						
+					case 2:
+						viewReports.init();
+						break;
+						
+					case 3:
+						viewSetting.init();
+						break;
+
+					case 4:
+						viewTelephony.init();
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" height="30" verticalAlign="middle" paddingLeft="10" paddingRight="10" paddingTop="4" paddingBottom="4">
+		<mx:Spacer width="100%"/>
+		<mx:Label text="Lead Management System" color="#FFFFFF" fontSize="14" fontWeight="bold"/>
+	</mx:HBox>
+
+	<mx:TabNavigator id="tnOwner" width="100%" height="100%"
+		tabHeight="30" fontSize="14"  
+		historyManagementEnabled="false" change="onTabNavigatorChange()"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<breadCrumb:BreadCrumbsContainer width="100%" height="100%" label="Leads">
+			<lead:LeadManagementView id="viewLeads" width="100%" height="100%" label="Leads" fontSize="12"/>
+		</breadCrumb:BreadCrumbsContainer>
+
+		<breadCrumb:BreadCrumbsContainer width="100%" height="100%" label="Dashboard">
+			<dashboard:OwnerDashboardView id="viewDashboard" width="100%" height="100%" label="Dashboard" fontSize="12"/>
+		</breadCrumb:BreadCrumbsContainer>
+
+		<breadCrumb:BreadCrumbsContainer width="100%" height="100%" label="Reports">
+			<report:OwnerReportsView id="viewReports" width="100%" height="100%" label="Reports" fontSize="12"/>
+		</breadCrumb:BreadCrumbsContainer>
+
+		<breadCrumb:BreadCrumbsContainer width="100%" height="100%" label="Setting">
+			<setting:OwnerSettingView id="viewSetting" width="100%" height="100%" label="Setting" fontSize="12"/>
+		</breadCrumb:BreadCrumbsContainer>
+
+		<breadCrumb:BreadCrumbsContainer width="100%" height="100%" label="Phone settings">
+			<telephony:TelephonyView id="viewTelephony" width="100%" height="100%" label="Telephony" fontSize="12"/>
+		</breadCrumb:BreadCrumbsContainer>
+	</mx:TabNavigator>
+</mx:Canvas>

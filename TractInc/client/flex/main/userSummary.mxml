@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:TractModule xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" backgroundColor="#c0c0c0" 
+	xmlns:modules="TractInc.modules.*"
+	percentWidth="100" percentHeight="100"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.Module;
+			import TractInc.Domain.User;
+			
+			public override function init(user:User, module:Module):void 
+			{
+			}
+			
+			public override function logout():Boolean
+			{
+				return true;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label x="10" y="10" text="Welcome  to your application center" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	
+	<mx:VBox left="20" bottom="20" right="20" top="55" cornerRadius="0" borderColor="#ffffff" backgroundColor="#e6e6e6" borderStyle="solid" borderThickness="2">
+
+		<mx:VBox width="100%">
+			<mx:Label text="module: TrueTract" fontFamily="Verdana" fontWeight="bold" fontSize="16" color="#004080"/>
+			<mx:HBox width="100%" verticalAlign="bottom">
+				<mx:Text text="TTrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module TrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module description " width="400"/>
+				<mx:Button label="Start module"/>
+			</mx:HBox>
+			<mx:HRule width="100%" strokeWidth="3" strokeColor="#004080"/>
+		</mx:VBox>
+
+		<mx:VBox width="100%">
+			<mx:Label text="module: ScopeMapping" fontFamily="Verdana" fontWeight="bold" fontSize="16" color="#004080"/>
+			<mx:HBox width="100%" verticalAlign="bottom">
+				<mx:Text text="TTrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module TrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module description " width="400"/>
+				<mx:Button label="Start module"/>
+			</mx:HBox>
+			<mx:HRule width="100%" strokeWidth="3" strokeColor="#004080"/>
+		</mx:VBox>
+
+		<mx:VBox width="100%">
+			<mx:Label text="module: RAID" fontFamily="Verdana" fontWeight="bold" fontSize="16" color="#004080"/>
+			<mx:HBox width="100%" verticalAlign="bottom">
+				<mx:Text text="TTrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module TrueTract module description TrueTract module description TrueTract module description TrueTract module description TrueTract module description " width="400"/>
+				<mx:Button label="Request to subscribe"/>
+			</mx:HBox>
+			<mx:HRule width="100%" strokeWidth="3" strokeColor="#004080"/>
+		</mx:VBox>
+
+	</mx:VBox>
+	
+</modules:TractModule>

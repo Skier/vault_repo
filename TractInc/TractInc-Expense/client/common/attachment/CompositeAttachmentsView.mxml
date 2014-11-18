@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" width="480"
+	title="Load attachment">
+
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.BillItemCompositionDataObject;
+			import App.Entity.BillItemDataObject;
+			import UI.landman.Composition;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import App.Domain.BillItem;
+			
+			[Bindable]
+			private var controller:CompositeAttachmentsController;
+			
+            public static function Open(parent:DisplayObject, isReadOnly:Boolean, composition:BillItemCompositionDataObject = null, compositionInfo:Composition = null):CompositeAttachmentsView {
+                var popup:CompositeAttachmentsView = new CompositeAttachmentsView();
+                popup.controller = new CompositeAttachmentsController(popup, isReadOnly, composition);
+                popup.controller.model.composition = compositionInfo;
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+
+		]]>
+	</mx:Script>
+	
+	<mx:ControlBar>
+		<mx:HBox width="100%">
+			<mx:ProgressBar id="pbUpload" labelPlacement="right" mode="manual" width="100%"/>
+			<mx:VBox>
+				<mx:Button id="cancel" label="Cancel" click="controller.onClickCancelUpload()"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

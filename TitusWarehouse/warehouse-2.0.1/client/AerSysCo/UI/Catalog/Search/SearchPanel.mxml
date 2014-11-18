@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtPanel xmlns="AerSysCo.UI.Containers.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="searchPanel" layout="horizontal"> 
+
+    <mx:Metadata>
+        [Event(name="searchRequest", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DynamicEvent;
+			
+			private function searchHandler():void 
+			{
+				if (txtSearch.text.length > 0) 
+				{
+					var event:DynamicEvent = new DynamicEvent("searchRequest");
+					event.searchString = txtSearch.text;
+					
+					dispatchEvent(event);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TextInput id="txtSearch" width="100%" enter="searchHandler()" height="22"/>
+
+	<mx:Button height="22" width="60" 
+		label="Search" click="searchHandler()" 
+		enabled="{txtSearch.text.length > 0}"
+		styleName="searchPanelButton"/>
+</ExtPanel>

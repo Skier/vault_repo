@@ -1,0 +1,227 @@
+@font-face
+{
+    src: url("assets/fonts/MyriadWebPro.ttf");
+    font-family: main;
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face
+{
+    src: url("assets/fonts/MyriadWebPro-Bold.ttf");
+    font-family: main;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.appContainer {
+	background-image: Embed("assets/app_skin.png",
+			scaleGridLeft="15",
+			scaleGridRight="970",
+			scaleGridTop="60",
+			scaleGridBottom="64");
+	background-size: "100%";
+}
+
+.popupButton {
+	open-duration: 0;
+	close-duration: 0;
+}
+
+.linkButtonMenu {
+	
+}
+
+/*
+SuperTabNavigator {
+	border-style:none;
+	cornerRadius: 0;
+	tabStyleName: "myButtonStyleName";
+	firstButtonStyleName: "myButtonStyleName";
+	lastButtonStyleName: "myButtonStyleName";
+	selectedTabTextStyleName: "mySelectedTabs";
+	tab-height: 27;
+	padding-top:0;
+	popupButtonStyleName: "tabPopupButton";
+}
+*/
+.tabPopupButton {
+	skin: Embed("assets/icon_pulldown.png");
+}
+
+.tabContainer {
+	background-image:Embed("assets/tabnav_skin.png",
+		scaleGridLeft="10",
+		scaleGridRight="430",
+		scaleGridTop="60",
+		scaleGridBottom="64");
+}
+
+.myButtonStyleName {
+	font-weight:normal;
+	text-align:left;
+/*	tabCloseButton: Embed("assets/icon_close.png"); */
+	skin:Embed("assets/tab_skin.png",
+			scaleGridLeft="1",
+			scaleGridRight="160",
+			scaleGridTop="0",
+			scaleGridBottom="21");
+	selected-up-skin:Embed("assets/tab_selected_skin.png",
+			scaleGridLeft="1",
+			scaleGridRight="160",
+			scaleGridTop="1",
+			scaleGridBottom="20");
+	selected-over-skin:Embed("assets/tab_selected_skin.png",
+			scaleGridLeft="1",
+			scaleGridRight="160",
+			scaleGridTop="1",
+			scaleGridBottom="20");
+	over-skin:Embed("assets/tab_over_skin.png",
+			scaleGridLeft="1",
+			scaleGridRight="160",
+			scaleGridTop="1",
+			scaleGridBottom="20");
+}
+
+
+.mySelectedTabs {
+	/* font-weight:bold; */
+}
+
+
+.title
+{
+	/* color:#535353; */
+	color:#666666;
+    font-family: main; 
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+.smallTitle
+{
+	color:#535353;	
+    font-family: main; 
+    font-size: 12pt;
+}
+
+.appTitle
+{
+	color:#222222;	
+    font-family: main; 
+    font-size: 20pt;
+}
+
+/*
+VSlider {
+	showTrackHighlight: true;
+	theme-color: #1C7487;
+}
+*/
+.welcome {
+	font-family: main;
+	color: #535353;
+}
+	
+.linkButtonList {
+	corner-radius: 0;
+	text-align:left;
+	font-weight:normal;
+}	
+
+.viewAllLink {
+	text-decoration:underline;
+	color: #0000CC;
+	roll-over-color: #FFFFFF;
+}
+
+.firstButton {
+	skin: Embed("assets/button_bar_first.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	over-skin: Embed("assets/button_bar_first_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	selected-up-skin: Embed("assets/button_bar_first_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+}
+
+.middleButton {
+	skin: Embed("assets/button_bar_middle.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	over-skin: Embed("assets/button_bar_middle_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	selected-up-skin: Embed("assets/button_bar_middle_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+}
+
+.lastButton {
+	skin: Embed("assets/button_bar_last.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	over-skin: Embed("assets/button_bar_last_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+	selected-up-skin: Embed("assets/button_bar_last_over.png",
+			scaleGridLeft="8",
+			scaleGridRight="27",
+			scaleGridTop="8",
+			scaleGridBottom="21");
+}
+
+.iconClose {
+	skin: Embed("assets/icon_close16.png");
+	over-skin: Embed("assets/icon_close_over16.png");
+}
+
+.tabCloseButton {
+	skin: Embed("assets/icon_close16.png");
+	over-skin: Embed("assets/icon_close_over16.png");
+}
+
+.iconMinimize {
+	skin: Embed("assets/icon_minimize16.png");
+	over-skin: Embed("assets/icon_minimize_over16.png");
+}
+.iconMaximize {
+	skin: Embed("assets/icon_maximize16.png");
+	over-skin: Embed("assets/icon_maximize_over16.png");
+}
+
+.nestedTab {
+	button-style-name: nestedTabButton;
+	first-button-style-name: nestedTabButton;		
+	last-button-style-name: nestedTabButton;
+}
+
+.nestedTabButton {
+	skin: Embed("assets/blank.png");
+	font-weight: normal;
+	text-roll-over-color: #CCCCCC;
+	text-roll-over-color: #CCCCCC;
+}
+
+.headerTextCentered {
+	text-align: center;
+}
+

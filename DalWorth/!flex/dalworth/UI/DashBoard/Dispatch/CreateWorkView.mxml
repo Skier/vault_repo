@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel title = "Create Work" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
+	height="100%" layout="vertical" xmlns:Dispatch="UI.DashBoard.Dispatch.*"
+	show="init();">
+	
+	<mx:Script>
+		<![CDATA[
+			import UI.DashBoard.MainView;
+			import Util.DateMath;
+			import mx.controls.TextInput;
+			import mx.events.DataGridEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.effects.Sequence;
+			import Domain.WorkDetail;
+			import Domain.WorkEquipment;
+			import Domain.Van;
+			import Domain.Employee;
+			import Domain.Work;
+			import Domain.WorkPackage;
+			import Domain.EquipmentType;
+			import Domain.Ticket;
+			import Domain.TicketPackage;
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.controls.Alert;
+			import Service.ServerSyncService;
+			import mx.collections.ArrayCollection;
+		
+			private var _controller:DispatchController;
+			
+			[Bindable] private var m_technicians:ArrayCollection;
+			[Bindable] private var m_vans:ArrayCollection;			
+			[Bindable] private var m_pendingTickets:ArrayCollection;						
+			[Bindable] private var m_assignedTickets:ArrayCollection;									
+			[Bindable] private var m_equipmentEstimate:ArrayCollection;												
+			
+			
+			public function set dispatchController(controller:DispatchController):void {
+ 				this._controller = controller;
+ 			}
+
+			private function init():void {
+				var date:Date = new Date();
+				dtpDate.selectedDate = date;
+				m_assignedTickets = new ArrayCollection();
+				
+				populateTechnicians();
+				populateVans();
+				populatePendingTickets();
+				
+				m_equipmentEstimate = new ArrayCollection();
+				cmbWorkStatus.selectedIndex = 1;
+				txtStartMessage.text = "";				
+				txtEndMessage.text = "";				
+				txtEquipmentNotes.text = "";								
+ 			}
+ 			
+ 			private function populateTechnicians():void{
+ 				var service:ServerSyncService = new ServerSyncService(); 				 				
+ 				service.GetUnassignedTechnicians(dtpDate.selectedDate, OnGetTechniciansOk, OnFail);
+ 			}
+
+ 			private function populateVans():void{
+ 				var service:ServerSyncService = new ServerSyncService(); 				 				
+ 				service.GetUnassignedVans(dtpDate.selectedDate, OnGetVansOk, OnFail);
+ 			}
+
+ 			private function populatePendingTickets():void{
+ 				var service:ServerSyncService = new ServerSyncService(); 				 				
+ 				service.GetPendingTickets(OnGetPendingTicketsOk, OnFail);
+ 			}
+ 			
+			private function OnGetTechniciansOk(techs:ArrayCollection):void{
+				m_technicians = techs;
+			}
+
+			private function OnGetVansOk(vans:ArrayCollection):void{
+				m_vans = vans;
+			}
+
+			private function OnGetPendingTicketsOk(tickets:ArrayCollection):void{
+				m_pendingTickets = tickets;
+			}
+			
+			private function OnFail(msg:String):void{
+				Alert.show(msg);
+			}
+ 			
+			private function dateChanged(date:Date):void{
+				populateTechnicians();	
+				populateVans();										
+			}
+
+			private function onAssignTicketClick():void{
+				if (tblPendingTickets.selectedItem == null){
+					Alert.show("Please select ticket to add");
+					return;
+				}
+																												
+				m_assignedTickets.addItem(tblPendingTickets.selectedItem);
+				m_pendingTickets.removeItemAt(tblPendingTickets.selectedIndex);				
+				updateEquipmentEstimate();								
+			}
+
+			private function onDeassignTicketClick():void{
+				if (tblAssignedTickets.selectedItem == null){
+					Alert.show("Please select ticket to remove");
+					return;
+				}
+																																
+				m_pendingTickets.addItem(tblAssignedTickets.selectedItem);
+				m_assignedTickets.removeItemAt(tblAssignedTickets.selectedIndex);				
+				updateEquipmentEstimate();									
+			}
+			
+ 			private function updateEquipmentEstimate():void{ 				 				
+ 				var selectedTicketIds:ArrayCollection = new ArrayCollection();
+ 				
+ 				for each(var ticket:TicketPackage in m_assignedTickets)
+	 				selectedTicketIds.addItem(ticket.ticket.ID);
+	 				
+ 				var service:ServerSyncService = new ServerSyncService(); 				 				
+ 				service.GetEquipmentEstimate(selectedTicketIds.toArray(), OnGetEquipmentEstimateOk, OnFail);
+ 			}
+ 			
+			private function OnGetEquipmentEstimateOk(workEquipment:ArrayCollection):void{
+				
+				m_equipmentEstimate = workEquipment;					
+				if (m_assignedTickets.length == 0){
+					m_equipmentEstimate.removeAll();
+				}
+			}
+
+			private function SaveWork():void{
+				if (cmbTechnicians.selectedItem == null){
+					Alert.show("Please select technician");
+					return;
+				}
+
+				if (cmbVans.selectedItem == null){
+					Alert.show("Please select van");
+					return;
+				}
+
+				if (m_assignedTickets.length == 0){
+					Alert.show("Please assing tickets");
+					return;
+				}
+
+				
+				var workPackage:WorkPackage = new WorkPackage();
+				
+				workPackage.work = new Work();				
+
+				workPackage.work.StartDate = dtpDate.selectedDate;
+				if (cmbWorkStatus.selectedIndex == 0){
+					workPackage.work.WorkStatus = 3;
+				} else {
+					workPackage.work.WorkStatus = 1;
+				}
+				
+				workPackage.work.StartMessage = txtStartMessage.text;
+				workPackage.work.EndMessage = txtEndMessage.text;
+				workPackage.work.EquipmentNotes = txtEquipmentNotes.text;
+
+				var workEquipments:ArrayCollection = new ArrayCollection();
+				for each(var workEquipment:WorkEquipment in m_equipmentEstimate){
+					if (workEquipment.Quantity > 0)
+						workEquipments.addItem(workEquipment);
+				}
+				workPackage.WorkEquipments = workEquipments.toArray();
+				
+				var workDetails:ArrayCollection = new ArrayCollection();
+				var sequence:Number = 0;
+				for each(var ticket:TicketPackage in m_assignedTickets){
+					sequence++;
+					
+					var workDetail:WorkDetail = new WorkDetail();
+					workDetail.TicketId = ticket.ticket.ID;
+					workDetail.Sequence = sequence;
+					workDetails.addItem(workDetail);
+				}				
+				workPackage.WorkDetails = workDetails.toArray();
+				
+				workPackage.van = cmbVans.selectedItem as Van;
+				workPackage.technician = cmbTechnicians.selectedItem as Employee;
+
+				var dispatch:Employee = (parentDocument.parentDocument as MainView)._appController.CurrentEmployee;
+				workPackage.dispatch = dispatch;
+				
+ 				var service:ServerSyncService = new ServerSyncService(); 				 				
+ 				service.CreateWork(workPackage, OnCreateWorkOk, OnFail);				
+			}
+			
+			private function OnCreateWorkOk(event:ResultEvent):void{
+				_controller.closeCreateWork();
+				_controller.refreshDashborad();
+			}
+			
+			private function onEquipmentEditEnd(event:DataGridEvent):void{																
+				var value:Number = parseInt(event.currentTarget.itemEditorInstance.text);
+				if (isNaN(value) || value < 0){
+					event.currentTarget.itemEditorInstance.text = "0";
+					Alert.show("Please enter valid equipment quantity");
+				}				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Form width="100%">
+		<mx:HBox width="100%">
+			<mx:FormItem label="Work Date">
+				<mx:DateField id="dtpDate" change="dateChanged(DateField(event.target).selectedDate)"
+					disabledRanges="{[{rangeStart: new Date(1900,1,1), rangeEnd: DateMath.addDays(new Date(), -1)}]}"/>
+			</mx:FormItem>
+			<mx:Spacer width="100%"/>
+			<mx:FormItem label="Work Status">
+				<mx:ComboBox width="160" id="cmbWorkStatus">				
+					<mx:dataProvider>
+						<mx:ArrayCollection>
+							<mx:String>Pending</mx:String>
+							<mx:String>Start Day Ready</mx:String>
+						</mx:ArrayCollection>
+					</mx:dataProvider>
+				</mx:ComboBox>
+			</mx:FormItem>
+		</mx:HBox>
+		<mx:FormItem label="Technician">
+			<mx:ComboBox id="cmbTechnicians" dataProvider="{m_technicians}" width="160" labelField="DisplayName"></mx:ComboBox>
+		</mx:FormItem>
+		<mx:FormItem label="Van">
+			<mx:ComboBox id="cmbVans" dataProvider="{m_vans}" width="160" labelField="LicensePlateNumber"></mx:ComboBox>
+		</mx:FormItem>
+		<mx:HBox width="100%" height="216">
+			<mx:VBox width="33%" height="100%" verticalGap="0" horizontalAlign="center">
+				<mx:Label text="Pending Tickets"/>
+				<mx:DataGrid id="tblPendingTickets" dataProvider="{m_pendingTickets}" height="100%" width="100%">
+					<mx:columns>
+						<mx:DataGridColumn width="50" headerText="Ticket" labelFunction="
+						{function(item:Object, column:DataGridColumn):String{return item.ticket.Number; }}"/>
+						<mx:DataGridColumn headerText="Customer" labelFunction="
+						{function(item:Object, column:DataGridColumn):String{return item.customer.FirstName + ', ' + item.customer.LastName; }}"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox width="44" height="100%" horizontalAlign="center" verticalAlign="middle">
+				<mx:Button label="&gt;" id="btnAssignTicket" click="onAssignTicketClick()" width="100%"/>
+				<mx:Button label="&lt;" id="btnDeassignTicket" click="onDeassignTicketClick()" width="100%"/>
+			</mx:VBox>
+			<mx:VBox width="33%" height="100%" horizontalAlign="center" verticalGap="0">
+				<mx:Label text="Assigned Tickets"/>
+				<mx:DataGrid id="tblAssignedTickets" dataProvider="{m_assignedTickets}" width="100%" height="100%">
+					<mx:columns>
+						<mx:DataGridColumn width="50" headerText="Ticket" dataField="col1" labelFunction="
+						{function(item:Object, column:DataGridColumn):String{return item.ticket.Number; }}"/>
+						<mx:DataGridColumn headerText="Customer" dataField="col2" labelFunction="
+						{function(item:Object, column:DataGridColumn):String{return item.customer.FirstName + ', ' + item.customer.LastName; }}"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox width="33%" height="100%" horizontalAlign="center" verticalGap="0">
+				<mx:Label text="Equipment Requirement"/>
+				<mx:DataGrid id="tblEquipmentEstimate" dataProvider="{m_equipmentEstimate}" width="100%" height="100%" editable="true" itemEditEnd="onEquipmentEditEnd(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Equipment" editable="false" labelFunction="
+						{function(item:Object, column:DataGridColumn):String{return EquipmentType.Names[item.EquipmentTypeId]; }}"/>
+						<mx:DataGridColumn headerText="QTY" width="50" dataField="Quantity"/>
+					</mx:columns>
+				</mx:DataGrid>
+
+ 			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%" height="71">
+			<mx:VBox width="33%" height="100%" verticalGap="0" horizontalAlign="center">
+				<mx:Label text="Start Message"/>
+				<mx:TextArea width="100%" height="100%" id="txtStartMessage"/>
+			</mx:VBox>
+			<mx:VBox width="33%" height="100%" horizontalAlign="center" verticalGap="0">
+				<mx:Label text="End Message"/>
+				<mx:TextArea width="100%" height="100%" id="txtEndMessage"/>
+			</mx:VBox>
+			<mx:VBox width="34%" height="100%" horizontalAlign="center" verticalGap="0">
+				<mx:Label text="Equipment Notes"/>
+				<mx:TextArea width="100%" height="100%" id="txtEquipmentNotes"/>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button label="Save" id="btnSave" click="SaveWork()"/>
+			<mx:Button label="Cancel" id="btnCancel" click="_controller.closeCreateWork()"/>
+		</mx:HBox>
+	</mx:Form>
+	
+</mx:Panel>

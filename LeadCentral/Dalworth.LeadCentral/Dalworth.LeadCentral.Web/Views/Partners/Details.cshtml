@@ -1,0 +1,214 @@
+﻿@using Dalworth.LeadCentral.Service
+@model Dalworth.LeadCentral.Domain.BusinessPartner
+
+@{
+    ViewBag.Title = "Details";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+<script type="text/javascript">
+    function confirmSubmit() {
+        var agree = confirm("Are you sure you want to delete?");
+        if (agree)
+            return true;
+        else
+            return false;
+    }
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+@*
+        @Html.ActionLink("Partners List", "Index", new { controller = "Partners" }, new { @class = "button"})
+*@
+        @if (!currentUser.IsAccounter() && !Model.IsRemoved)
+        {
+            <span>@Html.ActionLink(" Edit ", "Edit", new{controller = "Partners", id = Model.Id}, new{@class="button primary"})</span>
+            <span>@Html.ActionLink(" Delete ", "Delete", new { controller = "Partners", id = Model.Id }, new { @class = "button negative", @onclick = "return confirmSubmit()" })</span>
+        }
+        </div>
+      <h1>Business Partner [@Model.PartnerName]
+        @if (Model.IsRemoved)
+        {
+            <span style="color: #C00">&nbsp;-&nbsp;Removed</span>
+        }
+      </h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Name</td>
+              <td><b>@Model.PartnerName</b>
+                @if (Model.IsExcludedFromReports)
+                {
+                    <i>&nbsp;&nbsp;&nbsp;(Test Partner)</i>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Email</td>
+              <td><b>@Model.Email</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone</td>
+              <td><b>@Model.Phone</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Address</td>
+              <td><textarea rows="4" cols="30" readonly="readonly">@Model.Address</textarea></td>
+            </tr>
+            @if (Model.SalesRepId != null)
+            {
+            <tr>
+              <td style="text-align:right;">Sales Rep</td>
+              <td>@Html.ActionLink(Model.RelatedSalesRep.ScreenName, "Details", new { controller = "Users", id = Model.SalesRepId.Value })</td>
+            </tr>
+            }
+          </table>
+
+    <div style="padding: 6px; margin: 5px; background:#FFF; border:1px solid #DDD;">
+      @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner && !Model.IsRemoved)
+      {
+      <div style="float:right;">
+        @Html.ActionLink("Add Phone Number", "CreatePhoneNumber", new { controller = "Partners", partnerId = Model.Id }, new { @class = "button primary" })
+      </div>
+      }
+      <div style="padding:4px;font-size: 13px;"><b>Contact Phones</b></div>
+@if (Model.PhoneNumbers != null && Model.PhoneNumbers.Count > 0)
+{
+      <br/>
+      <table class="list">
+        <thead>
+          <tr>
+            <td class="left" style="white-space: nowrap;">Phone Number</td>
+            <td class="left">Description</td>
+            @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner)
+            {
+                <td class="left">&nbsp;</td>
+            }
+          </tr>
+        </thead>
+        <tbody>
+@foreach (var phone in Model.PhoneNumbers)
+{
+          <tr>
+            @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner && !Model.IsRemoved)
+            {
+            <td class="left" style="white-space: nowrap;">
+              @Html.ActionLink(phone.PhoneNumber, "EditPhoneNumber", new { controller = "Partners", id = phone.Id, partnerId = Model.Id })
+            </td>
+            }
+            else
+            {
+            <td class="left" style="white-space: nowrap;">
+              @phone.PhoneNumber
+            </td>
+            }
+            <td class="left">
+              @phone.Description
+            </td>
+            @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner && !Model.IsRemoved)
+            {
+                <td class="left">
+                    @Html.ActionLink("Delete", "DeletePhoneNumber", new { controller = "Partners", id = phone.Id, partnerId = Model.Id }, new { @class = "button negative", @onclick = "return confirmSubmit()" })
+                </td>
+            }
+          </tr>
+}
+        </tbody>
+      </table>
+}
+    </div>
+  </div>
+  <br/>
+    <div style="padding:4px;background: #FFD;border: 1px solid #DDD;border-bottom: none;font-size: 14px;">
+        @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner && !Model.IsRemoved)
+        {
+        <div style="float:right;margin: 1px;">
+          @Html.ActionLink("Add Campaign", "Create", new { controller = "Campaigns", partnerId = Model.Id }, new { @class = "button primary" })
+        </div>
+        }
+        <div style="margin: 5px;"><b>Campaigns</b></div>
+    </div>
+@if (Model.Campaigns != null && Model.Campaigns.Count > 0)
+{
+      <table class="list">
+        <thead>
+          <tr>
+            <td class="left">Campaign Name</td>
+            <td class="left">Started</td>
+            <td class="left">Status</td>
+            <td class="left">Tracking Phones</td>
+          </tr>
+        </thead>
+        <tbody>
+@foreach (var campaign in Model.Campaigns)
+{
+          <tr>
+            <td class="left">
+              @Html.ActionLink(campaign.CampaignName, "Details", new { controller = "Campaigns", id = campaign.Id })
+            </td>
+            <td class="left">
+              @String.Format("{0:g}", campaign.DateCreated)
+            </td>
+            <td class="left">
+              @campaign.StatusStr
+            </td>
+            <td class="left">
+              @campaign.TrackingPhonesStr
+            </td>
+          </tr>
+}
+        </tbody>
+      </table>
+} else
+{
+    <div><i>No Related Campaign found</i></div>
+}
+  <br/>
+    <div style="padding:4px;background: #FFD;border: 1px solid #DDD;border-bottom: none;font-size: 14px;">
+        @if (!currentUser.IsAccounter() && !currentUser.IsBusinessPartner && !Model.IsRemoved)
+        {
+        <div style="float:right;margin: 1px;">
+        @Html.ActionLink("Add User", "Create", new { controller = "Users", partnerId = Model.Id }, new { @class = "button primary" })
+        </div>
+        }
+        <div style="margin: 5px;"><b>Users</b></div>
+    </div>
+@if (Model.Users != null && Model.Users.Count > 0)
+{
+    <table class="list">
+      <thead>
+        <tr>
+          <td class="left">Name</td>
+          <td class="left">Phone</td>
+          <td class="left">Email</td>
+          <td class="left">Last Access</td>
+          <td class="left">Status</td>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var user in Model.Users)
+        {
+        <tr>
+          <td class="left">@Html.ActionLink(user.ScreenName, "Details", new { controller = "Users", user.Id })</td>
+          <td class="left">@user.Phone</td>
+          <td class="left">@user.Email</td>
+          <td class="left">@string.Format("{0:d}", user.DateLastAccess)</td>
+          <td class="left">@user.StatusStr</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+}
+else
+{
+    <div><i>No Partners Users found</i></div>
+}
+    </div>
+  </div>
+

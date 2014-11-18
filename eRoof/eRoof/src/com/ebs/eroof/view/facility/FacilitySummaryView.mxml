@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{model != null}" xmlns:controls="com.ebs.controls.*" height="754" width="1007" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*">
+	
+    <mx:Metadata>
+        [Event(name="startEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.dto.Facilities_DTO;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			[Bindable]
+			private var facilityDTO:Facilities_DTO;
+			
+			[Bindable]
+			private var roofSystems:ArrayCollection;
+			
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				_model = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				if (model != null)
+				{
+					facilityDTO = model.facilityDTO;
+				} else 
+				{
+					facilityDTO = null;
+				}
+			}
+			
+			private function onClickEdit():void 
+			{
+				dispatchEvent(new Event("startEdit"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+
+
+	<mx:Label id="lblFacilityName" y="10" fontSize="14" text="{facilityDTO.FacilityName}" left="10" width="635"/>
+
+	<mx:LinkButton label="Edit" click="onClickEdit()" top="11" height="22" textAlign="center" fontSize="12" left="789" width="100"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:Label x="10" y="55" text="Facility Name" textAlign="right" width="97"/>
+	<mx:Label x="115" y="53" fontSize="12" width="340" text="{facilityDTO.FacilityName}"/>
+	<mx:Label x="454" y="56" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="85" text="Brief Name" textAlign="right" width="97"/>
+	<mx:Label x="115" y="83" fontSize="12" width="340" text="{facilityDTO.BriefName}"/>
+	<mx:Label x="454" y="86" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="114" text="Address" textAlign="right" width="97"/>
+	<mx:Label x="115" y="113" width="340" height="60" text="{facilityDTO.Address}" fontSize="12" />
+
+	<mx:Label x="10" y="183" text="City" textAlign="right" width="97"/>
+	<mx:Label x="115" y="181" fontSize="12" width="120" text="{facilityDTO.City}"/>
+
+	<mx:Label x="243" y="183" text="State/Prov" textAlign="right" width="84"/>
+	<mx:Label x="335" y="181" fontSize="12" width="120" text="{facilityDTO.Province}"/>
+
+	<mx:Label x="10" y="211" text="Country" textAlign="right" width="97"/>
+	<mx:Label x="115" y="209" fontSize="12" width="120" text="{facilityDTO.Country}"/>
+
+	<mx:Label x="243" y="211" text="Zip/Postal" textAlign="right" width="84"/>
+	<mx:Label x="335" y="209" width="120" text="{facilityDTO.PostalCode}"/>
+
+	<mx:Label x="10" y="239" text="Type of building" textAlign="right" width="97"/>
+	<mx:Label x="115" y="237" fontSize="12" width="120" text="{facilityDTO.TypeOfBuilding}"/>
+
+	<mx:Label x="243" y="239" text="Neighborhood" textAlign="right" width="84"/>
+	<mx:Label x="335" y="237" fontSize="12" width="120" text="{facilityDTO.Neighbourhood}"/>
+
+	<mx:HBox x="10" y="275" width="445" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5" height="105">
+		<mx:Canvas width="100%" height="100%">
+			<mx:Label x="25" y="5" text="Name" textAlign="right" width="60"/>
+			<mx:Label x="93" y="1" fontSize="12" width="120" text="{facilityDTO.PrimaryContact}"/>
+
+			<mx:Label x="25" y="31" text="Position" textAlign="right" width="60"/>
+			<mx:Label x="93" y="29" fontSize="12" width="120" text="{facilityDTO.Position}"/>
+
+			<mx:Label x="25" y="62" text="Phone" textAlign="right" width="60"/>
+			<mx:Label x="93" y="60" fontSize="12" width="120" text="{facilityDTO.Phone}"/>
+
+			<mx:Label x="234" y="3" text="Cell" textAlign="right" width="60"/>
+			<mx:Label x="302" y="3" fontSize="12" width="120" text="{facilityDTO.Cell}"/>
+
+			<mx:Label x="234" y="31" text="Fax" textAlign="right" width="60"/>
+			<mx:Label x="302" y="31" fontSize="12" width="120" text="{facilityDTO.Fax}"/>
+
+			<mx:Label x="234" y="59" text="EMail" textAlign="right" width="60"/>
+			<mx:Label x="302" y="59" fontSize="12" width="120" text="{facilityDTO.EMail}"/>
+		</mx:Canvas>
+	</mx:HBox>
+	<mx:HBox x="20" y="265" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Primary Contact"/>
+	</mx:HBox>
+
+	<mx:Label x="10" y="388" text="Additional Contact Information" textAlign="left" width="445"/>
+	<mx:TextArea x="10" y="409" width="445" height="60" text="{facilityDTO.AdditionalContacts}" id="txtAdditionalContacts" editable="false"/>
+
+	<mx:Label x="10" y="479" text="Budget deadline" textAlign="right" width="97"/>
+	<mx:Label x="115" y="477" fontSize="12" width="340" text="{facilityDTO.BudgetDeadline}"/>
+
+	<mx:Label x="12" y="505" text="Budget Notes" textAlign="right" width="95"/>
+	<mx:TextArea x="10" y="531" width="445" height="100" text="{facilityDTO.BudgetNotes}" editable="false"/>
+
+	<mx:VBox top="53" left="483" height="406" width="406" verticalAlign="middle" horizontalAlign="center"
+		borderColor="#eeeeee" borderStyle="solid">
+		<mx:Image source="{facilityDTO.Photo.url}"/>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    close="OnClose(event);" 
+    creationComplete="OnCreationComplete();" 
+    title="Participant reservation" 
+    showCloseButton="true"
+    width="400" height="200"
+    >
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        	import mx.managers.PopUpManager;
+        	import UI.Document.DocumentController;
+        	import Domain.Participantreservation;
+
+            [Bindable]
+            public var reservation:Participantreservation;
+            
+            public var parentCollection:ArrayCollection;
+            
+            [Bindable]
+            private var details:String;
+            
+	        public function OnCreationComplete():void {
+	            PopUpManager.centerPopUp(this);
+	            focusManager.setFocus(detail);
+	            details = reservation.Details;
+	        }
+	
+	        public function OnClose(event:Event):void {
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        public function OnOk(event:Event):void {
+				
+				if (!this.IsValid()) {
+					return;
+				}
+				
+				reservation.Details = details;
+	        	if (reservation.isNew){
+		        	parentCollection.addItem(reservation);
+	        	}
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        private function IsValid():Boolean {
+	        	return true;
+	        }
+            
+        ]]>
+    </mx:Script>
+
+	<mx:Label text="Reservation detail:" fontWeight="bold"/>
+	<mx:TextArea id="detail" 
+		text="{details}" maxChars="350"
+		change="details = detail.text.toUpperCase()"
+		width="100%" height="100%"/>
+
+    <mx:ControlBar width="100%">
+        <mx:Spacer width="100%" height="10"/>
+        <mx:Button id="btnAdd" label="Ok" click="OnOk(event)" 
+        	enabled="{detail.text.length != 0}"/>
+        <mx:Button id="btnCancel" label="Cancel" click="OnClose(event)"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

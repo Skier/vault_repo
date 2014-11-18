@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle" horizontalAlign="center"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Tract;
+			import mx.controls.Alert;
+			import truetract.domain.ProjectTabDocument;
+			import truetract.domain.ProjectTabContact;
+			
+			private function setActiveClickHandler(e:Event):void 
+			{
+				if (ProjectTabDetailView(parentDocument).readOnly) 
+				{
+					checkIsActive.selected = ProjectTabDocument(data).IsActive;
+					return;
+				}
+				
+				var tabDocument:ProjectTabDocument = data as ProjectTabDocument;
+				
+				checkIsActive.selected = ProjectTabDocument(data).IsActive;
+
+				if (tabDocument.DocumentRef.TractsList.length == 0) 
+				{
+					Alert.show("Selected document havn't any tracts and can not be set as Primary", "Document incorrect");
+
+				} else if (tabDocument.DocumentRef.TractsList.length > 1) 
+				{
+					var popup:SelectTractView = SelectTractView.open(parentDocument as DisplayObject, tabDocument.DocumentRef, true);
+
+					popup.addEventListener("submit", 
+						function (event:Event):void 
+						{
+							updateDescription(popup.selectedTract);
+
+							popup.close();
+							
+							ProjectTabDetailView(parentDocument).changeProjectTabDocumentIsActiveStatus(data as ProjectTabDocument);
+						});
+
+					popup.addEventListener("cancel", 
+						function (e:Event):void 
+						{
+							popup.close();
+						});
+				} else 
+				{
+					updateDescription(tabDocument.DocumentRef.TractsList[0]);
+
+					ProjectTabDetailView(parentDocument).changeProjectTabDocumentIsActiveStatus(data as ProjectTabDocument);
+				}
+			}
+			
+			private function updateDescription(tract:Tract):void 
+			{
+				if (!ProjectTabDocument(data).IsActive) {
+					return;
+				}
+				
+				var newDescription:String = 
+					"Reference Name: " + tract.RefName + " ; " + 
+					"Called Size: " + tract.calledString + "\n" + 
+					ProjectTabDocument(data).Description;
+
+				ProjectTabDocument(data).Description = newDescription;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CheckBox id="checkIsActive" height="16" width="16" minHeight="16" minWidth="16" label="" 
+        toolTip="Set Entry as Primary"
+		selected="{ProjectTabDocument(data).IsActive}" 
+		click="setActiveClickHandler(event)"/>
+</mx:HBox>

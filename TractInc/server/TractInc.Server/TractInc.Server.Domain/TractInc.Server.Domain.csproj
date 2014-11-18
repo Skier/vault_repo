@@ -1,0 +1,124 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3EE93651-E7FB-437C-AD0E-30DC9C22EB27}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.Server.Domain</RootNamespace>
+    <AssemblyName>TractInc.Server.Domain.4</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account.cs" />
+    <Compile Include="AccountType.cs" />
+    <Compile Include="Asset.cs" />
+    <Compile Include="AssetRate.cs" />
+    <Compile Include="AssetType.cs" />
+    <Compile Include="BillItemType.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="ClientCompany.cs" />
+    <Compile Include="ClientContact.cs" />
+    <Compile Include="codegen\Account.Generator.cs" />
+    <Compile Include="codegen\AccountType.Generator.cs" />
+    <Compile Include="codegen\Asset.Generator.cs" />
+    <Compile Include="codegen\AssetRate.Generator.cs" />
+    <Compile Include="codegen\AssetType.Generator.cs" />
+    <Compile Include="codegen\BillItemType.Generator.cs" />
+    <Compile Include="codegen\Client.Generator.cs" />
+    <Compile Include="codegen\ClientCompany.Generator.cs" />
+    <Compile Include="codegen\ClientContact.Generator.cs" />
+    <Compile Include="codegen\Company.Generator.cs" />
+    <Compile Include="codegen\CompanyContact.Generator.cs" />
+    <Compile Include="codegen\Contract.Generator.cs" />
+    <Compile Include="codegen\ContractRate.Generator.cs" />
+    <Compile Include="codegen\ContractStatus.Generator.cs" />
+    <Compile Include="codegen\County.Generator.cs" />
+    <Compile Include="codegen\Export.Codegen.cs" />
+    <Compile Include="codegen\Import.Codegen.cs" />
+    <Compile Include="codegen\InvoiceItemType.Generator.cs" />
+    <Compile Include="codegen\Module.Generator.cs" />
+    <Compile Include="codegen\ModuleType.Generator.cs" />
+    <Compile Include="codegen\Permission.Generator.cs" />
+    <Compile Include="codegen\PermissionAssignment.Generator.cs" />
+    <Compile Include="codegen\Person.Generator.cs" />
+    <Compile Include="codegen\Project.Generator.cs" />
+    <Compile Include="codegen\ProjectStatus.Generator.cs" />
+    <Compile Include="codegen\Role.Generator.cs" />
+    <Compile Include="codegen\State.Generator.cs" />
+    <Compile Include="codegen\Team.Generator.cs" />
+    <Compile Include="codegen\TeamAssignment.Generator.cs" />
+    <Compile Include="codegen\TeamMember.Generator.cs" />
+    <Compile Include="codegen\User.Generator.cs" />
+    <Compile Include="codegen\UserPreference.Generator.cs" />
+    <Compile Include="codegen\UserRole.Generator.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="CompanyContact.cs" />
+    <Compile Include="Contract.cs" />
+    <Compile Include="ContractRate.cs" />
+    <Compile Include="ContractStatus.cs" />
+    <Compile Include="County.cs" />
+    <Compile Include="InvoiceItemType.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="ModuleType.cs" />
+    <Compile Include="Package\ClientManager\ClientManagerPackage.cs" />
+    <Compile Include="Package\ContractManager\ContractManagerPackage.cs" />
+    <Compile Include="Package\ContractManager\ContractPackage.cs" />
+    <Compile Include="Package\Dashboard\DashboardPackage.cs" />
+    <Compile Include="Package\ProjectManager\ProjectManagerPackage.cs" />
+    <Compile Include="Package\StaffManager\StaffManagerPackage.cs" />
+    <Compile Include="Package\UserManager\UserManagerPackage.cs" />
+    <Compile Include="Package\UserProfile\UserProfilePackage.cs" />
+    <Compile Include="Permission.cs" />
+    <Compile Include="PermissionAssignment.cs" />
+    <Compile Include="Person.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="ProjectStatus.cs" />
+    <Compile Include="Role.cs" />
+    <Compile Include="State.cs" />
+    <Compile Include="Team.cs" />
+    <Compile Include="TeamAssignment.cs" />
+    <Compile Include="TeamMember.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserPreference.cs" />
+    <Compile Include="UserRole.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TractInc.Server\TractInc.Server.csproj">
+      <Project>{31D5272A-01E6-4116-88E1-77EE941165C2}</Project>
+      <Name>TractInc.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

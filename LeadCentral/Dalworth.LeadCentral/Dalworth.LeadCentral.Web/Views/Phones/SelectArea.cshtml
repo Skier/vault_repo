@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "Select Area";
+
+    string returnUrl;
+    returnUrl = string.IsNullOrEmpty(ViewBag.ReturnUrl) ? "/Phones" : ViewBag.ReturnUrl;
+}
+
+@using (Html.BeginForm("SelectAvailablePhone", "Phones"))
+{
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Purchase New Phone Number</h1>
+    <div style="float:right;padding: 8px 0px 8px 0px;"><a href="@returnUrl" class="button">Cancel</a></div>
+  </div>
+  <div class="content">
+    <div style="display: inline-block; width: 100%; margin-bottom: 15px; clear: both;">
+      <div id="panel-local" style="float: left; width: 49%; opacity:1;cursor:pointer;" onclick="selectLocal();">
+        <div id="div-local" style="background: #F9F9F9; border: 1px solid #8EAEC3; padding: 10px; height: 180px;">
+          <h2 style="text-align:center;">Local Number</h2>
+          <table class="form">
+            <tr>
+              <td style="font-size:16px;text-align:center;">Select state:</td>
+              <td style="font-size:16px;text-align:center;">
+                <select id="state-sel" style="font-size:16px;"></select>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size:16px;text-align:center;">Select prefix:</td>
+              <td style="font-size:16px;text-align:center;">
+                <select id="local-area-sel" style="font-size:16px;"></select>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div id="panel-tollfree" style="float: right; width: 49%; opacity:1;cursor:pointer;" onclick="selectTollfree();">
+        <div id="div-tollfree" style="background: #F9F9F9; border: 1px solid #8EAEC3; padding: 10px; height: 180px;">
+          <h2 style="text-align:center;">Toll Free</h2>
+          <table class="form">
+            <tr>
+              <td style="font-size:16px;text-align:center;">Select prefix:</td>
+              <td style="font-size:16px;text-align:center;">
+                <select id="tollfree-area-sel" style="font-size:16px;">
+                  <option>800</option>
+                  <option>855</option>
+                  <option>866</option>
+                  <option>877</option>
+                  <option>888</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="panel-get-local-number" style="width: 100%; display:none;">
+      <div style="padding: 20px; text-align:center;">
+        <button type="submit" class="button primary" style="vertical-align:middle; font-size:14px;" onclick="addAreaCode()">Get Available Phone Number</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<script type="text/javascript"><!--
+    function selectLocal() {
+        $('#panel-tollfree').css({ opacity: 0.5 });
+        $('#div-tollfree').css({ background: '#FFF' });
+        $('#panel-local').css({ opacity: 1 });
+        $('#div-local').css({ background: '#FFC' });
+        $("#tollfree-area-sel").attr("selectedIndex", -1);
+        allowGetNumber();
+    }
+
+    function selectTollfree() {
+        $('#panel-local').css({ opacity: 0.5 });
+        $('#div-local').css({ background: '#FFF' });
+        $('#panel-tollfree').css({ opacity: 1 });
+        $('#div-tollfree').css({ background: '#FFC' });
+        $("#local-area-sel").attr("selectedIndex", -1);
+        allowGetNumber();
+    }
+
+    function allowGetNumber() {
+        $('#panel-get-local-number').show("fast");
+    }
+
+    var states_areas = [
+    ["Alaska", "AK", [["907", "0"]]],
+    ["Alabama", "AL", [["205", "1"], ["251", "1"], ["256", "1"], ["334", "1"]]],
+    ["Arizona", "AZ", [["445", "0"], ["480", "1"], ["520", "1"], ["602", "0"], ["623", "0"], ["928", "1"]]],
+    ["Arkansas", "AR", [["479", "1"], ["501", "1"], ["870", "1"]]],
+    ["California", "CA", [["209", "1"], ["213", "1"], ["310", "1"], ["323", "1"], ["408", "1"], ["415", "1"], ["424", "1"], ["442", "0"], ["510", "1"], ["530", "1"], ["559", "1"], ["562", "1"], ["619", "1"], ["626", "1"], ["650", "1"], ["657", "1"], ["661", "1"], ["707", "1"], ["714", "1"], ["747", "0"], ["760", "1"], ["805", "1"], ["818", "1"], ["831", "1"], ["858", "1"], ["909", "1"], ["916", "1"], ["925", "1"], ["949", "1"], ["951", "1"]]],
+    ["Colorado", "CO", [["303", "1"], ["719", "1"], ["720", "1"], ["970", "1"]]],
+    ["Connecticut", "CT", [["203", "1"], ["475", "0"], ["860", "1"], ["959", "0"]]],
+    ["Delaware", "DE", [["302", "1"]]],
+    ["District Of Columbia", "DC", [["202", "1"]]],
+    ["Florida", "FL", [["239", "1"], ["305", "1"], ["321", "1"], ["352", "1"], ["386", "1"], ["407", "1"], ["561", "1"], ["689", "0"], ["727", "1"], ["754", "1"], ["772", "1"], ["786", "1"], ["813", "1"], ["850", "1"], ["863", "1"], ["904", "1"], ["941", "1"], ["954", "1"]]],
+    ["Georgia", "GA", [["229", "1"], ["404", "1"], ["470", "0"], ["478", "1"], ["678", "1"], ["706", "1"], ["762", "1"], ["770", "0"], ["912", "1"]]],
+    ["Hawaii", "HI", [["808", "0"]]],
+    ["Idaho", "ID", [["208", "1"]]],
+    ["Illinois", "IL", [["217", "1"], ["224", "1"], ["302", "1"], ["309", "1"], ["312", "1"], ["331", "1"], ["618", "1"], ["630", "1"], ["708", "1"], ["773", "1"], ["779", "1"], ["815", "1"], ["847", "1"], ["872", "0"]]],
+    ["Indiana", "IN", [["219", "1"], ["260", "1"], ["317", "1"], ["574", "1"], ["765", "1"], ["812", "1"]]],
+    ["Iowa", "IA", [["319", "1"], ["515", "1"], ["563", "1"], ["641", "0"], ["712", "1"]]],
+    ["Kansas", "KS", [["316", "1"], ["620", "1"], ["785", "1"], ["913", "1"]]],
+    ["Kentucky", "KY", [["270", "1"], ["502", "1"], ["606", "1"], ["859", "1"]]],
+    ["Louisiana", "LA", [["225", "1"], ["318", "1"], ["337", "1"], ["504", "1"], ["985", "1"]]],
+    ["Maine", "ME", [["207", "1"]]],
+    ["Maryland", "MD", [["240", "1"], ["301", "1"], ["410", "1"], ["443", "1"]]],
+    ["Massachusetts", "MA", [["339", "1"], ["351", "0"], ["413", "1"], ["508", "1"], ["617", "1"], ["774", "1"], ["781", "1"], ["857", "1"], ["978", "1"]]],
+    ["Michigan", "MI", [["231", "1"], ["248", "1"], ["269", "1"], ["313", "1"], ["517", "1"], ["586", "1"], ["616", "1"], ["734", "1"], ["810", "1"], ["906", "1"], ["947", "0"], ["989", "1"]]],
+    ["Minnesota", "MN", [["218", "1"], ["320", "1"], ["507", "1"], ["612", "1"], ["651", "1"], ["763", "1"], ["952", "1"]]],
+    ["Mississippi", "MS", [["228", "1"], ["601", "1"], ["662", "1"], ["769", "1"]]],
+    ["Missouri", "MO", [["314", "1"], ["417", "1"], ["573", "1"], ["636", "1"], ["660", "1"], ["816", "1"]]],
+    ["Montana", "MT", [["406", "1"]]],
+    ["Nebraska", "NE", [["308", "1"], ["402", "1"], ["605", "1"]]],
+    ["Nevada", "NV", [["702", "1"], ["775", "1"]]],
+    ["New Hampshire", "NH", [["603", "1"]]],
+    ["New Jersey", "NJ", [["201", "1"], ["226", "1"], ["254", "1"], ["276", "1"], ["289", "1"], ["306", "0"], ["316", "1"], ["506", "0"], ["551", "1"], ["604", "1"], ["609", "1"], ["647", "1"], ["705", "1"], ["709", "1"], ["732", "1"], ["848", "1"], ["856", "1"], ["862", "1"], ["908", "1"], ["973", "1"]]],
+    ["New Mexico", "NM", [["505", "1"], ["575", "1"]]],
+    ["New York", "NY", [["212", "0"], ["315", "1"], ["347", "1"], ["516", "1"], ["518", "1"], ["585", "1"], ["607", "1"], ["631", "1"], ["646", "1"], ["712", "1"], ["716", "1"], ["718", "1"], ["845", "1"], ["914", "1"], ["917", "1"]]],
+    ["North Carolina", "NC", [["252", "1"], ["336", "1"], ["704", "1"], ["828", "1"], ["910", "1"], ["919", "1"], ["980", "1"], ["984", "0"]]],
+    ["North Dakota", "ND", [["701", "1"]]],
+    ["Ohio", "OH", [["216", "1"], ["234", "1"], ["283", "0"], ["330", "1"], ["380", "0"], ["419", "1"], ["440", "1"], ["513", "1"], ["567", "1"], ["614", "1"], ["740", "1"], ["937", "1"]]],
+    ["Oklahoma", "OK", [["405", "1"], ["580", "1"], ["918", "1"]]],
+    ["Oregon", "OR", [["503", "1"], ["541", "1"], ["971", "1"]]],
+    ["Pennsylvania", "PA", [["215", "1"], ["267", "1"], ["412", "1"], ["484", "1"], ["570", "1"], ["610", "1"], ["717", "1"], ["724", "1"], ["814", "1"], ["878", "0"]]],
+    ["Rhode Island", "RI", [["401", "1"]]],
+    ["South Carolina", "SC", [["803", "1"], ["843", "1"], ["864", "1"]]],
+    ["South Dakota", "SD", [["605", "1"]]],
+    ["Tennessee", "TN", [["423", "1"], ["615", "1"], ["731", "1"], ["865", "1"], ["901", "1"], ["931", "1"]]],
+    ["Texas", "TX", [["210", "1"], ["214", "1"], ["254", "1"], ["281", "1"], ["325", "1"], ["361", "1"], ["409", "1"], ["430", "0"], ["432", "1"], ["469", "1"], ["512", "1"], ["682", "1"], ["713", "0"], ["806", "1"], ["817", "1"], ["830", "1"], ["832", "1"], ["903", "1"], ["915", "1"], ["936", "1"], ["940", "1"], ["956", "1"], ["972", "1"], ["979", "1"]]],
+    ["Utah", "UT", [["385", "1"], ["435", "1"], ["801", "1"]]],
+    ["Vermont", "VT", [["802", "1"]]],
+    ["Virginia", "VA", [["276", "1"], ["434", "1"], ["540", "1"], ["571", "1"], ["703", "1"], ["757", "1"], ["804", "1"]]],
+    ["Washington", "WA", [["206", "1"], ["253", "1"], ["360", "1"], ["425", "1"], ["509", "1"], ["564", "0"]]],
+    ["West Virginia", "WV", [["304", "1"], ["681", "0"]]],
+    ["Wisconsin", "WI", [["262", "1"], ["414", "1"], ["608", "1"], ["715", "1"], ["920", "1"]]],
+    ["Wyoming", "WY", [["307", "1"]]]];
+
+    $(document).ready(function () {
+        $("#state-sel").change(function () {
+            fillAreas();
+        });
+
+        for (var idx in states_areas) {
+            $('#state-sel').append('<option value="' + states_areas[idx][1] + '">' + states_areas[idx][0] + '</option>');
+        }
+
+        fillAreas();
+    });
+
+    function fillAreas() {
+        var selectedState = states_areas[$("#state-sel").attr("selectedIndex")];
+        var areas = selectedState[2];
+        $('#local-area-sel').empty();
+        for (var idx in areas) {
+            $('#local-area-sel').append('<option value="' + areas[idx][0] + '">' + areas[idx][0] + '</option>');
+        }
+    }
+
+    function addAreaCode() {
+        var selectedArea = "";
+        var isTollFree = false;
+
+        if ($("#local-area-sel").attr("selectedIndex") != -1) {
+            selectedArea = $("#local-area-sel").val();
+            isTollFree = false;
+        } else if ($("#tollfree-area-sel").attr("selectedIndex") != -1) {
+            selectedArea = $("#tollfree-area-sel").val();
+            isTollFree = true;
+        }
+
+        if (selectedArea != "") {
+            $('<input />')
+                    .attr('type', 'hidden')
+                    .attr('name', 'area')
+                    .attr('value', selectedArea)
+                    .appendTo('form');
+
+            $('<input />')
+                    .attr('type', 'hidden')
+                    .attr('name', 'isTollFree')
+                    .attr('value', isTollFree)
+                    .appendTo('form');
+
+            return true;
+        }
+        return false;
+    }
+
+//--></script>
+

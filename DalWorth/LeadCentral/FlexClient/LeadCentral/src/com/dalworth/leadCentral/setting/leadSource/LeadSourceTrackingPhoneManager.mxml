@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:DataGrid x="10" y="135" height="243" width="351">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Phone Number" dataField="col1"/>
+			<mx:DataGridColumn headerText="Description" dataField="col2"/>
+			<mx:DataGridColumn headerText="Assignments" dataField="col2"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Label x="10" y="74" text="Available Phone Numbers:" fontSize="14"/>
+	<mx:CheckBox x="10" y="105" label="Show already assigned to another Lead Sources"/>
+	<mx:Button x="10" y="568" label="Cancel" width="105"/>
+	<mx:Button x="685" y="568" label="Next" width="105"/>
+	<mx:Text text="Phone 214 334 4142 already assigned to Lead Sources:" fontSize="16" width="421" x="369" y="135"/>
+	<mx:List x="369" y="188" width="421" height="190"></mx:List>
+	<mx:Text text="Assigning Tracking Phone Number to Molly Maids" fontSize="16" width="780" x="10" y="10"/>
+	<mx:Text text="Select Tracking Phone" fontSize="16" width="780" x="10" y="42"/>
+	
+</mx:Canvas>

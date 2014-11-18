@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="src.deedplotter.components.*"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.settings.UserSettingsRegistry;
+            import src.deedplotter.domain.settings.TractPointCssStyle;
+            import mx.collections.ArrayCollection;
+            
+            private var settings:UserSettingsRegistry;
+
+            public function CommitChanges():void 
+            {
+                var spStyle:TractPointCssStyle = settings.StartPointColorStyle;
+                spStyle.borderColor = spBorderColor.selectedColor;
+                spStyle.backgroundColor = spBgColor.selectedColor;
+                spStyle.borderRollOverColor = spBorderROColor.selectedColor;
+                spStyle.backgroundRollOverColor = spBgROColor.selectedColor;
+                settings.StartPointColorStyle = spStyle;
+
+                var epStyle:TractPointCssStyle = settings.EndPointColorStyle;
+                epStyle.borderColor = epBorderColor.selectedColor;
+                epStyle.backgroundColor = epBgColor.selectedColor;
+                epStyle.borderRollOverColor = epBorderROColor.selectedColor;
+                epStyle.backgroundRollOverColor = epBgROColor.selectedColor;
+                settings.EndPointColorStyle = epStyle;
+
+                var cpStyle:TractPointCssStyle = settings.ControlPointColorStyle;
+                cpStyle.borderColor = cpBorderColor.selectedColor;
+                cpStyle.backgroundColor = cpBgColor.selectedColor;
+                cpStyle.borderRollOverColor = cpBorderROColor.selectedColor;
+                cpStyle.backgroundRollOverColor = cpBgROColor.selectedColor;
+                settings.ControlPointColorStyle = cpStyle;
+
+                settings.CallViewColorStyle.lineColor = callColor.selectedColor;
+                settings.CallViewColorStyle.lineRollOverColor = callRollOverColor.selectedColor;
+
+                settings.refreshColorStyles();
+            }
+            
+            private function creationCompleteHandler():void 
+            {
+                settings = UserSettingsRegistry.getInstance();
+
+                callColor.selectedColor = settings.CallViewColorStyle.lineColor;
+                callRollOverColor.selectedColor = settings.CallViewColorStyle.lineRollOverColor;
+                
+                spBorderColor.selectedColor = settings.StartPointColorStyle.borderColor;
+                spBgColor.selectedColor = settings.StartPointColorStyle.backgroundColor;
+                spBorderROColor.selectedColor = settings.StartPointColorStyle.borderRollOverColor;
+                spBgROColor.selectedColor = settings.StartPointColorStyle.backgroundRollOverColor;
+
+                epBorderColor.selectedColor = settings.EndPointColorStyle.borderColor;
+                epBgColor.selectedColor = settings.EndPointColorStyle.backgroundColor;
+                epBorderROColor.selectedColor = settings.EndPointColorStyle.borderRollOverColor;
+                epBgROColor.selectedColor = settings.EndPointColorStyle.backgroundRollOverColor;
+
+                cpBorderColor.selectedColor = settings.ControlPointColorStyle.borderColor;
+                cpBgColor.selectedColor = settings.ControlPointColorStyle.backgroundColor;
+                cpBorderROColor.selectedColor = settings.ControlPointColorStyle.borderRollOverColor;
+                cpBgROColor.selectedColor = settings.ControlPointColorStyle.backgroundRollOverColor;
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <components:GlassHeaders headerTitle="COLOR SETTINGS"/>
+
+    <mx:VBox borderColor="#FFFFFF" cornerRadius="6"  borderStyle="solid" 
+        backgroundAlpha="0.0" width="100%" height="100%">
+        
+        <mx:Form paddingBottom="3" paddingLeft="3" paddingRight="3" paddingTop="3" verticalGap="3">
+
+            <mx:FormItem label="Tract Call">
+                <mx:HBox horizontalGap="3">
+                    <components:ExtendedColorPicker id="callColor" toolTip="Call Color"/>
+                    <components:ExtendedColorPicker id="callRollOverColor" toolTip="Call Roll Over Color"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+            <mx:FormItem label="Tract Start Point">
+                <mx:HBox horizontalGap="3">
+                    <components:ExtendedColorPicker id="spBorderColor" toolTip="Border Color"/>
+                    <components:ExtendedColorPicker id="spBgColor" toolTip="Background Color"/>
+                    <components:ExtendedColorPicker id="spBorderROColor" toolTip="Border Roll Over Color"/>
+                    <components:ExtendedColorPicker id="spBgROColor" toolTip="Background Roll Over Color"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+            <mx:FormItem label="Tract End Point">
+                <mx:HBox horizontalGap="3">
+                    <components:ExtendedColorPicker id="epBorderColor" toolTip="Border Color"/>
+                    <components:ExtendedColorPicker id="epBgColor" toolTip="Background Color"/>
+                    <components:ExtendedColorPicker id="epBorderROColor" toolTip="Border Roll Over Color"/>
+                    <components:ExtendedColorPicker id="epBgROColor" toolTip="Background Roll Over Color"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+            <mx:FormItem label="Tract Control Point">
+                <mx:HBox horizontalGap="3">
+                    <components:ExtendedColorPicker id="cpBorderColor" toolTip="Border Color"/>
+                    <components:ExtendedColorPicker id="cpBgColor" toolTip="Background Color"/>
+                    <components:ExtendedColorPicker id="cpBorderROColor" toolTip="Border Roll Over Color"/>
+                    <components:ExtendedColorPicker id="cpBgROColor" toolTip="Background Roll Over Color"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+        </mx:Form>
+        
+    </mx:VBox>
+
+</mx:VBox>

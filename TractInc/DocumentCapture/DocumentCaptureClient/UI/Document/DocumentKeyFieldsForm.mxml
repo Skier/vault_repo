@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:Document="UI.Document.*"
+	width="100%" height="100%"
+	xmlns:components="components.*" xmlns:Common="Domain.Common.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
+			import Domain.Countys;
+			import Domain.States;
+			import Domain.DataMapperRegistry;
+			
+			[Bindable]
+			public var Controller:DocumentController;
+			
+			public function IsValid():Boolean {
+
+				var result:Boolean = true;
+				
+				if (dateFiledValidator.validate().type == ValidationResultEvent.INVALID) {
+					result = false;
+				}
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+
+<!--	<mx:DateValidator id="dateFiledValidator1" enabled="true"
+		source="{date}"
+		yearSource="{year}" yearProperty="text"
+		monthSource="{month}" monthProperty="text"
+		daySource="{date}" dayProperty="text"
+		required="true"/>
+ -->	
+	<Common:DatesValidator id="dateFiledValidator" source="{dateFiled}" property="text" required="true"/>
+	
+	<mx:HDividedBox width="100%" height="100%"
+		horizontalGap="5"
+		>
+
+		<mx:VBox id="keyFieldsForm" width="100%" backgroundColor="#eeeeee"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+			borderColor="#dddddd" borderStyle="solid" cornerRadius="5"
+			visible="{Controller.Model.CurrentDocument.DocID == 0}"
+			includeInLayout="{Controller.Model.CurrentDocument.DocID == 0}"
+			>
+			
+			<mx:HBox width="100%" horizontalGap="4" horizontalAlign="center">
+				
+				<mx:Form id="formView">
+		
+					<mx:FormItem label="State">
+						<mx:ComboBox id="UsState" 
+							dataProvider="{Controller.Model.States}"
+							labelField="STATE_NAME"
+							change="Controller.OnStatesChanged()"
+							/>
+					</mx:FormItem>
+		
+					<mx:FormItem label="County">
+						<mx:ComboBox id="County" width="200"
+							dataProvider="{Controller.Model.Counties}"
+							labelField="NAME"
+							change="Controller.OnKeyFieldsChanged()"
+							/>
+					</mx:FormItem>
+		
+					<mx:Spacer height="10"/>
+		
+					<mx:FormItem label="Document type">
+						<mx:ComboBox id="DocumentType" 
+							dataProvider="{Controller.Model.Types}" 
+							labelField="Name"
+							change="Controller.OnKeyFieldsChanged()"
+							/>
+					</mx:FormItem>
+		
+					<mx:Spacer height="10"/>
+		
+					<mx:FormItem label="Doc No">
+						<mx:TextInput id="DocumentNo" maxChars="26" width="150"
+							text="{Controller.Model.CurrentDocument.DocumentNo}"
+							focusOut="Controller.OnKeyFieldsChanged()"
+							/>
+					</mx:FormItem>
+		
+					<mx:FormItem label="Volume">
+						<mx:TextInput id="Volume" maxChars="26" width="150"
+							text="{Controller.Model.CurrentDocument.Vol}"
+							focusOut="Controller.OnKeyFieldsChanged()"
+							/>
+					</mx:FormItem>
+		
+					<mx:FormItem label="Page">
+						<mx:TextInput id="Page" maxChars="26"  width="150"
+							text="{Controller.Model.CurrentDocument.Pg}"
+							focusOut="Controller.OnKeyFieldsChanged()"
+							/>
+					</mx:FormItem>
+		
+<!--					<mx:FormItem label="Date Filed">
+
+ 						<mx:HBox id="dateFiled">
+ 							<mx:TextInput id="year" maxChars="4" width="40" 
+ 								text="{Controller.Model.CurrentDocument.DateFiled.getFullYear()}"
+							 	focusOut="Controller.OnKeyFieldsChanged()"
+ 								/>
+							<mx:Canvas width="70">
+								<mx:ComboBox id="comboMonth" width="70" tabEnabled="false"
+									selectedIndex="{Controller.Model.CurrentDocument.DateFiled.getMonth()}"
+									dataProvider="{Controller.Model.monthes}"
+								 	change="month.text = comboMonth.selectedIndex &lt; 9 ? '0' + (comboMonth.selectedIndex + 1).toString() : (comboMonth.selectedIndex + 1).toString()"
+								 	/>
+								<mx:TextInput id="month" maxChars="2" width="50" 
+							 		text="{
+							 			Controller.Model.CurrentDocument.DateFiled.getMonth() &lt; 9 ? 
+							 				'0' + (Controller.Model.CurrentDocument.DateFiled.getMonth() + 1).toString() :
+							 				(Controller.Model.CurrentDocument.DateFiled.getMonth() + 1).toString()
+							 			}" 
+							 		change="comboMonth.selectedIndex = int(month.text) - 1"
+								 	focusOut="Controller.OnKeyFieldsChanged()"
+							 		/>
+							</mx:Canvas>
+ 							<mx:TextInput id="date" maxChars="2" width="30"
+ 								text="{Controller.Model.CurrentDocument.DateFiled.getDate()}"
+							 	focusOut="Controller.OnKeyFieldsChanged()"
+ 								/>
+ 						</mx:HBox>
+
+ 					</mx:FormItem>
+ -->		
+					<mx:FormItem label="Date Filed (yyyy/mm/dd)">
+						<components:DatePicker id="dateFiled" 
+							text="{Controller.Model.CurrentDocument.DateFiled == null ? '' : ''}"
+							inputMask="####/##/##" defaultChar=" " blankChar="_" 
+							width="80"
+							/>
+					</mx:FormItem>
+		
+				</mx:Form>
+	
+			</mx:HBox>
+	
+			<mx:ControlBar width="100%">
+				<mx:Spacer width="100%"/>
+	 			<mx:Button label="Create new document" click="Controller.OnClickCreate()"
+					enabled="{Controller.Model.CurrentDocument.DocID == 0 
+						&amp;&amp; Controller.Model.IsKeysFilled 
+						&amp;&amp; !Controller.Model.IsMatched}"
+					/>
+			</mx:ControlBar>
+	
+		</mx:VBox>
+
+		<mx:VBox id="searchPanel" width="350" backgroundColor="#eeeeee"
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+			borderColor="#dddddd" borderStyle="solid" cornerRadius="5"
+			visible="{Controller.Model.CurrentDocument.DocID == 0}"
+			includeInLayout="{Controller.Model.CurrentDocument.DocID == 0}"
+			>
+			<Document:DocumentSearchView id="documentSearch" 
+				Parent="{Controller}"/>
+	
+		</mx:VBox>
+
+	</mx:HDividedBox>
+
+</mx:Canvas>

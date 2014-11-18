@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalAlign="center" verticalAlign="top"
+	width="100%" height="100%"
+	xmlns:userManager="tractIncUserManager.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import TractInc.Domain.User;
+			import TractInc.Domain.Role;
+			
+			public function init(user:User):void 
+			{
+				controller.init(user);
+	        }
+	        
+			public function logout():Boolean 
+			{
+				return controller.logout();
+			}
+			
+			public function isValid():Boolean 
+			{
+				return true;
+			}
+			
+			private function userLabelFunction(item:Object, column:DataGridColumn):String
+			{
+			    var user:User = item as User;
+			    
+                if ( "Is Active" == column.headerText ) {
+        		    if ( user.IsActive ) {
+        		        return "Yes";
+        		    } else {
+        		        return "No";
+        		    }
+                } else if ( "First Name" == column.headerText ) {
+                    return user.Personal.FirstName;
+                } else if ( "Last Name" == column.headerText ) {
+                    return user.Personal.LastName;
+                } else if ( "Email" == column.headerText ) {
+                    return user.Personal.Email;
+                }
+                return "Not DEFINED!";
+			}
+			
+			private function roleListLabelFunction(item:Object, column:DataGridColumn):String
+			{
+			    var user:User = item as User;
+			    var result:String = (1 < user.RoleList.length ? "..." : "");
+			    for each (var role:Role in user.RoleList) {
+			        result = role.Name + result;
+			        break;
+			    }
+			    return result;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<userManager:UserManagerController id="controller" view="{this}"/>
+
+<!--
+ enabled="{!controller.model.isBusy}"
+ -->
+
+<!-- 
+	<mx:Panel title="User And Role Management" height="100%" width="100%">
+-->
+    <mx:VBox height="100%" width="100%">
+	
+		<mx:TabBar id="tabBar" 
+		    dataProvider="{controller.tabData}"
+		    itemClick="{controller.tabChanged(event);}"/>
+		
+<!--                        
+                        <mx:DataGridColumn headerText="First Name" width="85" dataField="{Personal.FirstName}"/>
+                        <mx:DataGridColumn headerText="Last Name" width="85" dataField="{Personal.LastName}"/>
+-->                        
+		<mx:ViewStack id="tabStack" creationPolicy="all" minHeight="200" minWidth="400" width="100%" height="100%">
+		    <mx:VBox visible="false">
+		        <mx:Button id="addUserButton" label="Add User" click="controller.addUserButtonOnClickHandler(event)"/>
+		        <mx:Form width="100%"
+                        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+                        paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+    		        <mx:HBox>
+                		<mx:FormItem label="Login">
+                			<mx:TextInput id="txtLoginFilter" width="80"/>
+                		</mx:FormItem>
+                		<mx:FormItem label="First Name">
+                			<mx:TextInput id="txtFirstNameFilter" width="100"/>
+                		</mx:FormItem>
+                		<mx:FormItem label="Last Name">
+                			<mx:TextInput id="txtLastNameFilter" width="100"/>
+                		</mx:FormItem>
+                		<mx:FormItem label="Is Active">
+                			<mx:ComboBox id="cbIsActiveFilter" width="60">
+                			    <mx:Array>
+                			        <mx:Object label="Yes"/>
+                			        <mx:Object label="No"/>
+                			    </mx:Array>
+                			</mx:ComboBox>
+                		</mx:FormItem>
+    		        </mx:HBox>
+    		        <mx:HBox>
+                		<mx:FormItem label="Role">
+                			<mx:ComboBox id="cbRoleFilter" width="100"/>
+                		</mx:FormItem>
+                		<mx:FormItem label="Company">
+                			<mx:ComboBox id="cbCompanyFilter" width="100"/>
+                		</mx:FormItem>
+                		<mx:FormItem label="Client">
+                			<mx:ComboBox id="cbClientFilter" width="100"/>
+                		</mx:FormItem>
+        		        <mx:Button id="searchUserButton" label="Search" click="controller.searchButtonOnClickHandler(event)"/>
+    		        </mx:HBox>
+                </mx:Form>
+    		    <mx:DataGrid id="userGrid" width="100%" height="100%">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="Id" width="20" dataField="UserId"/>
+                        <mx:DataGridColumn headerText="Login" width="50" dataField="Login"/>
+                        <mx:DataGridColumn headerText="First Name" width="85" labelFunction="userLabelFunction"/>
+                        <mx:DataGridColumn headerText="Last Name" width="85" labelFunction="userLabelFunction"/>
+                        <mx:DataGridColumn headerText="Email" width="100" labelFunction="userLabelFunction"/>
+                        <mx:DataGridColumn headerText="Is Active" width="50" labelFunction="userLabelFunction"/>
+                        <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                                itemRenderer="tractIncUserManager.UserGridActionIR"/>
+                    </mx:columns>
+                </mx:DataGrid>
+		    </mx:VBox>
+		    <mx:VBox visible="false">
+		        <mx:Button id="addRoleButton" label="Add Role" click="controller.addRoleButtonOnClickHandler(event)"/>
+    		    <mx:DataGrid id="roleGrid" width="100%" height="100%">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="Name" width="85" dataField="Name"/>
+                        <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                                itemRenderer="tractIncUserManager.RoleGridActionIR"/>
+                    </mx:columns>
+                </mx:DataGrid>
+		    </mx:VBox>
+		</mx:ViewStack>
+
+<!--	
+		<mx:ControlBar horizontalAlign="center">
+			<mx:Button label="Save" click="controller.btnSave_clickHandler()"/>
+			<mx:Button label="Reset" click="controller.btnReset_clickHandler()"/>
+		</mx:ControlBar>
+	</mx:Panel>
+-->		
+        
+    </mx:VBox>	
+</mx:VBox>

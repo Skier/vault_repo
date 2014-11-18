@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.Account;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            [Embed(source="/assets/page_go.png")]
+            [Bindable]
+            private var imgDocOpen:Class;
+            
+            override public function set data(value:Object):void 
+            {
+                super.data = value;
+                this.imgOpen.visible = (null != data && null != (data.data as Account));
+                this.imgRemove.visible = (null != data && null != (data.data as Account));
+            }
+            
+            private function openClickHandler():void 
+            {
+                AccountController.getInstance().openAccount(data.data as Account);
+            }
+
+            private function removeClickHandler():void 
+            {
+                AccountController.getInstance().removeAccount(data.data as Account);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Image id="imgOpen" source="{imgDocOpen}" 
+        toolTip="Open Account" 
+        click="openClickHandler()"/>
+        
+    <mx:Image id="imgRemove" source="{imgDelete}"
+        toolTip="Remove Account" 
+        click="removeClickHandler()"/>
+        
+</mx:HBox>

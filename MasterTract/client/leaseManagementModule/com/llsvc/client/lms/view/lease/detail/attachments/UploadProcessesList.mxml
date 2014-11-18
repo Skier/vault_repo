@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	visible="{items.length &gt; 0}" includeInLayout="{items.length &gt; 0}"
+	height="{(UploadProcessRenderer.HEIGHT * items.length) > 70 ? 70 : UploadProcessRenderer.HEIGHT * items.length}" 
+	horizontalScrollPolicy="off">
+	
+    <mx:Metadata>
+        [Event(name="uploadCompleteData", type="flash.events.DataEvent")]
+        [Event(name="cancelUploadProcess", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.EffectEvent;
+        	import mx.effects.Move;
+        	import mx.collections.ArrayCollection;
+
+			[Bindable]
+	        public var items:ArrayCollection = new ArrayCollection();
+	
+	        public var newItemStartX:int;
+	        public var newItemStartY:int;
+	        
+	        [Bindable]
+	        private var playingEffects:Dictionary = new Dictionary(true);
+	
+	        public function addUploadProcess(fileRef:FileReference, type:String):void 
+	        {
+		        var process:UploadProcessRenderer = new UploadProcessRenderer();
+				process.addEventListener("cancelUploadProcess", cancelUploadProcessHandler);
+				process.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeUploadProcessHandler);
+	
+	            var index:int = items.length;
+	            
+	            items.addItem(process);
+	            addChild(process);
+	            
+	            layoutItems(index, true);
+	
+				process.startUpload(fileRef, type);
+	        }
+	
+	        public function removeAllItems():void
+	        {
+	    		items.removeAll();
+	    		removeAllChildren();
+	        }
+	        
+	        private function completeUploadProcessHandler(event:DataEvent):void 
+	        {
+	            var item:UploadProcessRenderer = event.target as UploadProcessRenderer;
+				removeItem(item);
+
+//				dispatchEvent(event);
+	        }
+	        
+	        private function cancelUploadProcessHandler(event:Event):void 
+	        {
+	            var item:UploadProcessRenderer = event.target as UploadProcessRenderer;
+				removeItem(item);
+	        }
+	        
+	        private function removeItem(item:UploadProcessRenderer):void 
+	        {
+	            var index:int = items.getItemIndex(item);
+	            if (index > -1) 
+	            {
+	            	items.removeItemAt(index);
+	            }
+
+	            removeChild(item);
+	            layoutItems(index);
+	        }
+	
+	        private function layoutItems(startIndex:int, scrollToBottom:Boolean=false):void	
+	        {
+	            var n:int = items.length;
+	            var e:Move;
+				for (var i:int = startIndex; i < n ; i++) {
+				    var item:UploadProcessRenderer = items[i];
+	                var yTo:Number = i * (item.height);
+				    if (playingEffects[item] == null) {
+	                    e = new Move(item);
+	                    if (item.x == 0 && item.y == 0)
+	    				{
+	    					e.xFrom = newItemStartX;
+	    					e.yFrom = newItemStartY;
+	                    }
+	    
+	                    e.xTo = 0;
+	                    e.yTo = yTo;
+	                    playingEffects[item] = e;
+	                    e.addEventListener(EffectEvent.EFFECT_END, function(event:Event):void {
+	                       delete playingEffects[item];
+	                    });
+	                    e.play();
+	                } else {
+	                    playingEffects[item].pause();
+	                    playingEffects[item].yTo = yTo;
+	                    playingEffects[item].play();
+	                }
+	            }
+	            if (scrollToBottom){
+	                e.addEventListener(EffectEvent.EFFECT_END, function(event:Event):void {
+	                    validateNow();
+	                    verticalScrollPosition = maxVerticalScrollPosition;    
+	                });
+	            }
+	        }
+	        
+        ]]>
+    </mx:Script>    
+</mx:Canvas>

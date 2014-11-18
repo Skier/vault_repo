@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:smTeamAssignment="tractIncStaffManager.team.assignment.*">
+    
+    <mx:Script>
+        <![CDATA[
+        ]]>
+    </mx:Script>
+
+    <smTeamAssignment:TeamAssignmentController id="controller" view="{this}"/>
+
+    <mx:DataGrid id="assignmentDataGrid" width="100%" height="100%">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Id" width="20" dataField="TeamAssignmentId"/>
+            <mx:DataGridColumn headerText="Project" width="100"  labelFunction="controller.projectLabelFunction"/>
+            <mx:DataGridColumn headerText="Lead" width="100"  labelFunction="controller.nameLabelFunction"/>
+            <mx:DataGridColumn headerText="Start Date" width="75" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="End Date" width="75" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                    itemRenderer="tractIncStaffManager.team.assignment.ActionIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+    <mx:Button id="addMemberButton" label="Add Team Assignment" 
+            click="controller.addMemberButtonOnClickHandler(event)"
+            visible="{null != controller.team}"/>
+    
+</mx:VBox>

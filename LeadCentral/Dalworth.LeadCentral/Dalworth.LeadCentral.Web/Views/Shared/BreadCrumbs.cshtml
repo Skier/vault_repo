@@ -1,0 +1,36 @@
+﻿@using Dalworth.LeadCentral.Web.Controllers
+@{
+    var request = HttpContext.Current.Request;
+    var response = new HttpResponse(new StringWriter());
+    var httpContext = new HttpContext(request, response);
+    var routeData = RouteTable.Routes.GetRouteData(new HttpContextWrapper(httpContext));
+
+    var controllerName = string.Empty;
+    var actionName = string.Empty;
+    if (routeData != null)
+    {
+        var values = routeData.Values;
+        controllerName = (string)values["controller"];
+        actionName = (string) values["action"];
+    }
+}
+
+<div class="breadcrumb" style="height:15px;">
+
+@*
+    <div style="float:left;">
+        @Html.ActionLink("Home", "Dashboard", new { controller = "Home" })
+        @if (!string.IsNullOrEmpty(controllerName) && controllerName != "Home")
+        {
+            <span>&gt;&nbsp;</span>@Html.ActionLink(controllerName, "Index", new { controller = controllerName })
+            if (!string.IsNullOrEmpty(actionName) && actionName != "Index")
+            {
+                <span>&gt;&nbsp;</span>@Html.ActionLink(actionName, actionName, new { controller = controllerName })
+            }
+        }
+    </div>
+*@
+
+    <div style="float:right;">Ver 0.8</div>
+
+</div>

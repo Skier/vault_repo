@@ -1,0 +1,46 @@
+package truetract.domain.callparams
+{
+    import truetract.utils.*;
+	
+    public class DeltaParam implements IParam
+    {
+        public static const NAME:String = "DELTA";
+        
+        private var m_value:Angle;
+        
+        public function DeltaParam(value:*) {
+        	if (value is Angle) {
+        		m_value = value;
+        	} else if (value is String) {
+        		m_value = Angle.Parse(value);
+        	} else {
+        		m_value = new Angle(value);
+        	}
+        }
+        
+        public function get Value():*
+        {
+            return m_value;
+        }
+        
+        public function get DisplayValue():String
+        {
+            return m_value.toString();
+        }
+        
+        public function get DisplayName():String
+        {
+            return "Delta";
+        }
+        
+        public function get DBName():String {
+            return NAME;
+        }
+        
+        public function get DBValue():String
+        {
+            return m_value.toDbString();
+        }
+        
+    }
+}

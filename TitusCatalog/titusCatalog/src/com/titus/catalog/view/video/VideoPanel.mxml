@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	styleName="contentBox"
+	initialize="initHandler()" xmlns:controls="com.fxcomponents.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.model.VideoItem;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] private var videos:ArrayCollection;
+			
+			public function init():void 
+			{
+				if (videos == null)
+					videos = new ArrayCollection();
+				
+				getVideos();
+			}
+			
+			private function getVideos():void 
+			{
+				var video1:VideoItem = new VideoItem();
+					video1.name = "sample1";
+					video1.url = "http://localhost/titusSample1.flv";
+					video1.length = 0;
+					video1.description = "some description some description";
+				var video2:VideoItem = new VideoItem();
+					video2.name = "sample2";
+					video2.url = "http://localhost/titusSample2.flv";
+					video2.length = 0;
+					video2.description = "some description some description";
+				var video3:VideoItem = new VideoItem();
+					video3.name = "sample3";
+					video3.url = "http://localhost/titusSample3.flv";
+					video3.length = 0;
+					video3.description = "some description some description";
+				var video4:VideoItem = new VideoItem();
+					video4.name = "sample4";
+					video4.url = "http://localhost/titusSample4.flv";
+					video4.length = 0;
+					video4.description = "some description some description";
+				var video5:VideoItem = new VideoItem();
+					video5.name = "sample5";
+					video5.url = "http://localhost/titusSample5.flv";
+					video5.length = 0;
+					video5.description = "some description some description";
+				
+				videos.addItem(video1);
+				videos.addItem(video2);
+				videos.addItem(video3);
+				videos.addItem(video4);
+				videos.addItem(video5);
+			}
+			
+			private function initHandler():void 
+			{
+				init();
+			}
+			
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" height="400" verticalAlign="middle" horizontalAlign="center">
+		<controls:FXVideo width="480" height="360" source="{VideoItem(dgVideos.selectedItem).url}" autoPlay="false" bufferTime="10" />
+	</mx:HBox>
+	
+	<mx:DataGrid id="dgVideos" width="100%" height="100%" dataProvider="{videos}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Name" dataField="name" width="150"/>
+			<mx:DataGridColumn headerText="URL" dataField="url" width="350"/>
+			<mx:DataGridColumn headerText="Description" dataField="description"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

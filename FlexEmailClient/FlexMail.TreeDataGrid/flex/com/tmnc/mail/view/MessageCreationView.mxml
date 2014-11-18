@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Panel 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:view="com.tmnc.mail.view.*"
+	xmlns:c="com.tmnc.mail.view.controls.*"
+	xmlns:fc="com.adobe.flex.extras.controls.*"
+	xmlns:Attachment="com.tmnc.mail.view.Attachment.*"	
+	title="Create New Message"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    width="100%" height="100%" show="onShow()" backgroundColor="#cccccc">
+        
+    <mx:Script>
+        <![CDATA[
+            import mx.events.ValidationResultEvent;
+        	import com.tmnc.mail.business.messages.*;
+            import com.tmnc.mail.model.MailBoxModel;
+            import com.tmnc.mail.view.Attachment.AttachmentList;
+            import com.tmnc.mail.control.events.MessageEvent;
+            
+            import mx.collections.ArrayCollection;
+            import mx.core.*;
+            import mx.controls.*;   
+
+              
+            [Bindable]
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+            
+            private var attachmentDir:String;
+            private var inReplyTo:String;
+           
+            private function onCancelClick():void{
+                model.workflowState = MailBoxModel.VIEWING_INBOX_MAIL_SCREEN;
+            }
+      
+            private function onSendClick():void {
+                if (toEmailV.validate().type == ValidationResultEvent.INVALID){
+                    return;
+                }
+                
+                if (attachmentPanel.attachmentList.hasBusyItems){
+                    Alert.show("Some of your attachments is still uploading. Please wait.");
+                    return;
+                }
+                
+                var message:MessageInfo  = new MessageInfo();
+                message.To = ToEmail.text;
+                message.CC = CcEmail.text;
+                message.BCC = BccEmail.text;
+                message.Subject = subjectTxt.text;
+                message.AttachmentDir = attachmentDir;
+                message.InReplyTo = inReplyTo;
+                
+                var fileNameList:Array = attachmentPanel.attachmentList.items;
+                if (fileNameList.length > 0){
+                    message.BodyPartList = new Array(fileNameList.length);
+                
+                    for (var i:int; i < fileNameList.length; i++ ){
+                        message.BodyPartList[i] = new BodyPartInfo();
+                        message.BodyPartList[i].FileName = fileNameList[i].fileName;
+                    }
+                }
+              
+                message.BodyPlainText = body.text;
+
+                if (!body.usePlainText){
+                    var htmlPart:BodyPartInfo  = new BodyPartInfo();
+                    htmlPart.ContentType = "text/html";
+                    htmlPart.FileName = "";
+                    htmlPart.Text = body.msgBodyText;
+                    message.BodyPartList.push(htmlPart);
+                }
+        
+                var event:MessageEvent = new MessageEvent(MessageEvent.EVENT_SEND, message);
+                Application.application.dispatchEvent(event);
+            }
+            
+            private function onShow():void {
+        
+                ToEmail.text    = model.newMessage.To;
+                CcEmail.text    = model.newMessage.CC;
+                BccEmail.text   = model.newMessage.BCC;
+                subjectTxt.text = model.newMessage.Subject;
+                body.text       = model.newMessage.BodyPlainText;
+                attachmentDir   = model.newMessage.AttachmentDir;
+                inReplyTo       = model.newMessage.InReplyTo;
+                
+                attachmentPanel.attachmentList.removeAllItems();
+              
+                var variables:URLVariables = new URLVariables();
+                variables.AttachmentDirUid = attachmentDir;
+                model.uploadRequestURL.data = variables;
+
+                attachmentPanel.attachmentList.uploadRequestURL = model.uploadRequestURL;
+            }
+            
+        ]]>
+    </mx:Script>  
+
+	<mx:StringValidator id="toEmailV" source="{ToEmail}" property="text"/>
+	
+    <mx:Form width="100%" height="111" paddingTop="5" paddingBottom="5" verticalGap="4" verticalScrollPolicy="off" id="form1">
+        <mx:FormItem label="To:" width="100%" required="true">
+            <c:EmailInputField id="ToEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+            dataProvider="{new ArrayCollection(model.accountContactEmails)}"/>                
+        </mx:FormItem>
+        <mx:FormItem label="CC:" width="100%">
+            <c:EmailInputField id="CcEmail" width="100%" keepLocalHistory="false" lookAhead="false" text="" 
+            dataProvider="{new ArrayCollection(model.accountContactEmails)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="BCC" width="100%">
+        <c:EmailInputField id="BccEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+            dataProvider="{new ArrayCollection(model.accountContactEmails)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Subject" width="100%">
+            <mx:TextInput id="subjectTxt" width="100%"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:HBox width="100%" height="100%" id="hbox1" horizontalGap="4" backgroundColor="#cccccc" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <Attachment:AttachmentPanel y="4" id="attachmentPanel" 
+            width="300" height="100%" backgroundColor="#cccccc" borderStyle="solid"/>
+        <c:MessageBodyEditor id="body" width="100%" height="100%" backgroundColor="#cccccc" borderStyle="solid" headerHeight="10"/>
+    </mx:HBox>
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Send" id="Send" click="onSendClick()"/>
+        <mx:Button label="Cancel" id="cancelButton" click="onCancelClick()"/>
+    </mx:ControlBar>
+
+</mx:Panel>

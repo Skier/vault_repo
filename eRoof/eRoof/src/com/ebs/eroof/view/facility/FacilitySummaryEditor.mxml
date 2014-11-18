@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{model != null}" xmlns:controls="com.ebs.controls.*" height="754" width="1007" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="endEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.dto.Facilities_DTO;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			[Bindable]
+			private var facilityDTO:Facilities_DTO;
+			
+			[Bindable]
+			private var roofSystems:ArrayCollection;
+			
+			private var _model:Facility;
+			[Bindable]
+			public function get model():Facility { return _model; }
+			public function set model(value:Facility):void 
+			{
+				_model = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				if (model != null)
+					facilityDTO = model.facilityDTO;
+				else 
+					facilityDTO = null;
+				
+				callLater(initCombos);
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				
+				return result;
+			}
+			
+			private function populateSection():void 
+			{
+				facilityDTO.FacilityName = txtFacilityName.text;
+				facilityDTO.BriefName = txtBriefName.text;
+				facilityDTO.Address = txtAddress.text;
+				facilityDTO.City = txtCity.text;
+				facilityDTO.Province = comboProvince.selectedItem as String;
+				facilityDTO.Country = comboCountry.selectedItem as String;
+				facilityDTO.PostalCode = txtPostalCode.text;
+				facilityDTO.TypeOfBuilding = comboTypeOfBuilding.selectedItem as String;
+				facilityDTO.Neighbourhood = comboNeighborhood.selectedItem as String;
+				facilityDTO.PrimaryContact = txtPrimaryContact.text;
+				facilityDTO.Position = txtPosition.text;
+				facilityDTO.Phone = txtPhone.text;
+				facilityDTO.Cell = txtCell.text;
+				facilityDTO.Fax = txtFax.text;
+				facilityDTO.EMail = txtEmail.text;
+				facilityDTO.AdditionalContacts = txtAdditionalContacts.text;
+				facilityDTO.BudgetDeadline = txtBudgetDeadline.text;
+				facilityDTO.BudgetNotes = txtBudgetNotes.text;
+			}
+			
+			private function updateSection():void 
+			{
+				Application.application.enabled = false;
+				
+				populateSection();
+				
+				isBusy = true;
+				
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreSection, facilityDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(facilityDTO, callBackEvent);
+            	ev.dispatch();
+			}
+			
+            private function onStoreSection(storedObject:Facilities_DTO):void 
+            {
+            	facilityDTO = storedObject;
+				Application.application.enabled = true;
+
+				isBusy = false;
+
+				dispatchEvent(new Event("endEdit"));
+            }
+			
+			private function onCreate():void 
+			{
+				filePhoto.download.enabled = false;
+				filePhoto.displaySection.percentWidth = 100;
+				
+				initCombos();
+			}
+			
+			private function initCombos():void 
+			{
+				if (facilityDTO == null)
+					return;
+					
+				comboCountry.selectedItemVal = facilityDTO.Country;
+				comboProvince.selectedItemVal = facilityDTO.Province;
+				comboTypeOfBuilding.selectedItemVal = facilityDTO.TypeOfBuilding;
+				comboNeighborhood.selectedItemVal = facilityDTO.Neighbourhood;
+			}
+			
+			private function onClickSave():void 
+			{
+				if (isFormValid()) 
+					updateSection();
+			}
+			
+			private function onClickCancel():void 
+			{
+				dispatchEvent(new Event("endEdit"));
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+
+
+	<mx:Label id="lblFacilityName" y="10" fontSize="14" text="{facilityDTO.FacilityName}" left="10" width="635"/>
+
+	<mx:LinkButton label="Save" width="100" click="onClickSave()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="681"/>
+	<mx:LinkButton label="Cancel" click="onClickCancel()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="789" width="100"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:Label x="10" y="55" text="Facility Name" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="53" id="txtFacilityName" maxChars="10" width="340" text="{facilityDTO.FacilityName}"/>
+	<mx:Label x="454" y="56" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="85" text="Brief Name" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="83" id="txtBriefName" maxChars="10" width="340" text="{facilityDTO.BriefName}"/>
+	<mx:Label x="454" y="86" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="114" text="Address" textAlign="right" width="97"/>
+	<mx:TextArea x="115" y="113" width="340" height="60" text="{facilityDTO.Address}" id="txtAddress"/>
+
+	<mx:Label x="10" y="183" text="City" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="181" id="txtCity" width="120" text="{facilityDTO.City}"/>
+
+	<mx:Label x="243" y="183" text="State/Prov" textAlign="right" width="84"/>
+	<view:QuickBaseItemComboBox id="comboProvince" 
+		x="335" y="181" width="120" 
+		dtoType="{Facilities_DTO}" dto="{facilityDTO}" selectedItemVal="{facilityDTO.Province}" tableField="Province"/>
+
+	<mx:Label x="10" y="211" text="Country" textAlign="right" width="97"/>
+	<view:QuickBaseItemComboBox id="comboCountry" 
+		x="115" y="209" width="120"  
+		dtoType="{Facilities_DTO}" dto="{facilityDTO}" selectedItemVal="{facilityDTO.Country}" tableField="Country"/>
+
+	<mx:Label x="243" y="211" text="Zip/Postal" textAlign="right" width="84"/>
+	<mx:TextInput x="335" y="209" id="txtPostalCode" width="120" text="{facilityDTO.PostalCode}"/>
+
+	<mx:Label x="10" y="239" text="Type of building" textAlign="right" width="97"/>
+	<view:QuickBaseItemComboBox id="comboTypeOfBuilding" 
+		x="115" y="237" width="120"	
+		dtoType="{Facilities_DTO}" dto="{facilityDTO}" selectedItemVal="{facilityDTO.TypeOfBuilding}" tableField="TypeOfBuilding"/>
+
+	<mx:Label x="243" y="239" text="Neighborhood" textAlign="right" width="84"/>
+	<view:QuickBaseItemComboBox id="comboNeighborhood" 
+		x="335" y="237" width="120"	
+		dtoType="{Facilities_DTO}" dto="{facilityDTO}" selectedItemVal="{facilityDTO.Neighbourhood}" tableField="Neighbourhood"/>
+
+	<mx:HBox x="10" y="275" width="445" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5" height="105">
+		<mx:Canvas width="100%" height="100%">
+			<mx:Label x="25" y="5" text="Name" textAlign="right" width="60"/>
+			<mx:TextInput x="93" y="1" id="txtPrimaryContact" width="120" text="{facilityDTO.PrimaryContact}"/>
+
+			<mx:Label x="25" y="31" text="Position" textAlign="right" width="60"/>
+			<mx:TextInput x="93" y="29" id="txtPosition" width="120" text="{facilityDTO.Position}"/>
+
+			<mx:Label x="25" y="62" text="Phone" textAlign="right" width="60"/>
+			<mx:TextInput x="93" y="60" id="txtPhone" width="120" text="{facilityDTO.Phone}"/>
+
+			<mx:Label x="234" y="3" text="Cell" textAlign="right" width="60"/>
+			<mx:TextInput x="302" y="3" id="txtCell" width="120" text="{facilityDTO.Cell}"/>
+
+			<mx:Label x="234" y="31" text="Fax" textAlign="right" width="60"/>
+			<mx:TextInput x="302" y="31" id="txtFax" width="120" text="{facilityDTO.Fax}"/>
+
+			<mx:Label x="234" y="59" text="EMail" textAlign="right" width="60"/>
+			<mx:TextInput x="302" y="59" id="txtEmail" width="120" text="{facilityDTO.EMail}"/>
+		</mx:Canvas>
+	</mx:HBox>
+	<mx:HBox x="20" y="265" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Primary Contact"/>
+	</mx:HBox>
+
+	<mx:Label x="10" y="388" text="Additional Contact Information" textAlign="left" width="445"/>
+	<mx:TextArea x="10" y="409" width="445" height="60" text="{facilityDTO.AdditionalContacts}" id="txtAdditionalContacts"/>
+
+	<mx:Label x="10" y="479" text="Budget deadline" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="477" id="txtBudgetDeadline" maxChars="10" width="340" text="{facilityDTO.BudgetDeadline}"/>
+
+	<mx:Label x="12" y="505" text="Budget Notes" textAlign="right" width="95"/>
+	<mx:TextArea x="10" y="531" width="445" height="100" text="{facilityDTO.BudgetNotes}" id="txtBudgetNotes"/>
+
+	<mx:VBox top="53" left="483" height="406" width="406" verticalAlign="middle" horizontalAlign="center"
+		borderColor="#eeeeee" borderStyle="solid">
+		<mx:Image source="{facilityDTO.Photo.url}"/>
+	</mx:VBox>
+
+	<view:FileManagementField id="filePhoto" fileDTO="{facilityDTO.Photo}"
+		allowUpload="true" height="50" width="406" x="483" y="409"/>
+</mx:Canvas>

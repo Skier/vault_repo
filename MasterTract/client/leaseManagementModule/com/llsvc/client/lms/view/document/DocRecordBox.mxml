@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" xmlns:document="com.llsvc.client.lms.view.document.*"
+	borderColor="#eeeeee" borderStyle="solid" borderThickness="1">
+	
+    <mx:Metadata>
+        [Event(name="editRecordRequest", type="flash.events.Event")]
+        [Event(name="deleteRecordRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.events.ItemClickEvent;
+			import com.llsvc.client.lms.LocalCash;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.State;
+			import com.llsvc.domain.DocumentRecord;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _docRecord:DocumentRecord;
+			[Bindable]
+			public function get docRecord():DocumentRecord { return _docRecord; }
+			public function set docRecord(value:DocumentRecord):void 
+			{
+				_docRecord = value;
+			}
+			
+	        private function buttonBarClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                	dispatchEvent(new Event("editRecordRequest"));
+	                    break;
+	                case 1:
+	                	dispatchEvent(new Event("deleteRecordRequest"));
+	                    break;
+	            }
+	        }
+	        
+	        private function openAttachment():void 
+	        {
+		        var request:URLRequest = new URLRequest("download?id=" + docRecord.attachment.file.id.toString());
+        		navigateToURL(request, "_blank");
+	        }
+	        
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" verticalGap="0"
+		paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		verticalAlign="top">
+		<mx:VBox width="100%" verticalGap="0">
+			<mx:HBox width="100%" horizontalGap="0">
+				<mx:Label text="State:"/>
+				<mx:Label text="{docRecord.state.name}" fontWeight="bold"/>
+				<mx:Label text="County:"/>
+				<mx:Label text="{docRecord.county.name}" fontWeight="bold"/>
+			</mx:HBox>
+	
+			<mx:HBox width="100%" horizontalGap="0">
+				<mx:Label text="BK/Vol:"/>
+				<mx:Label text="{docRecord.volume}" fontWeight="bold"/>
+				<mx:Label text="Pg:"/>
+				<mx:Label text="{docRecord.page}" fontWeight="bold"/>
+				<mx:Label text="File No:"/>
+				<mx:Label text="{docRecord.docNo}" fontWeight="bold"/>
+				<mx:Label text="Rec:"/>
+				<mx:Label text="{docRecord.docDate.toDateString()}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:Spacer width="100%"/>
+		
+		<mx:Button width="30" height="24" icon="@Embed('assets/icons16/attach.png')" 
+			toolTip="Show attachment"
+			enabled="{docRecord.attachment != null &amp;&amp; docRecord.attachment.file != null}"
+			click="openAttachment()"/>
+		
+        <mx:ButtonBar id="bbUtil" right="10" itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="30" buttonHeight="24"
+        	visible="{editable}"
+        	includeInLayout="{editable}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/pencil.png')" toolTip="Edit record"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')" toolTip="Delete record"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+	</mx:HBox>
+</mx:Box>

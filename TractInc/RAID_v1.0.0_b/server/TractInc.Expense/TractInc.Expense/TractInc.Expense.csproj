@@ -1,0 +1,134 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{69568EB7-CE14-4D09-BE67-31AE3B79A739}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.Expense</RootNamespace>
+    <AssemblyName>TractInc.Expense</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>c:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ApacheFop.Net, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\ApacheFop.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="vjslib" />
+    <Reference Include="weborb, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\weborb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseService.cs" />
+    <Compile Include="Domain\BillItemAttachment.cs" />
+    <Compile Include="Domain\BillItemAttachmentDataMapper.cs" />
+    <Compile Include="Domain\Invoice.cs" />
+    <Compile Include="Domain\InvoiceDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItem.cs" />
+    <Compile Include="Domain\InvoiceItemDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItemStatus.cs" />
+    <Compile Include="Domain\InvoiceItemStatusDataMapper.cs" />
+    <Compile Include="Domain\InvoiceItemType.cs" />
+    <Compile Include="Domain\InvoiceItemTypeDataMapper.cs" />
+    <Compile Include="Domain\InvoiceStatus.cs" />
+    <Compile Include="Domain\InvoiceStatusDataMapper.cs" />
+    <Compile Include="Domain\Message.cs" />
+    <Compile Include="Domain\MessageDataMapper.cs" />
+    <Compile Include="Domain\Note.cs" />
+    <Compile Include="Domain\NoteDataMapper.cs" />
+    <Compile Include="Domain\TractIncRAIDDb.cs" />
+    <Compile Include="InvoiceProcessor.cs" />
+    <Compile Include="Uploader.cs" />
+    <Compile Include="Domain\Afe.cs" />
+    <Compile Include="Domain\AfeDataMapper.cs" />
+    <Compile Include="Domain\Afestatus.cs" />
+    <Compile Include="Domain\AfestatusDataMapper.cs" />
+    <Compile Include="Domain\Asset.cs" />
+    <Compile Include="Domain\Assetassignment.cs" />
+    <Compile Include="Domain\AssetassignmentDataMapper.cs" />
+    <Compile Include="Domain\AssetDataMapper.cs" />
+    <Compile Include="Domain\Assettype.cs" />
+    <Compile Include="Domain\AssettypeDataMapper.cs" />
+    <Compile Include="Domain\Bill.cs" />
+    <Compile Include="Domain\BillDataMapper.cs" />
+    <Compile Include="Domain\Billitem.cs" />
+    <Compile Include="Domain\BillitemDataMapper.cs" />
+    <Compile Include="Domain\Billitemstatus.cs" />
+    <Compile Include="Domain\BillitemstatusDataMapper.cs" />
+    <Compile Include="Domain\BillItemType.cs" />
+    <Compile Include="Domain\BillItemTypeDataMapper.cs" />
+    <Compile Include="Domain\BillStatus.cs" />
+    <Compile Include="Domain\BillStatusDataMapper.cs" />
+    <Compile Include="Domain\Client.cs" />
+    <Compile Include="Domain\ClientDataMapper.cs" />
+    <Compile Include="Domain\codegen.cs" />
+    <Compile Include="Domain\Module.cs" />
+    <Compile Include="Domain\ModuleDataMapper.cs" />
+    <Compile Include="Domain\Permission.cs" />
+    <Compile Include="Domain\PermissionAssignment.cs" />
+    <Compile Include="Domain\PermissionAssignmentDataMapper.cs" />
+    <Compile Include="Domain\PermissionDataMapper.cs" />
+    <Compile Include="Domain\RateByAssignment.cs" />
+    <Compile Include="Domain\RateByAssignmentDataMapper.cs" />
+    <Compile Include="Domain\Role.cs" />
+    <Compile Include="Domain\RoleDataMapper.cs" />
+    <Compile Include="Domain\Subafe.cs" />
+    <Compile Include="Domain\SubafeDataMapper.cs" />
+    <Compile Include="Domain\Subafestatus.cs" />
+    <Compile Include="Domain\SubafestatusDataMapper.cs" />
+    <Compile Include="Domain\Synclog.cs" />
+    <Compile Include="Domain\SynclogDataMapper.cs" />
+    <Compile Include="Domain\User.cs" />
+    <Compile Include="Domain\UserAsset.cs" />
+    <Compile Include="Domain\UserAssetDataMapper.cs" />
+    <Compile Include="Domain\UserDataMapper.cs" />
+    <Compile Include="Domain\UserRole.cs" />
+    <Compile Include="Domain\UserRoleDataMapper.cs" />
+    <Compile Include="HttpUrlHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\ExpenseService.cs" />
+    <Compile Include="SqlHelper.cs" />
+    <Compile Include="UserService.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)\Domain\App.config $(TargetDir)\TractInc.Expense.dll.Config
+copy $(ProjectDir)\styles\invoice.xsl $(TargetDir)\invoice.xsl
+copy $(ProjectDir)\styles\cover.xsl $(TargetDir)\cover.xsl
+copy $(ProjectDir)\styles\logo.jpg $(TargetDir)\logo.jpg</PostBuildEvent>
+  </PropertyGroup>
+</Project>

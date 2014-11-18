@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" currentState="login" verticalAlign="middle" horizontalAlign="center">
+
+ 	<mx:states>
+ 	 	<mx:State name="login"/>
+ 	 	
+ 	 	<mx:State name="passwordRecovery">
+            <mx:RemoveChild target="{btnLogin}"/>
+            
+            <mx:AddChild relativeTo="{buttonBar}" position="lastChild">
+                <mx:Button 
+                    label="Send password" enabled="{username.text != 'guest'}" 
+                    click="Controller.restorePassword()"/>
+            </mx:AddChild>
+            
+            <mx:RemoveChild target="{lbForgot}"/>
+            
+            <mx:RemoveChild target="{passwordItem}"/>
+            
+            <mx:AddChild relativeTo="{spacer}" position="before">
+                    <mx:LinkButton label="Login" click="currentState='login'"/>
+            </mx:AddChild>
+ 	 	
+ 	 	 	<mx:SetProperty target="{titlewindow1}" name="title" value="Restore password"/>
+ 	 	</mx:State>
+ 	</mx:states>
+    
+ 	<mx:Script>
+ 		<![CDATA[
+ 		    import src.AppController;
+
+ 			[Bindable]
+ 			public var Controller:LoginController;
+ 			
+ 			public function set Parent(parent:AppController):void 
+ 			{
+ 			    Controller = new LoginController(this, parent);
+ 			}
+
+ 		]]>
+ 	</mx:Script>
+
+    <mx:StringValidator id="usernameV" 
+        source="{username}" property="text" required="true" minLength="4" maxLength="12"/>
+        
+    <mx:StringValidator id="passwordV" 
+        source="{password}" property="text" required="false" maxLength="12"/>
+
+    <mx:TitleWindow id="titlewindow1"
+        title="Login to the system" showCloseButton="false">
+        
+    	<mx:Form id="content">
+    	    <mx:Label id="msgLabel" color="#990000" includeInLayout="{msgLabel.text.length > 0}"/>
+    	    
+    		<mx:FormItem id="usernameItem" label="Username">
+    			<mx:TextInput id="username" 
+    				text="{Controller.model.user.Login}" enter="Controller.doLogin()"/>
+    		</mx:FormItem>
+    		
+    		<mx:FormItem label="Password" id="passwordItem">
+    			<mx:TextInput id="password" 
+    				text="{Controller.model.user.Password}" displayAsPassword="true"
+    				enter="Controller.doLogin()"/>
+    		</mx:FormItem>
+    		
+    	</mx:Form>
+    	
+    	<mx:ControlBar id="buttonBar">
+    	
+    		<mx:LinkButton id="lbForgot" label="Forgot password?" click="Controller.switchToRecovery()"/>
+    		
+    		<mx:Spacer id="spacer" width="100%"/>
+    		
+    		<mx:Button id="btnLogin" label="Login" click="Controller.doLogin()"/>
+    		
+    		<mx:Button label="U" width="25" click="Controller.autoLogin('user','user')"/>
+    		
+    		<mx:Button label="M" width="25" click="Controller.autoLogin('manager','manager')"/>
+    		
+    	</mx:ControlBar>
+    	
+    </mx:TitleWindow>
+</mx:HBox>

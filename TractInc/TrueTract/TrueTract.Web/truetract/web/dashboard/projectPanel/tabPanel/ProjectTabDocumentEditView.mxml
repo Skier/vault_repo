@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="truetract.plotter.validators.*"
+    xmlns:documentPanel="truetract.web.dashboard.documentPanel.*"
+    title="Edit Runsheet Entry" 
+    layout="vertical">
+
+    <mx:Metadata>
+        [Event(name="commit", type="flash.events.Event")]
+        [Event(name="cancel", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.domain.ProjectTabDocumentTract;
+        	import truetract.domain.Tract;
+        	import truetract.domain.DictionaryRegistry;
+            import mx.events.DynamicEvent;
+            import mx.managers.PopUpManager;
+            import truetract.domain.ProjectTab;
+            import truetract.domain.ProjectTabDocument;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+			[Bindable] public var tabDocument:ProjectTabDocument;
+			[Bindable] public var readOnly:Boolean = false;
+
+            private function doSubmit():void
+            {
+                tabDocument.Description = descriptionTxt.text;
+                tabDocument.Remarks = remarksText.text;
+                
+                var tracts:Array = new Array();
+
+                for each (var tract:Tract in tabDocument.DocumentRef.TractsList)
+                {
+                	if (tract.IsSelected)
+                	{
+                		var tabTract:ProjectTabDocumentTract = new ProjectTabDocumentTract();
+                		tabTract.ProjectTabDocumentId = tabDocument.ProjectTabDocumentId;
+                		tabTract.TractId = tract.TractId;
+                		tracts.push(tabTract);
+                	}
+                }
+                
+                tabDocument.Tracts = tracts;
+
+            	dispatchEvent(new Event("commit"));
+            }
+
+            private function doCancel():void
+            {
+                dispatchEvent(new Event("cancel"));
+                close();
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+
+            public static function open(parent:DisplayObject, tabDocument:ProjectTabDocument, modal:Boolean):ProjectTabDocumentEditView
+            {
+                var popup:ProjectTabDocumentEditView = new ProjectTabDocumentEditView();
+                
+                popup.tabDocument = tabDocument;
+                popup.updateDocTracts();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+			private function updateDocTracts():void 
+			{
+				if (tabDocument.DocumentRef == null)
+					return;
+				
+				for each (var tract:Tract in tabDocument.DocumentRef.TractsList)
+				{
+					if (tabDocument.IsTractExists(tract))
+					{
+						tract.IsSelected = true;
+					} else {
+						tract.IsSelected = false;
+					}
+				}
+			}
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:VBox styleName="popupPanel" width="100%">
+	    <mx:VBox width="100%">
+	        <mx:HBox width="100%">
+	            <mx:VBox width="100%"
+	                paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+	                <mx:HBox width="100%">
+	                	<mx:Label text="State:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{dictionary.statesAndCounties.state.(@StateId == tabDocument.DocumentRef.State).@Name}" />
+	                </mx:HBox>
+	                
+	                <mx:HBox width="100%">
+	                	<mx:Label text="Doc Type:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{dictionary.documentTypes.DocumentType.(@DocTypeID == tabDocument.DocumentRef.DocTypeId).@Name}" />
+	                </mx:HBox>
+	                
+	                <mx:HBox width="100%">
+	                	<mx:Label text="Volume:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{tabDocument.DocumentRef.Volume}"/>
+	                </mx:HBox>
+	                
+	                <mx:HBox width="100%">
+	                	<mx:Label text="Date Signed:" minWidth="100" textAlign="right" fontWeight="bold"/>
+                        <mx:Label width="100%"
+                            text="{df.format(tabDocument.DocumentRef.DateSigned)}"/>
+	                </mx:HBox>
+	            </mx:VBox>
+	
+	            <mx:VBox width="100%" 
+	                paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0">
+					<mx:HBox width="100%">
+						<mx:Label text="County:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{dictionary.statesAndCounties.state.(@StateId == tabDocument.DocumentRef.State).county.(@CountyId == tabDocument.DocumentRef.County).@Name}"/>
+					</mx:HBox>
+
+					<mx:HBox width="100%">
+						<mx:Label text="Doc Number:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{tabDocument.DocumentRef.DocumentNo}" />
+					</mx:HBox>
+
+					<mx:HBox width="100%">
+						<mx:Label text="Page:" minWidth="100" textAlign="right" fontWeight="bold"/>
+	                    <mx:Label width="100%"
+	                        text="{tabDocument.DocumentRef.Page}" />
+					</mx:HBox>
+
+					<mx:HBox width="100%">
+						<mx:Label text="Date Filled:" minWidth="100" textAlign="right" fontWeight="bold"/>
+                        <mx:Label width="100%"
+                            text="{df.format(tabDocument.DocumentRef.DateFiled)}"/>
+					</mx:HBox>
+	            </mx:VBox>
+	        </mx:HBox>
+	
+	        <mx:VBox width="100%" 
+	            paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" >
+				<mx:HBox width="100%">
+					<mx:Label text="{dictionary.documentTypes.DocumentType.(@DocTypeID == tabDocument.DocumentRef.DocTypeId).@GiverRoleName != ''
+	                	? dictionary.documentTypes.DocumentType.(@DocTypeID == tabDocument.DocumentRef.DocTypeId).@GiverRoleName 
+	                	: 'Seller'}:" minWidth="100" textAlign="right" fontWeight="bold"/>
+                    <mx:Label width="100%" text="{tabDocument.DocumentRef.Seller.AsNamed}"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%">
+					<mx:Label text="{dictionary.documentTypes.DocumentType.(@DocTypeID == tabDocument.DocumentRef.DocTypeId).@ReceiverRoleName != ''
+	                	? dictionary.documentTypes.DocumentType.(@DocTypeID == tabDocument.DocumentRef.DocTypeId).@ReceiverRoleName 
+	                	: 'Buyer'}:" minWidth="100" textAlign="right" fontWeight="bold"/>
+                    <mx:Label width="100%" text="{tabDocument.DocumentRef.Buyer.AsNamed}"/>
+				</mx:HBox>
+	        </mx:VBox>
+	
+	    </mx:VBox>
+
+        <mx:Form labelWidth="100">
+            <mx:FormItem label="Description :" fontWeight="bold">
+                <mx:TextArea id="descriptionTxt" editable="{!readOnly}"
+                	text="{tabDocument.Description}" height="40" width="300" 
+                	fontWeight="normal"/>
+            </mx:FormItem>
+            <mx:FormItem label="Remarks :" fontWeight="bold">
+                <mx:TextArea id="remarksText" editable="{!readOnly}"
+                	text="{tabDocument.Remarks}" height="40" width="300" 
+                	fontWeight="normal"/>
+            </mx:FormItem>
+        </mx:Form>
+        
+        <mx:VBox width="100%" verticalGap="0">
+	        <mx:Label text="Referenced Tracts:" fontSize="9" fontWeight="bold"/>
+	
+		    <mx:DataGrid id="dgTracts"
+		        dataProvider="{tabDocument.DocumentRef.TractsList}" sortableColumns="false" dragEnabled="false"
+		        fontSize="9" height="70" width="100%" minWidth="150">
+		        <mx:columns>
+		            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="IsSelected" sortable="false"
+		            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.ProjectTabDocumentTractIsSelectedIR"/>
+		            <mx:DataGridColumn headerText="Reference Name" dataField="RefName"/>
+		            <mx:DataGridColumn headerText="Called Size" width="100" dataField="calledString"/>
+		        </mx:columns>
+		    </mx:DataGrid>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+<!--    
+        <mx:Button label="Open Document" click="doOpenDocument()"/>
+ -->        
+        <mx:Spacer width="100%"/>
+        <mx:Button label="Submit" click="doSubmit()"/>
+        <mx:Button label="Cancel" click="doCancel()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

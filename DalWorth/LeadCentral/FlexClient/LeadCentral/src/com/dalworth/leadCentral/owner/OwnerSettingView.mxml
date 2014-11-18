@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="onCreate()" 
+	xmlns:leadType="com.dalworth.leadCentral.setting.leadType.*" 
+	xmlns:leadSource="com.dalworth.leadCentral.setting.leadSource.*" xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:help="com.dalworth.leadCentral.help.*" xmlns:trackingPhone="com.dalworth.leadCentral.phone.trackingPhone.*" xmlns:callWorkflow="com.dalworth.leadCentral.phone.callWorkflow.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			
+			[Embed(source="/assets/icons16/control.png")]
+			[Bindable]
+			private var iconControlRight:Class;
+			
+			[Embed(source="/assets/icons16/control_180.png")]
+			[Bindable]
+			private var iconControlLeft:Class;
+			
+			private function onCreate():void 
+			{
+				vsSetting.selectedChild = viewLeadSources;
+				viewLeadSources.init();
+			}
+			
+			public function init():void 
+			{
+				initLeadSources();
+			}
+			
+			public function initLeadSources():void 
+			{
+				if (vsSetting != null)
+					vsSetting.selectedChild = viewLeadSources;
+				
+				if (viewLeadSources != null)
+					viewLeadSources.init();
+			}
+			
+			public function initPhones():void 
+			{
+				if (vsSetting != null)
+					vsSetting.selectedChild = viewPhoneNumbers;
+				
+				if (viewPhoneNumbers != null)
+					viewPhoneNumbers.init();
+			}
+			
+			public function initWorkflows():void 
+			{
+				if (vsSetting != null)
+					vsSetting.selectedChild = viewWorkflows;
+				
+				if (viewWorkflows != null)
+					viewWorkflows.init();
+			}
+			
+			private function onModelInited(event:Event):void 
+			{
+				trace("Settings model inited");
+			}
+
+			private function onMenuItemClick(event:ItemClickEvent):void 
+			{
+				switch (event.index) 
+				{
+					case 0:
+						viewLeadSources.init();
+						break;
+
+					case 1:
+						viewUsers.init();
+						break;
+
+					case 2:
+						viewPhoneNumbers.init();
+						break;
+
+					case 3:
+						viewWorkflows.init();
+						break;
+				}
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:HBox id="boxLeftPanel" width="100%" paddingLeft="4" paddingRight="4">
+		<mx:LinkBar direction="horizontal" dataProvider="{vsSetting}" labelField="label" itemClick="onMenuItemClick(event)"
+			fontSize="14"/>
+	</mx:HBox>
+	
+	<mx:ViewStack id="vsSetting" width="100%" height="100%" creationPolicy="all">
+		<leadSource:LeadSourcesView id="viewLeadSources" width="100%" height="100%" label="Lead Sources"/>
+		<user:UsersView id="viewUsers" width="100%" height="100%" label="Users"/>
+		<trackingPhone:TrackingPhonesView id="viewPhoneNumbers" width="100%" height="100%" label="Tracking Phones"/>
+		<callWorkflow:PhoneWorkflowsView id="viewWorkflows" width="100%" height="100%" label="Phone Workflows"/>
+	</mx:ViewStack>
+</mx:VBox>

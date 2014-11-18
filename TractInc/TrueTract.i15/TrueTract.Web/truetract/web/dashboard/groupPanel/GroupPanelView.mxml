@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    label="{group.groupName}"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:groupPanel="truetract.web.dashboard.groupPanel.*" 
+    xmlns:documentList="truetract.web.dashboard.documentList.*" 
+    xmlns:drawingList="truetract.web.dashboard.drawingList.*" 
+    xmlns:dashboard="truetract.web.dashboard.*" 
+    xmlns:components="truetract.plotter.components.*" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+    
+    <mx:Metadata>
+        [Event(name="openDocumentRequest", type="mx.events.DynamicEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.Tract;
+            import truetract.web.dashboard.UserGroup;
+        
+            private var _group:UserGroup;
+            [Bindable] public function get group():UserGroup { return _group; }
+            public function set group(value:UserGroup):void
+            {
+                _group = value;
+                controller.groupChangedHandler();
+            }
+
+        ]]>
+    </mx:Script>
+
+    <groupPanel:GroupPanelController id="controller" view="{this}"/>
+
+    <dashboard:DashboardController id="dashboardController"/>
+
+    <mx:TabNavigator 
+        width="100%" height="100%" backgroundColor="#c2d8fe" 
+        paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" borderStyle="solid">
+
+        <mx:VBox label="Documents" width="100%" height="100%">
+
+            <mx:HBox width="100%" verticalAlign="middle">
+        
+                <components:ExtendedPopUpButton id="moveToFolderButton"
+                    label="Move to Folder"
+                    enabled="{docDG.selectedItem != null}"
+                    openAlways="true" popUpWidth="{moveToFolderButton.width}"/>
+
+                <mx:Button label="Remove from Folder"/>
+                <mx:Button label="Delete" enabled="false"/>
+        
+            </mx:HBox>
+
+            <mx:DataGrid id="docDG" 
+                width="100%" height="100%" dataProvider="{group.groupDocumentsList}"
+                doubleClickEnabled="true" 
+                doubleClick="controller.docDG_doubleClickHandler()">
+        
+                <mx:columns>
+                    <mx:DataGridColumn headerText="State" dataField="StateName"/>
+                    <mx:DataGridColumn headerText="County" dataField="CountyName"/>
+                    <mx:DataGridColumn headerText="Doc Type" dataField="DocumentTypeName"/>
+                    <mx:DataGridColumn headerText="Doc Place" dataField="DocumentPlacement"/>
+                    <mx:DataGridColumn headerText="Modified" dataField="DateModifiedString"/>
+                    <mx:DataGridColumn headerText="Created By" dataField="CreatedBy"/>
+                </mx:columns>
+        
+            </mx:DataGrid>
+            
+        </mx:VBox>
+
+        <mx:VBox label="Drawings" width="100%" height="100%">
+
+            <mx:HBox width="100%" verticalAlign="middle">
+        
+                <components:ExtendedPopUpButton id="moveToFolderButton2"
+                    label="Move to Folder"
+                    enabled="{drawingsListControl.selectedItem != null}"
+                    openAlways="true" popUpWidth="{moveToFolderButton2.width}"/>
+
+                <mx:Button label="Remove from Folder"/>
+                <mx:Button label="Delete" enabled="false"/>
+        
+            </mx:HBox>
+
+            <mx:List id="drawingsListControl" 
+                dataProvider="{group.groupDrawingsList}" labelField="RefName"
+                doubleClickEnabled="true"
+                doubleClick="dispatchEvent(new Event('openSelectedItem'))"
+                width="100%" height="100%" horizontalScrollPolicy="off"/>
+            
+        </mx:VBox>
+        
+        
+    </mx:TabNavigator>
+
+</mx:VBox>

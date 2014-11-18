@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+    icon="@Embed('assets/icons16/magnifier.png')" label="Search result"
+    xmlns:controls="com.llsvc.controls.*">
+
+    <mx:Metadata>
+        [Event(name="closeTabRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.client.lms.control.TabManager;
+        	import mx.events.ListEvent;
+        	import com.llsvc.domain.Lease;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import com.llsvc.client.lm.storage.Storage;
+        	import mx.collections.ArrayCollection;
+        	import mx.core.Application;
+        	import mx.rpc.Responder;
+
+			[Bindable]
+            private var criterias:LeaseSearchCriterias;
+            
+            [Bindable]
+            private var leaseCollection:ArrayCollection = new ArrayCollection();
+
+			public function init():void 
+			{
+				resetCriterias();
+				leaseCollection.removeAll();
+				
+				editCriterias();
+			}
+
+            private function resetCriterias():void 
+            {
+            	criterias = new LeaseSearchCriterias();
+            }
+            
+            private function startRemoting(name:String):void 
+            {
+                content.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                content.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+            private function editCriterias():void 
+            {
+//            	var popup:LeaseSearchCriteriasView = LeaseSearchCriteriasView.open(Application.application as DisplayObject, criterias, true);
+//            	popup.addEventListener("submitRequest", 
+//            		function (event:Event):void 
+//            		{
+//            			popup.close();
+//            			loadLeases();
+//            		});
+            }
+            
+            private function loadLeases():void 
+            {
+            	startRemoting("Search Leases...");
+            	
+            	leaseCollection.removeAll();
+            	
+            	Storage.instance.searchLeases(criterias.copyForQuery(), 
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+							stopRemoting();
+							for each (var lease:Lease in ArrayCollection(event.result)) 
+							{
+								lease.updateTractsSummary();
+								leaseCollection.addItem(lease);
+							}
+            			},
+            			function (event:FaultEvent):void 
+            			{
+							stopRemoting();
+            				Alert.show(event.fault.message);
+            			}));
+            	
+            }
+            
+            private function onCloseClick():void 
+            {
+          		dispatchEvent(new Event("closeTabRequest"));
+            }
+            
+            private function setRowColor(item:Lease, color:uint):uint 
+            {
+            	if (item.vet) 
+            	{
+            		return 0xeeffee;
+            	} else 
+            	{
+            		return color;
+            	}
+            }
+            
+            private function dgLeasesItemDoubleClickHandler(event:ListEvent):void 
+            {
+            	var lease:Lease = dgLeases.selectedItem as Lease;
+            	if (lease != null)
+            		TabManager.openLease(lease);
+            }
+            
+            private function btnSearchClickHandler():void 
+            {
+            	editCriterias();
+            }   
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox id="content" width="100%" height="100%"
+    	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+<!--
+        <mx:HBox width="100%" horizontalAlign="right">
+        	<mx:Button id="btnSearch" label="Advanced Search..." click="btnSearchClickHandler()"/>
+        </mx:HBox>
+-->    	
+        <controls:ColoredDataGrid id="dgLeases" dataProvider="{leaseCollection}" minWidth="600" width="100%" height="100%"
+            sortableColumns="false" draggableColumns="false" resizableColumns="false"
+            doubleClickEnabled="true" itemDoubleClick="dgLeasesItemDoubleClickHandler(event)"
+            rowColorFunction="setRowColor">
+            <controls:columns>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Lease No" headerWordWrap="true" dataField="leaseNum" width="50" minWidth="50"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+                    headerText="Lease Name" dataField="leaseName"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" minWidth="150"
+                    headerText="Records" itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseRecordsIR"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Exp Date" headerWordWrap="true" dataField="expirationDateStr" width="100" minWidth="100" textAlign="center"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Gross AC" headerWordWrap="true" dataField="tractsGrossAcresStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Net AC" headerWordWrap="true" dataField="tractsNetAcresStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Interest" dataField="tractsInterestStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Lease Burden" headerWordWrap="true" dataField="tractsBurdenStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Lease NRI" headerWordWrap="true" dataField="tractsNriStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="FCR WI" headerWordWrap="true" dataField="tractsCwiStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="Addition. Burden" headerWordWrap="true" dataField="tractsAddBurdensStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="FCR NRI" headerWordWrap="true" dataField="tractsCnriStr" width="60" minWidth="60" textAlign="right"/>
+                <mx:DataGridColumn headerStyleName="headerTextCentered" 
+                    headerText="FCR Net Acres" headerWordWrap="true" dataField="tractsCNetAcresStr" width="50" minWidth="50" textAlign="right"/>
+            </controls:columns>
+        </controls:ColoredDataGrid>
+
+        <mx:VBox width="100%" verticalGap="0">
+            <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+        
+            <mx:HBox width="100%" horizontalAlign="right" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4">
+                <mx:Button width="100" label="Close Tab" icon="@Embed('assets/icon_close16.png')" toolTip="Close Tab" 
+                    horizontalCenter="0" verticalCenter="0" click="onCloseClick()"/>
+                    
+                <mx:Spacer width="100%"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+    
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:Canvas>

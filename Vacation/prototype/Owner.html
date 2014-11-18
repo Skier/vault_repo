@@ -1,0 +1,65 @@
+<div class="menu">
+    <a href="OwnerEdit.php"><? echo(MSG_EDIT_INFO) ?></a> <b>::</b>
+    <a href="OwnerSelectLocation.php"><? echo(MSG_ADD_RENTAL) ?></a> <b>::</b>
+    <a href="Logout.php"><? echo(MSG_LOGOUT) ?></a>
+</div>
+
+<?
+    if ($this->isOwnerFound()) {
+?>
+
+    <table>
+        <tr>
+            <td>
+                <b><?echo(MSG_FIRST_NAME.":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getFirstName());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_LAST_NAME.":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getLastName());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_PHONE_NUMBER.":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getPhoneNumber());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_MOBILE_PHONE_NUMBER.":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getMobilePhoneNumber());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_ADDRESS . ":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getAddress());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_COMMENTS.":")?></b>
+            </td>
+            <td>
+                <?echo($this->owner->getComments());?>
+            </td>
+        </tr>
+    </table>
+<?
+    } else {
+        echo("ERROR: any owner not found <br>");
+    }
+?>

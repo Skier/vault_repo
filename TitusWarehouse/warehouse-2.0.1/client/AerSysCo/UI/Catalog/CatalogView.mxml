@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:Search="AerSysCo.UI.Catalog.Search.*"
+    xmlns:UI="AerSysCo.UI.*"
+    xmlns:Categories="AerSysCo.UI.Catalog.Categories.*" 
+    xmlns:Containers="AerSysCo.UI.Containers.*" 
+    xmlns:Products="AerSysCo.UI.Catalog.Products.*" 
+    xmlns:Catalog="AerSysCo.UI.Catalog.*">
+    
+    <mx:Metadata>
+        [Event(name="categoriesLoadFault", type="flash.events.Event")]
+        [Event(name="categoriesChangeRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import AerSysCo.Events.CatalogItemsEvent;
+            import AerSysCo.UI.Models.CatalogItemUI;
+            import AerSysCo.UI.Models.ModelUI;
+            import AerSysCo.UI.MainController;
+            import AerSysCo.UI.Catalog.Products.ProductMultiWarehouseView;
+            import AerSysCo.UI.Catalog.Products.ProductDetailView;
+            import AerSysCo.Events.CatalogItemEvent;
+            import AerSysCo.Events.CategoryEvent;
+            import AerSysCo.UI.Models.CustomerUI;
+            import AerSysCo.UI.Models.CategoryUI;
+            import AerSysCo.Server.Warehouse;
+            import mx.rpc.Responder;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.events.FaultEvent;
+        
+            import AerSysCo.Server.CatalogItemCollection;
+            import AerSysCo.Server.Model;
+            import AerSysCo.Server.Category;
+            import AerSysCo.Service.WarehouseStorage;
+            import AerSysCo.Server.CatalogItem;
+            import mx.core.Application;
+            import mx.controls.Alert;
+            import mx.events.DynamicEvent;
+            import mx.collections.ArrayCollection;
+            
+            [Bindable] private var controller:CatalogController;
+            
+            private var ignoreCategoriesChanging:Boolean = false;
+
+            public function init(currenCustomer:CustomerUI):void 
+            {
+                controller = CatalogController.getInstance();
+                controller.init(currenCustomer, this);
+            }
+            
+            public function setCatalogView():void 
+            {
+                vsBrowsing.selectedChild = panelProducts;
+                panelCategories.collapseAllCategories();
+                controller.model.productList.removeAll();
+            }
+
+            public function setDefaultCategory():void 
+            {
+                if ( null != controller.model.getDefaultCategory() ) {
+                    controller.getProductsByCategory(controller.model.getDefaultCategory());
+                    dispatchEvent(new Event("categoriesChangeRequest"));
+                }
+            }
+
+            public function setTermsView():void 
+            {
+                vsBrowsing.selectedChild = rulesView;
+                panelCategories.collapseAllCategories();
+                controller.model.productList.removeAll();
+            }
+
+            public function setFAQView():void 
+            {
+                vsBrowsing.selectedChild = faqView;
+                panelCategories.collapseAllCategories();
+                controller.model.productList.removeAll();
+            }
+
+            
+            public function setHomeView():void 
+            {
+                panelCategories.collapseAllCategories();
+                controller.model.productList.removeAll();
+                vsBrowsing.selectedChild = brandLanding;
+                frameLanding.source = "whslanding.html";
+            }
+            
+            private function getModels(category:CategoryUI):ArrayCollection 
+            {
+                var result:ArrayCollection = new ArrayCollection();
+
+                return result;
+            }
+            
+            private function searchRequestHandler(e:DynamicEvent):void 
+            {
+            	ignoreCategoriesChanging = true;
+
+                setCatalogView();
+                controller.search(e.searchString as String);
+
+                ignoreCategoriesChanging = false;
+            }
+            
+            private function categoriesChangeHandler(event:CategoryEvent):void 
+            {
+            	if (ignoreCategoriesChanging)
+            		return;
+
+                vsBrowsing.selectedChild = panelProducts;
+                controller.getProductsByCategory(event.initiator);
+                dispatchEvent(new Event("categoriesChangeRequest"));
+            }
+            
+            private function addCatalogItemsHandler(event:CatalogItemsEvent):void 
+            {
+                controller.addCatalogItemsToShoppingCart(event.catalogItems);
+            }
+            
+            private function changeCurrentWarehouseHandler():void 
+            {
+                controller.model.currentWarehouse = panelProducts.currentWarehouse;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HDividedBox  width="100%" height="100%" horizontalGap="5">
+        <mx:VBox width="250" height="100%" verticalGap="5">
+            <Search:SearchPanel id="panelSearch"
+                searchRequest="searchRequestHandler(event)"
+                width="100%"/>
+
+            <Categories:CategoriesPanel id="panelCategories" 
+                title="Product Categories" width="100%" height="100%" 
+                enabled="{!controller.model.isBusy}"
+                rootCategory="{controller.model.rootCategory}"
+                categoryOrModelSelected="categoriesChangeHandler(event)"/>
+        </mx:VBox>
+        
+        <mx:ViewStack id="vsBrowsing" width="100%" height="100%" creationPolicy="all" selectedIndex="1">
+            <Containers:ExtPanel  id="brandLanding"
+                width="100%" height="100%"
+                styleName="landingPanel">
+                <Containers:IFrame id="frameLanding"
+                    width="100%" height="100%" visible="{vsBrowsing.selectedIndex == 0}"/>
+            </Containers:ExtPanel>
+
+            <Products:ProductsPanel id="panelProducts" 
+                width="100%" height="100%"
+                enabled="{!controller.model.isBusy}"
+                currentCustomer="{controller.model.currentCustomer}"
+                productList="{controller.model.productList}"
+                warehouseList="{controller.model.warehouseList}"
+                currentWarehouse="{controller.model.currentWarehouse}"
+                addCatalogItems="addCatalogItemsHandler(event)"
+                changeCurrentWarehouse="changeCurrentWarehouseHandler()"/>
+
+            <mx:Panel id="rulesView"
+                width="100%" height="100%" 
+                layout="vertical" title="Warehouse Terms and Conditions">
+                <UI:TextBox width="100%" height="100%" source="rules.txt"/>
+            </mx:Panel>
+
+            <mx:Panel id="faqView" 
+                width="100%" height="100%" 
+                layout="vertical" title="Warehouse FAQ�_Ts">
+                <UI:TextBox width="100%" height="100%" source="faq.txt"/>
+            </mx:Panel>
+
+        </mx:ViewStack>
+            
+    </mx:HDividedBox>
+</mx:Canvas>

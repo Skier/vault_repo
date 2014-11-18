@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	width="600" height="600" xmlns:BarCode="BarCode.*"
+	title="Print Preview">
+	
+	<mx:Script>
+		<![CDATA[
+			import BarCode.Code39;
+
+			import App.Domain.Lease;
+
+			[Bindable]
+			private var _lease:Lease;
+			[Bindable]
+			private var _stateName:String;
+			[Bindable]
+			private var _countyName:String;
+			
+			public function init(lease:Lease, stateName:String, countyName:String, onSubmit:Function, onCancel:Function):void {
+				_lease = lease;
+				_stateName = stateName;
+				_countyName = countyName;
+				btnSubmit.addEventListener(MouseEvent.CLICK, onSubmit);
+				btnCancel.addEventListener(MouseEvent.CLICK, onCancel);
+				
+				barCodePanel.removeAllChildren();
+				
+				var barCode:Code39 = new Code39();
+				barCode.addLabel = true;
+				if (_lease.LCN) {
+					barCode.barCodeText = _lease.LCN;
+				} else {
+					barCode.barCodeText = "";
+				}
+				
+				barCodePanel.addChild(barCode);
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		
+		<mx:VBox id="printArea" width="100%" height="100%" horizontalAlign="right"
+			paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"
+			backgroundColor="#ffffff"
+			>
+			<mx:HBox id="barCodePanel" height="110" minWidth="300" 
+				horizontalAlign="center" verticalAlign="middle" cornerRadius="0"
+				borderColor="#000000" borderStyle="solid" backgroundColor="#ffffff"/>
+			<mx:Spacer height="20"/>
+			<mx:VBox width="100%" height="100%">
+				<mx:HBox width="100%">
+					<mx:Label text="Leasor:" fontSize="14" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.LeassorName}" fontSize="14" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="Leasee:" fontSize="14" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.LeaseeName}" fontSize="14" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+				<mx:HBox width="100%">
+					<mx:Label text="County:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_countyName}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="State:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_stateName}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+				<mx:HBox width="100%">
+					<mx:Label text="Doc Number:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.DocumentNumber}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="Volume:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.Volume}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="Page:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.PAGE}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:Spacer height="20"/>
+				<mx:HBox width="100%">
+					<mx:Label text="Date signed:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.EffDate.toDateString()}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+				<mx:HBox width="100%">
+					<mx:Label text="Date recorded:" fontSize="12" width="150" textAlign="right"/>
+					<mx:Label text="{_lease.RcdDate.toDateString()}" fontSize="12" fontWeight="bold" width="100%"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+		
+		<mx:HBox width="100%" horizontalAlign="right" 
+			paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+			backgroundColor="#eeeeee" borderColor="#999999" borderStyle="solid" cornerRadius="4"
+			>
+			<mx:Button id="btnSubmit" label="Print"/>
+			<mx:Button id="btnCancel" label="Cancel"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</mx:TitleWindow>

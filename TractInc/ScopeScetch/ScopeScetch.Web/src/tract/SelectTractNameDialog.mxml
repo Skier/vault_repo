@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtendedTitleWindow
+    xmlns="src.deedplotter.containers.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="src.deedplotter.validators.*"
+    title="Set Tract Name" width="550" height="348" >
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.Tract;
+            import src.deedplotter.domain.TractListInfo;
+            import mx.controls.Alert;
+            import mx.collections.ItemResponder;
+            import mx.managers.PopUpManager;
+            import mx.collections.ArrayCollection;
+
+            public static function Open(parent:DisplayObject, modal:Boolean = false):SelectTractNameDialog {
+                var dialog:SelectTractNameDialog = new SelectTractNameDialog();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+                
+                return dialog;
+            }
+        
+            [Bindable] public var referenceNamesList:ArrayCollection;
+            [Bindable] public var tract:Tract;
+
+            public var responder:ItemResponder;
+
+            private function commit():void 
+            {
+                if (!vgroup.validate(true))
+                    return;
+
+
+                if (!isSelectedNameUnique())
+                {
+                    Alert.show("Reference Name of the Tract should be unique.");
+                    return;
+                }
+
+                tract.Description = tractName.text;
+                responder.result(null);
+                closePopup();
+            }
+            
+            private function isSelectedNameUnique():Boolean
+            {
+                var result:Boolean = true;
+                
+                for each (var info:TractListInfo in referenceNamesList)
+                {
+                    if (info..tractId != tract.TractId && info.referenceName == tractName.text)
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+                
+                return result;
+            }
+            
+            private function closePopup():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <validators:ValidatorsGroup id="vgroup">
+        <mx:StringValidator source="{tractName}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+    
+    <mx:HBox width="100%" verticalAlign="middle">
+        <mx:Label text="Tract Name :"/>
+        
+        <mx:TextInput id="tractName" width="100%" text="{tract.Description}"/>
+    </mx:HBox>
+    
+    <mx:Label text="List of already specified tract names :"/>
+    
+    <mx:List 
+        dataProvider="{referenceNamesList}" width="100%" height="100%"
+        labelField="referenceName"
+        selectable="false" backgroundAlpha="0.54"/>
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" click="commit()"/>
+        <mx:Button label="Cancel" click="closePopup()"/>
+    </mx:ControlBar>
+    
+</ExtendedTitleWindow>

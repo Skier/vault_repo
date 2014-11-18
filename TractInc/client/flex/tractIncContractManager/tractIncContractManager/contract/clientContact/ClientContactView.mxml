@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%"
+    xmlns:cmClientContact="tractIncContractManager.contract.clientContact.*">
+    
+    <mx:Script>
+        <![CDATA[
+        ]]>
+    </mx:Script>
+
+    <cmClientContact:ClientContactController id="controller" view="{this}"/>
+    
+    <mx:Button id="addButton" label="Add Client Contact" enabled="{null != controller.contract}" click="controller.addButtonOnClickHandler(event)"/>
+    <mx:DataGrid id="dataGrid" width="100%" height="100%">
+        <mx:columns>
+            <mx:DataGridColumn headerText="Id" width="20" dataField="ClientContactId"/>
+            <mx:DataGridColumn headerText="Person" width="85" labelFunction="controller.personLabelFunction"/>
+            <mx:DataGridColumn headerText="Start Date" width="55" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="End Date" width="55" labelFunction="controller.dateLabelFunction"/>
+            <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                    itemRenderer="tractIncContractManager.contract.clientContact.ActionIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+    
+</mx:VBox>

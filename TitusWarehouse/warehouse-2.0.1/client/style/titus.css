@@ -1,0 +1,1017 @@
+global
+{
+    themeColor: #7AA4B9;    
+    rollOverColor: #AADEFF;
+    selectionColor: #7FCDFE;
+
+    font-family: Tahoma;
+    font-size: 12;
+}
+
+Application
+{
+    background-color: #002252;
+    background-alpha: 1;
+    padding-left: 10;
+    padding-right: 10;
+    padding-top: 5;
+    padding-bottom: 5;
+}
+
+.roundedBackground
+{
+    backgroundImage: Embed(source="wmp11.swf", symbol="roundedControlBar");
+    backgroundSize: "100%";
+    verticalAlign:middle;
+    paddingLeft:10;
+    paddingRight:10;
+}
+    
+Button
+{
+    disabledSkin: Embed(source="wmp11.swf", symbol="Button_disabledSkin");
+    downSkin: Embed(source="wmp11.swf", symbol="Button_downSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="Button_overSkin");
+    upSkin: Embed(source="wmp11.swf", symbol="Button_upSkin");
+    selectedDisabledSkin: Embed(source="wmp11.swf", symbol="Button_disabledSkin");
+    selectedDownSkin: Embed(source="wmp11.swf", symbol="Button_upSkin");
+    selectedOverSkin: Embed(source="wmp11.swf", symbol="Button_overSkin");
+    selectedUpSkin: Embed(source="wmp11.swf", symbol="Button_downSkin");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#000000;
+}
+
+.blueButton
+{
+    disabledSkin: Embed(source="wmp11.swf", symbol="blueButton_upSkin");
+    downSkin: Embed(source="wmp11.swf", symbol="blueButton_upSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="blueButton_upSkin");
+    upSkin: Embed(source="wmp11.swf", symbol="blueButton_upSkin");
+    selectedDisabledSkin: Embed(source="wmp11.swf", symbol="Button_disabledSkin");
+    selectedDownSkin: Embed(source="wmp11.swf", symbol="Button_upSkin");
+    selectedOverSkin: Embed(source="wmp11.swf", symbol="Button_overSkin");
+    selectedUpSkin: Embed(source="wmp11.swf", symbol="Button_downSkin");
+    color: #ffffff;
+    textRollOverColor: #ffffff;
+    textSelectedColor:#ffffff;
+}
+
+.wideCloseButton
+{
+    disabledSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    downSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    overSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    upSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    selectedDisabledSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    selectedDownSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    selectedOverSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    selectedUpSkin: Embed(source="wmp11.swf", symbol="wideCloseBttn");
+    color: #ffffff;
+    textRollOverColor: #ffffff;
+    textSelectedColor:#ffffff;
+}
+
+ButtonBar 
+{ 
+        buttonStyleName: "buttonBarButton"; 
+        firstButtonStyleName: "firstButtonBarButton"; 
+        lastButtonStyleName: "lastButtonBarButton";
+}
+
+ToggleButtonBar 
+{ 
+        buttonStyleName: "buttonBarButton"; 
+        firstButtonStyleName: "firstButtonBarButton"; 
+        lastButtonStyleName: "lastButtonBarButton";
+}
+
+.roundedButtonBar 
+{ 
+        buttonStyleName: "roundedButtonBarButton"; 
+        firstButtonStyleName: "roundedFirstButtonBarButton"; 
+        lastButtonStyleName: "roundedLastButtonBarButton";
+}
+
+.firstButtonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstDisabledSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstDownSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstOverSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstSelectedDisabledSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstSelectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstSelectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstSelectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000;
+}
+.buttonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonDisabledSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonDownSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonOverSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonSelectedDisabledSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonSelectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonSelectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonSelectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="ButtonBar_buttonUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000; 
+}
+
+.lastButtonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastDisabledSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastDownSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastOverSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastSelectedDisabledSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastSelectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastSelectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastSelectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="ButtonBar_lastUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000; 
+}
+
+.roundedFirstButtonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstUpSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstSelectedUpSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstSelectedUpSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="ButtonBar_firstSelectedDisabledSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstSelectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstSelectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstSelectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_firstUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000;
+}
+.roundedButtonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_buttonUpSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_selectedUpSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_selectedUpSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_buttonUpSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_selectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_selectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_selectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_buttonUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000; 
+}
+
+.roundedLastButtonBarButton 
+{ 
+        disabledSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastUpSkin"); 
+        downSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastSelectedUpSkin"); 
+        overSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastSelectedUpSkin"); 
+        selectedDisabledSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastUpSkin"); 
+        selectedDownSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastSelectedUpSkin"); 
+        selectedOverSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastSelectedUpSkin");
+        selectedUpSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastSelectedUpSkin");
+        upSkin: Embed(source="wmp11.swf", symbol="roundedButtonBar_lastUpSkin");
+        color: #000000;
+        textRollOverColor: #000000;
+        textSelectedColor:#000000; 
+}
+
+CheckBox
+{
+    color: #000000;
+    textSelectedColor: #000000;
+    textRollOverColor: #000000;
+}       
+
+ComboBox
+{
+
+    disabledSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_disabledSkin");
+    downSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_downSkin");
+    editableDisabledSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDisabledSkin");
+    editableDownSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDownSkin");
+    editableOverSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableOverSkin");
+    editableUpSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableUpSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_overSkin");
+    upSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_upSkin");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#ffffff;
+    dropDownStyleName: "dropDown";
+    highlightAlphas: .5, .8;
+    fontWeight:normal;
+}
+
+.clearComboBox
+{
+
+    disabledSkin: Embed(source="wmp11.swf", symbol="clearComboBox");
+    downSkin: Embed(source="wmp11.swf", symbol="clearComboBox");
+    editableDisabledSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDisabledSkin");
+    editableDownSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDownSkin");
+    editableOverSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableOverSkin");
+    editableUpSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableUpSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="clearComboBox");
+    upSkin: Embed(source="wmp11.swf", symbol="clearComboBox");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#ffffff;
+    dropDownStyleName: "dropDown";
+    highlightAlphas: .5, .8;
+    fontWeight:normal;
+}
+
+.greyComboBox
+{
+
+    disabledSkin: Embed(source="wmp11.swf", symbol="greyComboBox");
+    downSkin: Embed(source="wmp11.swf", symbol="greyComboBox");
+    editableDisabledSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDisabledSkin");
+    editableDownSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDownSkin");
+    editableOverSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableOverSkin");
+    editableUpSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableUpSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="greyComboBox");
+    upSkin: Embed(source="wmp11.swf", symbol="greyComboBox");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#ffffff;
+    dropDownStyleName: "dropDown";
+    highlightAlphas: .5, .8;
+    fontWeight:normal;
+}
+
+.textInputComboBox
+{
+
+    disabledSkin: Embed(source="wmp11.swf", symbol="textInputComboBox");
+    downSkin: Embed(source="wmp11.swf", symbol="textInputComboBox");
+    editableDisabledSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDisabledSkin");
+    editableDownSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableDownSkin");
+    editableOverSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableOverSkin");
+    editableUpSkin: Embed(source="wmp11.swf", symbol="ComboBoxArrow_editableUpSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="textInputComboBox");
+    upSkin: Embed(source="wmp11.swf", symbol="textInputComboBox");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#ffffff;
+    dropDownStyleName: "dropDown";
+    highlightAlphas: .5, .8;
+    fontWeight:normal;
+}       
+
+.dropDown {
+    branchIcon: Embed(source="wmp11.swf",symbol="Menu_branchIcon");
+    branchDisabledIcon: Embed(source="wmp11.swf",symbol="Menu_branchDisabledIcon");
+    checkIcon: Embed(source="wmp11.swf",symbol="Menu_checkIcon");
+    checkDisabledIcon: Embed(source="wmp11.swf",symbol="Menu_checkDisabledIcon");
+    radioIcon: Embed(source="wmp11.swf",symbol="Menu_radioIcon");
+    radioDisabledIcon: Embed(source="wmp11.swf",symbol="Menu_radioDisabledIcon");
+    separatorSkin: Embed(source="wmp11.swf",symbol="Menu_separatorSkin");
+    backgroundColor: #ffffff;
+    backgroundAlpha: .9;
+    borderStyle: solid;
+    borderThickness: 0;
+    borderColor: #ffffff;
+    roundedCorners:5;
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#000000;
+    rollOverColor: #EEF2FB;
+}
+
+DataGrid
+{
+    headerColors: #eeeeee, #bbbbbb;
+    rollOverColor: #EEF2FB;
+    selectionColor: #ccd2db;
+    disabledColor: #999999;
+    selectiondDisabledColor: #999999;
+    alternatingItemColors: #ffffff, #eeeeee;
+    
+}
+
+.dataGridHeader
+{
+    color: #000000;
+}
+
+DateChooser
+{
+    headerColors: #dddddd, #dddddd;
+
+    nextMonthDisabledSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextMonthDisabledSkin");
+    nextMonthDownSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextMonthDownSkin");
+    nextMonthOverSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextMonthOverSkin");
+    nextMonthUpSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextMonthUpSkin");
+    prevMonthDisabledSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevMonthDisabledSkin");
+    prevMonthDownSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevMonthDownSkin");
+    prevMonthOverSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevMonthOverSkin");
+    prevMonthUpSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevMonthUpSkin");
+    
+    nextYearDisabledSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextYearDisabledSkin");
+    nextYearDownSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextYearDownSkin");
+    nextYearOverSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextYearOverSkin");
+    nextYearUpSkin: Embed(source="wmp11.swf", symbol="DateChooser_nextYearUpSkin");
+    prevYearDisabledSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevYearDisabledSkin");
+    prevYearDownSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevYearDownSkin");
+    prevYearOverSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevYearOverSkin");
+    prevYearUpSkin: Embed(source="wmp11.swf", symbol="DateChooser_prevYearUpSkin");
+
+    todayIndicatorSkin: Embed(source="wmp11.swf", symbol="DateChooser_todayIndicatorSkin"); 
+    todayStyleName: "today";
+    
+    rollOverIndicatorSkin: Embed(source="wmp11.swf", symbol="DateChooser_rollOverIndicatorSkin");
+    selectionIndicatorSkin: Embed(source="wmp11.swf", symbol="DateChooser_selectionIndicatorSkin");
+}
+
+.today {
+    color: #cc3300;
+    textRollOverColor: #cc3300;
+    textSelectedOverColor: #cc3300;
+}
+
+DateField
+{
+    disabledSkin: Embed(source="wmp11.swf",symbol="DateField_disabledSkin"); 
+    downSkin: Embed(source="wmp11.swf",symbol="DateField_downSkin"); 
+    overSkin: Embed(source="wmp11.swf",symbol="DateField_overSkin"); 
+    upSkin: Embed(source="wmp11.swf",symbol="DateField_upSkin"); 
+}
+
+DividedBox
+{
+    dividerSkin: Embed(source="wmp11.swf",symbol="DividedBox_dividerSkin");
+    horizontalCursor: Embed(source="wmp11.swf",symbol="DividedBox_horizontalCursor");
+    verticalCursor: Embed(source="wmp11.swf",symbol="DividedBox_verticalCursor");
+}
+
+DragManager
+{
+    copyCursor: Embed(source="wmp11.swf",symbol="DragManager_copyCursor");
+
+    defaultDragImageSkin: Embed(source="wmp11.swf", symbol="DragManager_defaultDragImageSkin");
+
+    linkCursor: Embed(source="wmp11.swf",symbol="DragManager_linkCursor");
+    moveCursor: Embed(source="wmp11.swf",symbol="DragManager_moveCursor");
+    rejectCursor: Embed(source="wmp11.swf",symbol="DragManager_rejectCursor");
+}
+
+FormItem
+{
+    indicatorSkin: Embed(source="wmp11.swf",symbol="FormItem_indicatorSkin");  
+}
+
+Image
+{
+
+    brokenImageSkin: Embed(source="wmp11.swf",symbol="Loader_brokenImageSkin");
+
+}
+
+LinkButton
+{
+    disabledSkin: Embed(source="wmp11.swf", symbol="LinkButton_disabledSkin");
+    downSkin: Embed(source="wmp11.swf", symbol="LinkButton_downSkin");
+    overSkin: Embed(source="wmp11.swf", symbol="LinkButton_overSkin");
+    upSkin: Embed(source="wmp11.swf", symbol="LinkButton_upSkin");
+    selectedDisabledSkin: Embed(source="wmp11.swf", symbol="LinkButton_overSkin");
+    selectedDownSkin: Embed(source="wmp11.swf", symbol="LinkButton_downSkin");
+    selectedOverSkin: Embed(source="wmp11.swf", symbol="LinkButton_overSkin");
+    selectedUpSkin: Embed(source="wmp11.swf", symbol="LinkButton_overSkin");
+    selectedSkin: Embed(source="wmp11.swf", symbol="LinkButton_overSkin");
+    color: #ffffff;
+    disabledColor: #ffffff;
+    textSelectedColor: #ffffff;
+    textRollOverColor:#ffffff;
+    fontWeight:normal;
+}       
+
+List
+{
+    rollOverColor: #EEF2FB;
+    selectionColor: #ccd2db;
+    disabledColor: #999999;
+    selectiondDisabledColor: #999999;
+}
+
+Loader
+{
+    brokenImageSkin: Embed(source="wmp11.swf",symbol="Loader_brokenImageSkin");
+
+}
+
+Panel
+{
+
+    closeButtonDisabledSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonDisabledSkin");
+    closeButtonDownSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonDownSkin");
+    closeButtonOverSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonOverSkin");
+    closeButtonUpSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonUpSkin");
+    borderThicknessLeft: 6;
+    borderThicknessRight: 6;
+    borderThicknessTop: 0;
+    borderThicknessBottom: 6;
+    headerHeight: 24;
+    titleStyleName: "title";
+    backgroundColor: #eeeeee;
+    backgroundAlpa:.6;
+}
+
+.title {
+    fontSize: 14;
+    color: #dddddd;
+    font-weight: bold;
+}
+
+.collapseButton {
+    up-skin: Embed(source="../assets/collapseButton.png");
+    over-skin: Embed(source="../assets/collapseButton_over.png");
+    down-skin: Embed(source="../assets/collapseButton_down.png");
+    disabled-skin: Embed(source="../assets/collapseButton.png");
+}
+
+.expandButton {
+    up-skin: Embed(source="../assets/expandButton.png");
+    over-skin: Embed(source="../assets/expandButton_over.png");
+    down-skin: Embed(source="../assets/expandButton_down.png");
+    disabled-skin: Embed(source="../assets/expandButton.png");
+}
+
+ControlBar
+{
+    borderSkin: Embed(source="wmp11.swf", symbol="Panel_controlBarBackgroundSkin");
+    themeColor:#000000;
+}
+
+ApplicationControlBar
+{
+    borderSkin: Embed(source="wmp11.swf", symbol="app_controlBarBackgroundSkin");
+    verticalAlign: middle;
+}
+
+.startBar
+{
+
+    borderSkin: Embed(source="wmp11.swf", symbol="startBar_backgroundSkin");
+    color: #000000;
+    backgroundColor:#ffffff;
+    textSelectedColor:#ffffff;
+
+}
+
+ProgressBar
+{
+
+    barSkin: Embed(source="wmp11.swf", symbol="ProgressBarSkin");
+    indeterminateSkin: Embed(source="wmp11.swf", symbol="ProgressIndeterminateSkin");
+    trackSkin: Embed(source="wmp11.swf", symbol="ProgressTrackSkin");
+
+}
+
+RadioButton
+{
+    disabledIcon: Embed(source="wmp11.swf", symbol="RadioButton_disabledIcon");
+    downIcon: Embed(source="wmp11.swf", symbol="RadioButton_downIcon");
+    overIcon: Embed(source="wmp11.swf", symbol="RadioButton_overIcon");
+    selectedDisabledIcon: Embed(source="wmp11.swf", symbol="RadioButtonSelected_disabledIcon");
+    selectedDownIcon: Embed(source="wmp11.swf", symbol="RadioButtonSelected_downIcon");
+    selectedOverIcon: Embed(source="wmp11.swf", symbol="RadioButtonSelected_overIcon");
+    selectedUpIcon: Embed(source="wmp11.swf", symbol="RadioButtonSelected_upIcon");
+    upIcon: Embed(source="wmp11.swf", symbol="RadioButton_upIcon");
+    color: #000000;
+    textRollOverColor: #000000;
+    textSelectedColor:#000000;
+}
+
+TabBar
+{
+    firstButtonStyleName: "tabStyle";
+    tabStyleName: "tabStyle";
+    lastButtonStyleName: "tabStyle";
+    selectedTabTextStyleName: "selectedTabText";
+    color:#000000;
+    textRollOverColor:#000000;
+    textSelectedColor:#000000;
+    corner-radius: 3;
+    horizontal-gap: 2;
+}
+
+.tabStyle {
+    disabledSkin: Embed(source="wmp11.swf", symbol="Tab_disabledSkin");
+    color:#000000;
+    textRollOverColor:#000000;
+    textSelectedColor:#000000;
+}
+
+.selectedTabText {
+    color:#000000;
+    textRollOverColor:#000000;
+    textSelectedColor:#000000;
+}
+
+TextInput
+{
+    cornerRadius:0;
+    backgroundColor:#eef2fb;
+    borderColor:#ffffff;
+}
+
+TextArea
+{
+    borderStyle:inset;
+    cornerRadius:0;
+    backgroundColor:#eef2fb;
+    borderColor:#ffffff;
+    
+}       
+
+Tree
+{
+    defaultLeafIcon: Embed(source="wmp11.swf",symbol="Tree_defaultLeafIcon");
+
+    disclosureClosedIcon: Embed(source="wmp11.swf",symbol="Tree_disclosureClosedIcon");
+    disclosureOpenIcon: Embed(source="wmp11.swf",symbol="Tree_disclosureOpenIcon");
+
+    folderClosedIcon: Embed(source="wmp11.swf",symbol="Tree_folderClosedIcon");
+    folderOpenIcon: Embed(source="wmp11.swf",symbol="Tree_folderOpenIcon");
+    borderStyle:none;
+    backgroundColor:#eef2fb;
+    rollOverColor: #EEF2FB;
+    selectionColor: #ccd2db;
+}
+
+TitleWindow
+{
+    closeButtonDisabledSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonDisabledSkin");
+    closeButtonDownSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonDownSkin");
+    closeButtonOverSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonOverSkin");
+    closeButtonUpSkin: Embed(source="wmp11.swf",symbol="Panel_closeButtonUpSkin");
+
+    headerHeight: 24;
+    titleStyleName: "titleWindow";
+    backgroundColor: #eeeeee;
+    backgroundAlpa:.6;
+    border-color: #002252;
+    border-alpha: .7;
+}
+
+.titleWindow {
+    fontSize: 14;
+    color: #eeeeee;
+    font-weight: bold;
+}
+
+.welcomeTopBar {
+	color: #ffff66;
+}
+
+.welcomeTopBarName {
+	color: #ffff66;
+	font-weight: bold;
+}
+
+.shoppingCartQuick {
+	color: #ffffff;
+	background-color: #ffffff; 
+	background-alpha: 0.6;
+	border-color: #999999;
+	border-style: solid;
+	corner-radius: 2;
+	vertical-align: top;
+	vertical-gap: -2;
+	padding-left: 5; 
+	padding-right: 5; 
+	padding-top: 2; 
+	padding-bottom: 0;
+}
+
+.mainTopBarButton {
+	font-weight: bold;
+	color: #666666;
+}
+
+.customerTopBar {
+	vertical-align: middle;
+	background-alpha: 0.5;
+	background-color: #ffee00;
+	color: #ffffff;
+	border-color: #999999;
+	border-style: solid;
+	corner-radius: 2;
+	padding-left: 5;
+	padding-right: 5;
+}
+
+.customerTopBarAlert {
+	background-color: #dd0000;
+}
+
+.searchPanel {
+	header-height: 8;
+	corner-radius: 0;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+}
+
+.searchPanelButton {
+	font-weight: bold;
+	color: #666666;
+}
+
+.categoriesTree {
+    background-color: #ffffff;
+    background-alpha: 0.5;
+}
+
+.landingPanel {
+	header-height: 8;
+}
+
+.productsPanel {
+	header-height: 8;
+	padding-left: 3;
+	padding-right: 3;
+	padding-top: 3;
+	padding-bottom: 3;
+	vertical-gap: 0;
+}
+
+.panelTopHeader {
+	background-color: #002252;
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 5;
+	padding-bottom: 5;
+	color: #ffffff;
+}
+
+.productsDataGrid {
+	font-size: 11;
+}
+
+.productsAddButton {
+	icon: Embed(source="../assets/cart_add.png");
+	color: #ffffff;
+}
+
+.shoppingCartPanel {
+	padding-left: 3;
+	padding-right: 3;
+	padding-top: 3;
+	padding-bottom: 3;
+	vertical-gap: 2;
+}
+
+.shoppingCartButton {
+	color: #ffffff;
+}
+
+.shoppingCartTotalBar {
+	background-color: #ffffdd;
+	padding-left: 4;
+	padding-right: 4;
+	padding-top: 2;
+	padding-bottom: 2;
+	vertical-align: middle;
+}
+
+.checkOutPanel {
+	padding-left: 3;
+	padding-right: 3;
+	padding-top: 3;
+	padding-bottom: 3;
+	background-color: #ffffff;
+	background-alpha: 1;
+}
+
+.checkOutButton {
+	color: #ffffff;
+}
+
+.addressSelectorBox {
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 10;
+	padding-bottom: 10;
+	background-color: #ffffee;
+	border-color: #dddddd;
+	border-style: solid;
+	corner-radius: 4;
+}
+
+.shippingOptionsPanel {
+	background-color: #ffffee;
+	background-alpha: 1;
+}
+
+.shippingOptionsContent {
+	background-color: #ffffff;
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 10;
+	padding-bottom: 10;
+    horizontal-align: left;
+}
+
+.finalCheckOutPanel {
+	background-color: #ffffff;
+	background-alpha: 1;
+}
+
+.finalCheckOutSection {
+	top: 10;
+	background-color: #ffffff;
+	background-alpha: 1;
+	border-color: #dddddd;
+	border-style: solid;
+	corner-radius: 4;
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 15;
+	padding-bottom: 10;
+}
+
+.finalCheckOutSectionLabel {
+	background-color: #ffffff;
+	left: 20;
+	font-weight: bold;
+	font-size: 14;
+}
+
+.finalCheckOutAddressBox {
+	vertical-gap: -3;
+	padding-left: 4;
+	padding-right: 4;
+	padding-top: 4;
+	padding-bottom: 4;
+	background-color: #ffffee;
+	border-color: #dddddd;
+	border-style: solid;
+	corner-radius: 2;
+}
+
+.finalCheckOutSubSection {
+	padding-left: 10; 
+	padding-right: 10; 
+	background-color: #225588;
+	color: #ffffff
+}
+
+.finalCheckOutAgreeBox {
+	horizontal-align: right;
+	vertical-align: middle;
+	vertical-center: 0;
+	horizontal-gap: -4;
+	background-color: #ffffdd;
+	background-alpha: 1;
+}
+
+.finalOrderCheckOutTermsLink {
+	font-weight: bold;
+	text-decoration: underline;
+	color: #000099;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.orderHistoryPanel {
+
+}
+
+.orderHistorySearchBox {
+	background-color: #ffffee;
+	padding-left: 4;
+	padding-right: 4;
+	padding-top: 4;
+	padding-bottom: 4;
+}
+
+.orderHistorySearchButtonBar {
+	horizontal-align: center;
+	background-color: #002252;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 2;
+	padding-bottom: 2;
+	color: #ffffff;
+}
+
+.orderHistorySearchButton {
+	color: #ffffff;
+}
+
+.orderHistoryResultList {
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+}
+
+.orderHistoryResultButtonBar {
+	horizontal-align: center;
+	background-color: #002252;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 2;
+	padding-bottom: 2;
+	color: #ffffff;
+}
+
+.orderHistoryResultButton {
+	color: #ffffff;
+}
+
+.orderHistoryDetailButtonBar {
+	background-color: #002252;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 2;
+	padding-bottom: 2;
+}
+
+.orderHistoryDetailButton {
+	color: #ffffff;
+}
+
+.orderHistoryOrderDetailBox {
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+	background-color: #ffffff;
+	background-alpha: 1;
+}
+
+.orderHistoryOrderDetailHeader {
+	background-color: #002252;
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 2;
+	padding-bottom: 2;
+	font-size: 14;
+	font-weight: bold;
+	text-align: center;
+	color: #ffffdd;
+}
+
+.orderDetailSectionBox {
+	vertical-gap: 0;
+	border-color: #999999;
+	border-style: solid;
+}
+
+.orderDetailSectionHeader {
+	background-color: #224482;
+	horizontal-align: center;
+	color: #ffffff;
+	font-weight: bold;
+}
+
+.orderDetailSectionContent {
+	background-color: #ffffee;
+	horizontal-align: center;
+}
+
+.orderDetailSectionContentMultiline {
+	background-color: #ffffee;
+	horizontal-align: left;
+	vertical-gap: -3;
+}
+
+.helpText {
+	font-size: 14;
+}
+
+.initPopup {
+	padding-left: 20;
+	padding-right: 20;
+	padding-top: 20;
+	padding-bottom: 20;
+	vertical-gap: 20;
+	horizontal-align: center;
+}
+
+.selectCustomerContent {
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 10;
+	padding-bottom: 10;
+	horizontal-align: center;
+	vertical-align: middle;		
+}
+
+.confirmedProductListBox {
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+}
+
+.confirmedProductListMessage {
+	padding-left: 5;
+	padding-right: 5;
+	background-color: #ffff99;
+	border-color: #999999;
+	border-style: solid;
+}
+
+.productDetailPanel {
+	padding-left: 5;
+	padding-right: 5;
+	padding-top: 5;
+	padding-bottom: 5;
+}
+
+.productDetailModel {
+	border-color: #999999;
+	border-style: solid;
+	background-color: #eeeeee;
+	font-weight: bold;
+	font-size: 14;
+}
+
+.productDetailImage {
+	border-color: #eeeeee;
+	border-style: solid;
+	corner-radius: 2;
+	padding-left: 4;
+	padding-right: 4;
+	padding-top: 4;
+	padding-bottom: 4;
+	drop-shadow-enabled: true;
+	shadow-distance: 0;
+	shadow-direction: center;
+}
+
+.productDetailPriceBox {
+	font-size: 14; 
+    background-color: #ffffcc;
+	left: 5;
+	right: 5;
+	top: 5;
+	padding-left: 3;
+	padding-right: 3;
+	padding-top: 3;
+	padding-bottom: 3;
+}
+
+.productDetailPrice {
+	font-weight: bold;
+	color: #cc0000;
+}
+
+.productDetailLinkButton {
+	icon: Embed(source="../assets/information.png");
+}
+
+.multiWarehouseModel {
+	border-color: #999999;
+	border-style: solid;
+	background-color: #eeeeee;
+	font-size: 14;
+}
+
+.multiWarehouseContent {
+	background-color: #eeeeee;
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 10;
+	padding-bottom: 10;
+}
+
+.shoppingCartDeleteButton {
+	icon: Embed(source="../assets/garbage.png");
+	color: #666666;
+}
+
+.multiWarehouseAvaliableButton {
+	icon: Embed(source="../assets/packages.png");
+}
+
+.multiWarehouseAvaliableButtonDisable {
+	icon: Embed(source="../assets/packages_disable.png");
+}
+
+.imageBuilding {
+	background-image: Embed(source="../assets/building.png");
+}
+
+.imageCart {
+	background-image: Embed(source="../assets/cart.png");
+}
+
+.imageAccept {
+	background-image: Embed(source="../assets/accept.png");
+}
+
+.imageStop {
+	background-image: Embed(source="../assets/stop.png");
+}
+

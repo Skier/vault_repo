@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+			public function isValid():Boolean {
+				return true;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox backgroundColor="#cccccc" width="100%">
+		<mx:Label text="Participant reservations:" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+
+	<mx:VBox id="reservationForm" width="100%">
+		
+		<mx:DataGrid id="dgParticipantReservations" 
+			showHeaders="false"
+			dataProvider="{controller.Model.reservations}" 
+			width="100%" height="80">
+			<mx:columns>
+				<mx:DataGridColumn dataField="Details"/>
+			</mx:columns>
+		</mx:DataGrid>
+	
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button label="Add" click="controller.OnClickAddParticipantReservation()"/>
+			<mx:Button label="Edit" click="controller.OnClickEditParticipantReservation()" enabled="{dgParticipantReservations.selectedItem != null}"/>
+			<mx:Button label="Remove" click="controller.OnClickRemoveParticipantReservation()" enabled="{dgParticipantReservations.selectedItem != null}"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+
+</mx:VBox>

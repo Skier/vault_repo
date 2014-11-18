@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:owner="com.dalworth.servman.main.owner.*"
+	initialize="onInit()"
+	left="5" right="5" top="5" bottom="5"
+	xmlns:employee="com.dalworth.servman.main.employee.*" xmlns:businessPartner="com.dalworth.servman.main.businessPartner.*" xmlns:phone="com.dalworth.servman.main.phone.*" xmlns:salesRep="com.dalworth.servman.main.salesRep.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.User;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			import com.quickbase.idn.dto.QuickBaseUserDTO;
+			
+			import mx.events.ItemClickEvent;
+			
+			public static const INIT_APP_EVENT_START:String = "initAppStart";
+			public static const INIT_APP_EVENT_END:String = "initAppEnd";
+			public static const INIT_APP_EVENT_FAULT:String = "initAppFault";
+			public static const INIT_USER_EVENT_START:String = "initUserStart";
+			public static const INIT_USER_EVENT_END:String = "initUserEnd";
+			public static const INIT_USER_EVENT_FAULT:String = "initUserFault";
+			public static const INIT_PROJECT_TYPES_START:String = "initProjectTypesStart";
+			public static const INIT_PROJECT_TYPES_END:String = "initProjectTypesEnd";
+			public static const INIT_PROJECT_TYPES_FAULT:String = "initProjectTypesFault";
+
+			[Bindable]
+			private var model:MainAppModel = MainAppModel.getInstance();
+			
+			private var controller:MainAppController;
+			
+			private function onInit():void 
+			{
+				controller = new MainAppController(this);
+				addEventListener(INIT_APP_EVENT_START, function(event:*):void {log("Init Application Start...");});
+				addEventListener(INIT_APP_EVENT_END, function(event:*):void {log("Done.");});
+				addEventListener(INIT_USER_EVENT_START, function(event:*):void {log("Retrieve current User's information...");});
+				addEventListener(INIT_USER_EVENT_END, function(event:*):void {log("Done.");});
+				addEventListener(INIT_PROJECT_TYPES_START, function(event:*):void {log("Get Project Types..");});
+				addEventListener(INIT_PROJECT_TYPES_END, onProjectTypesInitEnd);
+				
+				controller.initApp();
+			}
+			
+			private function onInitFault(event:Event):void 
+			{
+				btnRestart.visible = btnRestart.includeInLayout = true;
+			}
+			
+			private function restartApp():void 
+			{
+				controller.initApp();
+			}
+			
+			private function onProjectTypesInitEnd(event:Event):void 
+			{
+				removeEventListener(INIT_PROJECT_TYPES_END, onProjectTypesInitEnd);
+
+				boxInit.visible = false;
+				boxInit.includeInLayout = false;
+				
+				initSalesRepUI();
+				return;
+				
+				if (model.currentUser.HasRoleName(User.ROLE_ADMINISTRATOR))
+					initAdminUI();
+				else if (model.currentUser.HasRoleName(User.ROLE_OWNER))
+					initOwnerUI();
+				else if (model.currentUser.HasRoleName(User.ROLE_SALES_REP))
+					initSalesRepUI();
+				else if (model.currentUser.HasRoleName(User.ROLE_CUSTOMER_SERVICE_REP))
+					initCustomerServiceRepUI();
+				else if (model.currentUser.HasRoleName(User.ROLE_BUSINESS_PARTNER))
+					initBusinessPartnerUI();
+			}
+			
+			private function initAdminUI():void 
+			{
+				initOwnerUI();
+			}
+			
+			private function initOwnerUI():void 
+			{
+				viewOwner.init();
+				vsMain.selectedChild = viewOwner;
+				vsMain.visible = true;
+			}
+			
+			private function initSalesRepUI():void 
+			{
+				viewSalesRep.init();
+				vsMain.selectedChild = viewSalesRep;
+				vsMain.visible = true;
+			}
+			
+			private function initCustomerServiceRepUI():void 
+			{
+				viewEmployee.init();
+				vsMain.selectedChild = viewEmployee;
+				vsMain.visible = true;
+			}
+			
+			private function initBusinessPartnerUI():void 
+			{
+				viewBusinessPartner.init();
+				vsMain.selectedChild = viewBusinessPartner;
+				vsMain.visible = true;
+			}
+			
+			private function log(value:String):void 
+			{
+				txtLog.text += value;
+				txtLog.text += "\n";
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="boxInit" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Panel title="Init application" width="350" height="130" layout="vertical" horizontalAlign="center">
+			<mx:TextArea id="txtLog" width="100%" height="100%" editable="false"/>
+			<mx:ProgressBar width="100%"  height="10" indeterminate="true" labelPlacement="center" label=""/>
+			<mx:Button id="btnRestart" label="Restart Application" click="restartApp()"
+				visible="false" includeInLayout="false"/>
+		</mx:Panel>
+	</mx:VBox>
+	
+	<mx:ViewStack id="vsMain" width="100%" height="100%" visible="false">
+		<owner:OwnerView id="viewOwner" width="100%" height="100%"/>
+		<salesRep:SalesRepView id="viewSalesRep" width="100%" height="100%"/>
+		<businessPartner:BusinessPartnerView id="viewBusinessPartner" width="100%" height="100%"/>
+		<employee:EmployeeView id="viewEmployee" width="100%" height="100%"/>
+	</mx:ViewStack>
+	
+	<phone:ActiveCallsView right="5" bottom="5" user="{model.currentUser}"/>
+</mx:Canvas>

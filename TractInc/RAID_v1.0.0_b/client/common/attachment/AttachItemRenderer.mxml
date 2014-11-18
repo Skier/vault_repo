@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" verticalAlign="middle"
+	horizontalScrollPolicy="off" horizontalAlign="center"
+	paddingLeft="5" paddingRight="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.BillItem;
+			
+			private function onClickAttach(billItem:BillItem):void 
+			{
+				BillItemAttachmentsView.Open(billItem, parentDocument.parentDocument, !billItem.isBillItemEditable());
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button width="20" height="20"
+        icon="@Embed(source='/common/attachment/paperclip.gif')"
+    	visible="{data.RelatedBillItemAttachment.length > 0 &amp;&amp; 0 != data.BillItemId}"
+    	includeInLayout="{data.RelatedBillItemAttachment.length > 0 &amp;&amp; 0 != data.BillItemId}"
+        click="onClickAttach(data as BillItem)"/>
+    <mx:Label text="({data.RelatedBillItemAttachment.length})" fontWeight="bold"
+    	visible="{data.RelatedBillItemAttachment.length > 0 &amp;&amp; 0 != data.BillItemId}"
+    	includeInLayout="{data.RelatedBillItemAttachment.length > 0 &amp;&amp; 0 != data.BillItemId}"
+    	/>
+	<mx:LinkButton label="Add file" click="onClickAttach(data as BillItem)"
+    	visible="{(data.RelatedBillItemAttachment.length == 0) &amp;&amp; data.isBillItemEditable() &amp;&amp; data.RelatedBillItemType != null &amp;&amp; 0 != data.BillItemId}"
+    	includeInLayout="{(data.RelatedBillItemAttachment.length == 0) &amp;&amp; data.isBillItemEditable() &amp;&amp; data.RelatedBillItemType != null &amp;&amp; 0 != data.BillItemId}"
+		/>
+
+</mx:HBox>

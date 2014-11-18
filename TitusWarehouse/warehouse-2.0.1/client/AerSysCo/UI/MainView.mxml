@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:TopBar="AerSysCo.UI.TopBar.*" 
+    xmlns:UI="AerSysCo.UI.*"
+    creationComplete="init()"
+    xmlns:Catalog="AerSysCo.UI.Catalog.*" 
+    xmlns:ShoppingCart="AerSysCo.UI.Ordering.ShoppingCart.*" 
+    xmlns:CheckOut="AerSysCo.UI.Ordering.CheckOut.*" xmlns:Orders="AerSysCo.UI.Account.Orders.*">
+    
+    <mx:Metadata>
+        [Event(name="logoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import AerSysCo.Events.CatalogItemsEvent;
+            import AerSysCo.Events.CustomerEvent;
+            
+            [Bindable] private var controller:MainController;
+            
+            private function init():void 
+            {
+                controller = MainController.getInstance();
+                controller.view = this;
+                controller.init();
+            }
+            
+            public function resetCatalogView():void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setCatalogView();
+                controlBar.setState(UserControlBar.STATE_PRODUCTS);
+            }
+            
+            private function currentCustomerChangeHandler(event:CustomerEvent):void 
+            {
+                catalogView.setCatalogView();
+                controlBar.setState(UserControlBar.STATE_PRODUCTS);
+                controller.selectCurrentCustomer();
+            }
+            
+            private function homeRequestHandler(event:Event):void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setHomeView();
+                controlBar.setState(UserControlBar.STATE_HOME);
+            }
+            
+            private function catalogRequestHandler(event:Event):void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setDefaultCategory();
+                catalogView.setCatalogView();
+                controlBar.setState(UserControlBar.STATE_PRODUCTS);
+            }
+            
+            private function accountRequestHandler(event:Event):void 
+            {
+            
+            }
+            
+            private function orderHistoryRequestHandler(event:Event):void 
+            {
+                catalogView.setCatalogView();
+                vsMain.selectedChild = orderHistoryView;
+                orderHistoryView.init(controller.model.currentCustomer);
+                controlBar.setState(UserControlBar.STATE_ORDER_HISTORY);
+            }
+            
+            private function openShoppingCartHandler(event:Event):void 
+            {
+                catalogView.setCatalogView();
+                vsMain.selectedChild = shoppingCartView;
+                controlBar.setState(UserControlBar.STATE_NOTHING);
+            }
+            
+            private function continueShoppingHandler(event:Event):void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setCatalogView();
+                controlBar.setState(UserControlBar.STATE_PRODUCTS);
+            }
+
+            private function checkoutRequestHandler(event:Event):void 
+            {
+                if ((controller.model.currentCustomer.dayBalance - controller.model.currentCustomer.shoppingCart.total) < 0) 
+                {
+                    Alert.show("You have exceeded your daily allowed limit. Please remove some items from your shopping cart.");
+                    return;
+                }
+
+                catalogView.setCatalogView();
+                vsMain.selectedChild = checkOutView;
+                controlBar.setState(UserControlBar.STATE_NOTHING);
+                checkOutView.init(controller.model.currentCustomer);
+            }
+            
+            private function createFinalOrdersHandler(event:Event):void 
+            {
+                catalogView.setCatalogView();
+                vsMain.selectedChild = catalogView;
+                controller.initCurrentCustomer();
+            }
+
+            private function faqRequestHandler(event:Event):void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setFAQView();
+                controlBar.setState(UserControlBar.STATE_FAQ);
+            }
+
+            private function termsRequestHandler(event:Event):void 
+            {
+                vsMain.selectedChild = catalogView;
+                catalogView.setTermsView();
+                controlBar.setState(UserControlBar.STATE_TERMS);
+            }
+            
+            private function categoriesChangeRequestHandler():void 
+            {
+                controlBar.setState(UserControlBar.STATE_PRODUCTS);
+            }
+            
+            private function categoriesLoadFaultHandler():void 
+            {
+                controller.catalogLoadFault();
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <TopBar:UserControlBar id="controlBar" width="100%"
+        user="{controller.model.user}"
+        currentCustomer="{controller.model.currentCustomer}"
+        currentCustomerChangeRequest="currentCustomerChangeHandler(event)"
+        homeRequest="homeRequestHandler(event)"
+        catalogRequest="catalogRequestHandler(event)"
+        accountRequest="accountRequestHandler(event)"
+        openShoppingCart="openShoppingCartHandler(event)"
+        checkoutRequest="checkoutRequestHandler(event)"
+        orderHistoryRequest="orderHistoryRequestHandler(event)"
+        faqRequest="faqRequestHandler(event)"
+        termsRequest="termsRequestHandler(event)"/>
+
+    <mx:Canvas width="100%" height="100%">
+        <mx:ViewStack id="vsMain" width="100%" height="100%" 
+            enabled="{controller.model.currentCustomer != null}"
+            creationPolicy="auto">
+            <Catalog:CatalogView id="catalogView" 
+                label="Catalog" width="100%" height="100%"
+                categoriesChangeRequest="categoriesChangeRequestHandler()"
+                categoriesLoadFault="categoriesLoadFaultHandler()"/>
+
+            <ShoppingCart:ShoppingCartView id="shoppingCartView" 
+                shoppingCart="{controller.model.currentCustomer.shoppingCart}"
+                width="100%" height="100%"
+                continueShopping="continueShoppingHandler(event)"
+                checkoutRequest="checkoutRequestHandler(event)"/>
+
+            <CheckOut:CheckOutView id="checkOutView"
+                currentCustomer="{controller.model.currentCustomer}"
+                width="100%" height="100%"
+                backToShoppingCart="openShoppingCartHandler(event)"
+                createFinalOrders="createFinalOrdersHandler(event)"/>
+            
+            <Orders:OrderHistoryView id="orderHistoryView"
+                width="100%" height="100%"/>
+
+        </mx:ViewStack>
+    </mx:Canvas>
+</mx:VBox>

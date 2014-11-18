@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="onCreationComplete()"
+	title="{'Not Exceed Rate info. Asset:' + rate.RelatedAssetAssignment.RelatedAsset.Name + ', AFE:' + rate.RelatedAssetAssignment.AFE + ', SubAFE: ' + rate.RelatedAssetAssignment.SubAFE}"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import App.Domain.BillItemType;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import App.Domain.Asset;
+			import mx.rpc.events.FaultEvent;
+			import weborb.data.DynamicLoadEvent;
+			import App.Domain.RateByAssignment;
+			import common.TypesRegistry;
+
+			[Bindable]
+			private var _types:ArrayCollection = new ArrayCollection();
+			
+			private var _collection:ArrayCollection;
+
+			[Bindable]
+			public var rate:RateByAssignment;
+			
+            public static function Open(rate:RateByAssignment, collection:ArrayCollection, parent:DisplayObject, modal:Boolean = true):NotExceedDetail 
+            {
+                var popup:NotExceedDetail = new NotExceedDetail();
+                popup.rate = rate;
+                popup._collection = collection;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function onCreationComplete():void 
+            {
+            	initTypes();
+
+            	cbBillItemType.selectedIndex = _types.getItemIndex(getTypeById(rate.BillItemTypeId));
+            }
+            
+            private function initTypes():void 
+            {
+            	var types:ArrayCollection = TypesRegistry.getInstance().getAllBillItemTypes;
+            	_types.removeAll();
+            	
+            	for each (var type:BillItemType in types) {
+            		if (typeIsAvailable(type) && !type.IsPresetRate) {
+            			_types.addItem(type);
+            		}
+            	}
+            }
+            
+			private function typeIsAvailable(type:BillItemType):Boolean 
+			{
+				if (rate.BillItemTypeId == type.BillItemTypeId) {
+					return true;
+				}
+
+				for each (var r:RateByAssignment in _collection) {
+					if (r.BillItemTypeId == type.BillItemTypeId) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+            private function getTypeById(id:int):BillItemType 
+            {
+            	for each (var type:BillItemType in _types) {
+            		if (type.BillItemTypeId == id) {
+            			return type;
+            		}
+            	}
+            	return null;
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%">
+		<mx:HBox>
+			<mx:Label text="Bill Item Type:" width="120" textAlign="right"/>
+			<mx:ComboBox id="cbBillItemType" width="120" labelField="Name"
+				dataProvider="{_types}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Not Exceed Rate:" width="100" textAlign="right"/>
+			<mx:TextInput id="txtBillRate" text="{rate.BillRate.toFixed(3)}" width="150" maxChars="15"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:HRule width="100%"/>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Ok"
+			enabled="{cbBillItemType.selectedItem != null &amp;&amp; !isNaN(Number(txtBillRate.text))}"/>
+		<mx:Button id="btnCancel" label="Cancel"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

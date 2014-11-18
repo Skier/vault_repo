@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalAlign="middle" horizontalGap="2" paddingLeft="2" paddingRight="2" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+
+
+			private function onClick():void 
+			{
+				dispatchEvent(new Event("removeAttachment", true));
+			}
+
+			private function onOpen():void 
+			{
+				dispatchEvent(new Event("openAttachment", true));
+			}
+
+		]]>
+	</mx:Script>
+	
+    <mx:Button id="btnOpen" 
+    	width="20" height="20" icon="@Embed('assets/icons16/attach.png')" toolTip="Open attachment"
+    	click="onOpen()"/>
+    <mx:Button id="btnRemove" 
+    	width="20" height="20" icon="@Embed('assets/icons16/delete.png')" toolTip="Remove attachment"
+    	click="onClick()"/>
+	
+</mx:HBox>

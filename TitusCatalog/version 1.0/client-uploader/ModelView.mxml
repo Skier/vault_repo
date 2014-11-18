@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="350"
+	height="150"
+	title="Add Link">
+	
+    <mx:Script>
+        <![CDATA[
+        	import mx.managers.PopUpManager;
+            [Bindable]
+            
+            public var controller:ModelController;
+            
+            public static function Open(parent:PDFUploaderView, modelInfo:ModelDataObject):ModelView {
+                var popup:ModelView = new ModelView();
+                popup.controller = new ModelController(parent.controller, popup, modelInfo);
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function onAddClick():void {
+            	controller.modelInfo.ModelId = parseInt(txtModelId.text);
+            	controller.modelInfo.PageId = parseInt(txtPageNumber.text);
+            	controller.parentController.model.links.addItem(controller.modelInfo);
+            	
+            	onCancelClick();
+            }
+            
+            private function onCancelClick():void {
+            	PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+
+	<mx:VBox
+		width="100%"
+		height="100%">
+		<mx:HBox
+			width="100%">
+			<mx:Label
+				text="Model ID:" />
+			<mx:TextInput
+				id="txtModelId"
+				width="100%"
+				/>
+		</mx:HBox>
+		<mx:HBox
+			width="100%">
+			<mx:Label
+				text="Page Number:" />
+			<mx:TextInput
+				id="txtPageNumber"
+				width="100%"
+				/>
+		</mx:HBox>
+		<mx:HBox
+			horizontalAlign="center"
+			width="100%">
+			<mx:Button
+				label="Add"
+				click="onAddClick()"
+				/>
+			<mx:Button
+				label="Cancel"
+				click="onCancelClick()"
+				/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:TitleWindow>

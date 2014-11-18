@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="com.dalworth.leadCentral.lead.convert.steps.IWizardStep" xmlns:controls="com.affilia.controls.*"
+	creationComplete="onCreate()" xmlns:steps="com.dalworth.leadCentral.lead.convert.steps.*">
+	
+	<mx:Metadata>
+		[Event(name="jobConnect", type="com.dalworth.leadCentral.events.JobEvent")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.events.QbInvoiceEvent;
+			import com.dalworth.leadCentral.service.JobService;
+			import com.dalworth.leadCentral.service.IdsService;
+			import com.dalworth.leadCentral.events.JobEvent;
+			import com.dalworth.leadCentral.lead.convert.ConvertLeadToJobModel;
+			import mx.events.ValidationResultEvent;
+			import mx.events.CloseEvent;
+			import Intuit.Sb.Cdm.vo.PhysicalAddress;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import mx.rpc.Responder;
+			
+            [Bindable]
+            public var editable:Boolean = false;
+
+			[Bindable]
+			private var customerTypes:ArrayCollection;
+			
+			[Bindable]
+			private var jobs:ArrayCollection;
+			
+			private var model:ConvertLeadToJobModel = ConvertLeadToJobModel.getInstance();
+			
+			[Bindable]
+			private var customer:Customer;
+			
+			private function setCustomer(value:Customer):void 
+			{
+				model.currentQbInvoice.RelatedIdsCustomer = value;
+				
+				customer = value;
+
+				if (customer.Address == null)
+					customer.Address = new Array();
+				
+				if (customer.Address.length == 0)
+					customer.Address.push(new PhysicalAddress());
+
+				panelAddress.address = customer.Address[0] as PhysicalAddress;
+
+				if (customer.Id == null) 
+				{
+					editable = true;
+					lstJobs.visible = lstJobs.includeInLayout = false;
+				} else 
+				{
+					editable = false;
+					lstJobs.visible = lstJobs.includeInLayout = true;
+				} 
+
+				initJobs();
+			}
+			
+			public function updateModel():void 
+			{
+				applyFields();
+			}
+			
+			public function init(model:ConvertLeadToJobModel):void 
+			{
+				setCustomer(model.currentJob.RelatedIdsCustomer);
+			}
+
+			public function get isValid():Boolean 
+			{
+				if (!editable)
+					return true;
+				
+				var result:Boolean = true;
+				
+				if (vFirstName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+					
+				if (vLastName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+					
+				return result;
+			} 
+			
+			private function startRemoting():void 
+			{
+				
+			}
+			
+			private function stopRemoting():void 
+			{
+				
+			}
+			
+			private function applyFields():void 
+			{
+				customer.Name = txtFirstName.text + " " + txtLastName.text;
+				customer.GivenName = txtFirstName.text;
+				customer.FamilyName = txtLastName.text;
+				
+				panelAddress.applyFields();
+			}
+			
+			private function initJobs():void 
+			{
+				if (jobs == null)
+					jobs = new ArrayCollection();
+				jobs.removeAll();
+				
+				if (customer == null || customer.Id == null)
+					return;
+				
+				startRemoting();
+				JobService.getInstance().getJobsByCustomer(customer, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							jobs.source = event.result as Array;
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}
+					))
+					
+			}
+			
+			private var existingCustomer:Customer = null;
+			private var refreshingExistingCustomer:Boolean = false;
+			private var isNameChanged:Boolean = false;
+			private function refreshExistingCustomer():void 
+			{
+				if (refreshingExistingCustomer)
+					return;
+					
+				refreshingExistingCustomer = true;
+
+				var name:String = txtFirstName.text + " " + txtLastName.text;
+				IdsService.getInstance().getCustomerByName(name, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							refreshingExistingCustomer = false;
+							if (isNameChanged)
+							{
+								isNameChanged = false;
+								existingCustomer = null;
+								refreshExistingCustomer();
+								return;
+							} else 
+							{
+								existingCustomer = event.result as Customer;
+								if (existingCustomer != null)
+									customerExistAlert();
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							refreshingExistingCustomer = false;
+							Alert.show(event.fault.message);
+							existingCustomer = null;
+						} 
+					));
+				
+			} 
+			
+			private function customerExistAlert():void 
+			{
+				if (existingCustomer == null || existingCustomer.Id == null || existingCustomer.Id.Value == null || existingCustomer.Id.Value == "")
+					return;
+				
+				if (customer.Id == null || customer.Id.Value == null || customer.Id.Value == "")
+					return;
+				
+				if (existingCustomer.Id.Value == customer.Id.Value && existingCustomer.Id.idDomain == customer.Id.idDomain)
+					return;
+				
+				Alert.show(existingCustomer.Name + " already exists. Do you want to use existing customer?", "Customer already exists",
+					Alert.YES | Alert.NO, null, 
+					function (event:CloseEvent):void 
+					{
+						if (event.detail == Alert.YES)
+						{
+							setCustomer(existingCustomer);
+						} else if (event.detail == Alert.NO) 
+						{
+							txtLastName.setFocus();
+							txtLastName.selectionBeginIndex = 0;
+							txtLastName.selectionEndIndex = 1024;
+						}
+					});
+			}
+			
+			private function onChangeName():void 
+			{
+				if (txtFirstName.text.length == 0 || txtLastName.text.length == 0)
+					return;
+				
+				isNameChanged = true;
+				refreshExistingCustomer();
+			}
+			
+			private function onConnect(event:QbInvoiceEvent):void 
+			{
+				
+			}
+			
+			private function onCreate():void 
+			{
+				lstJobs.addEventListener(JobEvent.JOB_CONNECT, onConnect);
+			}
+			
+			private function setEditable():void 
+			{
+				editable = true;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:StringValidator id="vFirstName" source="{txtFirstName}" property="text" required="true"/>
+	<mx:StringValidator id="vLastName" source="{txtLastName}" property="text" required="true"/>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:VBox width="100%" 
+			paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+			backgroundColor="#EEEEEE" verticalGap="0">
+			<mx:Label text="Customer Edit Screen" fontSize="12" fontWeight="bold" color="#999999"/>
+			<mx:Label text="Review customer or change it" fontSize="9"/>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%"
+			paddingLeft="8" paddingRight="8" paddingBottom="8">
+			<mx:HBox width="100%" verticalAlign="top">
+				<mx:Grid width="100%">
+					<mx:GridRow width="100%">
+						<mx:GridItem>
+							<mx:Label text="Name:" fontSize="12" textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%" colSpan="3">
+							<mx:Label text="{txtFirstName.text + ' '  + txtLastName.text}" fontSize="12" width="100%"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem>
+							<mx:Label text="First Name:" fontSize="12" textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:TextInput id="txtFirstName" text="{customer.GivenName}" fontSize="12" width="100%" 
+								visible="{editable}" includeInLayout="{editable}"
+								change="onChangeName()"/>
+							<mx:Label text="{customer.GivenName}" fontSize="12" width="100%" visible="{!editable}" includeInLayout="{!editable}"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:Label text="Last Name:" fontSize="12" textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem width="100%">
+							<mx:TextInput id="txtLastName" text="{customer.FamilyName}" fontSize="12" width="100%" 
+								visible="{editable}" includeInLayout="{editable}"
+								change="onChangeName()"/>
+							<mx:Label text="{customer.FamilyName}" fontSize="12" width="100%" visible="{!editable}" includeInLayout="{!editable}"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+				
+				<mx:Button label="Change" click="setEditable()" visible="{!editable}" height="30" cornerRadius="2"/>
+			</mx:HBox>
+			
+			<steps:AddressPanel id="panelAddress" width="100%" editable="{editable}"/>
+			
+			<mx:HBox width="100%" height="100%">
+				<mx:Label text="Existing Jobs:" fontWeight="bold"/>
+				<mx:List id="lstQbInvoices" width="100%" height="100%" labelField="ShowAs" dataProvider="{jobs}" fontSize="12"
+					itemRenderer="com.dalworth.leadCentral.lead.JobRenderer"/>
+			</mx:HBox>
+	
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	initialize="onInit()"
+	creationComplete="onCreate()" xmlns:dashboard="com.dalworth.leadCentral.dashboard.*" xmlns:controls="com.affilia.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import com.dalworth.leadCentral.service.registry.UserRegistry;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.leadSource.LeadSourceTreeDataDescriptor;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.UIComponent;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_LEAD_SOURCE:String = "Lead Source";
+			private static const COLUMN_SALES_REP:String = "Sales Rep";
+			private static const COLUMN_BUSINESS_PARTNER:String = "Business Partner";
+
+			[Bindable]
+			private var model:DashboardModel;
+			private var controller:DashboardController;
+			
+            [Embed(source="/assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+            [Embed(source="/assets/icons16/user--exclamation.png")]
+            [Bindable]
+            private var imgUserAttention:Class;
+
+            [Embed(source="/assets/icons16/building.png")]
+            [Bindable]
+            private var imgBuilding:Class;
+
+            [Embed(source="/assets/icons16/building--exclamation.png")]
+            [Bindable]
+            private var imgBuildingAttention:Class;
+
+            [Embed(source="/assets/icons16/user-business-boss.png")]
+            [Bindable]
+            private var imgBoss:Class;
+
+            [Embed(source="/assets/icons16/telephone-network.png")]
+            [Bindable]
+            private var imgTelephone:Class;
+
+			public function init():void 
+			{
+				controller.initModel();
+				onRefreshFilter();
+			}
+			
+			private function onInit():void 
+			{
+				model = DashboardModel.getInstance();
+				controller = new DashboardController(this as UIComponent);
+			}
+			
+			private function onCreate():void 
+			{
+				viewContent.content = null;
+			}
+			
+			private function getTreeIcon(object:Object):Class 
+			{
+				var leadSource:LeadSource = object as LeadSource;
+				if (leadSource != null)
+				{
+					if (leadSource.RelatedUser != null) 
+					{
+						if (leadSource.RelatedUser.RoleName == User.ROLE_BUSINESS_PARTNER)
+							return leadSource.RelatedUser.IsActive ? imgBuilding : imgBuildingAttention;
+						else if (leadSource.RelatedUser.RoleName == User.ROLE_STAFF)
+							return leadSource.RelatedUser.IsActive ? imgUser : imgUserAttention;
+						else if (leadSource.RelatedUser.RoleName == User.ROLE_ADMINISTRATOR)
+							return imgBoss;
+					} else
+					{
+						return imgTelephone;
+					} 
+				}
+				return null;
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is LeadSource) 
+				{
+					var leadSource:LeadSource = item as LeadSource;
+					
+					switch (column.headerText) 
+					{
+						case COLUMN_LEAD_SOURCE :
+							return leadSource.Name;
+						
+						case COLUMN_SALES_REP :
+							if (leadSource.OwnedByUserId > 0)
+								return User(UserRegistry.getInstance().getLocal(leadSource.OwnedByUserId)).Name;
+							else
+								return "";
+						
+						case COLUMN_BUSINESS_PARTNER :
+							if (leadSource.UserId > 0)
+								return User(UserRegistry.getInstance().getLocal(leadSource.UserId)).Name;
+							else
+								return "";
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onRefreshFilter():void 
+			{
+				var salesRepId:int = 0;
+				if (comboSalesRep.selectedIndex > 0)
+					salesRepId = comboSalesRep.value as int;
+					
+				var businessPartnerId:int = 0;
+				if (comboBusinessPartner.selectedIndex > 0)
+					businessPartnerId = comboBusinessPartner.value as int;
+					
+				controller.refreshFilter(salesRepId, businessPartnerId);
+
+				dgLeadSources.selectedIndex = -1;
+				dgLeadSources.selectedItem = null;
+/* 
+				var filtered:ArrayCollection = new ArrayCollection();
+				for each (var leadSource:LeadSource in model.leadSources)
+				{
+					filtered.addItem(leadSource);
+				}
+				viewContent.content = filtered;
+ */
+			}
+			
+			private function onClearFilter():void 
+			{
+				comboSalesRep.selectedIndex = 0;
+				comboBusinessPartner.selectedIndex = 0;
+
+				controller.refreshFilter(0,0);
+
+				dgLeadSources.selectedIndex = -1;
+				dgLeadSources.selectedItem = null;
+/* 
+				var filtered:ArrayCollection = new ArrayCollection();
+				for each (var leadSource:LeadSource in model.leadSources)
+				{
+					filtered.addItem(leadSource);
+				}
+				viewContent.content = filtered;
+ */
+			}
+			
+			private function set selectedLeadSource(value:Object):void 
+			{
+				var selected:LeadSource = dgLeadSources.selectedItem as LeadSource;
+				var collection:ArrayCollection = new ArrayCollection();
+				
+				if (selected != null)
+				{
+					collection.addItem(selected);
+				} else 
+				{
+					for each (var leadSource:LeadSource in model.leadSources)
+					{
+						collection.addItem(leadSource);
+					}
+				}
+				
+				viewContent.content = collection;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Binding source="dgLeadSources.selectedItem" destination="selectedLeadSource"/>
+
+	<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+		<mx:VBox width="350" height="100%">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Lead Sources:" fontWeight="bold" fontSize="13"/>
+				<mx:Spacer width="100%"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#EEEEFF"
+				paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4" verticalAlign="bottom">
+				<mx:VBox borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#FFFFFF" backgroundAlpha="0.3"
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" verticalGap="2"
+					width="100%">
+					<mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle">
+						<mx:Label text="Sales Rep:" width="100" textAlign="right"/>
+						<controls:ComboBox id="comboSalesRep" 
+							labelField="Name" width="100%" minWidth="120" fontSize="12"
+							dataProvider="{model.salesReps}" valueField="Id" value="{model.salesRepId}"/>
+					</mx:HBox>
+					<mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle">
+						<mx:Label text="Granted Login:" width="100" textAlign="right"/>
+						<controls:ComboBox id="comboBusinessPartner" 
+							labelField="Name" width="100%" minWidth="120" fontSize="12"
+							dataProvider="{model.businessPartners}" valueField="Id" value="{model.businessPartnerId}"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox verticalGap="4" verticalAlign="bottom" height="100%">
+					<mx:Button label="Refresh" click="onRefreshFilter()" width="80"/>
+					<mx:Button label="Clear" click="onClearFilter()" width="80"/>
+				</mx:VBox>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgLeadSources" width="100%" height="100%"
+				dataProvider="{model.leadSources}" fontSize="12" draggableColumns="false">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" width="20"/>
+					<mx:DataGridColumn headerText="{COLUMN_LEAD_SOURCE}" labelFunction="getLabel"/>
+					<mx:DataGridColumn headerText="{COLUMN_SALES_REP}" labelFunction="getLabel"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<dashboard:DashboardContentView id="viewContent" width="100%" height="100%"/>
+	</mx:HDividedBox>
+</mx:VBox>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Metadata>
+        [Event(name="addTract", type="flash.events.Event")]
+        [Event(name="openTract", type="mx.events.DynamicEvent")]
+        [Event(name="addAttachment", type="flash.events.Event")]
+        [Event(name="deleteAttachment", type="mx.events.DynamicEvent")]
+        [Event(name="openAttachment", type="mx.events.DynamicEvent")]
+        [Event(name="addReference", type="truetract.web.dashboard.events.DocumentReferenceEvent")]
+        [Event(name="openReference", type="truetract.web.dashboard.events.DocumentReferenceEvent")]
+        [Event(name="deleteReference", type="truetract.web.dashboard.events.DocumentReferenceEvent")]
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.web.dashboard.documentPanel.DocumentPanel;
+        	import truetract.web.AppModel;
+        	import truetract.web.services.DocumentService;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.AsyncToken;
+        	import mx.core.Application;
+        	import truetract.web.dashboard.events.DocumentReferenceEvent;
+        	import truetract.web.dashboard.events.DocumentEvent;
+        	import mx.events.CloseEvent;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import flash.net.navigateToURL;
+            import truetract.domain.*;
+            import mx.rpc.Responder;
+            
+            import mx.events.DynamicEvent;
+            import mx.controls.Alert;
+            
+            private var _docum:Document;
+			public function get docum():Document { return _docum; }
+            [Bindable] public function set docum(doc:Document):void
+            {
+            	_docum = doc;
+
+        		Application.application.addEventListener(DocumentEvent.SAVE_DOCUMENT, saveDocumentHandler);
+            }
+            
+            public var caller:*;
+            
+            public function setMode(mode:String):void 
+            {
+            	switch (mode) 
+            	{
+            		case DocumentPanel.TRACTS_MODE:
+		            	tnDetails.selectedChild = tractsBox;
+		            	break;
+		            	
+		            case DocumentPanel.ATTACHMENT_MODE:
+		            	tnDetails.selectedChild = filesBox;
+		            	break;
+		            	
+		            case DocumentPanel.REFERENCES_MODE:
+	    	        	tnDetails.selectedChild = referencesBox;
+		            	break;
+		            	
+		            default :
+		            	tnDetails.selectedChild = tractsBox;
+            	}
+            }
+            
+		    private function saveDocumentHandler(event:DocumentEvent):void 
+		    {
+		    	if (!docum) 
+		    	{
+		    		return;
+		    	}
+		    	
+		    	for each (var docRef:DocumentReference in docum.ReferencesList) 
+		    	{
+		    		if (docRef.ReferencedDoc != null && docRef.ReferenceId != docRef.ReferencedDoc.DocID) 
+		    		{
+		    			updateDocumentRef(docRef);
+		    		}
+		    	}
+		    }
+
+		    private function updateDocumentRef(docRef:DocumentReference):void 
+		    {
+		        var asyncToken:AsyncToken = DocumentService.getInstance().getDocument(docRef.ReferenceId);
+		        asyncToken.addResponder(new mx.rpc.Responder(
+		            function (event:ResultEvent):void
+		            {
+		                var doc:Document = event.result as Document;
+		                if (doc) 
+		                {
+		                    docRef.ReferencedDoc = doc;
+		                }
+		            },
+		            function (event:FaultEvent):void {}
+		        ));
+		    }
+		    
+		    private function getLatestDocument(docRef:DocumentReference):void 
+		    {
+		        Alert.show("Do you want to change current reference to latest version of Document ?", 
+		           "Replace Document", Alert.YES | Alert.NO, null, 
+		           function (event:CloseEvent):void 
+		           {
+		                if (event.detail == Alert.YES)
+		                {
+							DocumentService.getInstance().actualizeDocumentReference(docRef);
+		                }
+		            });
+		    }
+		
+            private function fileNameFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.FileName : "";
+            }
+
+            private function fileDescriptionFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.Description : "";
+            }
+            
+            public function openDocument(document:Document, mode:String = null):void 
+            {
+            	var event:DocumentEvent = new DocumentEvent("openDocument", document, null, mode);
+            	dispatchEvent(event);
+            }
+
+		    public function getLatestDocumentRequestHandler(docRef:DocumentReference):void 
+		    {
+		    	if (docRef) {
+		    		getLatestDocument(docRef);
+		    	}
+		    }
+		
+            private function addTract_clickHandler():void
+            {
+                dispatchEvent(new Event("addTract"));
+            }
+
+            private function addFile_clickHandler():void
+            {
+                dispatchEvent(new Event("addAttachment"));
+            }
+
+            private function deleteFile_clickHandler():void
+            {
+            	if (fileList.selectedItem != null) 
+            	{
+	                Alert.show("Are you really want to remove selected attachment ?", 
+	                   "Delete file", Alert.YES | Alert.NO, null, 
+	                   function (ev:CloseEvent):void 
+	                   {
+	                        if (ev.detail == Alert.YES)
+	                        {
+				                var event:DynamicEvent = new DynamicEvent("deleteAttachment");
+				                event.attachment = DocumentAttachment(fileList.selectedItem);
+				
+				                dispatchEvent(event);
+	                        }
+	                    });
+            	}
+            }
+
+            private function openFile_clickHandler():void
+            {
+                var attach:DocumentAttachment = DocumentAttachment(fileList.selectedItem);
+                var urlRequest:URLRequest = new URLRequest(attach.FileRef.FileUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+
+            private function tractList_doubleClickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("openTract");
+                event.tract = Tract(tractList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+            private function fileList_doubleClickHandler():void
+            {
+                var event:DynamicEvent = new DynamicEvent("openAttachment");
+                event.attachment = DocumentAttachment(fileList.selectedItem);
+
+                dispatchEvent(event);
+            }
+
+            private function addReferenceClickHandler():void 
+            {
+            	dispatchEvent(new DocumentReferenceEvent(DocumentReferenceEvent.ADD_REFERENCE));
+            }
+            
+            private function openReferenceClickHandler():void 
+            {
+            	var reference:DocumentReference = dgReferences.selectedItem as DocumentReference;
+
+            	if (reference != null) 
+            	{
+		           	dispatchEvent(new DocumentReferenceEvent(DocumentReferenceEvent.OPEN_REFERENCE, reference));
+            	}
+            }
+            
+            private function deleteReferenceClickHandler():void
+            {
+            	var reference:DocumentReference = dgReferences.selectedItem as DocumentReference;
+
+            	if (reference != null) 
+            	{
+	                Alert.show("Are you really want to remove selected reference ?", 
+	                   "Delete reference", Alert.YES | Alert.NO, null, 
+	                   function (ev:CloseEvent):void 
+	                   {
+	                        if (ev.detail == Alert.YES)
+	                        {
+				                dispatchEvent(new DocumentReferenceEvent(
+				                					DocumentReferenceEvent.DELETE_REFERENCE, reference));
+	                        }
+	                    });
+            	}
+            }
+
+            private function dgReferenceDoubleClickHandler():void 
+            {
+            	var reference:DocumentReference = dgReferences.selectedItem as DocumentReference;
+
+            	if (reference != null) 
+            	{
+		           	dispatchEvent(new DocumentReferenceEvent(DocumentReferenceEvent.OPEN_REFERENCE, reference));
+            	}
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:TabNavigator id="tnDetails"
+        width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingBottom="5"
+        backgroundAlpha="0.52">
+
+        <mx:VBox id="tractsBox" label="Tracts" width="100%" height="100%">
+
+            <mx:DataGrid id="tractList"
+                dataProvider="{docum.TractsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="tractList_doubleClickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+		            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.documentPanel.documentDetail.TractStatusIR" sortable="false"/>
+                    <mx:DataGridColumn headerText="Ref.Name" dataField="RefName"/>
+                    <mx:DataGridColumn headerText="Called" dataField="calledString" width="150"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:HBox>
+                <mx:Button 
+                    label="Add Tract" enabled="{docum.IsActive}"
+                    click="addTract_clickHandler()"/>
+    
+                <mx:Button 
+                    label="Export.." enabled="false"
+                    click="Alert.show('Not implemented yet')"/>
+                    
+                <mx:Button 
+                    label="Import.." enabled="false"
+                    click="Alert.show('Not implemented yet')"/>
+            </mx:HBox>
+
+        </mx:VBox>
+
+        <mx:VBox id="filesBox" label="Files" width="100%" height="100%">
+
+            <mx:DataGrid id="fileList"
+                dataProvider="{docum.AttachmentsList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="openFile_clickHandler()"
+                width="100%" height="100%" backgroundAlpha="1">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="File Name" labelFunction="fileNameFunction"/>
+                    <mx:DataGridColumn headerText="Type" dataField="TypeName"/>
+                    <mx:DataGridColumn headerText="Description" labelFunction="fileDescriptionFunction"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:HBox>
+                <mx:Button 
+                    enabled="{docum.IsActive}"
+                    label="Add File" click="addFile_clickHandler()"/>
+
+                <mx:Button 
+                    enabled="{fileList.selectedItem != null}"
+                    label="Open" click="openFile_clickHandler()"/>
+
+                <mx:Button 
+                    enabled="{fileList.selectedItem != null &amp;&amp; docum.IsActive}"
+                    label="Delete" click="deleteFile_clickHandler()"/>
+
+            </mx:HBox>
+
+        </mx:VBox>
+
+        <mx:VBox id="referencesBox" label="References" width="100%" height="100%">
+
+            <mx:DataGrid id="dgReferences"
+                dataProvider="{docum.ReferencesList}" 
+                doubleClickEnabled="true"
+                itemDoubleClick="dgReferenceDoubleClickHandler()"
+                width="100%" height="100%" minWidth="300" backgroundAlpha="1">
+                <mx:columns>
+		            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.documentPanel.documentDetail.ReferencedDocStatusIR" sortable="false"/>
+		            <mx:DataGridColumn headerText="Instrument" width="100" minWidth="100" dataField="DocumentTypeName"/>
+		            <mx:DataGridColumn headerText="Date Signed" width="70" minWidth="70" dataField="DateSigned"/>
+		            <mx:DataGridColumn headerText="Date Filed" width="70" minWidth="70" dataField="DateFiledDisplayValue"/>
+		            <mx:DataGridColumn headerText="Grantor" width="100" dataField="SellerName"/>
+		            <mx:DataGridColumn headerText="Grantee" width="100" dataField="BuyerName"/>
+		            <mx:DataGridColumn headerText="Description" dataField="Description"/>
+		            <mx:DataGridColumn headerText="status" width="74" minWidth="74" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.documentPanel.documentDetail.ReferencedDocStateIR" sortable="false"/>
+		            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+		            	itemRenderer="truetract.web.dashboard.documentPanel.documentDetail.ReferencedDocActionsIR" sortable="false"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <mx:HBox>
+                <mx:Button 
+                    enabled="{docum.IsActive}"
+                    label="Add Reference" click="addReferenceClickHandler()"/>
+
+                <mx:Button 
+                    enabled="{dgReferences.selectedItem != null}"
+                    label="Open" click="openReferenceClickHandler()"/>
+
+                <mx:Button 
+                    enabled="{dgReferences.selectedItem != null &amp;&amp; docum.IsActive}"
+                    label="Delete" click="deleteReferenceClickHandler()"/>
+
+            </mx:HBox>
+
+        </mx:VBox>
+    </mx:TabNavigator>
+</mx:VBox>

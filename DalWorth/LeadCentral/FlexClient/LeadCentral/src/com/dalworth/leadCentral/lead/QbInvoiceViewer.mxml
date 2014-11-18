@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.InvoiceLine;
+			import Intuit.Sb.Cdm.vo.Invoice;
+			import com.dalworth.leadCentral.domain.QbInvoice;
+			import com.affilia.util.DateUtil;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import Intuit.Sb.Cdm.vo.TelephoneNumber;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.collections.ArrayCollection;
+			
+            [Embed(source="assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+            [Embed(source="assets/icons16/telephone.png")]
+            [Bindable]
+            private var imgPhone:Class;
+
+			[Bindable]
+			private var qbInvoice:QbInvoice;
+			
+			[Bindable] private var intuitInvoice:Intuit.Sb.Cdm.vo.Invoice;
+			[Bindable] private var intuitCustomer:Intuit.Sb.Cdm.vo.Customer;
+
+			[Bindable] private var phonesStr:String;
+			[Bindable] private var customerPhonesStr:String;
+
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				
+				if (value is QbInvoice)
+					qbInvoice = value as QbInvoice;
+				else 
+					qbInvoice = null;
+				
+				updateInvoiceProperties();
+			}
+			
+			private function updateInvoiceProperties():void 
+			{
+				if (qbInvoice != null) 
+				{
+					intuitInvoice = qbInvoice.RelatedIdsInvoice as Invoice;
+					intuitCustomer = qbInvoice.RelatedIdsCustomer as Customer;
+				} else 
+				{
+					intuitInvoice = null;
+					intuitCustomer = null;
+				} 
+
+				if (intuitCustomer != null) 
+					customerPhonesStr = getPhonesStr(intuitCustomer.Phone);
+				else 
+					customerPhonesStr = "";
+
+				setBackground();
+			}
+			
+			private function getPhonesStr(phones:Array):String
+			{
+				var result:String = "";
+				if (phones != null) 
+				{
+					for each (var phone:TelephoneNumber in phones) 
+					{
+						if (result != "")
+							result += ", ";
+						result += phone.FreeFormNumber;
+					}
+				}
+				return result;
+			}
+			
+			private function setBackground():void 
+			{
+				if (qbInvoice != null)
+				{
+					if (qbInvoice.MatchLevel == 4)
+						boxContent.setStyle("backgroundColor", 0xDDFFDD);
+					else if (qbInvoice.MatchLevel == 3)
+						boxContent.setStyle("backgroundColor", 0xDDDDFF);
+					else if (qbInvoice.MatchLevel == 2)
+						boxContent.setStyle("backgroundColor", 0xFFFFDD);
+					else if (qbInvoice.MatchLevel == 1)
+						boxContent.setStyle("backgroundColor", 0xFFDDDD);
+					else 
+						boxContent.setStyle("backgroundColor", 0xFFFFFF);
+				}
+			}
+			
+			private function getAmountLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is InvoiceLine) 
+				{
+					return cf.format(InvoiceLine(item).Amount);
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+
+	<mx:VBox id="boxContent" left="2" right="2" top="2" bottom="2" 
+		verticalGap="0" backgroundColor="#EEEEEE" backgroundAlpha="0.8" horizontalScrollPolicy="off">
+		<mx:HBox fontSize="12" width="100%" verticalAlign="middle" backgroundColor="#FFFFEE" backgroundAlpha="0.5">
+			<mx:Label text="INVOICE:"/>
+			<mx:Label text="{intuitInvoice.Header.DocNumber}" fontWeight="bold"/>
+			<mx:Label text="Date:"/>
+			<mx:Label text="{DateUtil.getDateStr(intuitInvoice.MetaData.CreateTime)}" fontWeight="bold"/>
+			<mx:Label text="Status" 
+				visible="{intuitInvoice.Header.Status != null &amp;&amp; intuitInvoice.Header.Status != ''}"
+				includeInLayout="{intuitInvoice.Header.Status != null &amp;&amp; intuitInvoice.Header.Status != ''}"/>
+			<mx:Text text="{intuitInvoice.Header.Status}" fontWeight="bold"/>
+			<mx:Label text="To:"/>
+			<mx:Label text="{intuitCustomer.Name}" fontWeight="bold" width="100%" minWidth="100"/>
+		</mx:HBox>
+		<mx:HRule width="100%" strokeWidth="1" height="1"/>
+		<mx:HBox width="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:DataGrid width="100%" height="60" dataProvider="{intuitInvoice.Line}" showHeaders="false" rowHeight="22" fontSize="10"
+					verticalScrollPolicy="on" selectable="false">
+					<mx:columns>
+						<mx:DataGridColumn dataField="Desc"/>
+						<mx:DataGridColumn textAlign="right" dataField="Amount" width="100" labelFunction="getAmountLabel"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox width="180" height="100%" verticalAlign="bottom">
+				<mx:Grid verticalGap="0" horizontalGap="0" fontSize="12">
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Amount:" fontWeight="bold"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="{cf.format(intuitInvoice.Header.SubTotalAmt)}" fontWeight="bold"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Tax Amt:" fontWeight="bold"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="{cf.format(intuitInvoice.Header.TaxAmt)}" fontWeight="bold"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Label text="Total Amt:" fontWeight="bold"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="{cf.format(intuitInvoice.Header.TotalAmt)}" fontWeight="bold"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:HRule width="100%" height="1" strokeColor="#CCCCCC" bottom="0" left="0" right="0"/>
+
+</mx:Canvas>

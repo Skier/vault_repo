@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    close="OnClose(event);" 
+    creationComplete="OnCreationComplete();" 
+    title="Participant Entity Party" 
+    showCloseButton="true"
+    width="400" height="250"
+    xmlns:components="components.*" xmlns:Common="Domain.Common.*">
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.ValidationResultEvent;
+        	import Domain.Participantentityparty;
+        	import mx.collections.ArrayCollection;
+        	import mx.managers.PopUpManager;
+
+            [Bindable]
+            public var entityParty:Participantentityparty;
+            
+            public var parentCollection:ArrayCollection;
+            
+	        public function OnCreationComplete():void {
+	            PopUpManager.centerPopUp(this);
+	            focusManager.setFocus(fName);
+	        }
+	
+	        public function OnClose(event:Event):void {
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        public function OnOk(event:Event):void {
+	        	if (!this.IsValid()) {
+	        		return;
+	        	}
+	        	
+	        	if (entityParty.isNew){
+		        	parentCollection.addItem(entityParty);
+	        	}
+	            
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        private function IsValid():Boolean {
+
+	        	var result:Boolean = true;
+
+				if (ssnV.validate().type == ValidationResultEvent.INVALID) {
+					result = false;
+				}
+				
+				return result;
+	        }
+	        
+        ]]>
+    </mx:Script>
+
+	<Common:SsnValidator id="ssnV" source="{SSN}" property="text" required="false"/>
+
+	<mx:Form width="100%" height="100%" defaultButton="{btnOk}">
+		<mx:FormItem label="First Name:">
+			<mx:TextInput id="fName" maxChars="50"
+				text="{entityParty.fName}" 
+				change="(entityParty.fName = fName.text.toUpperCase())"/>
+		</mx:FormItem>
+		<mx:FormItem label="Midname:">
+			<mx:TextInput id="mName" maxChars="50" 
+				text="{entityParty.mName}" 
+				change="(entityParty.mName = mName.text.toUpperCase())"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last Name:">
+			<mx:TextInput id="lName" maxChars="50" 
+				text="{entityParty.lName}" 
+				change="(entityParty.lName = lName.text.toUpperCase())"/>
+		</mx:FormItem>
+		<mx:FormItem label="SSN:">
+			<components:MaskedInput id="SSN"
+				text="{entityParty.SSN}" 
+				inputMask="###-##-####"
+				change="(entityParty.SSN = SSN.text)"/>
+		</mx:FormItem>
+	</mx:Form>
+
+    <mx:ControlBar width="100%">
+        <mx:Spacer width="100%" height="10"/>
+        <mx:Button id="btnOk" label="Ok" click="OnOk(event)" 
+        	enabled="{fName.text.length != 0 || mName.text.length != 0 || lName.text.length != 0 || SSN.text.length != 0 }"/>
+        <mx:Button id="btnCancel" label="Cancel" click="OnClose(event)"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

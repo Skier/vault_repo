@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A5C21082-985A-4B11-8487-2649A442751B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Domain</RootNamespace>
+    <AssemblyName>Dalworth.Domain</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>Dalworth.Domain</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETCF35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth\Dalworth.csproj">
+      <Project>{DB694166-7403-425C-912B-A9D33014299C}</Project>
+      <Name>Dalworth</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Address.cs" />
+    <Compile Include="Application.cs" />
+    <Compile Include="ApplicationState.cs" />
+    <Compile Include="Codegen\Address.Generator.cs" />
+    <Compile Include="Codegen\Application.Generator.cs" />
+    <Compile Include="Codegen\ApplicationState.Generator.cs" />
+    <Compile Include="Codegen\Counter.Generator.cs" />
+    <Compile Include="Codegen\Customer.Generator.cs" />
+    <Compile Include="Codegen\Employee.Generator.cs" />
+    <Compile Include="Codegen\EmployeeType.Generator.cs" />
+    <Compile Include="Codegen\Equipment.Generator.cs" />
+    <Compile Include="Codegen\EquipmentType.Generator.cs" />
+    <Compile Include="Codegen\EventLog.Generator.cs" />
+    <Compile Include="Codegen\Item.Generator.cs" />
+    <Compile Include="Codegen\ItemShape.Generator.cs" />
+    <Compile Include="Codegen\ItemType.Generator.cs" />
+    <Compile Include="Codegen\Project.Generator.cs" />
+    <Compile Include="Codegen\ProjectStatus.Generator.cs" />
+    <Compile Include="Codegen\ProjectType.Generator.cs" />
+    <Compile Include="Codegen\Task.Generator.cs" />
+    <Compile Include="Codegen\TaskEquipmentCapture.Generator.cs" />
+    <Compile Include="Codegen\TaskEquipmentRequirement.Generator.cs" />
+    <Compile Include="Codegen\TaskItemDelivery.Generator.cs" />
+    <Compile Include="Codegen\TaskItemRequirement.Generator.cs" />
+    <Compile Include="Codegen\TaskStatus.Generator.cs" />
+    <Compile Include="Codegen\TaskType.Generator.cs" />
+    <Compile Include="Codegen\Van.Generator.cs" />
+    <Compile Include="Codegen\VanDetail.Generator.cs" />
+    <Compile Include="Codegen\Visit.Generator.cs" />
+    <Compile Include="Codegen\VisitStatus.Generator.cs" />
+    <Compile Include="Codegen\Work.Generator.cs" />
+    <Compile Include="Codegen\WorkDetail.Generator.cs" />
+    <Compile Include="Codegen\WorkDetailStatus.Generator.cs" />
+    <Compile Include="Codegen\WorkEquipment.Generator.cs" />
+    <Compile Include="Codegen\WorkStatus.Generator.cs" />
+    <Compile Include="Codegen\WorkTransaction.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionEquipment.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionEtc.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionGps.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionItem.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionTask.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionTaskEquipment.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionTaskItem.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionType.Generator.cs" />
+    <Compile Include="Codegen\WorkTransactionVanCheck.Generator.cs" />
+    <Compile Include="Counter.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="DomainObject.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="EmployeeType.cs" />
+    <Compile Include="Equipment.cs" />
+    <Compile Include="EquipmentType.cs" />
+    <Compile Include="EventLog.cs" />
+    <Compile Include="EventService.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemShape.cs" />
+    <Compile Include="ItemType.cs" />
+    <Compile Include="MessageType.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="ProjectStatus.cs" />
+    <Compile Include="Package\ApplicationPackage.cs" />
+    <Compile Include="ProjectType.cs" />
+    <Compile Include="ServerEnums.cs" />
+    <Compile Include="Sync\DalworthSyncService.cs" />
+    <Compile Include="Sync\TrustAllCertificatePolicy.cs" />
+    <Compile Include="Task.cs" />
+    <Compile Include="TaskStatus.cs" />
+    <Compile Include="Visit.cs" />
+    <Compile Include="TaskEquipmentCapture.cs" />
+    <Compile Include="TaskEquipmentRequirement.cs" />
+    <Compile Include="TaskItemDelivery.cs" />
+    <Compile Include="TaskItemRequirement.cs" />
+    <Compile Include="VisitStatus.cs" />
+    <Compile Include="TaskType.cs" />
+    <Compile Include="Van.cs" />
+    <Compile Include="VanDetail.cs" />
+    <Compile Include="Web References\SyncService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Work.cs" />
+    <Compile Include="WorkDetail.cs" />
+    <Compile Include="WorkDetailStatus.cs" />
+    <Compile Include="WorkEquipment.cs" />
+    <Compile Include="WorkStatus.cs" />
+    <Compile Include="WorkTransaction.cs" />
+    <Compile Include="WorkTransactionEquipment.cs" />
+    <Compile Include="WorkTransactionEtc.cs" />
+    <Compile Include="WorkTransactionGps.cs" />
+    <Compile Include="WorkTransactionItem.cs" />
+    <Compile Include="WorkTransactionTask.cs" />
+    <Compile Include="WorkTransactionTaskEquipment.cs" />
+    <Compile Include="WorkTransactionTaskItem.cs" />
+    <Compile Include="WorkTransactionType.cs" />
+    <Compile Include="WorkTransactionVanCheck.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost:8080/Dalworth.Server.Web/serversyncservice.asmx">
+      <UrlBehavior>Static</UrlBehavior>
+      <RelPath>Web References\SyncService\</RelPath>
+      <UpdateFromURL>http://localhost:8080/Dalworth.Server.Web/serversyncservice.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\SyncService\Employee.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SyncService\Message.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SyncService\PaymentResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SyncService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\SyncService\ServerSyncService.disco" />
+    <None Include="Web References\SyncService\ServerSyncService.wsdl" />
+    <None Include="Web References\SyncService\StartDayPackage.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SyncService\VisitPackage.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="system, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.dll</HintPath>
+    </Reference>
+    <Reference Include="system.data, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.data.dll</HintPath>
+    </Reference>
+    <Reference Include="system.web.services, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.web.services.dll</HintPath>
+    </Reference>
+    <Reference Include="system.xml, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\system.xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

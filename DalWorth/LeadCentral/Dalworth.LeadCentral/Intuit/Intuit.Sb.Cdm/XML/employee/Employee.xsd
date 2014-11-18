@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="./EmployeeTypes.xsd" />
+	<!--===================================================================================-->
+	<!--KEY PAYROLL ELEMENTS-->
+	<!--===================================================================================-->
+	<xs:element name="Employer" type="Employer">
+		<xs:annotation>
+			<xs:documentation>Basic information for the Employer.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EmployerBankAccts" type="BankAccts">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the singleton Employer object which owns the "payload" consisting of a collection of bank accounts.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EmployerComplianceItems" type="EmployerComplianceItems">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the singleton Employer object which owns the "payload" consisting of a collection of compliance items.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EmployerRegulatoryIds" type="RegulatoryIds">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the singleton Employer object which owns the "payload" consisting of a collection of identifiers.
+The identifiers are issued by  compliance agencies, e.g., IRS, state and local agencies, and by service providers.
+In US the primary identifier is EIN. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!---->
+	<xs:element name="Worker" type="Worker">
+		<xs:annotation>
+			<xs:documentation>Basic information for the Worker.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerBankAccts" type="BankAccts">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of bank accounts.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerComplianceItems" type="WorkerComplianceItems">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of worker related compliance items.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerPayrollItemDtls" type="PayrollItemDtls">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of payroll item details.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerPaySchedules" type="WorkerPaySchedules">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of payroll schedule references.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerRegulatoryIds" type="RegulatoryIds">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of identifiers.
+The identifiers are issued by  compliance agencies, e.g., IRS, state and local agencies, and by service providers.
+In US the primary identifier is for a worker is SSN. </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="WorkerWorkLocations" type="WorkerWorkLocationRefs">
+		<xs:annotation>
+			<xs:documentation>The updatable reference group identifies the Worker object which owns the "payload" consisting of a collection of work location references.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!---->
+	<xs:element name="ContactPersons" type="ContactPersons">
+		<xs:annotation>
+			<xs:documentation>A collection representing a subset of contact persons defined in the given Employer's realm. 
+The list will contain contact person(s) for the Employer, Workers, Work locations, etc.
+Description of the contact is followed by a list of relevant references and is shared by the ContactPersons.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="PayrollItems">
+		<xs:annotation>
+			<xs:documentation>The master list of payroll items for the Employer. The latter is a singleton, thus its reference does not need to be provided.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:group ref="PayrollItemsGroup" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PaySchedules">
+		<xs:annotation>
+			<xs:documentation>Payroll schedules defined for the Employer. The latter is a singleton, thus its reference does not need to be provided.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PaySchedule" type="PaySchedule" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="WorkLocations">
+		<xs:annotation>
+			<xs:documentation>A collection of work locations for the given Employer. The latter is a singleton, thus its reference does not need to be provided.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="WorkLocation" type="WorkLocation" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!---->
+	<!--===================================================================================-->
+	<!--PAYROLL TRANSACTIONS-->
+	<!--===================================================================================-->
+	<xs:element name="Paychecks" type="Paychecks" />
+	<xs:element name="Paycheck" type="Paycheck">
+		<xs:annotation>
+			<xs:documentation>Paycheck (paystub) </xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

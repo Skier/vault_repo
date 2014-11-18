@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="600" height="380" 
+    title="Lead Edit" close="btnCloseClickHandler(event)" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:controls="com.affilia.controls.*"
+    initialize="onInit()" xmlns:containers="com.arc90.flexlib.containers.*" xmlns:voice="com.affilia.voice.*">
+    
+    <mx:Metadata>
+        [Event(name="leadSave", type="com.dalworth.servman.events.LeadEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import com.dalworth.leadCentral.domain.LeadStatus;
+        	import com.dalworth.leadCentral.service.LeadService;
+        	import com.dalworth.leadCentral.events.LeadEvent;
+        	import com.dalworth.leadCentral.MainModel;
+        	import com.dalworth.leadCentral.service.registry.UserRegistry;
+        	import com.dalworth.leadCentral.domain.User;
+        	import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+        	import com.dalworth.leadCentral.domain.LeadSource;
+        	import com.dalworth.leadCentral.domain.Lead;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            [Bindable] private var isBusy:Boolean = false;
+            [Bindable] private var isReadOnly:Boolean = false;
+            
+			[Bindable] private var leadSources:ArrayCollection = new ArrayCollection();
+			[Bindable] private var staff:ArrayCollection = new ArrayCollection();
+			[Bindable] private var leadTypes:ArrayCollection = new ArrayCollection();
+			
+			[Bindable] private var projects:ArrayCollection;
+			
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead { return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+			}
+			
+            public static function open(parent:DisplayObject, lead:Lead, isReadOnly:Boolean = false, modal:Boolean = true):LeadCreatePopup
+            {
+                var popup:LeadCreatePopup = new LeadCreatePopup();
+                
+                popup.lead = lead;
+                popup.isReadOnly = isReadOnly;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            	dispatchEvent(new Event("closePopup"));
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                if (!isBusy)
+                    close();
+            }
+            
+			private function onInit():void 
+			{
+				initStaff();
+				initLeadSources();
+			}
+
+			private function initStaff():void 
+			{
+				staff.removeAll();
+				staff.addItem(User.getEmpty());
+				var source:ArrayCollection = UserRegistry.getInstance().getAll();
+				for each (var item:User in source)
+				{
+					if (item.RoleName == User.ROLE_STAFF)
+						staff.addItem(item);
+				}
+			}
+			
+			private function initLeadSources():void 
+			{
+				leadSources.removeAll();
+				leadSources.addItem(LeadSource.getEmpty());
+				var source:ArrayCollection = LeadSourceRegistry.getInstance().getAll();
+				for each (var item:LeadSource in source)
+				{
+					leadSources.addItem(item);
+				}
+			}
+			
+			private function fillLeadFromForm(lead:Lead):void 
+			{
+				if (lead.Id == 0)
+				{
+					lead.DateCreated = new Date();
+					lead.CreatedByUserId = MainModel.getInstance().currentUser.Id;
+					lead.LeadStatusId = LeadStatusEnum.NEW;
+				}
+
+				lead.FirstName = txtFirstName.text;
+				lead.LastName = txtLastName.text;
+				lead.Phone = txtPhone.text;
+				lead.CustomerNotes = txtCustomerNotes.text;
+				
+				lead.Address = txtAddress.text;
+				
+				if (comboAssignedUser.selectedItem != null && comboAssignedUser.selectedIndex > 0)
+					lead.AssignedToUser = User(comboAssignedUser.selectedItem).Id;
+				else 
+					lead.AssignedToUser = 0;
+					
+				if (comboLeadSource.selectedItem != null && comboLeadSource.selectedIndex > 0)
+					lead.LeadStatusId = LeadSource(comboLeadSource.selectedItem).Id;
+				else 
+					lead.LeadStatusId = 0;
+			}
+
+			private function onSaveClick():void
+			{
+				var newLead:Lead = lead.prepareToSend();
+				
+				fillLeadFromForm(newLead);
+				
+				isBusy = true;
+				LeadService.getInstance().saveLead(newLead, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							isBusy = false;
+							lead.applyFields(event.result as Lead);
+							dispatchEvent(new LeadEvent(LeadEvent.LEAD_SAVE, lead));
+							close();
+						},
+						function (event:FaultEvent):void 
+						{
+							isBusy = false;
+							Alert.show(event.fault.message);
+						}));
+			}
+			
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:VBox width="100%" height="100%" enabled="{!isBusy}"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		borderColor="#999999" backgroundColor="#ffffee" borderStyle="solid" cornerRadius="2">
+		
+		<mx:VBox width="100%" backgroundColor="#FFFFCC"
+			paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="right" horizontalGap="5">
+					<mx:Label text="Assigned To:" fontSize="12" width="120" textAlign="right"/>
+					<controls:ComboBox id="comboAssignedUser" width="145" dataProvider="{staff}" labelField="Name"
+						value="{lead.AssignedToUser}" valueField="Id"/>
+				</mx:HBox>
+			</mx:HBox>
+			
+			<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="right" horizontalGap="5">
+				</mx:HBox>
+	
+				<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="right" horizontalGap="5">
+					<mx:Label text="Lead Source" fontSize="12" width="120" textAlign="right"/>
+					<controls:ComboBox id="comboLeadSource" width="145" dataProvider="{leadSources}" labelField="ShowAs"
+						value="{lead.LeadSourceId}" valueField="Id"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:HBox width="100%" backgroundColor="#eeeeee" borderColor="#ffffdd" borderStyle="solid" cornerRadius="2" horizontalGap="5"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox width="100%" verticalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="First Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtFirstName" text="{lead.FirstName}" width="100%"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Last Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtLastName" text="{lead.LastName}" width="100%"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Phone" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtPhone" text="{lead.Phone}" width="100%"/>
+				</mx:HBox>
+			</mx:VBox>
+
+			<mx:VBox width="250" height="100%" verticalGap="0">
+				<mx:Label text="Address:" fontSize="12"/>
+				<mx:TextInput id="txtAddress" text="{lead.Address}" width="100%" height="100%"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<mx:VBox width="100%" height="100%" verticalGap="5">
+			<mx:Label text="Customer Notes:"/>
+			<mx:TextArea id="txtCustomerNotes" text="{lead.CustomerNotes}" width="100%" height="100%"/>
+		</mx:VBox>
+	</mx:VBox>
+
+    <mx:ControlBar horizontalAlign="center" width="100%"  enabled="{!isBusy}">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Create" click="onSaveClick()"/>
+        <mx:Button label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

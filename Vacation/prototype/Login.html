@@ -1,0 +1,27 @@
+<form action="<? echo($this->m_url) ?>" method="get">
+    <table>
+        <tr>
+            <td><b><? echo(MSG_LOGIN); ?>: </b></td>
+            <td><input name="login" type="text" value="<? echo($this->login) ?>" /></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_PASSWORD); ?>: </b></td>
+            <td><input name="password" type="password" value="<? echo($this->password) ?>" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <input name="submit" type="submit" value="<? echo(MSG_ENTER) ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <a href="OwnerRegister.php"><? echo(MSG_ADD_RENTAL) ?></a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <a href="FindByBrowsing.php"><? echo(MSG_FIND_BY_BROWSING) ?></a>
+            </td>
+        </tr>
+    </table>
+</form>

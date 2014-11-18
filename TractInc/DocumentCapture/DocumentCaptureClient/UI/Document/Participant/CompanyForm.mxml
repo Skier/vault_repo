@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+ 	xmlns:Participant="UI.Document.Participant.*"
+ 	verticalScrollPolicy="on" 
+ 	backgroundColor="#eeeeee"
+ 	show="focusManager.setFocus(entityName)"
+ 	xmlns:components="components.*" xmlns:Common="Domain.Common.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+			public function IsValid():Boolean {
+				
+				var isValid:Boolean = true;
+
+				if (entityNameV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(entityName);
+					}
+					isValid = false;
+				}
+
+				if (taxIdV.validate().type == ValidationResultEvent.INVALID) {
+					if (isValid) {
+						focusManager.setFocus(taxId);
+					}
+					isValid = false;
+				}
+				
+				if (!phones.IsValid()) {
+					isValid = false;
+				}
+
+				if (!contact.IsValid()) {
+					isValid = false;
+				}
+
+				if (!addresses.IsValid()) {
+					isValid = false;
+				}
+
+				return isValid;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="entityNameV" source="{entityName}" property="text" required="true" maxLength="50"/>
+	<Common:SsnValidator id="taxIdV" source="{taxId}" property="text" required="false"/>
+	
+	<mx:VBox width="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		>
+	
+		<mx:HBox width="100%">
+	
+			<mx:VBox width="100%">
+	
+				<mx:Form width="100%">
+	
+					<mx:FormItem label="Company Name">
+						<mx:TextInput id="entityName" maxChars="50" width="250"
+							text="{controller.Model.participant.EntityName}" 
+							change="(controller.Model.participant.EntityName = entityName.text.toUpperCase())"
+							/>
+					</mx:FormItem>
+	
+					<mx:FormItem label="Tax ID">
+						<components:MaskedInput id="taxId" width="120"
+							text="{controller.Model.participant.TAXID}" inputMask="##-#######"
+							change="(controller.Model.participant.TAXID = taxId.text)"
+							/>
+					</mx:FormItem>
+	
+				</mx:Form>
+	
+			</mx:VBox>
+	
+			<Participant:PhonesForm id="phones" controller="{controller}" width="100%"/>
+	
+		</mx:HBox>
+		
+		<Participant:ContactPersonForm id="contact" controller="{controller}" width="100%"/>
+		
+		<Participant:PartsForm id="parts" controller="{controller}" width="100%"/>
+		
+		<Participant:AddressesForm id="addresses" controller="{controller}" width="100%"/>
+			
+		<Participant:ReservationsForm id="reservations" 
+			controller="{controller}" 
+			width="100%"
+			visible="{controller.Model.participant.isSeller}"
+			includeInLayout="{controller.Model.participant.isSeller}"
+			/>
+
+	</mx:VBox>
+
+</mx:Canvas>

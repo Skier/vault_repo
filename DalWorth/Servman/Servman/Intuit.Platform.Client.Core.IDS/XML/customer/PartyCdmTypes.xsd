@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>Specifies the Intuit Base type CDMs that will be used in any domains as base types </xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<!-- Type definitions -->
+	<xs:simpleType name="roleType">
+		<xs:annotation>
+			<xs:documentation>Role type enumeration, can be a Customer, Vendor, Employee, NonEmployee, or OtherName </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Customer"/>
+			<xs:enumeration value="Employee"/>
+			<xs:enumeration value="NonEmployee"/>
+			<xs:enumeration value="OtherName"/>
+			<xs:enumeration value="Vendor"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="ContactInfoGroup">
+		<xs:annotation>
+			<xs:documentation>Contact information group of properties</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Address" type="PhysicalAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged postal addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Phone" type="TelephoneNumber" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged phone number, possibly include pagers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WebSite" type="WebSiteAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged web addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Email" type="EmailAddress" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Tagged email addresses</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PersonGroup">
+		<xs:annotation>
+			<xs:documentation> Describes PersonGroup elements as a "group" so that PersonGroup can be substituted in places where all elements of Person need to appear </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Title" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the title of the person, can have zero or more title names </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GivenName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Given name or First Name of a person  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MiddleName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the middle name of the Person, can have zero or more middle names  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FamilyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the family name or the last name of the person  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Suffix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the suffix name associated with a person name. For example Senior, Junior, etc   </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Gender" type="gender" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the gender code of the person, gender enum is Male or Female  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BirthDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the birth date of the person  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UserId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the authid of this person </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="OrganizationGroup">
+		<xs:annotation>
+			<xs:documentation> Describes OrganizationGroup elements as a "group" so that OrganizationGroup can be substituted in places where all elements of Organization elements need to appear </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OrgId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the friendly Organizational ID </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Legal Name of the Organization, An organization must have at least Legal Name (though not enforced by XSD)  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DBAName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the DBA Name  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Industry" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the type of industry  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NonProfit" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if the organization is non profit </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalStructure" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the LegalStructure </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Category" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the category of the organization  </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="Person">
+		<xs:annotation>
+			<xs:documentation>Shared type that can be extended by domain specific viewes</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="PersonGroup"/>
+					<xs:element name="TaxId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Tax ID of the person, can be social security number or tax id  </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="ContactInfoGroup"/>
+					<xs:element name="Role" type="roleType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Roles played by this person</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Organization">
+		<xs:annotation>
+			<xs:documentation>Shared  type that can be extended by domain specific viewes</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="OrganizationGroup"/>
+					<xs:element name="TaxId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies the Organization tax ID</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:group ref="ContactInfoGroup"/>
+					<xs:element name="Role" type="roleType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Roles played by this organization</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

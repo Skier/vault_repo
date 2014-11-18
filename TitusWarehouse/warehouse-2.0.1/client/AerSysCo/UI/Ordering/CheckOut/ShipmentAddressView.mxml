@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:CheckOut="AerSysCo.UI.Ordering.CheckOut.*"
+    styleName="checkOutPanel"
+    title="Shipping Selection">
+
+    <mx:Metadata>
+        [Event(name="backToShoppingCart", type="flash.events.Event")]
+        [Event(name="continueCheckout", type="flash.events.Event")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import AerSysCo.UI.Models.ShippingAddressUI;
+            import AerSysCo.UI.Models.CustomerUI;
+            import mx.collections.ArrayCollection;
+            import mx.events.ValidationResultEvent;
+            
+            [Bindable] public var currentCustomer:CustomerUI;
+            
+            public function get address():ShippingAddressUI 
+            {
+                return addressSelector.address;
+            }
+            
+            public function init():void 
+            {
+                callLater(reset);
+            }
+            
+            private function reset():void 
+            {
+                addressSelector.reset();
+            }
+
+            private function btnViewCartClickHandler():void 
+            {
+                dispatchEvent(new Event("backToShoppingCart"));
+            }
+            
+            private function btnContinueClickHandler():void 
+            {
+            	var evt :ValidationResultEvent;
+            	evt = valTxtJobsite.validate();
+                if ( evt.type == ValidationResultEvent.VALID ) {   
+                    dispatchEvent(new Event("continueCheckout"));
+                } else {
+                	Alert.show(evt.message);
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <CheckOut:JobsiteContactValidator id="valTxtJobsite" 
+    	 source="{txtJobsite}" 
+    	 property="text" 
+    	 required="true" maxLength="255" minLength="4"
+    />
+    	 
+    <mx:HBox width="100%" height="100%">
+        <CheckOut:AddressSelectorPanel
+            currentCustomer="{currentCustomer}"
+            id="addressSelector"
+            width="100%" height="100%"/>
+        
+        <mx:VBox height="100%">
+            <mx:Form labelWidth="100">
+                <mx:FormItem label="Mark Order:">
+                    <mx:TextInput id="txtMark" text="{currentCustomer.shoppingCart.markOrder}" width="150"
+                        toolTip="Enter text that will help identity this shipment at jobsite"
+                        focusOut="txtMark.text = txtMark.text.toUpperCase()"/>
+                </mx:FormItem>
+
+
+                <mx:FormItem label="Jobsite Phone #:">
+                    <mx:TextInput id="txtJobsite" text="{currentCustomer.shoppingCart.jobsiteContactPh}" width="150"
+                        toolTip="Enter phone number of delivery point"
+                        focusOut="txtJobsite.text = txtJobsite.text.toUpperCase()"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="Delivery Request:">
+                    <mx:TextInput id="txtDelivery" text="{currentCustomer.shoppingCart.deliveryRequest}" width="150"
+                        focusOut="txtDelivery.text = txtDelivery.text.toUpperCase()"/>
+                </mx:FormItem>
+            </mx:Form>
+            
+            <mx:Spacer height="100%"/>
+            
+            <mx:HBox width="100%"
+                styleName="panelTopHeader">
+                <mx:Spacer width="100%"/>
+                <mx:Button id="btnViewCart" height="24" label="View Cart" 
+                    styleName="checkOutButton"
+                    click="btnViewCartClickHandler()"/>
+                <mx:Button id="btnContinue" height="24" label="Continue" 
+                    enabled="{addressSelector.txtZip.text.length > 2} "
+                    styleName="checkOutButton"
+                    click="btnContinueClickHandler()"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:HBox>
+</mx:Panel>

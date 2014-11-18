@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:companyPhones="com.dalworth.servman.telephony.companyPhones.*" 
+	xmlns:trackingPhone="com.dalworth.leadCentral.phone.trackingPhone.*" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.PhoneService;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.events.DynamicEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			private var _phone:TrackingPhone;
+			[Bindable]
+			public function get phone():TrackingPhone { return _phone; }
+			public function set phone(value:TrackingPhone):void 
+			{
+				_phone = value;
+			}
+			
+			private function suspendPhoneNumber():void 
+			{
+				enabled = false;
+				PhoneService.getInstance().suspendPhoneNumber(phone.prepareToSend(), 
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							enabled = true;
+							phone.applyFields(event.result as TrackingPhone);
+						},
+						function(event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+							enabled = true;
+						}
+					)); 
+			}
+			
+			private function activatePhoneNumber():void 
+			{
+				enabled = false;
+				PhoneService.getInstance().activatePhoneNumber(phone.prepareToSend(), 
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							enabled = true;
+							phone.applyFields(event.result as TrackingPhone);
+						},
+						function(event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+							enabled = true;
+						}
+					)); 
+			}
+			
+			private function savePhoneNumber():void 
+			{
+				enabled = false;
+				PhoneService.getInstance().savePhoneNumber(phone.prepareToSend(), 
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							enabled = true;
+							phone.applyFields(event.result as TrackingPhone);
+							onClose();
+						},
+						function(event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+							enabled = true;
+						}
+					)); 
+			}
+			
+			private function deletePhoneNumber():void 
+			{
+				enabled = false;
+				PhoneService.getInstance().removePhoneNumber(phone.prepareToSend(), 
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							dispatchEvent(new DynamicEvent("phoneEditClose"));
+							enabled = true;
+						},
+						function(event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+							enabled = true;
+						}
+					)); 
+			}
+			
+			private function onSuspend():void 
+			{
+				if (phone.IsSuspended)
+					activatePhoneNumber();
+				else 
+					suspendPhoneNumber();
+			}
+			
+			private function onUpdate():void 
+			{
+				phone.ScreenNumber = txtScreenNumber.text;
+				phone.Description = txtDescription.text;
+				phone.DenyCallerId = !cbCallerId.selected;
+				phone.DenyTranscription = !cbTranscribe.selected;
+				
+				savePhoneNumber();
+			}
+			
+			private function onDelete():void 
+			{
+				Alert.show("Are you really want to delete current phone number?", "Delete Phone Number",
+					Alert.YES | Alert.NO, null, 
+					function(event:CloseEvent):void 
+					{
+						if (event.detail == Alert.YES) 
+						{
+							deletePhoneNumber();
+						}
+					});
+			}
+			
+			private function onClose():void 
+			{
+				var event:DynamicEvent = new DynamicEvent("phoneEditClose");
+				event.phone = phone;
+				dispatchEvent(event);
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=158";
+		]]>
+	</mx:Script>
+	
+	<mx:PhoneFormatter id="fPhone" formatString="##(###)###-####"/>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#FFFFFF" verticalGap="0">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Phone Number:" fontSize="24" color="#666666"/>
+			<mx:Label text="{fPhone.format(phone.Number)}" fontSize="24" fontWeight="bold" color="666666"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button width="120" height="35" label="Update" click="onUpdate()" fontSize="14"/>
+			<mx:LinkButton width="120" height="35" label="Cancel" click="onClose()" textAlign="center" fontSize="14"/>
+		</mx:HBox> 
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox width="100%" fontSize="12" 
+				borderColor="#CCCCCC" borderStyle="solid"  
+				cornerRadius="2" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				verticalAlign="middle">
+				
+				<mx:Grid width="100%">
+					<mx:GridRow width="100%">
+						<mx:GridItem verticalAlign="middle" horizontalAlign="right">
+							<mx:Label text="Friendly Number:"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="middle">
+							<mx:TextInput id="txtScreenNumber" text="{phone.ScreenNumber}"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="middle">
+							<mx:CheckBox id="cbCallerId" label="Allow CallerID Lookup" selected="{!phone.DenyCallerId}"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="middle">
+							<mx:CheckBox id="cbTranscribe" label="Allow Call Transcribe" selected="{!phone.DenyTranscription}"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="middle" horizontalAlign="right" width="100%">
+							<mx:Label text="{phone.IsSuspended ? 'Suspended' : 'Active'}" color="{phone.IsSuspended ? 0x990000 : 0x009900}" fontSize="12"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem verticalAlign="top" horizontalAlign="right">
+							<mx:Label text="Quick Description:"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="middle" colSpan="3">
+							<mx:TextArea id="txtDescription" text="{phone.Description}" width="100%" height="45"/>
+						</mx:GridItem>
+						<mx:GridItem verticalAlign="bottom" horizontalAlign="right" width="100%">
+							<mx:Button label="{phone.IsSuspended ? 'Activate' : 'Suspend'}" click="onSuspend()" fontSize="12"/>
+							<mx:Button label="Release Number" click="onDelete()" fontSize="12"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+			</mx:VBox>
+
+			<mx:TabNavigator id="tnPhone" width="100%" height="100%" historyManagementEnabled="false"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+				<trackingPhone:PhoneCallsView width="100%" height="100%" phone="{phone}" label="Calls"/>
+				<trackingPhone:PhoneRulesView width="100%" height="100%" phone="{phone}" label="Flow Rules"/>
+				<trackingPhone:PhoneLeadSourcesView width="100%" height="100%" phone="{phone}" label="Lead Source"/>
+			</mx:TabNavigator>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

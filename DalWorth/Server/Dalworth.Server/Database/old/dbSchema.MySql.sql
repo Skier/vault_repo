@@ -1,0 +1,823 @@
+﻿/*Source Table: Address*/
+CREATE TABLE `address` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+Address1 VARCHAR(200) DEFAULT NULL,
+Address2 VARCHAR(200) DEFAULT NULL,
+City VARCHAR(100) DEFAULT NULL,
+State VARCHAR(30) DEFAULT NULL,
+Zip VARCHAR(10) DEFAULT NULL,
+Map VARCHAR(10) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: BankCheckAccountType*/
+CREATE TABLE `bankcheckaccounttype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(20) NOT NULL,
+Description VARCHAR(50) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: ConnectionKey*/
+CREATE TABLE `connectionkey` (
+ConnectionKey TEXT NOT NULL,
+IsActive TINYINT(2) NOT NULL,
+PRIMARY KEY (ConnectionKey(1))
+)ENGINE=InnoDB;
+
+/*Source Table: Counter*/
+CREATE TABLE `counter` (
+CounterName VARCHAR(40) NOT NULL,
+Val INTEGER(11) NOT NULL,
+PRIMARY KEY (CounterName)
+)ENGINE=InnoDB;
+
+/*Source Table: CreditCardCVV2Type*/
+CREATE TABLE `creditcardcvv2type` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(20) DEFAULT NULL,
+Description VARCHAR(100) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: CreditCardType*/
+CREATE TABLE `creditcardtype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Customer*/
+CREATE TABLE `customer` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+ServmanCustId VARCHAR(6) DEFAULT NULL,
+AddressId INTEGER(11) DEFAULT NULL,
+FirstName VARCHAR(100) DEFAULT NULL,
+LastName VARCHAR(100) DEFAULT NULL,
+Phone1 VARCHAR(50) DEFAULT NULL,
+Phone2 VARCHAR(50) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: DashboardState*/
+CREATE TABLE `dashboardstate` (
+EmployeeId INTEGER(11) NOT NULL,
+IsDirty TINYINT(2) NOT NULL,
+PRIMARY KEY (EmployeeId)
+)ENGINE=InnoDB;
+
+/*Source Table: Employee*/
+CREATE TABLE `employee` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+EmployeeTypeId INTEGER(11) NOT NULL,
+ServmanUserId TEXT,
+ServmanTechId TEXT,
+AddressId INTEGER(11) DEFAULT NULL,
+Login VARCHAR(50) DEFAULT NULL,
+FirstName VARCHAR(100) DEFAULT NULL,
+LastName VARCHAR(100) DEFAULT NULL,
+HireDate DATETIME DEFAULT NULL,
+Phone1 VARCHAR(50) DEFAULT NULL,
+Phone2 VARCHAR(50) DEFAULT NULL,
+Password VARCHAR(100) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: EmployeeType*/
+CREATE TABLE `employeetype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Equipment*/
+CREATE TABLE `equipment` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+EquipmentTypeId INTEGER(11) DEFAULT NULL,
+SerialNumber VARCHAR(50) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: EquipmentType*/
+CREATE TABLE `equipmenttype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) DEFAULT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: EventLog*/
+CREATE TABLE `eventlog` (
+EventLogId INTEGER(11) NOT NULL AUTO_INCREMENT,
+EventType INTEGER(11) NOT NULL,
+Message TEXT NOT NULL,
+Source VARCHAR(100) DEFAULT NULL,
+AssemblyName VARCHAR(100) DEFAULT NULL,
+CreateDate DATETIME NOT NULL,
+PRIMARY KEY (EventLogId)
+)ENGINE=InnoDB;
+
+/*Source Table: Item*/
+CREATE TABLE `item` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+ItemTypeId INTEGER(11) NOT NULL,
+SerialNumber VARCHAR(50) DEFAULT NULL,
+ItemShapeId INTEGER(11) DEFAULT NULL,
+Width DECIMAL(18,0) DEFAULT NULL,
+Height DECIMAL(18,0) DEFAULT NULL,
+Diameter DECIMAL(18,0) DEFAULT NULL,
+IsProtectorApplied TINYINT(2) DEFAULT NULL,
+IsPaddingApplied TINYINT(2) DEFAULT NULL,
+IsMothRepelApplied TINYINT(2) DEFAULT NULL,
+IsRapApplied TINYINT(2) DEFAULT NULL,
+CleanCost FLOAT(9,2) DEFAULT NULL,
+ProtectorCost FLOAT(9,2) DEFAULT NULL,
+PaddingCost FLOAT(9,2) DEFAULT NULL,
+MothRepelCost FLOAT(9,2) DEFAULT NULL,
+RapCost FLOAT(9,2) DEFAULT NULL,
+OtherCost FLOAT(9,2) DEFAULT NULL,
+SubTotalCost FLOAT(9,2) DEFAULT NULL,
+TaxCost FLOAT(9,2) DEFAULT NULL,
+TotalCost FLOAT(9,2) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: ItemShape*/
+CREATE TABLE `itemshape` (
+ID INTEGER(11) NOT NULL,
+Shape VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: ItemType*/
+CREATE TABLE `itemtype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Mapsco*/
+CREATE TABLE `mapsco` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+IdOld DOUBLE(15,3) NOT NULL,
+IdProduct DOUBLE(15,3) NOT NULL,
+Map VARCHAR(6) NOT NULL,
+UpperLeftLatitude DOUBLE(15,10) NOT NULL,
+UpperLeftLongitude DOUBLE(15,10) NOT NULL,
+UpperRightLatitude DOUBLE(15,10) NOT NULL,
+UpperRightLongitude DOUBLE(15,10) NOT NULL,
+LowerLeftLatitude DOUBLE(15,10) NOT NULL,
+LowerLeftLongitude DOUBLE(15,10) NOT NULL,
+LowerRightLatitude DOUBLE(15,10) NOT NULL,
+LowerRightLongitude DOUBLE(15,10) NOT NULL,
+PrintingSc DOUBLE(15,3) NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Message*/
+CREATE TABLE `message` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+EmployeeId INTEGER(11) NOT NULL,
+MessageTypeId INTEGER(11) NOT NULL,
+VisitId INTEGER(11) DEFAULT NULL,
+Notes VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: MessageType*/
+CREATE TABLE `messagetype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: PendingTaskGridState*/
+CREATE TABLE `pendingtaskgridstate` (
+EmployeeId INTEGER(11) NOT NULL,
+IsDirty TINYINT(2) NOT NULL,
+PRIMARY KEY (EmployeeId)
+)ENGINE=InnoDB;
+
+/*Source Table: Project*/
+CREATE TABLE `project` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+ParentProdjectId INTEGER(11) DEFAULT NULL,
+ProjectTypeId INTEGER(11) NOT NULL,
+CustomerId INTEGER(11) NOT NULL,
+ServiceAddressId INTEGER(11) DEFAULT NULL,
+ProjectStatusId INTEGER(11) NOT NULL,
+Description TEXT,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: ProjectStatus*/
+CREATE TABLE `projectstatus` (
+ID INTEGER(11) NOT NULL,
+Status VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: ProjectType*/
+CREATE TABLE `projecttype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Task*/
+CREATE TABLE `task` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+ServmanOrderNum VARCHAR(6) DEFAULT NULL,
+ProjectId INTEGER(11) NOT NULL,
+TaskTypeId INTEGER(11) NOT NULL,
+TaskStatusId INTEGER(11) DEFAULT NULL,
+Number VARCHAR(50) DEFAULT NULL,
+Sequence INTEGER(11) DEFAULT NULL,
+CreateDate DATETIME DEFAULT NULL,
+ServiceDate DATETIME DEFAULT NULL,
+DurationMin INTEGER(11) DEFAULT NULL,
+Description TEXT,
+Message TEXT,
+Notes TEXT,
+IsSentToServman TINYINT(2) NOT NULL DEFAULT '0',
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskEquipmentCapture*/
+CREATE TABLE `taskequipmentcapture` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+TaskId INTEGER(11) DEFAULT NULL,
+EquipmentId INTEGER(11) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskEquipmentRequirement*/
+CREATE TABLE `taskequipmentrequirement` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+TaskId INTEGER(11) NOT NULL,
+EquipmentTypeId INTEGER(11) DEFAULT NULL,
+ServiceQuantity INTEGER(11) DEFAULT NULL,
+LeaveQuantity INTEGER(11) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskItemDelivery*/
+CREATE TABLE `taskitemdelivery` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+TaskId INTEGER(11) NOT NULL,
+ItemId INTEGER(11) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskItemRequirement*/
+CREATE TABLE `taskitemrequirement` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+TaskId INTEGER(11) NOT NULL,
+ItemType VARCHAR(50) DEFAULT NULL,
+ServiceQuantity INTEGER(11) DEFAULT NULL,
+CaptureQuantity INTEGER(11) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskStatus*/
+CREATE TABLE `taskstatus` (
+ID INTEGER(11) NOT NULL,
+Status VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: TaskType*/
+CREATE TABLE `tasktype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Van*/
+CREATE TABLE `van` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+ServmanTruckId VARCHAR(6) DEFAULT NULL,
+ServmanTruckNum VARCHAR(4) DEFAULT NULL,
+LicensePlateNumber VARCHAR(20) DEFAULT NULL,
+EngineNumber VARCHAR(50) DEFAULT NULL,
+BodyNumber VARCHAR(50) DEFAULT NULL,
+Color VARCHAR(50) DEFAULT NULL,
+OilChangeDue VARCHAR(50) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: VanDetail*/
+CREATE TABLE `vandetail` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+VanId INTEGER(11) NOT NULL,
+DateCreated DATETIME DEFAULT NULL,
+OilChangeDue DECIMAL(18,0) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: Visit*/
+CREATE TABLE `visit` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+VisitStatusId INTEGER(11) NOT NULL,
+CreateDate DATETIME NOT NULL,
+ServiceDate DATETIME NOT NULL,
+DurationMin INTEGER(11) DEFAULT NULL,
+PreferedTimeFrom DATETIME DEFAULT NULL,
+PreferedTimeTo DATETIME DEFAULT NULL,
+CustomerId INTEGER(11) DEFAULT NULL,
+ServiceAddressId INTEGER(11) DEFAULT NULL,
+Notes VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: VisitStatus*/
+CREATE TABLE `visitstatus` (
+ID INTEGER(11) NOT NULL,
+Status VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: VisitTask*/
+CREATE TABLE `visittask` (
+VisitId INTEGER(11) NOT NULL,
+TaskId INTEGER(11) NOT NULL,
+PRIMARY KEY (VisitId, TaskId)
+)ENGINE=InnoDB;
+
+/*Source Table: Work*/
+CREATE TABLE `work` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+DispatchEmployeeId INTEGER(11) NOT NULL,
+TechnicianEmployeeId INTEGER(11) NOT NULL,
+VanId INTEGER(11) DEFAULT NULL,
+StartDate DATETIME DEFAULT NULL,
+WorkStatusId INTEGER(11) DEFAULT NULL,
+StartMessage TEXT,
+EndMessage TEXT,
+EquipmentNotes TEXT,
+IsSentToServman TINYINT(2) NOT NULL DEFAULT '0',
+CreateDate DATETIME NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkDetail*/
+CREATE TABLE `workdetail` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkId INTEGER(11) NOT NULL,
+VisitId INTEGER(11) NOT NULL,
+TimeBegin DATETIME NOT NULL,
+TimeEnd DATETIME NOT NULL,
+Sequence INTEGER(11) DEFAULT NULL,
+WorkDetailStatusId INTEGER(11) DEFAULT NULL,
+IsConfirmed TINYINT(2) NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkDetailStatus*/
+CREATE TABLE `workdetailstatus` (
+ID INTEGER(11) NOT NULL,
+Status VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkEquipment*/
+CREATE TABLE `workequipment` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkId INTEGER(11) NOT NULL,
+EquipmentTypeId INTEGER(11) NOT NULL,
+Quantity INTEGER(11) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkStatus*/
+CREATE TABLE `workstatus` (
+ID INTEGER(11) NOT NULL,
+Status VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransaction*/
+CREATE TABLE `worktransaction` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkId INTEGER(11) NOT NULL,
+VisitId INTEGER(11) DEFAULT NULL,
+WorkTransactionTypeId INTEGER(11) NOT NULL,
+TransactionDate DATETIME DEFAULT NULL,
+AmountCollected FLOAT(9,2) DEFAULT NULL,
+IsSentToServman TINYINT(2) NOT NULL DEFAULT '0',
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionEquipment*/
+CREATE TABLE `worktransactionequipment` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkTransactionId INTEGER(11) NOT NULL,
+EquipmentId INTEGER(11) NOT NULL,
+IsLeft TINYINT(2) DEFAULT NULL,
+IsCaptured TINYINT(2) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionEtc*/
+CREATE TABLE `worktransactionetc` (
+WorkTransactionId INTEGER(11) NOT NULL,
+SaleAmount FLOAT(9,2) DEFAULT NULL,
+Hours INTEGER(11) DEFAULT NULL,
+Minutes INTEGER(11) DEFAULT NULL,
+Notes VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (WorkTransactionId)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionGps*/
+CREATE TABLE `worktransactiongps` (
+WorkTransactionId INTEGER(11) NOT NULL,
+Latitude DOUBLE(15,10) NOT NULL,
+Longitude DOUBLE(15,10) NOT NULL,
+GpsTime DATETIME NOT NULL,
+PRIMARY KEY (WorkTransactionId)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionItem*/
+CREATE TABLE `worktransactionitem` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkTransactionlId INTEGER(11) NOT NULL,
+ItemId INTEGER(11) DEFAULT NULL,
+IsLeft TINYINT(2) NOT NULL,
+IsCaptured TINYINT(2) NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionPayment*/
+CREATE TABLE `worktransactionpayment` (
+WorkTransactionId INTEGER(11) NOT NULL,
+WorkTransactionPaymentTypeId INTEGER(11) NOT NULL,
+PaymentAmount FLOAT(9,2) NOT NULL,
+FirstName VARCHAR(100) DEFAULT NULL,
+LastName VARCHAR(100) DEFAULT NULL,
+Address VARCHAR(200) DEFAULT NULL,
+City VARCHAR(100) DEFAULT NULL,
+State VARCHAR(30) DEFAULT NULL,
+Zip VARCHAR(10) DEFAULT NULL,
+CreditCardTypeId INTEGER(11) DEFAULT NULL,
+CreditCardNumber VARCHAR(50) DEFAULT NULL,
+CreditCardExpirationDate DATETIME DEFAULT NULL,
+CreditCardCVV2TypeId INTEGER(11) DEFAULT NULL,
+CreditCardCVV2 VARCHAR(10) DEFAULT NULL,
+BankCheckAccountTypeId INTEGER(11) DEFAULT NULL,
+BankCheckNumber VARCHAR(50) DEFAULT NULL,
+BankRouteNumber VARCHAR(50) DEFAULT NULL,
+BankCheckCompany VARCHAR(100) DEFAULT NULL,
+BankCheckBankName VARCHAR(100) DEFAULT NULL,
+BankCheckAccountNumber VARCHAR(50) DEFAULT NULL,
+IsAccepted TINYINT(2) NOT NULL,
+ServerResponse VARCHAR(200) NOT NULL,
+PRIMARY KEY (WorkTransactionId)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionPaymentType*/
+CREATE TABLE `worktransactionpaymenttype` (
+ID INTEGER(11) NOT NULL,
+PaymentType VARCHAR(50) NOT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionTask*/
+CREATE TABLE `worktransactiontask` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkTransactionId INTEGER(11) NOT NULL,
+TaskId INTEGER(11) NOT NULL,
+TaskStatusId INTEGER(11) NOT NULL,
+AmountCollected FLOAT(9,2) NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionTaskEquipment*/
+CREATE TABLE `worktransactiontaskequipment` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkTransactionTaskId INTEGER(11) NOT NULL,
+EquipmentId INTEGER(11) NOT NULL,
+IsLeft TINYINT(2) DEFAULT NULL,
+IsCaptured TINYINT(2) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionTaskItem*/
+CREATE TABLE `worktransactiontaskitem` (
+ID INTEGER(11) NOT NULL AUTO_INCREMENT,
+WorkTransactionTaskId INTEGER(11) NOT NULL,
+ItemId INTEGER(11) DEFAULT NULL,
+IsLeft TINYINT(2) NOT NULL,
+IsCaptured TINYINT(2) NOT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionType*/
+CREATE TABLE `worktransactiontype` (
+ID INTEGER(11) NOT NULL,
+Type VARCHAR(50) DEFAULT NULL,
+Description VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (ID)
+)ENGINE=InnoDB;
+
+/*Source Table: WorkTransactionVanCheck*/
+CREATE TABLE `worktransactionvancheck` (
+WorkTransactionId INTEGER(11) NOT NULL,
+OilChecked TINYINT(2) DEFAULT NULL,
+UnitClean TINYINT(2) DEFAULT NULL,
+VanClean TINYINT(2) DEFAULT NULL,
+SuppliesStocked TINYINT(2) DEFAULT NULL,
+OdometerReading DECIMAL(18,0) DEFAULT NULL,
+HobbsReading DECIMAL(18,0) DEFAULT NULL,
+SpecialNeeds VARCHAR(200) DEFAULT NULL,
+PRIMARY KEY (WorkTransactionId)
+)ENGINE=InnoDB;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Customer_Address*/
+ALTER TABLE customer ADD CONSTRAINT FK_Customer_Address FOREIGN KEY (AddressId) REFERENCES address (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_DashboardState_Employee*/
+ALTER TABLE dashboardstate ADD CONSTRAINT FK_DashboardState_Employee FOREIGN KEY (EmployeeId) REFERENCES employee (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Employee_EmployeeType*/
+ALTER TABLE employee ADD CONSTRAINT FK_Employee_EmployeeType FOREIGN KEY (EmployeeTypeId) REFERENCES employeetype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Technician_Address*/
+ALTER TABLE employee ADD CONSTRAINT FK_Technician_Address FOREIGN KEY (AddressId) REFERENCES address (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Equipment_EquipmentType*/
+ALTER TABLE equipment ADD CONSTRAINT FK_Equipment_EquipmentType FOREIGN KEY (EquipmentTypeId) REFERENCES equipmenttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Item_ItemShape*/
+ALTER TABLE item ADD CONSTRAINT FK_Item_ItemShape FOREIGN KEY (ItemShapeId) REFERENCES itemshape (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Item_ItemType*/
+ALTER TABLE item ADD CONSTRAINT FK_Item_ItemType FOREIGN KEY (ItemTypeId) REFERENCES itemtype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Message_Visit*/
+ALTER TABLE message ADD CONSTRAINT FK_Message_Visit FOREIGN KEY (VisitId) REFERENCES visit (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_MessageQueue_Employee*/
+ALTER TABLE message ADD CONSTRAINT FK_MessageQueue_Employee FOREIGN KEY (EmployeeId) REFERENCES employee (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_MessageQueue_MessageType*/
+ALTER TABLE message ADD CONSTRAINT FK_MessageQueue_MessageType FOREIGN KEY (MessageTypeId) REFERENCES messagetype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_PendingTaskGridState_Employee*/
+ALTER TABLE pendingtaskgridstate ADD CONSTRAINT FK_PendingTaskGridState_Employee FOREIGN KEY (EmployeeId) REFERENCES employee (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Project_Address*/
+ALTER TABLE project ADD CONSTRAINT FK_Project_Address FOREIGN KEY (ServiceAddressId) REFERENCES address (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Project_Customer*/
+ALTER TABLE project ADD CONSTRAINT FK_Project_Customer FOREIGN KEY (CustomerId) REFERENCES customer (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Project_Project*/
+ALTER TABLE project ADD CONSTRAINT FK_Project_Project FOREIGN KEY (ParentProdjectId) REFERENCES project (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Project_ProjectStatus*/
+ALTER TABLE project ADD CONSTRAINT FK_Project_ProjectStatus FOREIGN KEY (ProjectStatusId) REFERENCES projectstatus (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Project_ProjectType*/
+ALTER TABLE project ADD CONSTRAINT FK_Project_ProjectType FOREIGN KEY (ProjectTypeId) REFERENCES projecttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Task_TaskStatus*/
+ALTER TABLE task ADD CONSTRAINT FK_Task_TaskStatus FOREIGN KEY (TaskStatusId) REFERENCES taskstatus (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Task_TaskType*/
+ALTER TABLE task ADD CONSTRAINT FK_Task_TaskType FOREIGN KEY (TaskTypeId) REFERENCES tasktype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Ticket_Project*/
+ALTER TABLE task ADD CONSTRAINT FK_Ticket_Project FOREIGN KEY (ProjectId) REFERENCES project (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskEquipmentCapture_Equipment*/
+ALTER TABLE taskequipmentcapture ADD CONSTRAINT FK_TaskEquipmentCapture_Equipment FOREIGN KEY (EquipmentId) REFERENCES equipment (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskEquipmentCapture_Task*/
+ALTER TABLE taskequipmentcapture ADD CONSTRAINT FK_TaskEquipmentCapture_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskEquipment_EquipmentType*/
+ALTER TABLE taskequipmentrequirement ADD CONSTRAINT FK_TaskEquipment_EquipmentType FOREIGN KEY (EquipmentTypeId) REFERENCES equipmenttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskEquipment_Task*/
+ALTER TABLE taskequipmentrequirement ADD CONSTRAINT FK_TaskEquipment_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskItemDelivery_Item*/
+ALTER TABLE taskitemdelivery ADD CONSTRAINT FK_TaskItemDelivery_Item FOREIGN KEY (ItemId) REFERENCES item (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskItemDelivery_Task*/
+ALTER TABLE taskitemdelivery ADD CONSTRAINT FK_TaskItemDelivery_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_TaskItemRequirement_Task*/
+ALTER TABLE taskitemrequirement ADD CONSTRAINT FK_TaskItemRequirement_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_VanDetail_Van*/
+ALTER TABLE vandetail ADD CONSTRAINT FK_VanDetail_Van FOREIGN KEY (VanId) REFERENCES van (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Visit_Address*/
+ALTER TABLE visit ADD CONSTRAINT FK_Visit_Address FOREIGN KEY (ServiceAddressId) REFERENCES address (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Visit_Customer*/
+ALTER TABLE visit ADD CONSTRAINT FK_Visit_Customer FOREIGN KEY (CustomerId) REFERENCES customer (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Visit_VisitStatus*/
+ALTER TABLE visit ADD CONSTRAINT FK_Visit_VisitStatus FOREIGN KEY (VisitStatusId) REFERENCES visitstatus (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_VisitTask_Task*/
+ALTER TABLE visittask ADD CONSTRAINT FK_VisitTask_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_VisitTask_Visit*/
+ALTER TABLE visittask ADD CONSTRAINT FK_VisitTask_Visit FOREIGN KEY (VisitId) REFERENCES visit (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Work_Employee*/
+ALTER TABLE work ADD CONSTRAINT FK_Work_Employee FOREIGN KEY (DispatchEmployeeId) REFERENCES employee (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Work_Employee1*/
+ALTER TABLE work ADD CONSTRAINT FK_Work_Employee1 FOREIGN KEY (TechnicianEmployeeId) REFERENCES employee (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Work_Van*/
+ALTER TABLE work ADD CONSTRAINT FK_Work_Van FOREIGN KEY (VanId) REFERENCES van (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_Work_WorkStatus*/
+ALTER TABLE work ADD CONSTRAINT FK_Work_WorkStatus FOREIGN KEY (WorkStatusId) REFERENCES workstatus (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkDetail_Visit*/
+ALTER TABLE workdetail ADD CONSTRAINT FK_WorkDetail_Visit FOREIGN KEY (VisitId) REFERENCES visit (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkDetail_Work*/
+ALTER TABLE workdetail ADD CONSTRAINT FK_WorkDetail_Work FOREIGN KEY (WorkId) REFERENCES work (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkDetail_WorkDetailStatus*/
+ALTER TABLE workdetail ADD CONSTRAINT FK_WorkDetail_WorkDetailStatus FOREIGN KEY (WorkDetailStatusId) REFERENCES workdetailstatus (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkEquipment_EquipmentType*/
+ALTER TABLE workequipment ADD CONSTRAINT FK_WorkEquipment_EquipmentType FOREIGN KEY (EquipmentTypeId) REFERENCES equipmenttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkEquipment_Work*/
+ALTER TABLE workequipment ADD CONSTRAINT FK_WorkEquipment_Work FOREIGN KEY (WorkId) REFERENCES work (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransaction_Visit*/
+ALTER TABLE worktransaction ADD CONSTRAINT FK_WorkTransaction_Visit FOREIGN KEY (VisitId) REFERENCES visit (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransaction_Work*/
+ALTER TABLE worktransaction ADD CONSTRAINT FK_WorkTransaction_Work FOREIGN KEY (WorkId) REFERENCES work (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransaction_WorkTransactionType*/
+ALTER TABLE worktransaction ADD CONSTRAINT FK_WorkTransaction_WorkTransactionType FOREIGN KEY (WorkTransactionTypeId) REFERENCES worktransactiontype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionEquipment_Equipment*/
+ALTER TABLE worktransactionequipment ADD CONSTRAINT FK_WorkTransactionEquipment_Equipment FOREIGN KEY (EquipmentId) REFERENCES equipment (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionEquipment_WorkTransaction*/
+ALTER TABLE worktransactionequipment ADD CONSTRAINT FK_WorkTransactionEquipment_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionEtc_WorkTransaction*/
+ALTER TABLE worktransactionetc ADD CONSTRAINT FK_WorkTransactionEtc_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionGps_WorkTransaction*/
+ALTER TABLE worktransactiongps ADD CONSTRAINT FK_WorkTransactionGps_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionItem_Item*/
+ALTER TABLE worktransactionitem ADD CONSTRAINT FK_WorkTransactionItem_Item FOREIGN KEY (ItemId) REFERENCES item (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionItem_WorkTransaction*/
+ALTER TABLE worktransactionitem ADD CONSTRAINT FK_WorkTransactionItem_WorkTransaction FOREIGN KEY (WorkTransactionlId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionPayment_BankCheckAccountType*/
+ALTER TABLE worktransactionpayment ADD CONSTRAINT FK_WorkTransactionPayment_BankCheckAccountType FOREIGN KEY (BankCheckAccountTypeId) REFERENCES bankcheckaccounttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionPayment_CreditCardCVV2Type*/
+ALTER TABLE worktransactionpayment ADD CONSTRAINT FK_WorkTransactionPayment_CreditCardCVV2Type FOREIGN KEY (CreditCardCVV2TypeId) REFERENCES creditcardcvv2type (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionPayment_CreditCardType*/
+ALTER TABLE worktransactionpayment ADD CONSTRAINT FK_WorkTransactionPayment_CreditCardType FOREIGN KEY (CreditCardTypeId) REFERENCES creditcardtype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionPayment_WorkTransaction*/
+ALTER TABLE worktransactionpayment ADD CONSTRAINT FK_WorkTransactionPayment_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionPayment_WorkTransactionPaymentType*/
+ALTER TABLE worktransactionpayment ADD CONSTRAINT FK_WorkTransactionPayment_WorkTransactionPaymentType FOREIGN KEY (WorkTransactionPaymentTypeId) REFERENCES worktransactionpaymenttype (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTask_Task*/
+ALTER TABLE worktransactiontask ADD CONSTRAINT FK_WorkTransactionTask_Task FOREIGN KEY (TaskId) REFERENCES task (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTask_WorkTransaction*/
+ALTER TABLE worktransactiontask ADD CONSTRAINT FK_WorkTransactionTask_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTaskEquipment_Equipment*/
+ALTER TABLE worktransactiontaskequipment ADD CONSTRAINT FK_WorkTransactionTaskEquipment_Equipment FOREIGN KEY (EquipmentId) REFERENCES equipment (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTaskEquipment_WorkTransactionTask*/
+ALTER TABLE worktransactiontaskequipment ADD CONSTRAINT FK_WorkTransactionTaskEquipment_WorkTransactionTask FOREIGN KEY (WorkTransactionTaskId) REFERENCES worktransactiontask (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTaskItem_Item*/
+ALTER TABLE worktransactiontaskitem ADD CONSTRAINT FK_WorkTransactionTaskItem_Item FOREIGN KEY (ItemId) REFERENCES item (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionTaskItem_WorkTransactionTask*/
+ALTER TABLE worktransactiontaskitem ADD CONSTRAINT FK_WorkTransactionTaskItem_WorkTransactionTask FOREIGN KEY (WorkTransactionTaskId) REFERENCES worktransactiontask (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
+
+SET FOREIGN_KEY_CHECKS=0;
+/*Source Foreign Key: FK_WorkTransactionVanCheck_WorkTransaction*/
+ALTER TABLE worktransactionvancheck ADD CONSTRAINT FK_WorkTransactionVanCheck_WorkTransaction FOREIGN KEY (WorkTransactionId) REFERENCES worktransaction (ID) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;

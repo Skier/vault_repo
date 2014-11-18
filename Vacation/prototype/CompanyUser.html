@@ -1,0 +1,63 @@
+<div class="menu">
+    <a href="CompanyUserEdit.php"><? echo(MSG_EDIT_INFO) ?></a> <b>::</b>
+    <a href="Logout.php"><? echo(MSG_LOGOUT) ?></a>
+</div>
+
+<?
+    if ($this->isUserFound()) {
+?>
+    <table>
+        <tr>
+            <td>
+                <b><?echo(MSG_LOGIN.":")?></b>
+            </td>
+            <td>
+                <?echo($this->user->getLogin());?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b><?echo(MSG_EMAIL.":")?></b>
+            </td>
+            <td>
+                <?echo($this->user->getEmailAddress());?>
+            </td>
+        </tr>
+    </table>
+<?
+    } else {
+        echo("ERROR: any owner not found <br>");
+    }
+
+    echo("<b>" . MSG_INACTIVE_RENTALS . ":</b>");
+
+    if (0 != count($this->requests)) {
+?>
+        <table>
+<?
+            for ($index = 0; $index < count($this->requests); $index ++) {
+?>
+                <tr>
+                    <td width=10%> <? echo(1 + $index) ?> </td>
+                    <td width=90%>
+                        <a href="EditPendingRental.php?rentalId=<? echo($this->requests[$index]->getRequestId()); ?>">
+                            <? echo($this->requests[$index]->getRentalName()) ?>
+                        </a>
+                        <br>    
+                        <? echo($this->requests[$index]->getRentalAddress()) ?>
+                        <? echo($this->requests[$index]->getRentalDescription()) ?>
+                        <? echo($this->requests[$index]->getStatus()) ?>
+                        <? echo($this->requests[$index]->getRatesDescription()) ?>
+                        <? echo(($this->requests[$index]->getIsPetFriendly()))?(MSG_PET_FRIENDLY):("") ?>
+                        <? echo(($this->requests[$index]->getIsNoSmoking()))?(MSG_NO_SMOKING):("") ?>
+                    </td>
+                <tr>
+<?
+            }
+?>
+        </table>
+<?
+    } else {
+        echo("<br>" . MSG_NOT_FOUND_INACTIVE_RENTALS);
+    }
+?>

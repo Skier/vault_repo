@@ -1,0 +1,75 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Campaign
+@model AssignPhone
+
+@{
+    ViewBag.Title = "Assign Phone";
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Select Tracking Phone</h1>
+    <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Cancel", "Details", new { controller = "Campaigns", id = Model.CampaignId }, new { @class = "button" })
+
+@*
+        @Html.ActionLink("Purchase New Phone", "StartPurchase",
+                        new { controller = "Phones", returnController = "Campaigns", returnAction = "AssignPhone", returnId = Model.CampaignId }, 
+                        new { @class = "button" })
+*@
+
+        </div>
+  </div>
+  <div class="content">
+    <div class="details">
+      <table class="form">
+        <tr>
+          <td style="text-align:right;">Campaign</td>
+          <td>
+            @Html.ActionLink(Model.Campaign.CampaignName, "Details", new { controller = "Campaigns", id = Model.CampaignId })
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br/>
+
+@if (Model != null && Model.UnassignedPhones != null && Model.UnassignedPhones.Count > 0)
+{
+    <table class="list">
+    <thead>
+        <tr>
+        <td class="left" style="white-space: nowrap;">Number</td>
+        <td class="left" style="white-space: nowrap;">Friendly Number</td>
+        <td class="left" style="white-space: nowrap;">Redirect Number</td>
+        <td class="left" style="white-space: nowrap;">Description</td>
+        <td class="left" style="white-space: nowrap;">&nbsp;</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var phone in Model.UnassignedPhones)
+    {
+        <tr>
+        <td class="left" style="white-space: nowrap;">@phone.PhoneNumber</td>
+        <td class="left" style="white-space: nowrap;">@phone.FriendlyNumber</td>
+        <td class="left" style="white-space: nowrap;">@phone.RedirectPhoneNumber</td>
+        <td class="left">@phone.Description</td>
+        <td class="right" style="white-space: nowrap;">@Html.ActionLink("Select", "AddPhone", 
+            new { controller = "Campaigns", 
+                trackingPhoneId = phone.Id, 
+                campaignId = Model.CampaignId }, 
+            new { @class = "button" })</td>
+        </tr>
+    }
+    </tbody>
+    </table>
+} else
+{
+    <div>No available Phone Numbers. You can purchase new phone number -
+        @Html.ActionLink("Purchase", "StartPurchase",
+                        new { controller = "Phones", returnController = "Campaigns", returnAction = "AssignPhone", returnId = Model.CampaignId },
+                        new { @class = "button" })
+    </div>
+}
+  </div>
+</div>

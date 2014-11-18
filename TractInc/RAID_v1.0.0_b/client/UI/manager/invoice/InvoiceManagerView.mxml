@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	width="100%" height="100%" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:components="components.*" xmlns:invoice="UI.manager.invoice.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import common.StatusesRegistry;
+			import util.NumberUtil;
+			import App.Domain.Invoice;
+			import UI.manager.ManagerController;
+			
+			[Bindable]
+			public var controller:InvoiceManagerController;
+			
+			public function set parentController(parent:ManagerController):void {
+				controller = new InvoiceManagerController(this as InvoiceManagerView, parent);
+			}
+			
+            private function selectRowColor(item:Invoice, color:uint):uint 
+            {
+           		var newColor:uint = StatusesRegistry.getInstance().getColorByName(item.RelatedInvoiceStatus.Status);
+           		if (newColor == 0) {
+	           		return color;
+           		} else {
+	           		return newColor;
+           		}
+            }
+
+            private function setInvoicesLabel(item:Invoice, column:DataGridColumn):String {
+            
+            	if (column.dataField == "client") {
+            		return (item.RelatedClient.ClientName);
+            	} else if (column.dataField == "startDate") {
+            		return item.StartDate;
+            	} else if (column.dataField == "totalDays") {
+            		return NumberUtil.fraction(item.TotalDailyAmt, 8)
+            	} else if (column.dataField == "dailyAmt") {
+            		return item.DailyInvoiceAmt.toFixed(2);
+            	} else if (column.dataField == "otherAmt") {
+            		return item.OtherInvoiceAmt.toFixed(2);
+            	} else if (column.dataField == "totalAmt") {
+            		return item.TotalInvoiceAmt.toFixed(2);
+            	} else if (column.dataField == "status") {
+            		return item.Status;
+            	} else if (column.dataField == "invoiceNo") {
+            		return item.InvoiceNumber;
+            	} else {
+            		return "";
+            	}
+            
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsInvoices" width="100%" height="100%">
+		
+	    <mx:Panel title="Current Invoices" id="invoiceList"
+	        width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	        >
+			
+	        <components:ColoredDataGrid
+	        	id="dgInvoices" focusEnabled="false"
+	        	width="100%" height="100%" minWidth="700"
+	        	resizableColumns="false" sortableColumns="false"
+	        	itemDoubleClick="controller.onOpenInvoice()"
+				rowColorFunction="selectRowColor"
+	        	doubleClickEnabled="true"
+	        	dataProvider="{controller.model.invoices}">
+	        	<components:columns>
+        	        <mx:DataGridColumn dataField="invoiceNo" labelFunction="setInvoicesLabel"
+            	    	headerText="Number" width="90"/>
+        	        <mx:DataGridColumn dataField="client" labelFunction="setInvoicesLabel"
+            	    	headerText="Client" width="120"/>
+                	<mx:DataGridColumn dataField="startDate" labelFunction="setInvoicesLabel"
+	                	headerText="Start Date" width="100"/>
+    	            <mx:DataGridColumn dataField="totalDays" labelFunction="setInvoicesLabel"
+        	        	headerText="Total Days" textAlign="right" width="90"/>
+            	    <mx:DataGridColumn dataField="dailyAmt" labelFunction="setInvoicesLabel"
+                		headerText="Daily Amt" textAlign="right" width="90"/>
+	                <mx:DataGridColumn dataField="otherAmt" labelFunction="setInvoicesLabel"
+    	            	headerText="Other Amt" textAlign="right" width="90"/>
+        	        <mx:DataGridColumn dataField="totalAmt" labelFunction="setInvoicesLabel"
+            	    	headerText="Total Amt" textAlign="right" width="90"/>
+					<mx:DataGridColumn dataField="status" labelFunction="setInvoicesLabel"
+						headerText="Status" textAlign="center" width="100"/>
+ 					<mx:DataGridColumn headerText="" itemRenderer="common.notes.NotesRenderer"/>
+	        	</components:columns>
+    	    </components:ColoredDataGrid>
+			
+			<mx:ControlBar horizontalAlign="right">
+				<mx:Button label="Open selected" click="controller.onOpenInvoice()" enabled="{dgInvoices.selectedItem != null}"/>
+				<mx:Button label="Create New Invoice" click="controller.createInvoice()"/>
+			</mx:ControlBar>
+			
+	    </mx:Panel>
+	    
+	    <invoice:InvoiceDetail id="invoiceDetail"/>
+
+	</mx:ViewStack>
+	
+</mx:VBox>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="600" title="Create New Lead Source" 
+    close="btnCloseClickHandler(event)" xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:controls="com.affilia.controls.*">
+    
+    <mx:Metadata>
+        [Event(name="leadSave", type="com.dalworth.servman.events.LeadEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.MainModel;
+        	import com.dalworth.leadCentral.domain.User;
+        	import com.dalworth.leadCentral.service.registry.UserRegistry;
+        	import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+        	import com.dalworth.leadCentral.events.LeadSourceEvent;
+        	import com.dalworth.leadCentral.service.LeadSourceService;
+        	import com.dalworth.leadCentral.domain.LeadSource;
+        	import mx.events.ValidationResultEvent;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            [Bindable] private var isBusy:Boolean = false;
+            [Bindable] private var isReadOnly:Boolean = false;
+            
+			private var _currentLeadSource:LeadSource;
+			[Bindable]
+			public function get currentLeadSource():LeadSource { return _currentLeadSource; }
+			public function set currentLeadSource(value:LeadSource):void 
+			{
+				_currentLeadSource = value;
+			}
+			
+			private var rootSource:LeadSource;
+			
+            public static function open(parent:DisplayObject, currentLeadSource:LeadSource, rootSource:LeadSource, isReadOnly:Boolean = false, modal:Boolean = true):LeadSourceCreatePopup
+            {
+                var popup:LeadSourceCreatePopup = new LeadSourceCreatePopup();
+                
+                popup.currentLeadSource = currentLeadSource;
+                popup.rootSource = rootSource;
+                
+                popup.isReadOnly = isReadOnly;
+                popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+            	dispatchEvent(new Event("closeLeadSourcePopup"));
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                if (!isBusy)
+                    close();
+            }
+            
+            [Bindable]
+            private var parents:ArrayCollection;
+
+            [Bindable]
+            private var users:ArrayCollection;
+
+			private function init():void 
+			{
+				initParents();
+				initUsers();
+			}
+
+            private function initParents():void 
+            {
+				var currUser:User = MainModel.getInstance().currentUser;
+				parents = new ArrayCollection();
+				if (currUser.RoleName == User.ROLE_ADMINISTRATOR) 
+					parents.addItem(rootSource);
+				var leadSources:ArrayCollection = LeadSourceRegistry.getInstance().getAll();
+				for each (var leadSource:LeadSource in leadSources) 
+				{
+					if (currUser.RoleName == User.ROLE_ADMINISTRATOR) 
+						parents.addItem(leadSource);
+					else if (currUser.RoleName == User.ROLE_STAFF && leadSource.UserId == currUser.Id) 
+						parents.addItem(leadSource);
+				}
+            }
+            
+			private function initUsers():void 
+			{
+				users = new ArrayCollection();
+				var emptyUser:User = User.getEmpty();
+				emptyUser.Name = "< create new >";
+				users.addItem(emptyUser);
+				var allUsers:ArrayCollection = UserRegistry.getInstance().getAll();
+				for each (var user:User in allUsers) 
+				{
+					var currUser:User = MainModel.getInstance().currentUser;
+					if (user.IsActive)
+					{
+						if (currUser.RoleName == User.ROLE_ADMINISTRATOR) 
+							users.addItem(user);
+						else if (currUser.RoleName == User.ROLE_STAFF && user.Id == currUser.Id) 
+							users.addItem(user);
+					}
+				}
+			}
+		
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vName.enabled = true;
+				if (vName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+
+			private function onSaveClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				currentLeadSource.Name = txtName.text;
+				currentLeadSource.IsActive = true;
+
+				currentLeadSource.RelatedUser = null;
+				currentLeadSource.UserId = 0;
+				
+				var view:UIComponent = this;
+				view.enabled = false;
+				LeadSourceService.getInstance().saveLeadSource(currentLeadSource, null, null,
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							view.enabled = true;
+							var result:LeadSource = event.result as LeadSource
+							currentLeadSource.applyFields(result);
+							
+							dispatchEvent(new LeadSourceEvent(LeadSourceEvent.LEAD_SOURCE_SAVE, currentLeadSource));
+							
+							close();
+						},
+						function (event:FaultEvent):void 
+						{
+							view.enabled = true;
+							Alert.show(event.fault.message);
+						}));
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:StringValidator id="vName" source="{txtName}" property="text" required="{currentLeadSource.Id == 0}" enabled="false"/>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		borderColor="#999999" borderStyle="solid" fontSize="12">
+		<mx:Form width="100%" minWidth="250" 
+			paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+			<mx:FormItem label="Lead Source Name:" width="100%" required="true">
+				<mx:TextInput id="txtName" width="100%" text="" fontSize="16"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:VBox>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%"  enabled="{!isBusy}" fontSize="12">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Create" click="onSaveClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

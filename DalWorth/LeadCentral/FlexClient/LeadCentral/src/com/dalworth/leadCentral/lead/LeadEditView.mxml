@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" creationComplete="onCreate()"
+	xmlns:voice="com.affilia.voice.*" xmlns:controls="com.affilia.controls.*" xmlns:lead="com.dalworth.leadCentral.lead.*" 
+	xmlns:domain="com.dalworth.leadCentral.domain.*" xmlns:phoneCall="com.dalworth.leadCentral.transport.phoneCall.*" xmlns:phoneSms="com.dalworth.leadCentral.transport.phoneSms.*" xmlns:leadForm="com.dalworth.leadCentral.transport.leadForm.*" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.QbInvoice;
+			import com.dalworth.leadCentral.events.QbInvoiceEvent;
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.Responder;
+			import mx.controls.Alert;
+			import com.affilia.voice.VoicePlayer;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.events.LeadEvent;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.events.CloseEvent;
+			import mx.core.Application;
+			
+			public function set isReadOnly(value:Boolean):void 
+			{
+				model.isReadOnly = value;
+			}
+			
+			public function setLead(lead:Lead):void 
+			{ 
+				controller.initModel(lead);
+				refreshUI();
+			}
+			
+			private function refreshUI():void 
+			{
+				vsLead.removeAllChildren();
+
+				if (model.lead != null)
+				{
+					if (model.lead.Id > 0)
+						lblHeader.text = "Lead [" + model.lead.FirstName + " " + model.lead.LastName + "]";
+					else 
+						lblHeader.text = "New Lead";
+
+					vsLead.addChild(viewLeadDetail);
+					
+					if (model.lead.RelatedPhoneCall != null)
+					{
+						vsLead.addChild(viewPhoneCall);
+						viewPhoneCall.setPhoneCall(model.lead.RelatedPhoneCall);
+					} 
+					
+					if (model.lead.RelatedSms != null)
+					{
+						vsLead.addChild(viewPhoneSms);
+						viewPhoneSms.setPhoneSms(model.lead.RelatedSms);
+					} 
+					
+					if (model.lead.RelatedForm != null)
+					{
+						vsLead.addChild(viewWebForm);
+						viewWebForm.setLeadForm(model.lead.RelatedForm);
+					}
+					
+					if (model.lead.RelatedQbInvoices && model.lead.RelatedQbInvoices.length > 0)
+					{
+						vsLead.addChild(viewRelatedInvoices);
+						viewSummary.visible = viewSummary.includeInLayout = true;
+					} else 
+					{
+						viewSummary.visible = viewSummary.includeInLayout = false;
+					}
+					
+					callLater(selectDetails);
+				} else 
+				{
+					lblHeader.text = "New Lead";
+				}
+			}
+			
+			private function selectDetails():void 
+			{
+				vsLead.selectedIndex = 0;
+			}
+			
+			[Bindable]
+			private var model:LeadEditModel;
+			private var controller:LeadEditController;
+			
+			private function fillLeadFromForm(lead:Lead):void 
+			{
+				if (lead.Id == 0)
+				{
+					lead.DateCreated = new Date();
+					lead.CreatedByUserId = MainModel.getInstance().currentUser.Id;
+					lead.LeadStatusId = LeadStatusEnum.NEW;
+				}
+				
+				lead.LeadStatusId = comboStatus.value as int;
+
+				if (comboLeadSource.selectedItem != null)
+					lead.LeadSourceId = LeadSource(comboLeadSource.selectedItem).Id;
+					
+				lead.FirstName = txtFirstName.text;
+				lead.LastName = txtLastName.text;
+				lead.Phone = txtPhone.text;
+				lead.CustomerNotes = txtCustomerNotes.text;
+				
+				lead.Address = txtAddress.text;
+			}
+
+			private function onInit():void 
+			{
+				model = LeadEditModel.getInstance();
+				controller = new LeadEditController(this);
+			}
+			
+			private function onCreate():void 
+			{
+				this.removeChild(viewLeadDetail);
+				this.removeChild(viewPhoneCall);
+				this.removeChild(viewPhoneSms);
+				this.removeChild(viewWebForm);
+				this.removeChild(viewRelatedInvoices);
+				
+				lstInvoices.addEventListener(QbInvoiceEvent.QBINVOICE_DISCONNECT, onDisconnect);
+				
+				addEventListener("updateUiRequire", 
+					function onUpdateUI(e:*):void
+					{
+						refreshUI();
+					});
+
+				switch (MainModel.getInstance().currentUser.RoleName)
+				{
+					case User.ROLE_ADMINISTRATOR :
+						setAdminMode();
+						return;
+					case User.ROLE_STAFF :
+						setStuffMode();
+						return;
+					case User.ROLE_BUSINESS_PARTNER :
+						setPartnerMode();
+						return;
+				}
+			}
+			
+			private function setAdminMode():void
+			{
+				lstInvoices.itemRenderer = new ClassFactory(QbInvoiceEditor);
+			}
+			
+			private function setStuffMode():void
+			{
+				setAdminMode();
+			}
+			
+			private function setPartnerMode():void
+			{
+				lstInvoices.itemRenderer = new ClassFactory(QbInvoiceViewer);
+			}
+			
+			private function onUpdateUI(event:*):void 
+			{
+				refreshUI();
+			}
+			
+			private function onDisconnect(event:QbInvoiceEvent):void 
+			{
+				if (model.isReadOnly)
+					return;
+					
+				var qbInvoice:QbInvoice = event.qbInvoice;
+				
+				Alert.show("Are you really want to unmatch selected invoice from lead?", "Unmatch Invoice", 
+					Alert.YES | Alert.NO, null, 
+					function(event:CloseEvent):void 
+					{
+						if (event.detail == Alert.YES)
+							controller.disconnectInvoice(qbInvoice);
+					}); 
+			}
+			
+			private function close():void 
+			{
+				dispatchEvent(new Event("closeLeadEditor"));
+			}
+			
+			private function onCancelClick():void 
+			{
+				voicePlayer.stopPlaying();            	
+				close();            	
+			}
+			
+			private function onSaveClick():void 
+			{
+				voicePlayer.stopPlaying();            	
+
+				var newLead:Lead = model.lead.prepareToSend();
+				fillLeadFromForm(newLead);
+				controller.saveLead(newLead, true);
+			}
+			
+			private function onMatchLead():void 
+			{
+				dispatchEvent(new LeadEvent(LeadEvent.LEAD_MATCH, model.lead, true));
+			}
+			
+			private function onCancelLead():void 
+			{
+				voicePlayer.stopPlaying();            	
+
+				Alert.show("Are you really want to cancel current lead?", "Cancel Lead", 
+					Alert.YES | Alert.NO, null, 
+					function(event:CloseEvent):void 
+					{
+						if (event.detail == Alert.YES)
+						{
+							var lead:Lead = model.lead.prepareToSend();
+							lead.LeadStatusId = LeadStatusEnum.CANCELLED;
+							controller.saveLead(lead, true);
+						}
+					}); 
+			}
+			
+			private function onSetPendingLead():void 
+			{
+				voicePlayer.stopPlaying();            	
+				var lead:Lead = model.lead.prepareToSend();
+				lead.LeadStatusId = LeadStatusEnum.PENDING;
+				controller.saveLead(lead, true);
+			}
+			
+			private function onSetConvertedLead():void 
+			{
+				voicePlayer.stopPlaying();            	
+				var lead:Lead = model.lead.prepareToSend();
+				lead.LeadStatusId = LeadStatusEnum.CONVERTED;
+				controller.saveLead(lead, true);
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=98";
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#FFFFFF" enabled="{!model.isBusy}" verticalGap="0">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label id="lblHeader" fontSize="24" color="#666666" minWidth="100" width="100%"/>
+			<mx:Button width="120" height="35" label="Save" click="onSaveClick()" fontSize="14" visible="{!model.isReadOnly}"/>
+			<mx:LinkButton width="120" height="35" label="Cancel" textAlign="center" fontSize="14" click="onCancelClick()"/>
+		</mx:HBox> 
+
+        <mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingBottom="4" paddingTop="4" horizontalGap="4"
+            borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+            backgroundColor="#eeeeee" verticalAlign="middle"
+			visible="{!model.isReadOnly &amp;&amp; model.lead.Id != 0}"
+			includeInLayout="{!model.isReadOnly &amp;&amp; model.lead.Id != 0}">
+			<mx:Label text="Lead Status:" fontSize="13"/>
+			<controls:ComboBox id="comboStatus" fontSize="13" dataProvider="{model.leadStatuses}" 
+				value="{model.lead.LeadStatusId}" valueField="Id"
+				labelField="Name" cornerRadius="2"/>
+			
+            <mx:Spacer width="100%"/>
+
+            <mx:Button cornerRadius="2" label="Match Lead to Quickbooks Invoice" click="onMatchLead()"
+            	fontSize="13"/> 
+        </mx:HBox>
+		
+		<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<voice:VoicePlayer id="voicePlayer" width="100%" layout="horizontal" showHeader="true"
+				voiceFileUrl="{model.lead.RelatedPhoneCall.RecordingUrl == null ? null : model.lead.RelatedPhoneCall.RecordingUrl + '.mp3'}"
+				visible="{model.lead.RelatedPhoneCall != null &amp;&amp; model.lead.RelatedPhoneCall.RecordingUrl != null}"
+				includeInLayout="{model.lead.RelatedPhoneCall != null &amp;&amp; model.lead.RelatedPhoneCall.RecordingUrl != null}"/>
+
+			<mx:VBox width="100%" height="100%" cornerRadius="4" 
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:LinkBar dataProvider="{vsLead}" fontSize="12" visible="{model.lead.Id &gt; 0}" includeInLayout="{model.lead.Id &gt; 0}"/>
+				<mx:ViewStack id="vsLead" width="100%" height="100%"/>
+			</mx:VBox>
+		</mx:VBox>
+
+		<lead:SummaryView id="viewSummary" width="100%" summary="{model.summary}"/>
+	</mx:VBox>
+
+	<phoneCall:PhoneCallView id="viewPhoneCall" width="100%" height="100%" label="Phone Call Detail"/>
+	<phoneSms:PhoneSmsView id="viewPhoneSms" width="100%" height="100%" label="SMS Detail"/>
+	<leadForm:LeadFormView id="viewWebForm" width="100%" height="100%" label="Web Form Detail"/>
+
+	<mx:VBox id="viewRelatedInvoices" label="Related Invoices" width="100%" height="100%" horizontalAlign="right">
+		<mx:List id="lstInvoices" width="100%" height="100%" labelField="ShowAs" dataProvider="{model.relatedInvoices}" fontSize="12"
+			variableRowHeight="true"/>
+	</mx:VBox>
+				
+	<mx:VBox id="viewLeadDetail" width="100%" height="100%" label="Lead Detail"> 
+		<mx:HBox width="100%" backgroundColor="#eeeeee" cornerRadius="2" horizontalGap="5"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox width="100%" verticalGap="5">
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Lead Source" fontSize="12" width="115" textAlign="right"/>
+					<controls:ComboBox id="comboLeadSource" width="250" dataProvider="{model.leadSources}" labelField="Name"
+						value="{model.lead.LeadSourceId}" valueField="Id" fontSize="13" enabled="{!model.isReadOnly}"
+						cornerRadius="2"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="First Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtFirstName" text="{model.lead.FirstName}" width="100%" enabled="{!model.isReadOnly}"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Last Name" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtLastName" text="{model.lead.LastName}" width="100%" enabled="{!model.isReadOnly}"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+					<mx:Label text="Phone" fontSize="12" width="115" textAlign="right"/>
+					<mx:TextInput id="txtPhone" text="{model.lead.Phone}" width="100%" enabled="{!model.isReadOnly}"/>
+				</mx:HBox>
+			</mx:VBox>
+
+			<mx:VBox width="250" height="100%" verticalGap="0">
+				<mx:Label text="Address:" fontSize="12"/>
+				<mx:TextArea id="txtAddress" text="{model.lead.Address}" width="100%" height="100%" enabled="{!model.isReadOnly}"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<mx:VBox width="100%" height="100%"	backgroundColor="#FFFFFF">
+			<mx:Label text="Notes:"/>
+			<mx:TextArea id="txtCustomerNotes" text="{model.lead.CustomerNotes}" width="100%" height="100%" minHeight="50" enabled="{!model.isReadOnly}"/>
+		</mx:VBox>
+	</mx:VBox>
+
+</mx:Canvas>

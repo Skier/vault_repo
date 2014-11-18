@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.dalworth.servman.events.BusinessPartnerEvent;
+			import com.dalworth.servman.main.bp.BusinessPartnerSelectorPopup;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.service.BusinessPartnerService;
+			import com.dalworth.servman.main.bp.PhoneEditPopup;
+			import com.dalworth.servman.events.PhoneEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.domain.Phone;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.SalesRep;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var ownBusinessPartners:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var freeBusinessPartners:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var busyBusinessPartners:ArrayCollection = new ArrayCollection();
+			
+			private var _salesRep:SalesRep;
+			[Bindable]
+			public function get salesRep():SalesRep { return _salesRep; }
+			public function set salesRep(value:SalesRep):void 
+			{
+				_salesRep = value;
+				initBusinessPartners();
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function saveBusinessPartner(businessPartner:BusinessPartner):void 
+			{
+				startRemoting();
+				BusinessPartnerService.getInstance().saveBusinessPartner(businessPartner.prepareToSend()).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							initBusinessPartners();
+						}, 
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+							trace(event.fault.message);
+						}));
+			}
+			
+			private function initBusinessPartners():void 
+			{
+				ownBusinessPartners.removeAll();
+				freeBusinessPartners.removeAll();
+				busyBusinessPartners.removeAll();
+				
+				if (salesRep == null)
+					return;
+				
+				BusinessPartnerService.getInstance().getAll().addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							var result:Array = event.result as Array;
+							for each (var businessPartner:BusinessPartner in result)
+							{
+								if (businessPartner.SalesRepId == salesRep.Id)
+								{
+									ownBusinessPartners.addItem(businessPartner);
+									busyBusinessPartners.addItem(businessPartner);
+								}
+								else if (businessPartner.SalesRepId == 0)
+								{
+									freeBusinessPartners.addItem(businessPartner);
+								}
+								else 
+								{
+									busyBusinessPartners.addItem(businessPartner);
+								} 
+							}
+
+							salesRep.BusinessPartners.source = ownBusinessPartners.source;
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+							trace(event.fault.message);
+						}
+					));
+			}
+			
+			private function onAddBusinessPartner():void 
+			{
+				var popup:BusinessPartnerSelectorPopup = BusinessPartnerSelectorPopup.open(Application.application as DisplayObject, busyBusinessPartners);
+				popup.addEventListener(BusinessPartnerEvent.BUSINESS_PARTNER_SELECT, onBusinessPartnerSelect);
+			}
+			
+			private function onBusinessPartnerSelect(event:BusinessPartnerEvent):void 
+			{
+				var businesPartner:BusinessPartner = event.businessPartner;
+				if (businesPartner == null)
+					return;
+				
+				businesPartner.SalesRepId = salesRep.Id;
+				saveBusinessPartner(businesPartner);
+			}
+			
+			private function onRemoveBusinessPartner():void 
+			{
+				var businesPartner:BusinessPartner = dgBusinessPartners.selectedItem as BusinessPartner;
+				businesPartner.SalesRepId = 0;
+				saveBusinessPartner(businesPartner);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" 
+		horizontalAlign="right">
+		<mx:DataGrid id="dgBusinessPartners" width="100%" height="100%" dataProvider="{ownBusinessPartners}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Related Business Partners" dataField="ShowAs"/>
+			</mx:columns>
+		</mx:DataGrid>
+
+		<mx:HBox width="100%">
+			<mx:Button label="Remove" click="onRemoveBusinessPartner()" enabled="{dgBusinessPartners.selectedItem != null}" width="80"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Add" click="onAddBusinessPartner()" width="80"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

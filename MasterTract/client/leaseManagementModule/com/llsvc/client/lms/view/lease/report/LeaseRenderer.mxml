@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="top" horizontalGap="-1"
+	doubleClickEnabled="true" doubleClick="onDoubleClick()"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.core.Application;
+			import com.llsvc.client.lms.events.TractEvent;
+			import mx.collections.SortField;
+			import mx.collections.Sort;
+			import mx.controls.TextInput;
+			import mx.events.DataGridEvent;
+			import com.llsvc.domain.LeaseTract;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.llsvc.client.lms.control.TabManager;
+			import com.llsvc.domain.Lease;
+			
+			[Bindable] public var lease:Lease;
+			
+			[Bindable] public var leaseStatusWidth:int;
+
+			[Bindable] public var leaseNoWidth:int;
+			[Bindable] public var leaseLessorWidth:int;
+			[Bindable] public var leaseLesseeWidth:int;
+			[Bindable] public var recordingWidth:int;
+			[Bindable] public var leaseDateWidth:int;
+			[Bindable] public var leaseExpDateWidth:int;
+
+			[Bindable] public var townshipRangeWidth:int;
+			[Bindable] public var sectionWidth:int;
+			[Bindable] public var interestWidth:int;
+			[Bindable] public var grossAcresWidth:int;
+			[Bindable] public var netAcresWidth:int;
+			[Bindable] public var leaseInterestWidth:int;
+			[Bindable] public var leaseBurdenWidth:int;
+			[Bindable] public var nriWidth:int;
+			[Bindable] public var cwiWidth:int;
+			[Bindable] public var burdenWidth:int;
+			[Bindable] public var cnriWidth:int;
+			[Bindable] public var cNetAcresWidth:int;
+			
+			private function onDoubleClick():void 
+			{
+				TabManager.openLease(lease);
+			}
+			
+			private function getLabel(item:LeaseTract, column:DataGridColumn):String
+			{
+				if (column.dataField == "nri") {
+					return LeaseTract(item).nriStr; 
+				} else if (column.dataField == "cwi") {
+					return LeaseTract(item).cwiStr; 
+				} else if (column.dataField == "burden") {
+					return LeaseTract(item).burdenStr; 
+				} else if (column.dataField == "cnri") {
+					return LeaseTract(item).cnriStr; 
+				} else if (column.dataField == "leaseInterest") {
+					return LeaseTract(item).leaseInterestStr; 
+				} else if (column.dataField == "leaseBurden") {
+					return LeaseTract(item).leaseBurdenStr; 
+				} else {
+					return ""; 
+				}
+			} 
+			
+			private function onCreationComplete():void 
+			{
+				dgTracts.addEventListener(TractEvent.CREATE_TRACT, addTractHandler);
+				dgTracts.addEventListener(TractEvent.UPDATE_TRACT, editTractHandler);
+				dgTracts.addEventListener(TractEvent.REMOVE_TRACT, deleteTractHandler);
+			}
+			
+			private function addTractHandler(event:TractEvent):void 
+			{
+				addTract();
+			}
+			
+			private function addTract():void 
+			{
+				var t:LeaseTract = new LeaseTract();
+				t.lease = lease;
+				var popup:TractEditView = TractEditView.open(Application.application as DisplayObject, t, true);
+				popup.addEventListener("commitRequest", 
+					function (event:*):void 
+					{
+						lease.tracts.addItem(popup.tract);
+						lease.isDirty = true;
+						popup.close();
+					}
+				);
+			}
+			
+			private function editTractHandler(event:TractEvent):void 
+			{
+				var popup:TractEditView = TractEditView.open(Application.application as DisplayObject, event.leaseTract, true);
+				popup.addEventListener("commitRequest", 
+					function (event:*):void 
+					{
+						lease.isDirty = true;
+						popup.close();
+					}
+				);
+			}
+			
+			private function deleteTractHandler(event:TractEvent):void 
+			{
+                Alert.show("Do you really want to delete this Tract ?", 
+                   "Delete Tract", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES)
+                        {
+							var idx:int = lease.tracts.getItemIndex(event.leaseTract);
+							if (idx > -1) 
+							{
+								lease.tracts.removeItemAt(idx);
+								lease.isDirty = true;
+							}
+                        }
+                    });
+			}
+			
+			private function onItemEditEnd(event:DataGridEvent):void 
+			{
+				var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+
+				if (event.columnIndex > 4)
+					checkInPercentField(ti);
+				
+				var t:LeaseTract = lease.tracts[event.rowIndex];
+
+				if (event.dataField == "grossAcres") 
+				{
+					var ga:Number = Number(ti.text);
+					t.leaseInterest = t.netAcres / ga;  
+				}
+
+				if (event.dataField == "netAcres") 
+				{
+					var na:Number = Number(ti.text);
+					if (na > t.grossAcres) {
+						na = t.grossAcres;
+						ti.text = t.grossAcres.toString();
+					}
+					t.leaseInterest = na / t.grossAcres;  
+				}
+
+				if (event.dataField == "leaseInterest") 
+				{
+					t.netAcres = t.grossAcres * Number(ti.text);
+				}
+			}
+			
+			private function onItemEditBegin(event:DataGridEvent):void 
+			{
+				var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+
+				var t:LeaseTract = lease.tracts[event.rowIndex];
+
+				if (event.dataField == "grossAcres") 
+				{
+					var ga:Number = Number(ti.text);
+					t.leaseInterest = t.netAcres / ga;  
+				}
+
+				if (event.dataField == "netAcres") 
+				{
+					var na:Number = Number(ti.text);
+					if (na > t.grossAcres) {
+						na = t.grossAcres;
+						ti.text = t.grossAcres.toString();
+					}
+					t.leaseInterest = na / t.grossAcres;  
+				}
+
+				if (event.dataField == "leaseInterest") 
+				{
+					t.netAcres = t.grossAcres * Number(ti.text);
+				}
+			}
+			
+			private function checkInPercentField(ti:TextInput):void 
+			{
+				var percentInput:String = ti.text;
+				var value:Number;
+				
+				if ( percentInput.length > 0 && percentInput.indexOf("%") > 0 ) 
+				{
+					var p1:String = percentInput.substr(0, percentInput.indexOf("%"));
+					if ( !isNaN(Number(p1)) ) {
+						value = new Number(p1)/100;
+					} else {
+						value = 0.00;
+					}
+				} else if ( !isNaN(Number(percentInput)) ) 
+				{
+					value = new Number(percentInput);
+				} else 
+				{
+					value = 0.00;
+				}
+				
+				if (value > 1) {
+					value = 1.00;
+				} else if (value < 0) {
+					value = 0.00;
+				}
+				
+				ti.text = value.toString();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<mx:HBox horizontalGap="-1">
+			<mx:Box height="100%" width="{leaseStatusWidth}" horizontalAlign="center" verticalAlign="middle" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:CheckBox id="cbComplete" width="16" height="16" 
+					selected="{lease.isComplete}" click="lease.isComplete = !lease.isComplete"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{leaseNoWidth}" horizontalAlign="center" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.leaseNum}" width="100%"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{leaseLessorWidth}" horizontalAlign="center"
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.leasorStr}" width="100%"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{leaseLesseeWidth}" horizontalAlign="center" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.leaseeStr}" width="100%"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{recordingWidth}" horizontalAlign="center" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.recordsStr}" width="100%"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{leaseDateWidth}" horizontalAlign="center" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.leaseDateStr}" width="100%"/>
+			</mx:Box>
+			
+			<mx:Box height="100%" width="{leaseExpDateWidth}" horizontalAlign="center" 
+				borderColor="#999999" borderStyle="solid" borderThickness="1"
+				horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Text text="{lease.expirationDateStr}" width="100%"/>
+			</mx:Box>
+		</mx:HBox>
+
+		<mx:HBox width="100%" paddingRight="8" horizontalAlign="right">
+			<mx:Button label="Add Tract" click="addTract()" height="24"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:DataGrid id="dgTracts" 
+		dataProvider="{lease.tracts}" showHeaders="false" editable="true"
+		rowHeight="20"
+		rowCount="{(lease.tracts.length == 0) ? 1 : (lease.tracts.length)}"
+		itemEditEnd="onItemEditEnd(event)" itemEditBegin="onItemEditBegin(event)">
+		<mx:columns>
+			<mx:DataGridColumn width="{townshipRangeWidth - 2}" dataField="townshipRangeStr" editable="false"/>
+			<mx:DataGridColumn width="{sectionWidth - 1}" dataField="section" editable="false"/>
+			<mx:DataGridColumn width="{interestWidth - 1}" dataField="tract" editable="false" 
+				itemRenderer="com.llsvc.client.lms.view.lease.report.LeaseDescriptionIR"/>
+			<mx:DataGridColumn width="{grossAcresWidth - 1}" dataField="grossAcres" textAlign="right"/>
+			<mx:DataGridColumn width="{netAcresWidth - 1}" dataField="netAcres" textAlign="right"/>
+			<mx:DataGridColumn width="{leaseInterestWidth - 1}" dataField="leaseInterest" textAlign="right"
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{leaseBurdenWidth - 1}" dataField="leaseBurden" textAlign="right" editable="false"
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{nriWidth - 1}" dataField="nri" textAlign="right" editable="false"
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{cwiWidth - 1}" dataField="cwi" textAlign="right" 
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{burdenWidth - 1}" dataField="burden" textAlign="right" 
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{cnriWidth - 1}" dataField="cnri" textAlign="right" editable="false"
+				labelFunction="getLabel"/>
+			<mx:DataGridColumn width="{cNetAcresWidth - 1}" dataField="cNetAcres" textAlign="right" editable="false"/>
+			<mx:DataGridColumn width="38" dataField="tract" editable="false" 
+				itemRenderer="com.llsvc.client.lms.view.lease.report.TractActionsIR"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<mx:Spacer width="3"/>
+	<mx:VRule height="{dgTracts.height}" strokeColor="#ff9900" visible="{lease.isDirty}" strokeWidth="2"/>
+</mx:HBox>

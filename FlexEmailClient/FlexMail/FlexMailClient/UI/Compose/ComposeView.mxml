@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+    xmlns:Compose="UI.Compose.*" 
+    xmlns:Attachment="UI.Compose.Attachment.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.managers.IFocusManagerComponent;
+            import mx.managers.FocusManager;
+            import mx.controls.Text;
+        	import Domain.MailAddress;
+            import UI.AppController;
+            
+            [Bindable]
+            public var Controller:ComposeController;
+
+            public function set ParentController(parent:AppController):void{
+                Controller = new ComposeController(ComposeView(this), parent);
+            }
+
+            //We need to cycle focus tabbing after cancelButton focus out and set focus to ToEmail field
+            public function OnCancelButtonKeyDown(event:KeyboardEvent):void
+            {
+                if (event.keyCode == 9 && !event.shiftKey)
+                    callLater(ToEmail.setFocus);
+            }
+            
+            //Reverse focus cycle
+            public function OnToFieldKeyDown(event:KeyboardEvent):void
+            {
+                if (event.keyCode == 9 && event.shiftKey)
+                    callLater(cancelButton.setFocus);
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:VBox width="100%" height="100%" y="0" x="0" 
+        paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5">
+
+        <mx:Label text="Compose Message" fontWeight="bold"/>
+           
+        <mx:Box styleName="composeSection" width="100%">
+            <mx:Form width="100%" verticalGap="3">
+                <mx:FormItem label="To:" width="100%" required="true">
+                    <Compose:EmailInputField id="ToEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+                        text="{MailAddress.AddressListToString(Controller.Model.To)}"
+                        dataProvider="{Controller.Parent.Model.contactList}"/>
+                </mx:FormItem>
+                <mx:FormItem label="CC:" width="100%">
+                    <Compose:EmailInputField id="CcEmail" width="100%" keepLocalHistory="false" lookAhead="false" 
+                        text="{MailAddress.AddressListToString(Controller.Model.Cc)}"
+                    dataProvider="{Controller.Parent.Model.contactList}"/>
+                </mx:FormItem>
+                <mx:FormItem label="BCC" width="100%">
+                <Compose:EmailInputField id="BccEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+                    text="{MailAddress.AddressListToString(Controller.Model.Bcc)}"
+                    dataProvider="{Controller.Parent.Model.contactList}"/>
+                </mx:FormItem>
+                <mx:FormItem label="Subject" width="100%">
+                    <mx:TextInput id="subjectTxt" width="100%" text="{Controller.Model.Subject}"/>
+                </mx:FormItem>
+            </mx:Form>
+        </mx:Box>
+        
+        <mx:HBox height="100%" width="100%">
+            <mx:Canvas width="300" height="100%" styleName="composeSection">
+                <Attachment:AttachmentPanel id="attachmentPanel" width="100%" height="100%" dropShadowEnabled="false"/>
+            </mx:Canvas>
+            
+            <mx:Canvas width="100%" height="100%" styleName="composeSection">
+                <Compose:MessageBodyEditor id="body" backgroundAlpha="0.2" width="100%" height="100%"
+                    htmlText="{Controller.Model.Body.HtmlBody.Text}"
+                    headerHeight="10" dropShadowEnabled="false"/>
+            </mx:Canvas>
+        </mx:HBox>
+        
+        <mx:ControlBar horizontalAlign="right" width="100%">
+            <mx:Button label="Send" id="sendButton" click="Controller.OnSend()" enabled="{!Controller.Parent.IsSmtpBusy}"/>
+            <mx:Button label="Cancel" id="cancelButton" click="Controller.OnDiscard()"
+                keyDown="OnCancelButtonKeyDown(event)"/>
+        </mx:ControlBar>
+        
+    </mx:VBox>
+        
+</mx:Canvas>

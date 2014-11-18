@@ -1,0 +1,84 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{733D1062-A55A-472C-9DBA-22BCF31CC63B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TractInc.ScopeScetch</RootNamespace>
+    <AssemblyName>TractInc.ScopeScetch</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Inetpub\wwwroot\weborb\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=4.0.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="sharpPDF, Version=1.0.1870.19498, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\sharpPDF.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\ParticipantDataMapper.cs" />
+    <Compile Include="Entity\Participant.cs" />
+    <Compile Include="Entity\TractListInfo.cs" />
+    <Compile Include="TractConverter.cs" />
+    <Compile Include="Data\DocDataMapper.cs" />
+    <Compile Include="Data\TractTODataMapper.cs" />
+    <Compile Include="Data\TractCallDataMapper.cs" />
+    <Compile Include="Data\TractDataMapper.cs" />
+    <Compile Include="Data\SqlHelper.cs" />
+    <Compile Include="Data\SyncLogDataMapper.cs" />
+    <Compile Include="Data\UserDataMapper.cs" />
+    <Compile Include="DocService.cs" />
+    <Compile Include="Entity\Document.cs" />
+    <Compile Include="Entity\User.cs" />
+    <Compile Include="Pinger.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="UserService.cs" />
+    <Compile Include="SyncService.cs" />
+    <Compile Include="Entity\Tract.cs" />
+    <Compile Include="Entity\TractCall.cs" />
+    <Compile Include="Entity\TractTextObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="WebConfig.part.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

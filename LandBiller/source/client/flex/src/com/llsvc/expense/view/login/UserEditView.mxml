@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="500" 
+	title="Registration" layout="vertical" xmlns:component="com.llsvc.component.*" xmlns:controls="com.llsvc.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.expense.view.attachment.UploadProcessRenderer;
+			import com.llsvc.services.LoginService;
+			import com.llsvc.registry.MainModel;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.Login;
+			import com.llsvc.domain.Person;
+			import com.llsvc.domain.State;
+			import com.llsvc.domain.Address;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.domain.vo.userVO;
+			import com.llsvc.domain.User;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.events.ValidationResultEvent;
+			import com.llsvc.services.UserService;
+			import mx.rpc.Responder;
+			
+			[Bindable] private var isBusy:Boolean = false;
+			[Bindable] private var usStates:ArrayCollection;
+			
+			[Bindable] private var user:User;
+			
+            public static function open(parent:DisplayObject, user:User = null, modal:Boolean = true):UserEditView
+            {
+                var popup:UserEditView = new UserEditView();
+                
+                popup.usStates = MainModel.instance.getStates();
+                popup.user = user;
+                
+                if (user != null)
+                	popup.logoUrl = user.logourl;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vUsername.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+				
+				if (vPassword.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vPassword2.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vEmail.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vFirstName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vMiddleName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vLastName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+/* 
+				if (vPhone.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vPhoneAlt.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+ */
+				if (vAddress1.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vAddress2.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vCity.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				if (vZip.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+					
+				if (comboState.selectedItem == null) 
+				{
+					result = false;
+				}
+				
+				if (txtPassword.text != txtPassword2.text) 
+				{
+					result = false;
+				} 
+
+				return result;
+			}
+			
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			private function getUser():User 
+			{
+				var localUser:User;
+				
+				if (user == null) 
+				{
+					var address:Address = new Address();
+					
+					var person:Person = new Person();
+					person.address = address;
+					
+					var login:Login = new Login();
+					login.person = person;
+					
+					localUser = new User();
+					localUser.login = login;
+				} else 
+				{
+					localUser = user;
+				}
+				
+				localUser.login.person.address.address1 = txtAddress1.text;
+				localUser.login.person.address.address2 = txtAddress2.text;
+				localUser.login.person.address.city = txtCity.text;
+				localUser.login.person.address.state = comboState.selectedItem as State;
+				localUser.login.person.address.stateid = comboState.value as int;
+				localUser.login.person.address.zip = txtZip.text;
+				
+				localUser.login.person.firstname = txtFirstName.text;
+				localUser.login.person.middlename = txtMiddleName.text;
+				localUser.login.person.lastname = txtLastName.text;
+				localUser.login.person.phone = txtPhone.text;
+				localUser.login.person.phonealt = txtPhoneAlt.text;
+				
+				localUser.login.username = txtUsername.text;
+				localUser.login.password = txtPassword.text;
+				localUser.login.email = txtEMail.text;
+				
+				localUser.logourl = logoUrl;
+				
+				return localUser;
+			}
+			
+			private function saveUser(user:User):void 
+			{
+				if (user.userid == 0) 
+				{
+					createUser(user);
+				} else 
+				{
+					updateUser(user);
+				}
+			}
+			
+			private function updateUser(user:User):void 
+			{
+				startRemoting();
+				
+				var service:UserService = UserService.instance;
+				service.addEventListener(UserEvent.REGISTRATION_COMPLETE,
+					function (event:UserEvent):void 
+					{
+						stopRemoting();
+						dispatchEvent(new UserEvent(UserEvent.REGISTRATION_SUCCESSFULL, event.user)); 
+					});
+				service.addEventListener("registrationFailed",
+					function (event:UserEvent):void 
+					{
+						stopRemoting();
+						Alert.show("Registraction Failed !"); 
+					});
+				service.saveCascade(user);
+			}
+			
+			private function createUser(user:User):void 
+			{
+				startRemoting();
+				
+				LoginService.instance.checkUser(user.login.username).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							var result:int = event.result as int;
+							if (result > 0) 
+							{
+								stopRemoting();
+								Alert.show("Username <" + user.login.username + "> already registered !");
+							} else 
+							{
+								var service:UserService = UserService.instance;
+								service.addEventListener(UserEvent.REGISTRATION_COMPLETE,
+									function (event:UserEvent):void 
+									{
+										stopRemoting();
+										dispatchEvent(new UserEvent(UserEvent.REGISTRATION_SUCCESSFULL, event.user)); 
+									});
+								service.addEventListener("registrationFailed",
+									function (event:Event):void 
+									{
+										stopRemoting();
+										Alert.show("Registraction Failed !"); 
+									});
+								service.saveCascade(user);
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			
+	        [Bindable]
+	        private var uploadInProcess:Boolean = false;
+	        
+	        [Bindable]
+	        private var logoUrl:String = "emptylogo.png";
+			
+            private function attachLogo():void 
+            {
+                var fileRef:FileReference = new FileReference();
+
+                var imgFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png;*.jpeg");
+
+                fileRef.addEventListener(Event.SELECT, 
+                    function (event:Event):void 
+                    {
+                        addUploadProcess(fileRef);
+                    });
+                     
+                fileRef.browse([imgFilter]);
+            }
+            
+	        public function addUploadProcess(fileRef:FileReference):void 
+	        {
+	        	uploadInProcess = true;
+	        	
+	        	var process:UploadProcessRenderer = new UploadProcessRenderer();
+		        
+				process.addEventListener("cancelUploadProcess", cancelUploadProcessHandler);
+				process.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, completeUploadProcessHandler);
+	
+	            boxContent.addChild(process);
+	            
+				process.startUpload(fileRef);
+	        }
+	
+	        private function completeUploadProcessHandler(event:DataEvent):void 
+	        {
+	        	uploadInProcess = false;
+
+	            var item:UploadProcessRenderer = event.target as UploadProcessRenderer;
+	            if (boxContent.contains(item))
+	            	boxContent.removeChild(item);
+	            
+	            logoUrl = item.uniqueFileName;
+	        }
+	        
+	        private function cancelUploadProcessHandler(event:Event):void 
+	        {
+	        	uploadInProcess = false;
+
+	            var item:UploadProcessRenderer = event.target as UploadProcessRenderer;
+	            if (boxContent.contains(item))
+	            	boxContent.removeChild(item);
+	        }
+	        
+	        private function btnAttachClickHandler():void 
+	        {
+	        	attachLogo();
+	        }
+	        
+			private function btnCancelClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+			private function btnRegisterClickHandler(event:*):void 
+			{
+				if (!isFormValid())
+					return;
+					
+				saveUser(getUser());
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator id="vUsername" source="{txtUsername}" property="text" maxLength="50" required="true"/>
+	<mx:StringValidator id="vPassword" source="{txtPassword}" property="text" maxLength="50" required="true"/>
+	<mx:StringValidator id="vPassword2" source="{txtPassword2}" property="text" maxLength="50" required="true"/>
+	<mx:EmailValidator id="vEmail" source="{txtEMail}" property="text" required="true"/>
+	<mx:StringValidator id="vFirstName" source="{txtFirstName}" property="text" maxLength="50" required="true"/>
+	<mx:StringValidator id="vMiddleName" source="{txtMiddleName}" property="text" maxLength="50" required="false"/>
+	<mx:StringValidator id="vLastName" source="{txtLastName}" property="text" maxLength="50" required="true"/>
+	<mx:PhoneNumberValidator id="vPhone" source="{txtPhone}" property="text" required="false" enabled="false"/>
+	<mx:PhoneNumberValidator id="vPhoneAlt" source="{txtPhoneAlt}" property="text" required="false" enabled="false"/>
+	<mx:StringValidator id="vAddress1" source="{txtAddress1}" property="text" maxLength="50" required="false"/>
+	<mx:StringValidator id="vAddress2" source="{txtAddress2}" property="text" maxLength="50" required="false"/>
+	<mx:StringValidator id="vCity" source="{txtCity}" property="text" required="false"/>
+	<mx:ZipCodeValidator id="vZip" source="{txtZip}" property="text" required="false"/>
+
+	<mx:VBox id="boxContent" width="100%">
+		<mx:HBox width="100%">
+			<mx:Form id="formUser" width="100%" enabled="{!(isBusy || uploadInProcess)}">
+				<mx:FormItem label="Username" required="true" width="100%" 
+					visible="{user == null}" includeInLayout="{user == null}">
+					<mx:TextInput id="txtUsername" width="100%" text="{user.login.username}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Password" required="true" width="100%"
+					visible="{user == null}" includeInLayout="{user == null}">
+					<mx:TextInput id="txtPassword" width="100%" displayAsPassword="true" text="{user.login.password}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Password" required="true" width="100%"
+					visible="{user == null}" includeInLayout="{user == null}">
+					<mx:TextInput id="txtPassword2" width="100%" displayAsPassword="true" text="{user.login.password}"/>
+				</mx:FormItem>
+				<mx:FormItem label="E-mail" required="true" width="100%">
+					<mx:TextInput id="txtEMail" width="100%" text="{user.login.email}"/>
+				</mx:FormItem>
+				<mx:FormItem label="First Name" required="true" width="100%">
+					<mx:TextInput id="txtFirstName" width="100%" text="{user.login.person.firstname}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Middle Name" width="100%">
+					<mx:TextInput id="txtMiddleName" width="100%" text="{user.login.person.middlename}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Last Name" required="true" width="100%">
+					<mx:TextInput id="txtLastName" width="100%" text="{user.login.person.lastname}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone" required="false" width="100%">
+					<controls:MaskedInput id="txtPhone" inputMask="(###) ###-####" width="100%" text="{user.login.person.phone}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone Alt" width="100%">
+					<controls:MaskedInput id="txtPhoneAlt" inputMask="(###) ###-####" width="100%" text="{user.login.person.phonealt}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Address1" required="false" width="100%">
+					<mx:TextInput id="txtAddress1" width="100%" text="{user.login.person.address.address1}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Address2" width="100%">
+					<mx:TextInput id="txtAddress2" width="100%" text="{user.login.person.address.address2}"/>
+				</mx:FormItem>
+				<mx:FormItem label="City" required="false" width="100%">
+					<mx:TextInput id="txtCity" width="100%" text="{user.login.person.address.city}"/>
+				</mx:FormItem>
+				<mx:FormItem label="State" required="false" width="100%">
+					<controls:ComboBox id="comboState" dataProvider="{usStates}" labelField="name"
+						valueField="stateid" value="{user.login.person.address.state.stateid}"/>
+				</mx:FormItem>
+				<mx:FormItem label="Zip" required="false" width="100%">
+					<mx:TextInput id="txtZip" width="100%" text="{user.login.person.address.zip}"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VBox verticalAlign="top" horizontalAlign="right"
+				paddingTop="15" paddingRight="15">
+				<mx:Button height="24" 
+					label="{(logoUrl != null &amp;&amp; logoUrl.length &gt; 0 &amp;&amp; logoUrl != 'emptylogo.png') ? 'Change logo' : 'Add logo'}" 
+					enabled="{!(isBusy || uploadInProcess)}" click="btnAttachClickHandler()"/>
+
+				<mx:Image source="{MainModel.REMOTE_STORAGE_LINK + logoUrl}"
+					visible="{logoUrl != null &amp;&amp; logoUrl.length &gt; 0 &amp;&amp; logoUrl != 'emptylogo.png'}"
+					includeInLayout="{logoUrl != null &amp;&amp; logoUrl.length &gt; 0 &amp;&amp; logoUrl != 'emptylogo.png'}" 
+					width="200" height="200" scaleContent="true"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+			visible="{isBusy}" includeInLayout="{isBusy}"/>
+	</mx:VBox>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!(isBusy || uploadInProcess)}" click="btnRegisterClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" enabled="{!(isBusy || uploadInProcess)}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

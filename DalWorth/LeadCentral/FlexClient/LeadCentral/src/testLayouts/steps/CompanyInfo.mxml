@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="622" height="516" xmlns:steps="testLayouts.steps.*">
+
+	<mx:ViewStack id="vsStep" width="100%" height="100%" creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<mx:LinkButton label="Video" click="vsStep.selectedIndex = 1" x="555" y="10" fontSize="12" color="#003399"/>
+			<mx:ComboBox x="250" y="36" width="362" fontSize="14"></mx:ComboBox>
+			<mx:Label x="10" y="10" text="Tell us about your Company" fontSize="14" fontWeight="bold"/>
+			<mx:Label x="10" y="41" text="Please select Quickbooks Company:" fontSize="12"/>
+			<mx:Form x="10" y="69" width="602" cornerRadius="2" borderStyle="solid" fontSize="12">
+				<mx:FormItem label="Name:" width="100%" required="true">
+					<mx:TextInput width="100%" text="Company Name"/>
+				</mx:FormItem>
+				<mx:FormItem label="Email:" width="100%" required="true">
+					<mx:TextInput width="100%" text="valery@affilia.com"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone:" width="100%" required="true">
+					<mx:TextInput width="100%" text="+1(555)789-4512"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<steps:VideoTutorial label="Video Tutorial" width="622" height="516"/>
+			<mx:LinkButton label="Back to Wizard" click="vsStep.selectedIndex = 0" fontSize="12" color="#003399" right="10" top="10"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+	
+</mx:Canvas>

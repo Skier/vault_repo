@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6A66048A-5225-460C-87F7-5E151CC8489C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Intuit.Platform.Client.Core.IDS</RootNamespace>
+    <AssemblyName>Intuit.Platform.Client.Core.IDS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Intuit.Platform.Client.Core.IDS.XML</DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <NoWarn>1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\External Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CompanyService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Create.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Create.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GenerateIDSResource.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenerateIDSResource.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GenerateReportClasses.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenerateReportClasses.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GenerateServiceClasses.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenerateServiceClasses.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HelperFunctions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HelperFunctions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IDSBaseService.cs" />
+    <Compile Include="IDSException.cs" />
+    <Compile Include="IDSOperationContext.cs" />
+    <Compile Include="IDSOperationList.cs" />
+    <Compile Include="IDSReportBaseService.cs" />
+    <Compile Include="IDSRequestCreator.cs" />
+    <Compile Include="IDSResource.cs" />
+    <Compile Include="IDSRestClient.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="ObjectSerializer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="QBOService.cs" />
+    <Compile Include="QBQBOAbstractQueries.cs" />
+    <Compile Include="Save.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Save.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Verb.cs" />
+    <Compile Include="AccountService.cs" />
+    <Compile Include="BillService.cs" />
+    <Compile Include="BillPaymentService.cs" />
+    <Compile Include="CheckService.cs" />
+    <Compile Include="CreditCardChargeService.cs" />
+    <Compile Include="CustomerService.cs" />
+    <Compile Include="EmployeeService.cs" />
+    <Compile Include="EstimateService.cs" />
+    <Compile Include="InvoiceService.cs" />
+    <Compile Include="ItemService.cs" />
+    <Compile Include="PaymentService.cs" />
+    <Compile Include="PaymentMethodService.cs" />
+    <Compile Include="SalesTermService.cs" />
+    <Compile Include="SalesReceiptService.cs" />
+    <Compile Include="VendorService.cs" />
+    <Compile Include="CashPurchaseService.cs" />
+    <Compile Include="BillPaymentCreditCardService.cs" />
+    <Compile Include="BOMComponentService.cs" />
+    <Compile Include="ChargeService.cs" />
+    <Compile Include="ClassService.cs" />
+    <Compile Include="CreditCardCreditService.cs" />
+    <Compile Include="CreditCardRefundService.cs" />
+    <Compile Include="CreditMemoService.cs" />
+    <Compile Include="CustomerMsgService.cs" />
+    <Compile Include="CustomerTypeService.cs" />
+    <Compile Include="DepositService.cs" />
+    <Compile Include="DiscountService.cs" />
+    <Compile Include="FixedAssetService.cs" />
+    <Compile Include="InventoryAdjustmentService.cs" />
+    <Compile Include="ItemConsolidatedService.cs" />
+    <Compile Include="ItemReceiptService.cs" />
+    <Compile Include="SalesTaxGroupService.cs" />
+    <Compile Include="JobService.cs" />
+    <Compile Include="JobTypeService.cs" />
+    <Compile Include="JournalEntryService.cs" />
+    <Compile Include="OtherNameService.cs" />
+    <Compile Include="PayrollItemService.cs" />
+    <Compile Include="PurchaseOrderService.cs" />
+    <Compile Include="SalesOrderService.cs" />
+    <Compile Include="SalesRepService.cs" />
+    <Compile Include="SalesTaxService.cs" />
+    <Compile Include="SalesTaxCodeService.cs" />
+    <Compile Include="SalesTaxPaymentCheckService.cs" />
+    <Compile Include="ShipMethodService.cs" />
+    <Compile Include="SyncActivityRequestService.cs" />
+    <Compile Include="TimeActivityService.cs" />
+    <Compile Include="UOMService.cs" />
+    <Compile Include="VendorTypeService.cs" />
+    <Compile Include="VendorCreditService.cs" />
+    <Compile Include="PreferencesService.cs" />
+    <Compile Include="AccountBalancesService.cs" />
+    <Compile Include="BalanceSheetService.cs" />
+    <Compile Include="CustomersWhoOweMeService.cs" />
+    <Compile Include="CustomTxnDetailService.cs" />
+    <Compile Include="IncomeBreakdownService.cs" />
+    <Compile Include="ProfitAndLossService.cs" />
+    <Compile Include="SalesSummaryService.cs" />
+    <Compile Include="TopCustomersBySalesService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Create.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Create.cs</LastGenOutput>
+    </None>
+    <None Include="GenerateIDSResource.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenerateIDSResource.cs</LastGenOutput>
+    </None>
+    <None Include="GenerateReportClasses.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenerateReportClasses.cs</LastGenOutput>
+    </None>
+    <None Include="GenerateServiceClasses.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenerateServiceClasses.cs</LastGenOutput>
+    </None>
+    <None Include="HelperFunctions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>HelperFunctions.cs</LastGenOutput>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Save.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Save.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Intuit.Common.Util\Intuit.Common.Util.csproj">
+      <Project>{A88AADC5-BBB1-44D9-A9B1-B44C4F99215B}</Project>
+      <Name>Intuit.Common.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Intuit.Sb.Cdm\Intuit.Sb.Cdm.csproj">
+      <Project>{1354CDE6-C21F-4514-8D56-9E85E2602405}</Project>
+      <Name>Intuit.Sb.Cdm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Intuit.Platform.Client.Core\Intuit.Platform.Client.Core.csproj">
+      <Project>{8E64A6C8-61F6-4EA3-80A3-FD0B8318D0B0}</Project>
+      <Name>Intuit.Platform.Client.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EntityDistribution.xml" />
+    <EmbeddedResource Include="QBQBOFilterAttributeMapping.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>"%25CommonProgramFiles%25\Microsoft Shared\TextTemplating\1.2\texttransform.exe" "$(Projectdir)Create.tt"</PreBuildEvent>
+  </PropertyGroup>
+</Project>

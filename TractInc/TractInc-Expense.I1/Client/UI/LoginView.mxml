@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+<mx:Script>
+    <![CDATA[
+        [Bindable]
+        public var controller:ExpenseController; 
+    ]]>
+</mx:Script>
+    <mx:TitleWindow  id="wndLogin" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" title="Login" horizontalAlign="center" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" layout="absolute">  
+    <mx:Form x="57" y="71">
+                <mx:FormItem label="FirstName">
+                    <mx:TextInput id="txtFirstName"/>
+                </mx:FormItem>
+                <mx:FormItem label="LastName">
+                    <mx:TextInput id="txtLastName"/>
+                </mx:FormItem>
+            
+            </mx:Form>
+            <mx:ControlBar x="0" y="256">
+                <mx:Spacer width="100%" height="10"/>
+                <mx:Button id="btnLogin" label="Login" click="controller.OnLoginSubmit()"/>
+            </mx:ControlBar>
+            
+            
+    </mx:TitleWindow>
+</mx:Canvas>

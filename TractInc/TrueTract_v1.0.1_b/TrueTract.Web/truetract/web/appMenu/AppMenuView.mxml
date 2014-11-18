@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Metadata>
+		[Event(name="fileCreateDrawing", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileCreateTract", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileOpenDrawing", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileOpenTract", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileSave", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileAttachDrawing", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileExportExcel", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="filePrint", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="fileLogout", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="viewZoomAll", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="viewZoomIn", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="viewZoomOut", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="settingsShowArea", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="settingsShowAnnotation", type="truetract.web.appMenu.AppMenuEvent")]
+		[Event(name="settingsMore", type="truetract.web.appMenu.AppMenuEvent")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.Document;
+            import truetract.plotter.domain.settings.UserSettingsRegistry;
+            import mx.binding.utils.BindingUtils;
+            import truetract.plotter.domain.Tract;
+            import mx.events.MenuEvent;
+            
+            [Bindable]
+            public var model:AppMenuModel = new AppMenuModel();
+            
+            private var _currentTract:Tract;
+            public function get currentTract():Tract { return _currentTract; }
+            public function set currentTract(value:Tract):void
+            {
+                _currentTract = value;
+
+                var currentTractNotNull:Boolean = (null != currentTract);
+                
+                getMenuItem(AppMenuEvent.FILE_EXPORT_EXCEL).enabled = currentTractNotNull;
+                getMenuItem(AppMenuEvent.FILE_EXPORT_PDF).enabled = currentTractNotNull;
+                getMenuItem(AppMenuEvent.FILE_PRINT).enabled = currentTractNotNull;
+                getMenuItem(AppMenuEvent.VIEW_ZOOM_ALL).enabled = currentTractNotNull;
+                getMenuItem(AppMenuEvent.VIEW_ZOOM_IN).enabled = currentTractNotNull;
+                getMenuItem(AppMenuEvent.VIEW_ZOOM_OUT).enabled = currentTractNotNull;
+
+                getMenuItem(AppMenuEvent.FILE_ATTACH_DRAWING).enabled = 
+                    currentTractNotNull && currentTract.ParentDocument == null;
+
+                getMenuItem(AppMenuEvent.VIEW_ZOOM_OUT).enabled = 
+                    currentTractNotNull && currentTract.IsDirty;
+                
+                model.data.refresh();
+
+                if (currentTractNotNull)
+                {
+                    BindingUtils.bindSetter(currentTract_IsDirtyHandler, currentTract, "IsDirty");
+                    
+                    if (currentTract.DocId == 0)
+                        BindingUtils.bindSetter(currentTract_DocHandler, currentTract, "ParentDocument");
+                }
+            }
+            
+            public function reset():void
+            {
+                model = new AppMenuModel();
+
+                getMenuItem(AppMenuEvent.SETTINGS_SHOW_ANNOTATION).toggled = 
+                    UserSettingsRegistry.getInstance().ShowAnnotations;
+
+                getMenuItem(AppMenuEvent.SETTINGS_SHOW_AREA).toggled = 
+                    UserSettingsRegistry.getInstance().ShowArea;
+            }
+            
+            public function getMenuItem(eventType:String):Object
+            {
+                return model.getMenuItemByEvent(model.data.source, eventType);
+            }
+
+            private function itemClickHandler(event:MenuEvent):void
+            {
+                var item:Object = event.item;
+                
+                dispatchEvent(new AppMenuEvent(item.eventType, item));
+            }
+            
+            private function currentTract_IsDirtyHandler(value:Boolean):void
+            {
+                getMenuItem(AppMenuEvent.FILE_SAVE).enabled = value;
+    
+                model.data.refresh();
+            }
+
+            private function currentTract_DocHandler(value:Document):void
+            {
+                getMenuItem(AppMenuEvent.FILE_ATTACH_DRAWING).enabled = (null == value);
+    
+                model.data.refresh();
+            }
+
+        ]]>
+    </mx:Script>
+    
+    <mx:MenuBar id="mainMenu"
+        dataProvider="{model.data}"
+        width="100%" labelField="label"
+        itemClick="itemClickHandler(event)"/>
+
+</mx:Box>

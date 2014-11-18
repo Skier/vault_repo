@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	xmlns:attachments="com.llsvc.client.lms.view.lease.detail.attachments.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Agreement Document Edit">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentCorrespondence;
+			import com.llsvc.domain.DocumentType;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var docum:DocumentCorrespondence;
+			
+            public static function open(parent:DisplayObject, docum:DocumentCorrespondence, modal:Boolean):CorrespondenceDocumentEditView
+            {
+                var popup:CorrespondenceDocumentEditView = new CorrespondenceDocumentEditView();
+                
+                popup.docum = docum;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnOkClickHandler():void 
+            {
+            	dispatchEvent(new Event("submitRequest"));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	dispatchEvent(new Event("cancelRequest"));
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#ffffdd" borderColor="#cccccc" borderStyle="solid" cornerRadius="2"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5">
+		<mx:Label text="{docum.document.documentType.name}" fontWeight="bold"/>
+	</mx:HBox>
+
+	<mx:VBox width="100%" height="100%" verticalGap="5">
+		<mx:HDividedBox width="100%" horizontalGap="5" height="200">
+			<attachments:DocAttachmentsPanel width="100%" height="100%" docum="{docum.document}"/>
+			<document:DocActorsPanel width="100%" height="100%" docum="{docum.document}"/>
+		</mx:HDividedBox>
+		
+		<mx:HBox width="100%">
+			<mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Correspondence Date:"/>
+					<mx:DateField selectedDate="{docum.correspDate}" editable="true"/>
+				</mx:VBox>
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%">
+				<mx:HBox>
+					<mx:Label text="Corr. From:" width="100" textAlign="right"/>
+					<mx:TextInput text="{docum.correspFrom}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Corr. To:" width="100" textAlign="right"/>
+					<mx:TextInput text="{docum.correspTo}"/>
+				</mx:HBox>
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%">
+				<mx:TextArea width="100%" height="100%" text="{docum.description}"/>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<document:DocNotes width="100%" height="100%" docum="{docum.document}"/>
+	</mx:VBox>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button height="28" label="Ok" click="btnOkClickHandler()"/>
+		<mx:Button height="28" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

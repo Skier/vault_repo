@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%" 
+	backgroundColor="#eeeeee"
+	horizontalScrollPolicy="off" 
+	borderColor="#999999"
+	borderStyle="solid"
+	horizontalAlign="left"
+	verticalAlign="bottom"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingTop="5"
+	paddingBottom="5"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import App.Service.LandmanService;
+		
+			import App.Entity.UserDataObject;
+			import mx.events.CollectionEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.Application;
+		
+			[Bindable] public var item:*;
+			
+			public function onClick():void {
+				NotesView.Open(item, Application.application as DisplayObject, false, onClose);
+			}
+			
+			public function onClose():void {
+				enabled = false;
+				LandmanService.getInstance().storeNotes(item.Notes, LandmanService.getResponder(
+					function(result:ResultEvent):void {
+						rpt.dataProvider = item.Notes;
+						enabled = true;
+					},
+					function(fault:FaultEvent):void {
+						enabled = true;
+						Alert.show("Cannot store notes", "Application error");
+					}
+				));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off">
+		
+		<mx:VBox width="100%" height="100%" backgroundColor="#ffffff"
+			paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+			
+			<mx:Repeater id="rpt" dataProvider="{item.Notes}">
+				
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="{rpt.currentItem.SenderName} says:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+					<mx:Label text="{rpt.currentItem.Posted.toLocaleString()}" fontStyle="italic"/>
+				</mx:HBox>
+				<mx:Text id="txtBody" width="100%" text="{rpt.currentItem.NoteText}"/>
+	
+			</mx:Repeater>
+			
+		</mx:VBox>
+		
+	</mx:Canvas>
+	
+	<mx:Button
+		label="Add Note"
+		click="onClick()"
+		visible="{item.isBillEditable()}"
+		includeInLayout="{item.isBillEditable()}"
+		/>
+	
+</mx:HBox>

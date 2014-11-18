@@ -1,0 +1,56 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Profile
+@model BlackList
+
+@{
+    ViewBag.Title = "Phones Blacklist";
+}
+
+<script type="text/javascript">
+    function confirmSubmit() {
+        var agree = confirm("Are you sure you want to delete?");
+        if (agree)
+            return true;
+        else
+            return false;
+    }
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Add Phone Number to blacklist", "CreateBlackListPhone", new { controller = "Profile" }, new { @class = "button primary" })
+      </div>
+      <h1>Blacklist phone numbers</h1>
+    </div>
+    <div class="content">
+@if (Model.Phones != null && Model.Phones.Count > 0)
+{
+      <table class="list">
+        <thead>
+          <tr>
+            <td class="left" style="white-space: nowrap;">Phone Number</td>
+            <td class="left">Description</td>
+            <td class="left">&nbsp;</td>
+          </tr>
+        </thead>
+        <tbody>
+@foreach (var phone in Model.Phones)
+{
+          <tr>
+            <td class="left" style="white-space: nowrap;">
+              @Html.ActionLink(phone.PhoneNumber, "EditBlackListPhone", new { controller = "Profile", id = phone.Id })
+            </td>
+            <td class="left">@phone.Description</td>
+            <td class="left">
+                @Html.ActionLink("Delete", "DeleteBlackListPhone", new { controller = "Profile", id = phone.Id }, new { @class = "button negative", @onclick = "return confirmSubmit()" })
+            </td>
+          </tr>
+}
+        </tbody>
+      </table>
+}
+    </div>
+  </div>
+

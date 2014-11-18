@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:attachment="com.llsvc.expense.view.attachment.*"
+	creationComplete="onCreate()">
+	
+    <mx:Script>
+        <![CDATA[
+        	import mx.core.Application;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import com.llsvc.services.InvoiceItemAttachmentService;
+        	import com.llsvc.services.InvoiceItemService;
+        	import com.llsvc.services.FileService;
+        	import com.llsvc.registry.MainModel;
+        	import mx.controls.Alert;
+        	import mx.events.CloseEvent;
+        	import com.llsvc.domain.events.InvoiceItemAttachmentEvent;
+        	import com.llsvc.domain.InvoiceItemAttachment;
+        	import com.llsvc.domain.File;
+        	import com.llsvc.domain.InvoiceItem;
+        	import mx.rpc.Responder;
+            
+            private var _invoiceItem:InvoiceItem;
+            [Bindable]
+            public function get invoiceItem():InvoiceItem {return _invoiceItem;}
+            public function set invoiceItem(value:InvoiceItem):void 
+            {
+                _invoiceItem = value;
+            }
+
+            [Bindable] public var isBusy:Boolean = false;
+			[Bindable] public var isReadOnly:Boolean = false;
+            
+            private function startRemoting():void 
+            {
+	            isBusy = true;
+            }
+
+            private function stopRemoting():void 
+            {
+	            isBusy = false;
+            }
+
+            private function getAttachedFile(file:File):void 
+            {
+                var request:URLRequest = new URLRequest(MainModel.REMOTE_STORAGE_LINK + file.storagekey);
+                navigateToURL(request);
+            }
+            
+            private function openAttachment(attach:InvoiceItemAttachment):void 
+            {
+            	AttachmentEditView.open(Application.application as DisplayObject, attach, isReadOnly);
+            } 
+            
+            private function onCreate():void 
+            {
+                dgAttachedDocs.addEventListener(InvoiceItemAttachmentEvent.REMOVE_ATTACHMENT, removeAttachmentHandler);
+                dgAttachedDocs.addEventListener(InvoiceItemAttachmentEvent.OPEN_PDF_ATTACHMENT, getAttachedFileHandler);
+                dgAttachedDocs.addEventListener(InvoiceItemAttachmentEvent.OPEN_ATTACHMENT, openAttachmentHandler);
+            }
+            
+            private function removeAttachmentHandler(e:InvoiceItemAttachmentEvent):void 
+            {
+            	if (isReadOnly)
+            		return;
+            	
+                e.stopPropagation();
+                e.preventDefault();
+
+                var item:InvoiceItemAttachment = e.invoiceItemAttachment;
+                var idx:int = invoiceItem.attachments.getItemIndex(item);
+                if (idx > -1) {
+                    Alert.show("Do you really want to remove attached file ?", 
+                       "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                       function (event:CloseEvent):void 
+                       {
+                            if (event.detail == Alert.YES)
+                            {
+                            	startRemoting();
+                            	InvoiceItemAttachmentService.instance.deleteInvoiceItemAttachment(item.invoiceitemattachmentid).addResponder(
+									new mx.rpc.Responder(
+										function (event:ResultEvent):void 
+										{
+											stopRemoting();
+			                                invoiceItem.attachments.removeItemAt(idx);
+										}, faultHandler));
+                            	
+                            }
+                        });
+                }
+            }
+            
+            private function getAttachedFileHandler(e:InvoiceItemAttachmentEvent):void 
+            {
+                e.stopPropagation();
+                e.preventDefault();
+
+                var attach:InvoiceItemAttachment = e.invoiceItemAttachment;
+                getAttachedFile(attach.file);
+            }
+            
+            private function openAttachmentHandler(e:InvoiceItemAttachmentEvent):void 
+            {
+                e.stopPropagation();
+                e.preventDefault();
+
+                var attach:InvoiceItemAttachment = e.invoiceItemAttachment;
+                openAttachment(attach);
+            }
+            
+            private function btnAddClickHandler():void 
+            {
+                attachFile();
+/* 
+                var popup:SelectAttachmentTypeView = SelectAttachmentTypeView.open(this, true);
+                popup.addEventListener("submitRequest", 
+                    function (event:Event):void 
+                    {
+                        var selectedType:String = popup.typeName;
+                        popup.close();
+                        attachFile(selectedType);
+                    });
+                popup.addEventListener("cancelRequest", 
+                    function (event:Event):void 
+                    {
+                        popup.close();
+                    });
+ */
+            }
+            
+            private function attachFile():void 
+            {
+                var fileRef:FileReference = new FileReference();
+
+                var docFilter:FileFilter = new FileFilter("PDF Documents", "*.pdf");
+                var imgFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png;*.jpeg");
+
+                fileRef.addEventListener(Event.SELECT, 
+                    function (event:Event):void 
+                    {
+                        boxUploadList.addUploadProcess(fileRef);
+                    });
+                     
+                fileRef.browse([docFilter, imgFilter]);
+            }
+            
+            private function onOpen():void 
+            {
+                var attach:InvoiceItemAttachment = dgAttachedDocs.selectedItem as InvoiceItemAttachment;
+                getAttachedFile(attach.file);
+            }
+            
+            private function onRemove():void 
+            {
+                Alert.show("Do you really want to remove attached file ?", 
+                   "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                            dispatchEvent(new Event("removeAttachmentRequest"));
+                        }
+                    });
+            }
+            
+            private function onFileUploadComplete(event:DataEvent):void 
+            {
+                event.stopPropagation();
+
+                var up:UploadProcessRenderer = event.target as UploadProcessRenderer; 
+                var file:File = new File();
+                file.origfilename = up.fileRef.name;
+                file.storagekey = up.uniqueFileName;
+                file.userid = MainModel.instance.currentUser.userid;
+                
+                var attach:InvoiceItemAttachment = new InvoiceItemAttachment();
+
+                startRemoting();
+                FileService.instance.saveFile(file).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+			                attach.invoiceItem = invoiceItem;
+			                attach.invoiceitemid = invoiceItem.invoiceitemid;
+			                attach.fileid = file.fileid;
+			                attach.file = file;
+			                
+			                InvoiceItemAttachmentService.instance.saveInvoiceItemAttachment(attach).addResponder(
+								new mx.rpc.Responder(
+									function (event:ResultEvent):void 
+									{
+										stopRemoting();
+
+										if (!invoiceItem.attachments.contains(attach))
+											invoiceItem.attachments.addItem(attach);
+										
+									}, faultHandler));
+						}, faultHandler));
+
+                openAttachment(attach);             
+            }
+            
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Attachment saving failed !\n" + event.fault.message); 
+			}
+				
+            private function onCancelUploadProcess(event:Event):void 
+            {
+            	return;
+/* 
+                event.stopPropagation();
+
+                var up:UploadProcessRenderer = event.target as UploadProcessRenderer; 
+                
+                var attach:DocumentAttachment = new DocumentAttachment();
+                attach.type = up.attachmentType;
+                attach.file = null;
+                
+                openAttachment(attach);             
+ */
+            }
+            
+            private function fileNumber(item:Object, col:int):String 
+            {
+                var idx:int = invoiceItem.attachments.getItemIndex(item);
+                return (idx + 1).toString();
+            }
+            
+            private function itemDoubleClickHandler():void 
+            {
+            	
+            } 
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="100%">
+        <mx:HBox width="100%" backgroundColor="#dddddd" verticalAlign="middle"
+            borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+            <mx:Label text="Attached Documents:"/>
+            <mx:Spacer width="100%"/>
+            <mx:Button height="24" label="Add" click="btnAddClickHandler()" enabled="{!isReadOnly}"/>
+        </mx:HBox>
+        
+        <mx:DataGrid id="dgAttachedDocs" 
+            width="100%" height="100%" 
+            dataProvider="{invoiceItem.attachments}"
+            doubleClickEnabled="true" itemDoubleClick="itemDoubleClickHandler()">
+            <mx:columns>
+                <mx:DataGridColumn headerText=" " width="22" minWidth="22" labelFunction="fileNumber"/>
+                <mx:DataGridColumn headerText="Name" dataField="fileName"/>
+                <mx:DataGridColumn width="56" itemRenderer="com.llsvc.expense.view.attachment.AttachmentActionsIR" editable="false" minWidth="56"/>
+            </mx:columns>
+        </mx:DataGrid>
+        
+        <attachment:UploadProcessesList id="boxUploadList" 
+            width="100%"
+            uploadCompleteData="onFileUploadComplete(event)"
+            cancelUploadProcess="onCancelUploadProcess(event)"/>
+    </mx:VBox>
+</mx:VBox>

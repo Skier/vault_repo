@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="creationCompleteHandler()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.controls.TextInput;
+			import mx.events.DataGridEvent;
+			import mx.controls.Alert;
+			import mx.rpc.Responder;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.client.lms.events.ProjectWrapperEvent;
+			import com.llsvc.domain.Project;
+			import com.llsvc.client.lms.LocalCash;
+			import mx.collections.ArrayCollection;
+		
+			[Bindable]
+			private var projectList:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var editMode:Boolean = false;
+			
+			private var projectEditor:ProjectEditView;
+			
+			public function init():void 
+			{
+				var projects:ArrayCollection = LocalCash.getInstance().getProjects();
+				
+				projectList.removeAll();
+				for each (var proj:Project in projects) 
+				{
+					projectList.addItem(new ProjectWrapper(proj));
+				}
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+				dgProjects.addEventListener(ProjectWrapperEvent.PROJECT_CHANGE, projectPropertyChangeHandler);
+				
+				init();
+			}
+			
+			private function projectPropertyChangeHandler(event:ProjectWrapperEvent):void 
+			{
+				var projectWrapper:ProjectWrapper = event.projectWrapper;
+				if (projectWrapper != null)
+					saveProject(projectWrapper);
+			}
+			
+			private function saveProject(projectWrapper:ProjectWrapper):void 
+			{
+				projectWrapper.isLoading = true;
+				
+				Storage.instance.saveProject(projectWrapper.project,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        projectWrapper.isLoading = false;
+	                        var project:Project = event.result as Project;
+	                        projectWrapper.project.populate(project);
+	                        
+	                        if (!projectList.contains(projectWrapper)) 
+	                        {
+	                        	addNewProject(projectWrapper);
+	                        }
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        projectWrapper.isLoading = false;
+	                        projectWrapper.getMemento();
+	                        Alert.show("Can not save Project: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+			private function openProject(project:ProjectWrapper):void 
+			{
+				project.setMemento();
+				
+				projectEditor = ProjectEditView.open(Application.application as DisplayObject, project, true);
+				projectEditor.addEventListener("submitRequest", submitRequestHandler);
+			}
+			
+			private function submitRequestHandler(event:Event):void 
+			{
+				projectEditor.project.isLoading = true;
+				
+				projectEditor.project.setMemento();
+				
+				Storage.instance.saveProject(projectEditor.project.project,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        projectEditor.project.isLoading = false;
+	                        var project:Project = event.result as Project;
+	                        projectEditor.project.project.populate(project);
+	                        
+	                        if (!projectList.contains(projectEditor.project)) 
+	                        {
+	                        	addNewProject(projectEditor.project);
+	                        }
+	                        
+	                        if (projectEditor != null) 
+	                        {
+	                        	projectEditor.close();
+	                        	projectEditor = null;
+	                        }
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        projectEditor.project.isLoading = false;
+	                        projectEditor.project.getMemento();
+	                        Alert.show("Can not save Project: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+			private function addNewProject(projectWrapper:ProjectWrapper):void
+			{
+				projectList.addItem(projectWrapper);
+				
+				var projects:ArrayCollection = LocalCash.getInstance().getProjects();
+				projects.addItem(projectWrapper.project);
+			}
+			
+			private function btnAddClickHandler():void 
+			{
+				var proj:Project = new Project();
+				proj.client = LocalCash.getInstance().getCurrentUser().client;
+				
+				openProject(new ProjectWrapper(proj));
+			}
+			
+			private function dgProjectsItemEditEndHandler(event:DataGridEvent):void 
+			{
+				var item:ProjectWrapper = projectList[event.rowIndex] as ProjectWrapper;
+				var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+				if (item.name != ti.text && ti.text.length > 1) 
+				{
+					item.setMemento();
+					item.name = ti.text;
+					saveProject(item);
+				} else {
+					ti.text = item.name;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		verticalGap="5">
+		<mx:DataGrid id="dgProjects" width="100%" height="100%" dataProvider="{projectList}"
+			draggableColumns="false" resizableColumns="false" editable="true"
+			itemEditEnd="dgProjectsItemEditEndHandler(event)">
+			<mx:columns>
+<!--
+				<mx:DataGridColumn headerText="Project Name" editable="false" itemRenderer="com.llsvc.client.lms.view.project.ProjectNameIR"/>
+-->
+				<mx:DataGridColumn headerText="Project Name" dataField="name" editable="true" itemEditor="com.llsvc.client.lms.controls.TextInputUpper"/>
+				<mx:DataGridColumn headerText="Is active" width="60" textAlign="center" editable="false" itemRenderer="com.llsvc.client.lms.view.project.ProjectStatusIR"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox horizontalAlign="right" width="100%">
+			<mx:Button id="btnAdd" width="80" height="28" label="Add New Project" click="btnAddClickHandler()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

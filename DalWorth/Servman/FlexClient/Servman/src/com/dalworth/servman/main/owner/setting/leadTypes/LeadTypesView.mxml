@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import mx.core.UIComponent;
+			import com.dalworth.servman.events.LeadTypeEvent;
+			import com.dalworth.servman.domain.LeadType;
+			import mx.core.Application;
+			
+			[Bindable]
+			private var model:LeadTypesModel = LeadTypesModel.getInstance();
+			private var controller:LeadTypesController = new LeadTypesController(this as UIComponent);
+			
+			public function init():void 
+			{
+				controller.initModel();
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Lead Types";
+			}
+			
+			private function openLeadType(leadType:LeadType):void 
+			{
+				var popup:LeadTypeEditPopup = LeadTypeEditPopup.open(Application.application as DisplayObject, leadType);
+				popup.addEventListener(LeadTypeEvent.LEAD_TYPE_SAVED, 
+					function (event:LeadTypeEvent):void 
+					{
+						var type:LeadType = event.leadType;
+						if (!model.leadTypes.contains(type))
+							model.leadTypes.addItem(leadType);
+						var idx:int = model.leadTypes.getItemIndex(leadType);
+						dgLeadTypes.selectedIndex = idx;
+						dgLeadTypes.scrollToIndex(idx);
+					});
+			}
+			
+			private function onLeadTypeDoubleClick():void 
+			{
+				var leadType:LeadType = dgLeadTypes.selectedItem as LeadType;
+				openLeadType(leadType);
+			}
+			
+			private function onCreateNew():void 
+			{
+				var leadType:LeadType = new LeadType();
+				leadType.IsActive = true;
+				openLeadType(leadType);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="viewProjectTypesList" width="100%" height="100%">
+		<mx:VBox width="100%" height="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			borderColor="#CCCCCC" borderStyle="solid">
+			<mx:DataGrid id="dgLeadTypes" 
+				width="100%" height="100%" dataProvider="{model.leadTypes}"
+				doubleClickEnabled="true" itemDoubleClick="onLeadTypeDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Lead Type" dataField="Name"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:VBox width="150" height="100%">
+			<mx:Button  label="Create New" width="150" height="35" fontSize="12" click="onCreateNew()"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:voice="com.affilia.voice.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.PhoneCall;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.service.BusinessPartnerService;
+			import com.dalworth.servman.domain.PhoneCallWorkflow;
+			import mx.events.DynamicEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.Phone;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var calls:ArrayCollection;
+			
+			private var _phone:Phone;
+			[Bindable]
+			public function get phone():Phone { return _phone; }
+			public function set phone(value:Phone):void 
+			{
+				_phone = value;
+				initCalls();
+			}
+			
+			private function initCalls():void 
+			{
+				if (calls == null)
+					calls = new ArrayCollection();
+				
+				calls.removeAll();
+				if (_phone == null)
+					return; 
+
+				PhoneService.getInstance().getCallsByPhoneId(_phone.Id).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							var result:Array = event.result as Array;
+							var len:int = result.length;
+							for (var i:int = 0; i < len; i++)
+							{
+								var call:PhoneCall = result[i] as PhoneCall;
+								calls.addItem(call);
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}));
+			}
+			
+			private function onRefresh():void 
+			{
+				initCalls();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" 
+		horizontalAlign="right">
+		<mx:DataGrid id="dgCalls" width="100%" height="100%" dataProvider="{calls}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="From" dataField="PhoneFrom"/>
+				<mx:DataGridColumn headerText="Status" dataField="CallStatus"/>
+				<mx:DataGridColumn headerText="Caller" dataField="CallerName"/>
+				<mx:DataGridColumn headerText="City" dataField="FromCity"/>
+				<mx:DataGridColumn headerText="State" dataField="FromState"/>
+				<mx:DataGridColumn headerText="Duration" dataField="CallDuration"/>
+				<mx:DataGridColumn headerText="Business Partner" dataField="businessPartnerStr"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<voice:VoicePlayer width="100%" layout="horizontal" showHeader="true" 
+			voiceFileUrl="{PhoneCall(dgCalls.selectedItem).RecordingUrl != null ? (PhoneCall(dgCalls.selectedItem).RecordingUrl + '.mp3') : null}"
+			visible="{dgCalls.selectedItem != null &amp;&amp; PhoneCall(dgCalls.selectedItem).RecordingUrl != null &amp;&amp; PhoneCall(dgCalls.selectedItem).RecordingUrl.length &gt; 0}" 
+			includeInLayout="{dgCalls.selectedItem != null &amp;&amp; PhoneCall(dgCalls.selectedItem).RecordingUrl != null &amp;&amp; PhoneCall(dgCalls.selectedItem).RecordingUrl.length &gt; 0}"/>
+		
+		<mx:Button label="Refresh" click="onRefresh()"/>
+	</mx:VBox>
+
+</mx:Canvas>

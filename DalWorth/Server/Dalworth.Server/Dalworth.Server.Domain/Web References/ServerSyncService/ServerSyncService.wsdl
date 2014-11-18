@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetCustomerOrderHistory">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="servmanCustId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCustomerOrderHistoryResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCustomerOrderHistoryResult" type="tns:ArrayOfH_order" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfH_order">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="h_order" nillable="true" type="tns:h_order" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="h_order">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ticket_num" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cust_id" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="alt_addr" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="contact" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="time" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="page" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="grid" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="area_id" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="serv_type" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="tran_type" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="comp_type" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="company" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="tech_id" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="amount" type="s:float" />
+          <s:element minOccurs="1" maxOccurs="1" name="tran_stat" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="closer_id" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="recve_amt" type="s:float" />
+          <s:element minOccurs="1" maxOccurs="1" name="pr_date" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="zip" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="bookby" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="mapbook" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="remcall" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="companyid" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="order_conf" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="canc_conf" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="rschd_conf" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="done_conf" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="qt_reqsted" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="qt_done" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="qt_convreq" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="cleancnum" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="survey_rem" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="e_offer" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="reminder" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="exp_cred" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="done_eref" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="TechnicianName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ServiceTypeText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CompletionTypeText" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="connectionKey" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="servmanTruckId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMessageResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetCustomerOrderHistorySoapIn">
+    <wsdl:part name="parameters" element="tns:GetCustomerOrderHistory" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerOrderHistorySoapOut">
+    <wsdl:part name="parameters" element="tns:GetCustomerOrderHistoryResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessage" />
+  </wsdl:message>
+  <wsdl:message name="SendMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServerSyncServiceSoap">
+    <wsdl:operation name="GetCustomerOrderHistory">
+      <wsdl:input message="tns:GetCustomerOrderHistorySoapIn" />
+      <wsdl:output message="tns:GetCustomerOrderHistorySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <wsdl:input message="tns:SendMessageSoapIn" />
+      <wsdl:output message="tns:SendMessageSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServerSyncServiceSoap" type="tns:ServerSyncServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetCustomerOrderHistory">
+      <soap:operation soapAction="http://tempuri.org/GetCustomerOrderHistory" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <soap:operation soapAction="http://tempuri.org/SendMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServerSyncServiceSoap12" type="tns:ServerSyncServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetCustomerOrderHistory">
+      <soap12:operation soapAction="http://tempuri.org/GetCustomerOrderHistory" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <soap12:operation soapAction="http://tempuri.org/SendMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ServerSyncService">
+    <wsdl:port name="ServerSyncServiceSoap" binding="tns:ServerSyncServiceSoap">
+      <soap:address location="http://192.168.1.14:8080/Dalworth.Server.Web/ServerSyncService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ServerSyncServiceSoap12" binding="tns:ServerSyncServiceSoap12">
+      <soap12:address location="http://192.168.1.14:8080/Dalworth.Server.Web/ServerSyncService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

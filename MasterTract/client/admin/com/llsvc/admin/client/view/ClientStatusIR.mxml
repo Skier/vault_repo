@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Client;
+			import com.llsvc.domain.events.ClientEvent;
+            
+            private function changeStatus():void 
+            {
+                var client:Client = Client(data);
+            	
+                if (cbIsActive.selected != client.isActive) 
+                {
+                	client.setMemento();
+                	
+                    client.isActive = cbIsActive.selected;
+                    dispatchEvent(new ClientEvent(ClientEvent.CLIENT_CHANGED, client, true));
+                }
+            }
+            
+            private function cbIsActiveChangeHandler():void 
+            {
+            	changeStatus();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:CheckBox id="cbIsActive"
+		label=""
+		verticalCenter="0" horizontalCenter="0"
+		enabled="{!Client(data).isLoading}" 
+		selected="{Client(data).isActive}" change="cbIsActiveChangeHandler()"/>
+</mx:Box>

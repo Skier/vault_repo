@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+          xmlns:widgets="com.quickbase.idn.widgets.*"
+          creationComplete="waitForReady()"
+          layout="vertical" title="eRoofNativeView"
+          height="100%" width="100%" xmlns:view="com.ebs.eroof.view.*"
+          fontSize="12">
+   <mx:Script>
+         <![CDATA[
+           import com.ebs.eroof.model.eRoofNativeModel; //replace with correct model reference
+       	   import com.quickbase.idn.control.events.KingussieEventDoUserMgmt;
+           import com.quickbase.idn.view.UserMgmtDialog;
+           import com.adobe.cairngorm.control.CairngormEventDispatcher;
+           import com.quickbase.idn.core.QBApp;
+               
+           //Get the model, make sure we can bind to it in our UI components
+           [Bindable] public var model:eRoofNativeModel = eRoofNativeModel.getInstance();
+               
+           //variable to record whether the UI has been initialized
+           private var panelInitialized:Boolean = false;
+               
+           //function to call when the component creation is complete, basically just
+           //ensures that we wait for QBApp to tell us QuickBase is ready for 
+           //interaction.
+           private function waitForReady():void
+           {
+               this.addEventListener(QBApp.QUICKBASE_READY_EVENT, initPanel);
+           }
+           
+           //function to call when the QBApp component notifies us that QuickBase is ready
+           //for interaction.
+           private function initPanel(ev:Event):void
+           {
+               if (!panelInitialized) {
+                   panelInitialized = true;
+               }
+
+               viewDashboard.init();
+           }
+           private function doUserMgmt():void
+           {
+           		new KingussieEventDoUserMgmt().dispatch();
+           }
+           
+           //TODO:  put your UI logic here...                
+         ]]>
+   </mx:Script>  
+   
+   <view:DashboardView id="viewDashboard" width="100%" height="100%"/>  
+
+</mx:Panel>

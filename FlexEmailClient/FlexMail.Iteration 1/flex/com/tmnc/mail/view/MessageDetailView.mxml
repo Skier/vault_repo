@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:view="com.tmnc.mail.view.*"
+    xmlns:controls="com.tmnc.mail.view.controls.*"
+    width="100%" height="100%"
+    initialize="onInit()" currentState="noMessageView">
+    
+    <mx:states>
+        <mx:State name="noMessageView">
+            <mx:SetProperty target="{messageView}" name="visible" value="false"/>
+            <mx:SetProperty target="{bodyViewer}" name="visible" value="false"/>
+        </mx:State>
+        <mx:State name="messageView">
+            <mx:SetProperty target="{noMessageView}" name="visible" value="false"/>
+        </mx:State>
+    </mx:states>
+
+    <mx:Script>
+        <![CDATA[
+            import com.tmnc.mail.vo.*;
+            import com.tmnc.mail.model.MailBoxModel;
+            
+            import flash.net.navigateToURL;
+            
+            import mx.events.IndexChangedEvent;
+            import mx.core.Application;
+            import mx.managers.PopUpManager;
+            import mx.events.ItemClickEvent;
+            import mx.events.PropertyChangeEvent;
+            import mx.binding.utils.ChangeWatcher;
+
+            [Bindable]
+            public var message:MessageInfo;
+            
+            [Bindable]            
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+
+            [Embed(source="/assets/attachment_icon.gif")]
+            [Bindable]
+            private var attachmentIcon:Class;
+     
+            private var fr:FileReference;
+            
+            private function onInit():void {
+                ChangeWatcher.watch(model, ["currentMessage"], showBodyParts);
+                ChangeWatcher.watch(model, ["currentMessage", "Body"], showBodyParts);                
+                ChangeWatcher.watch(model, ["workflowState"], hideIFrame);                
+            }
+
+            private function showBodyParts(event:PropertyChangeEvent):void {
+                var msg:MessageInfo = model.currentMessage;
+                
+                if (!msg){
+                    currentState = "noMessageView"
+                    return;
+                }
+                
+                currentState = "messageView"
+                
+                if (!msg.Body || msg.Body.Views.length == 0){
+                    
+                    bodyViewer.visible = false;
+                    
+                } else {
+                    
+                    bodyViewSwitcher.selectedIndex = 0;
+                    bodyViewer.source = model.currentMessage.Body.Views[0].Url;
+                    bodyViewer.visible = true;
+                    
+                }
+            }
+            
+            //We need to hide Html Message Body Frame when we go from MainView
+            //and show when return
+            private function hideIFrame(event:PropertyChangeEvent):void{
+                if (event.newValue != MailBoxModel.VIEWING_INBOX_MAIL_SCREEN) {
+                    this.bodyViewer.visible = false;
+                } else if (bodyViewSwitcher.numChildren > 0){
+                    this.bodyViewer.visible = true;
+                }
+            }
+            
+            private function linkItemClick(event:ItemClickEvent):void {
+                var file:FileInfo = FileInfo(event.item);
+                var popupParent:DisplayObject = this;
+                
+                fr = new FileReference();
+                
+                fr.addEventListener(Event.OPEN, 
+                    function (event:Event):void {
+                        var popup:FileDownloadingPanel = FileDownloadingPanel(
+                            PopUpManager.createPopUp(popupParent, FileDownloadingPanel, false));
+        
+                        popup.showDownloadProgress(fr, file);
+                    }
+                );
+
+                var request:URLRequest = new URLRequest();
+
+                request.url = file.Url;
+
+                fr.download(request, file.Name);
+            }
+            
+            private function onBodyViewSwitch(event:ItemClickEvent):void {
+                var view:ViewInfo = ViewInfo(event.item);
+                bodyViewer.source = view.Url;
+            }
+            
+         ]]>
+    </mx:Script>
+
+
+        <mx:Box id="messageView" verticalGap="1" backgroundColor="#e5e5e5" width="100%" height="100%">
+    
+            <mx:Form width="100%" verticalGap="0" fontWeight="bold" 
+                paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5" >
+                <mx:FormItem label="From :" width="100%">
+                    <mx:Text width="100%" text="{model.currentMessage.From.DisplayValue}" fontWeight="normal"/>
+                </mx:FormItem>
+                <mx:FormItem label="To :" width="100%">
+                    <mx:Text width="100%" text="{MessageInfo.getEmailAddressesText(model.currentMessage.To)}" 
+                        fontWeight="normal" />
+                </mx:FormItem>
+                <mx:FormItem label="Cc :" width="100%" 
+                    visible="{model.currentMessage.Cc.length > 0}"
+                    includeInLayout="{model.currentMessage.Cc.length > 0}">
+                    <mx:Text text="{MessageInfo.getEmailAddressesText(model.currentMessage.Cc)}" 
+                        fontWeight="normal"/>
+                </mx:FormItem>
+                <mx:FormItem label="Subject :" width="100%">
+                    <mx:Text text="{model.currentMessage.Subject}" fontWeight="normal"/>
+                </mx:FormItem>
+            </mx:Form>
+
+            <mx:HBox id="attachmentsBox" width="100%" verticalAlign="middle" 
+                horizontalGap="1" paddingLeft="5"
+                visible="{model.currentMessage.Body.Attachments.length > 0}"
+                includeInLayout="{model.currentMessage.Body.Attachments.length > 0}"
+            >
+                <mx:Image source="{attachmentIcon}"/>
+                
+                <mx:LinkBar id="attachmentBar" width="100%" itemClick="linkItemClick(event)"
+                    dataProvider="{model.currentMessage.Body.Attachments}"/> 
+            </mx:HBox>
+    
+            <mx:VBox width="100%" height="100%"  verticalGap="0" paddingLeft="5" paddingRight="5" paddingBottom="5" paddingTop="5">
+                
+                <mx:TabBar id="bodyViewSwitcher" itemClick="onBodyViewSwitch(event)"
+                    includeInLayout="{model.currentMessage.Body.Views.length > 1}"
+                    visible="{model.currentMessage.Body.Views.length > 1}"
+                    direction="horizontal" dataProvider="{model.currentMessage.Body.Views}"/>
+        
+                <mx:Box width="100%" height="100%" borderStyle="solid">
+                    <controls:IFrame id="bodyViewer" width="100%" height="100%"/>
+                </mx:Box>
+        
+            </mx:VBox>
+        
+        </mx:Box>
+        
+       <mx:Box id="noMessageView" horizontalAlign="center" verticalAlign="middle" width="100%" height="100%"> 
+           <mx:Text text="No message loaded"/>
+       </mx:Box>
+                    
+</mx:Canvas>
+

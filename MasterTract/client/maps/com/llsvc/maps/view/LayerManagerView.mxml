@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+	backgroundColor="#ffffee" borderColor="#999999" borderStyle="solid"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.collections.ArrayCollection;
+			import mx.controls.sliderClasses.Slider;
+			import mx.events.SliderEvent;
+			import mx.events.ListEvent;
+			import mx.events.ItemClickEvent;
+			import com.llsvc.maps.layers.BaseLayer;
+			import com.llsvc.maps.control.LayerManager;
+			import com.afcomponents.umap.overlays.Layer;
+			
+			private function setSelectedLayer(layer:BaseLayer):void 
+			{
+				var index:int = ArrayCollection(listLayers.dataProvider).getItemIndex(layer);
+				if (index > -1) {
+					listLayers.selectedIndex = index;
+					listLayers.scrollToIndex(index);
+				}
+			}
+			
+            private function buttonBarClickHandler(event:ItemClickEvent):void
+            {
+            	var layer:BaseLayer = listLayers.selectedItem as BaseLayer;
+            	
+                switch (event.index) 
+                {
+                    case 0:
+                    	LayerManager.moveLayerTop(layer);
+                    	callLater(setSelectedLayer, [layer]);
+                        break;
+                    case 1:
+                    	LayerManager.moveLayerUp(layer);
+                    	callLater(setSelectedLayer, [layer]);
+                        break;
+                    case 2:
+                    	LayerManager.moveLayerDown(layer);
+                    	callLater(setSelectedLayer, [layer]);
+                        break;
+                    case 3:
+                    	LayerManager.moveLayerBottom(layer);
+                    	callLater(setSelectedLayer, [layer]);
+                        break;
+                    case 4:
+                    	LayerManager.deselectLayer(layer);
+                    	callLater(setSelectedLayer, [layer]);
+                        break;
+                }
+            }
+            
+            private function btnAddClickHandler():void 
+            {
+            	SelectLayerView.open(Application.application as DisplayObject, true);
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:List id="listLayers" 
+		width="100%" height="100%"
+		variableRowHeight="true" 
+		dataProvider="{LayerManager.selectedLayers}" labelField="layerName"
+		itemRenderer="com.llsvc.maps.view.LayerIR"/>
+	
+	<mx:HBox width="100%">
+		<mx:Button width="30" height="24" icon="@Embed('assets/icons16/add.png')" toolTip="Add layer"
+			click="btnAddClickHandler()"/>
+		
+		<mx:Spacer width="100%"/>
+		
+        <mx:ButtonBar id="bbUtil" itemClick="buttonBarClickHandler(event)" 
+        	verticalCenter="0" buttonWidth="30" buttonHeight="24"
+        	enabled="{listLayers.selectedItem != null}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/arrow_top.png')" toolTip="Move Top"/>
+                <mx:Object icon="@Embed('assets/icons16/arrow_up.png')" toolTip="Move Up"/>
+                <mx:Object icon="@Embed('assets/icons16/arrow_down.png')" toolTip="Move Down"/>
+                <mx:Object icon="@Embed('assets/icons16/arrow_bottom.png')" toolTip="Move Bottom"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')" toolTip="Remove"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+	</mx:HBox>
+</mx:VBox>

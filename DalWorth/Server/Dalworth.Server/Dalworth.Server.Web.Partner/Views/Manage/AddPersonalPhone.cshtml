@@ -1,0 +1,40 @@
+﻿@model Dalworth.Server.Web.Partner.Models.Phone
+
+@{
+    ViewBag.Title = "Partner In Profit - Add Personal Phone";
+    ViewBag.Header = "Add Personal Phone";
+
+    ViewBag.ActiveTopMenu = "Manage";
+    ViewBag.ActiveSubMenu = "Partners";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("AddPersonalPhone", "Manage", FormMethod.Post, new { id = "AddPersonalPhoneForm" })) {
+
+	<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
+    <tr>
+		<th valign="top">Phone Number</th>
+		<td>
+            @Html.TextBoxFor(model => model.Number, new { @class="field-input" })            
+        </td>
+		<td>
+            @Html.ValidationMessageFor(model => model.Number)
+        </td>
+	</tr>
+
+	<tr>
+		<th>&nbsp;</th>
+		<td valign="top">
+			<input type="submit" value="" class="form-submit" />			
+		</td>
+		<td></td>
+	</tr>
+
+    </table>    
+}
+<br>
+<br>
+<br>
+<a href='@("Partner?PartnerId=" + Session["CurrentPartnerId"])' class='back-link'>Back to Partner Details</a>

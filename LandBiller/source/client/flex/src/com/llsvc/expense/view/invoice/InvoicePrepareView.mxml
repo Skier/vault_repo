@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Expense Edit" width="370" xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+
+			[Bindable] 
+			private var formats:ArrayCollection = new ArrayCollection(["PDF", "Excel"]);
+			[Bindable] 
+			private var groups:ArrayCollection = new ArrayCollection(["Date", "Project"]);
+			
+            public static function open(parent:DisplayObject, modal:Boolean = true):InvoicePrepareView
+            {
+                var popup:InvoicePrepareView = new InvoicePrepareView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function btnCancelClickHandler(event:*):void 
+			{
+				close();
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("sumbitRequest"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%">
+		<mx:FormItem label="Format:" width="100%" required="true">
+			<controls:ComboBox id="comboFormat" dataProvider="{formats}"/>
+		</mx:FormItem>
+<!--
+		<mx:FormItem label="Show 'From'" width="100%" required="true">
+			<mx:CheckBox id="cbShowFrom"/>
+		</mx:FormItem>
+-->
+		<mx:FormItem label="Expenses group by:" width="100%" required="true">
+			<controls:ComboBox id="comboGroup" dataProvider="{groups}"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

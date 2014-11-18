@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	backgroundColor="#eeeeee"
+	borderColor="#999999"
+	borderStyle="solid"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingTop="5"
+	paddingBottom="5"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ListCollectionView;
+			import App.Entity.AssetDataObject;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import common.TypesRegistry;
+			import UI.manager.admin.AdminController;
+			import mx.controls.dataGridClasses.DataGridColumn;
+
+			[Bindable]
+			public var controller:AssetsController;
+			
+			public function set parentController(parent:AdminController):void 
+			{
+				controller = new AssetsController(this as AssetsView, parent);
+			}
+			
+			public function open():void {
+				
+			}
+			
+			public function getAssetById(id:int):AssetDataObject
+			{
+				return controller.getAssetById(id);
+			}
+			
+			private function setAssetLabels(item:AssetDataObject, column:DataGridColumn):String 
+			{
+				var result:String = "";
+				
+				switch (column.dataField) {
+					case "chief":
+						result = controller.getAssetById(item.ChiefAssetId) == null ? "" : AssetDataObject(controller.getAssetById(item.ChiefAssetId)).BusinessName;
+						break;
+				}
+				
+				return result;
+			}
+			
+			private function onCrewFilterChange():void {
+				ListCollectionView(dgAssets.dataProvider).refresh();
+			}
+			
+			private function onAllCrewsClick():void {
+				cbCrewFilter.selectedIndex = -1;
+				onCrewFilterChange();
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="Assets:" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+		<mx:Label text="Crew:" fontWeight="bold"/>
+		<mx:ComboBox
+			id="cbCrewFilter"
+			dataProvider="{controller.model.crews}"
+			labelField="BusinessName"
+			change="onCrewFilterChange()"
+			prompt=" "
+			/>
+		<mx:Button
+			label="All"
+			click="onAllCrewsClick()"/>
+	</mx:HBox>
+	<mx:DataGrid
+		id="dgAssets" 
+		width="100%"
+		height="100%"
+		minWidth="600"
+		dataProvider="{controller.model.assets}"
+		doubleClickEnabled="true"
+		itemDoubleClick="controller.onClickEditAsset()"
+		>
+		<mx:columns>
+			<mx:DataGridColumn headerText="Business Name" dataField="BusinessName" />
+			<mx:DataGridColumn headerText="Chief" dataField="chief" labelFunction="setAssetLabels" sortable="false"/>
+			<mx:DataGridColumn headerText="First Name" dataField="FirstName" />
+			<mx:DataGridColumn headerText="Middle Name" dataField="MiddleName" />
+			<mx:DataGridColumn headerText="Last Name" dataField="LastName" />
+			<mx:DataGridColumn headerText="SSN" dataField="SSN" />
+			<mx:DataGridColumn headerText="Type" dataField="Type" />
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button label="New" click="controller.onClickNewAsset()"/>
+		<mx:Button label="Edit" click="controller.onClickEditAsset()" enabled="{dgAssets.selectedItem != null}"/>
+		<mx:Button label="Delete" click="controller.onClickDeleteAsset()" enabled="{dgAssets.selectedItem != null}"/>
+	</mx:HBox>
+	
+</mx:VBox>

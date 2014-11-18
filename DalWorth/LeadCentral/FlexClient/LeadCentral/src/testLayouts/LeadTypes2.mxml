@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+	<mx:Label x="10" y="10" text="Lead Types:" fontSize="14"/>
+	<mx:HBox x="10" y="41" width="380" height="249" horizontalGap="4">
+		<mx:DataGrid x="10" y="41" width="100%" height="100%" fontSize="12">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Available"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:VBox height="100%" verticalAlign="middle">
+			<mx:Button width="50" label="&gt;&gt;" fontSize="12"/>
+			<mx:Button width="50" label="&gt;" fontSize="12"/>
+			<mx:Button width="50" label="&lt;" fontSize="12"/>
+			<mx:Button width="50" label="&lt;&lt;" fontSize="12"/>
+		</mx:VBox>
+		<mx:DataGrid x="10" y="41" width="100%" height="100%" fontSize="12">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Selected"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:HBox>
+</mx:Canvas>

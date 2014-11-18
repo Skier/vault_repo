@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.Sync" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.Sync" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="RecommendationRequest">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Cost" type="xs:decimal" />
+      <xs:element minOccurs="0" name="ExclusiveTechnicianServmanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ForbiddenTechnicianServmanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Guid" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsEstimate" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsEstimateAndDo" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsRework" type="xs:boolean" />
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ScheduleDates" nillable="true" type="q1:ArrayOfdateTime" />
+      <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ServiceTypes" nillable="true" type="q2:ArrayOfstring" />
+      <xs:element minOccurs="0" name="Zip" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RecommendationRequest" nillable="true" type="tns:RecommendationRequest" />
+  <xs:complexType name="ArrayOfRecommendationResponseItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RecommendationResponseItem" nillable="true" type="tns:RecommendationResponseItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRecommendationResponseItem" nillable="true" type="tns:ArrayOfRecommendationResponseItem" />
+  <xs:complexType name="RecommendationResponseItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DateSchedule" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="FrameCost" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Guid" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsBucket" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsSecondaryArea" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Rank" type="xs:int" />
+      <xs:element minOccurs="0" name="TimeFrame" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RecommendationResponseItem" nillable="true" type="tns:RecommendationResponseItem" />
+  <xs:complexType name="ArrayOfOrder">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Order" nillable="true" type="tns:Order" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfOrder" nillable="true" type="tns:ArrayOfOrder" />
+  <xs:complexType name="Order">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AdsourceAcronym" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AreaId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="BusinessPhone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CallDateTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Cost" type="xs:decimal" />
+      <xs:element minOccurs="0" name="CustomerExclusiveTechnicianServmanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CustomerRank" type="xs:int" />
+      <xs:element minOccurs="0" name="Cutomer" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DateSchedule" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="DurationCost" type="xs:decimal" />
+      <xs:element minOccurs="0" name="ExclusiveTechnicianDefaultServmanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ExpCred" type="xs:boolean" />
+      <xs:element minOccurs="0" name="HomePhone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsEstimate" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsEstimateAndDo" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsRework" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Latitude" type="xs:float" />
+      <xs:element minOccurs="0" name="Longitude" type="xs:float" />
+      <xs:element minOccurs="0" name="Mapsco" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrderDetails" nillable="true" type="tns:ArrayOfOrderDetail" />
+      <xs:element minOccurs="0" name="OriginatedCompleteDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="OriginatedTechnicianServmanId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OriginatedTicketNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SdPercent" type="xs:decimal" />
+      <xs:element minOccurs="0" name="ServType" type="xs:int" />
+      <xs:element minOccurs="0" name="SpecName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Street" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TaxPercent" type="xs:decimal" />
+      <xs:element minOccurs="0" name="TicketNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TimeFrameId" type="xs:int" />
+      <xs:element minOccurs="0" name="Zip" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Order" nillable="true" type="tns:Order" />
+  <xs:complexType name="ArrayOfOrderDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="OrderDetail" nillable="true" type="tns:OrderDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfOrderDetail" nillable="true" type="tns:ArrayOfOrderDetail" />
+  <xs:complexType name="OrderDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Amount" type="xs:decimal" />
+      <xs:element minOccurs="0" name="ItemNumber" type="xs:int" />
+      <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServType" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OrderDetail" nillable="true" type="tns:OrderDetail" />
+</xs:schema>

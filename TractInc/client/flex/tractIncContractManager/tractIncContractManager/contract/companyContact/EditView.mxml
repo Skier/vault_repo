@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Company Contact" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.SDK.utils.DateHelper;
+            import TractInc.Domain.Person;
+            import TractInc.Domain.Contract;
+            import TractInc.Domain.CompanyContact;
+            import TractInc.Domain.ContractStatus;
+            import TractInc.Domain.Company;
+            import TractInc.Domain.Client;
+            import tractIncContractManager.ContractManagerController;
+            
+            [Bindable]
+            private var canEdit:Boolean = false;
+            [Bindable]
+            private var controller:CompanyContactController = null;
+            private var currentCompanyContact:CompanyContact = null;
+                
+            public static function open(ctrl:CompanyContactController, companyContact:CompanyContact, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, companyContact);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:CompanyContactController, companyContact:CompanyContact):void
+            {
+                controller = ctrl;
+                currentCompanyContact = companyContact;
+            }
+            
+            public function init():void
+            {
+                canEdit = true; //controller.model.userManagerPackage.canManageUsers;
+                
+                var persons:Array = [null];
+                for each (var a:Person in controller.contractPackage.ContractCompany.PersonList) {
+                    persons.push(a);
+                }
+                this.cbPersonList.dataProvider = persons;
+                this.cbPersonList.labelField = "LastName";
+                
+                if ( null != currentCompanyContact ) {
+                    populatePersonForm(currentCompanyContact.ContactPerson);
+                    
+                    this.dtStartDate.value = currentCompanyContact.StartDate;
+                    if ( !DateHelper.isNullDate(currentCompanyContact.EndDate) ) {
+                        this.dtEndDate.value = currentCompanyContact.EndDate;
+                    }
+                    
+                    this.cbPersonList.selectedItem = 
+                            controller.getCompanyPersonById(
+                                    currentCompanyContact.PersonId);
+                } else {
+                    currentCompanyContact = new CompanyContact();
+                    currentCompanyContact.ContactPerson = new Person();
+                }
+            }
+            
+            private function populatePersonForm(person:Person):void
+            {
+                if ( null != person ) {
+                    this.txtFirstName.text = person.FirstName;
+                    this.txtLastName.text = person.LastName;
+                    this.txtMiddleName.text = person.MiddleName;
+                    this.txtEmail.text = person.Email;
+                    this.txtPhone.text = person.PhoneNumber;
+                    currentCompanyContact.ContactPerson = person;
+                } else {
+                    this.txtFirstName.text = "";
+                    this.txtLastName.text = "";
+                    this.txtMiddleName.text = "";
+                    this.txtEmail.text = "";
+                    this.txtPhone.text = "";
+                    currentCompanyContact.ContactPerson = new Person();
+                }
+            }
+            
+            public function getCompanyContact():CompanyContact
+            {
+                currentCompanyContact.ContactPerson.FirstName = this.txtFirstName.text;
+                currentCompanyContact.ContactPerson.LastName = this.txtLastName.text;
+                currentCompanyContact.ContactPerson.MiddleName = this.txtMiddleName.text;
+                currentCompanyContact.ContactPerson.Email = this.txtEmail.text;
+                currentCompanyContact.ContactPerson.PhoneNumber = this.txtPhone.text;
+                
+                currentCompanyContact.StartDate = this.dtStartDate.value;
+                currentCompanyContact.EndDate = this.dtEndDate.value;
+                
+                return currentCompanyContact;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveCompanyContact(getCompanyContact());
+            }
+
+            public function availablePersonChangeHandler():void 
+            {
+                populatePersonForm(this.cbPersonList.selectedItem as Person);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtFirstName}" property="text" required="true"/>
+        <mx:StringValidator source="{txtLastName}" property="text" required="true"/>
+        <mx:StringValidator source="{txtEmail}" property="text" required="true"/>
+        <mx:StringValidator source="{txtPhone}" property="text" required="true"/>
+        <mx:StringValidator source="{dtStartDate}" property="value" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form id="mainForm" enabled="{canEdit}" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="Available Persons" width="100%" required="true">
+            <mx:ComboBox id="cbPersonList" change="availablePersonChangeHandler()" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormHeading label="Contact Person Information"/>
+        <mx:FormItem label="First Name:">
+            <mx:TextInput id="txtFirstName" maxChars="50"/>
+        </mx:FormItem>
+        <mx:FormItem label="Last Name:">
+            <mx:TextInput id="txtLastName" maxChars="50"/>
+        </mx:FormItem>
+        <mx:FormItem label="Middle Name:">
+            <mx:TextInput id="txtMiddleName" maxChars="50"/>
+        </mx:FormItem>
+        <mx:FormItem label="Email:">
+            <mx:TextInput id="txtEmail" maxChars="50"/>
+        </mx:FormItem>
+        <mx:FormItem label="Phone Num:">
+            <mx:TextInput id="txtPhone" maxChars="50"/>
+        </mx:FormItem>
+            
+        <mx:FormHeading label="Dates"/>
+        <mx:HBox>
+            <mx:FormItem label="Start Date" width="100%" required="true">
+                <components:CombinedDateField id="dtStartDate" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="End Date" width="100%">
+                <components:CombinedDateField id="dtEndDate" width="100%"/>
+            </mx:FormItem>
+        </mx:HBox>
+    </mx:Form>
+            
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

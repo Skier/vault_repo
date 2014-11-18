@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <display-name>LLSVC Server</display-name>
+    <description>LLSVC Server</description>
+
+    <env-entry>
+        <env-entry-name>databaseHost</env-entry-name>
+        <env-entry-value>localhost</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>databasePort</env-entry-name>
+        <env-entry-value>5432</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>databaseSchema</env-entry-name>
+        <env-entry-value>public</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>databaseName</env-entry-name>
+        <env-entry-value>llsvc</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>databaseUsername</env-entry-name>
+        <env-entry-value>llsvc</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>databasePassword</env-entry-name>
+        <env-entry-value>llsvc</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+
+    <env-entry>
+        <env-entry-name>attachmentsStorage</env-entry-name>
+        <env-entry-value>c:/llsvc-attachments</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>indexesDirectory</env-entry-name>
+        <env-entry-value>c:/llsvc-indexes</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>temporaryDirectory</env-entry-name>
+        <env-entry-value>c:/llsvc-temp</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+
+    <env-entry>
+        <env-entry-name>geoServerUrl</env-entry-name>
+        <env-entry-value>http://llsvc.demo.logicland.com.ua/geoserver/</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>geoServerUsername</env-entry-name>
+        <env-entry-value>admin</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+    <env-entry>
+        <env-entry-name>geoServerPassword</env-entry-name>
+        <env-entry-value>geoserver</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+
+    <!-- Http Flex Session attribute and binding listener support -->
+    <listener>
+        <listener-class>flex.messaging.HttpFlexSession</listener-class>
+        <listener-class>com.llsvc.server.framework.EntryPoint</listener-class>
+    </listener>
+
+    <!-- MessageBroker Servlet -->
+    <servlet>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <display-name>MessageBrokerServlet</display-name>
+        <servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
+        <init-param>
+            <param-name>services.configuration.file</param-name>
+            <param-value>/WEB-INF/flex/services-config.xml</param-value>
+       </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <url-pattern>/messagebroker/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- FileUploadServlet -->
+    <servlet>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <display-name>FileUploadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.FileUploadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <url-pattern>/upload/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- FileDownloadServlet -->
+    <servlet>
+        <servlet-name>FileDownloadServlet</servlet-name>
+        <display-name>FileDownloadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.FileDownloadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FileDownloadServlet</servlet-name>
+        <url-pattern>/download/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ShapefileDownloadServlet -->
+    <servlet>
+        <servlet-name>ShapefileDownloadServlet</servlet-name>
+        <display-name>ShapefileDownloadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.ShapefileDownloadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShapefileDownloadServlet</servlet-name>
+        <url-pattern>/shapefile/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ShapefileDownloadServlet2 -->
+    <servlet>
+        <servlet-name>ShapefileDownloadServlet2</servlet-name>
+        <display-name>ShapefileDownloadServlet2</display-name>
+        <servlet-class>com.llsvc.server.framework.ShapefileDownloadServlet2</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShapefileDownloadServlet2</servlet-name>
+        <url-pattern>/shapefile_download/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ShapefileUploadServlet -->
+    <servlet>
+        <servlet-name>ShapefileUploadServlet</servlet-name>
+        <display-name>ShapefileUploadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.ShapefileUploadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShapefileUploadServlet</servlet-name>
+        <url-pattern>/shapefile_upload/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- ShapefileTractUploadServlet -->
+    <servlet>
+        <servlet-name>ShapefileTractUploadServlet</servlet-name>
+        <display-name>ShapefileTractUploadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.ShapefileTractUploadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ShapefileTractUploadServlet</servlet-name>
+        <url-pattern>/shapefile_tract_upload/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- XLSFileDownloadServlet -->
+    <servlet>
+        <servlet-name>XLSFileDownloadServlet</servlet-name>
+        <display-name>XLSFileDownloadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.XLSFileDownloadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>XLSFileDownloadServlet</servlet-name>
+        <url-pattern>/xls/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- PseudoFileDownloadServlet -->
+    <servlet>
+        <servlet-name>PseudoFileDownloadServlet</servlet-name>
+        <display-name>PseudoFileDownloadServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.PseudoFileDownloadServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PseudoFileDownloadServlet</servlet-name>
+        <url-pattern>/xls2</url-pattern>
+    </servlet-mapping>
+
+    <!-- UserOptionServlet -->
+    <servlet>
+        <servlet-name>UserOptionServlet</servlet-name>
+        <display-name>UserOptionServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.UserOptionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UserOptionServlet</servlet-name>
+        <url-pattern>/option/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- GeoconfigServlet -->
+    <servlet>
+        <servlet-name>GeoconfigServlet</servlet-name>
+        <display-name>GeoconfigServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.GeoconfigServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GeoconfigServlet</servlet-name>
+        <url-pattern>/geoconfig/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- CoverageServlet -->
+    <servlet>
+        <servlet-name>CoverageServlet</servlet-name>
+        <display-name>CoverageServlet</display-name>
+        <servlet-class>com.llsvc.server.framework.CoverageServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CoverageServlet</servlet-name>
+        <url-pattern>/coverage/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>EMSupportFilter</filter-name>
+        <filter-class>com.llsvc.server.framework.EMSupportFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>FileUploadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>FileDownloadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>ShapefileDownloadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>ShapefileDownloadServlet2</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>ShapefileUploadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>ShapefileTractUploadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>XLSFileDownloadServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>UserOptionServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>GeoconfigServlet</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>EMSupportFilter</filter-name>
+        <servlet-name>CoverageServlet</servlet-name>
+    </filter-mapping>
+
+    <welcome-file-list>
+        <welcome-file>startup.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

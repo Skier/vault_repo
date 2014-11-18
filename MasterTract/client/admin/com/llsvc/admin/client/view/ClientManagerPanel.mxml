@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="creationCompleteHandler()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.UserEvent;
+			import com.llsvc.domain.events.ClientEvent;
+			import com.llsvc.domain.Person;
+			import mx.events.ListEvent;
+			import com.llsvc.admin.user.view.UserEditView;
+			import com.llsvc.admin.LocalCash;
+			import com.llsvc.domain.User;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.controls.TextInput;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.events.DataGridEvent;
+			import com.llsvc.domain.Client;
+			import com.llsvc.framework.storage.Storage;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			public var dataProvider:ArrayCollection;
+
+			[Bindable]
+			public var freeUsers:ArrayCollection; 
+
+			private var clientEditor:ClientEditView;
+			private var userEditor:UserEditView;
+			
+			private function creationCompleteHandler():void 
+			{
+				dgClients.addEventListener(ClientEvent.CLIENT_CHANGED, clientPropertyChangeHandler);
+			}
+			
+			private function clientPropertyChangeHandler(event:ClientEvent):void 
+			{
+				var client:Client = event.client;
+				if (client != null)
+					saveClient(client);
+			}
+			
+			private function saveClient(client:Client):void 
+			{
+				client.isLoading = true;
+				
+				Storage.instance.storeClient(client,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        client.isLoading = false;
+	                        var newClient:Client = event.result as Client;
+	                        client.populate(newClient);
+	                        
+	                        if (!dataProvider.contains(client)) 
+	                        {
+	                        	dataProvider.addItem(client);
+	                        }
+
+	                        if (clientEditor != null) 
+	                        {
+	                        	clientEditor.close();
+	                        	clientEditor = null;
+	                        }
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        client.isLoading = false;
+	                        
+	                        client.getMemento();
+	                        Alert.show("Can not save Client: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+			private function openClient(client:Client):void 
+			{
+				client.setMemento();
+				
+				clientEditor = ClientEditView.open(Application.application as DisplayObject, client, true);
+				clientEditor.addEventListener(ClientEvent.CLIENT_CHANGED, 
+					function (event:ClientEvent):void 
+					{
+						saveClient(event.client);
+					});
+			}
+			
+			private function btnAddClientClickHandler():void 
+			{
+				openClient(new Client());
+			}
+			
+			private function btnEditClientClickHandler():void 
+			{
+				var client:Client = dgClients.selectedItem as Client;
+				if (client != null)
+					openClient(client);
+			}
+			
+			private function dgClientsItemEditEndHandler(event:DataGridEvent):void 
+			{
+				var item:Client = dataProvider[event.rowIndex] as Client;
+				var ti:TextInput = TextInput(DataGrid(event.currentTarget).itemEditorInstance);
+				
+				if (event.columnIndex == 0) 
+				{
+					if (item.name != ti.text && ti.text.length > 1) 
+					{
+						item.setMemento();
+						item.name = ti.text;
+						saveClient(item);
+					} else {
+						ti.text = item.name;
+					}
+				} else if (event.columnIndex == 1) 
+				{
+					if (item.abbreviation != ti.text && ti.text.length > 1) 
+					{
+						item.setMemento();
+						item.abbreviation = ti.text;
+						saveClient(item);
+					} else {
+						ti.text = item.abbreviation;
+					}
+				}
+			}
+			
+			private function openUser(user:User):void 
+			{
+				if (user.isLoading)
+					return;
+					
+				if (userEditor != null) 
+				{
+					userEditor.close();
+					userEditor = null;
+				}
+
+				userEditor = UserEditView.open(Application.application as DisplayObject, user, true);
+				userEditor.addEventListener(UserEvent.USER_CHANGED, 
+					function (event:UserEvent):void 
+					{
+						saveUser(event.user);
+					}); 
+			}
+			
+			private function saveUser(user:User):void 
+			{
+				user.isLoading = true;
+				
+				Storage.instance.storeUser(user,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        var newUser:User = event.result as User;
+	                        user.populate(newUser);
+	                        
+	                        if (!user.client.users.contains(user)) 
+	                        {
+	                        	user.client.users.addItem(user);
+	                        }
+
+	                        if (userEditor != null) 
+	                        {
+	                        	userEditor.close();
+	                        	userEditor = null;
+	                        }
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        user.getMemento();
+	                        Alert.show("Can not save User: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+			private function dgUsersDoubleClickHandler(event:ListEvent):void 
+			{
+				var user:User = ArrayCollection(dgUsers.dataProvider).getItemAt(event.rowIndex) as User;
+				openUser(user);
+			}
+			
+			private function btnOpenUserClickHandler():void 
+			{
+				var user:User = dgUsers.selectedItem as User;
+				if (user != null) 
+				{
+					openUser(user);
+				}
+			}
+			
+			private function btnAddUserClickHandler():void 
+			{
+				var user:User = new User();
+				user.client = dgClients.selectedItem as Client;
+
+				openUser(user);
+			}
+			
+			private function changeUsersClient(user:User, clientTo:Client):void 
+			{
+				var clientFrom:Client = user.client;
+				var idx:int;
+				if (clientFrom != null) 
+				{
+					idx = clientFrom.users.getItemIndex(user);
+					if (idx > -1)
+						clientFrom.users.removeItemAt(idx);
+				} else 
+				{
+					idx = freeUsers.getItemIndex(user);
+					if (idx > -1)
+						freeUsers.removeItemAt(idx);
+				}
+
+				if (clientTo != null) 
+				{
+					if (!clientTo.users.contains(user))
+						clientTo.users.addItem(user);
+				} else 
+				{
+					if (!freeUsers.contains(user))
+						freeUsers.addItem(user);
+				}
+				
+				user.client = clientTo;
+			}
+			
+			private function moveUserToClient(user:User, client:Client):void 
+			{
+				var oldClient:Client = user.client;
+
+				changeUsersClient(user, client);
+				
+				user.isLoading = true;
+				Storage.instance.storeUser(user,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        var newUser:User = event.result as User;
+	                        user.populate(newUser);
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        changeUsersClient(user, oldClient);
+	                        Alert.show("Can not save User: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+/* 
+			private function acceptUserToClient(user:User, client:Client):void 
+			{
+				changeUsersClient(user, client);
+
+				user.isLoading = true;
+				Storage.instance.storeUser(user,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        var newUser:User = event.result as User;
+	                        user.populate(newUser);
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        changeUsersClient(user, null);
+	                        Alert.show("Can not save User: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+
+			private function unacceptUser(user:User):void 
+			{
+				var oldClient:Client = user.client;
+				
+				changeUsersClient(user, null);
+
+				user.isLoading = true;
+				Storage.instance.storeUser(user,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        var newUser:User = event.result as User;
+	                        user.populate(newUser);
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        changeUsersClient(user, oldClient);
+	                        Alert.show("Can not save User: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+ */
+			private function btnAcceptUserClickHandler():void 
+			{
+				var user:User = dgFreeUsers.selectedItem as User;
+				if (user == null)
+					return; 
+
+				var client:Client = dgClients.selectedItem as Client;
+				moveUserToClient(user, client);
+			}
+			
+			private function btnUnacceptUserClickHandler():void 
+			{
+				var user:User = dgUsers.selectedItem as User;
+				if (user == null)
+					return; 
+
+				moveUserToClient(user, null);
+			}
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="boxContent" width="100%" height="100%">
+		<mx:VBox  
+			width="300" height="100%"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			verticalGap="5">
+			<mx:DataGrid id="dgClients" width="100%" height="100%" dataProvider="{dataProvider}"
+				draggableColumns="false" resizableColumns="false" editable="true"
+				itemEditEnd="dgClientsItemEditEndHandler(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Client Name" dataField="name" editable="true" itemEditor="com.llsvc.component.SelectableInput"/>
+					<mx:DataGridColumn headerText="Abbr" dataField="abbreviation" editable="true" itemEditor="com.llsvc.component.SelectableInput"/>
+					<mx:DataGridColumn headerText="Is active" width="60" textAlign="center" editable="false" itemRenderer="com.llsvc.admin.client.view.ClientStatusIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			<mx:HBox horizontalAlign="right" width="100%">
+				<mx:Button id="btnAddClient" 
+					height="28" label="Add New Client" click="btnAddClientClickHandler()"/>
+					
+				<mx:Button id="btnEditClient" 
+					height="28" label="Edit" enabled="{dgClients.selectedItem != null}"
+					click="btnEditClientClickHandler()"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%">
+			<mx:VBox width="100%" height="100%"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				>
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="Clients users:" fontWeight="bold"/>
+				</mx:HBox>
+				
+				<mx:DataGrid id="dgUsers" 
+					width="100%" height="100%"
+					dataProvider="{dgClients.selectedItem != null ? Client(dgClients.selectedItem).users : null}"
+					doubleClickEnabled="true" itemDoubleClick="dgUsersDoubleClickHandler(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Login" dataField="login"/>
+						<mx:DataGridColumn headerText="Password" dataField="password"/>
+						<mx:DataGridColumn headerText="Is Active" dataField="isActive"/>
+						<mx:DataGridColumn headerText="Hacks" dataField="hackingAttempts"/>
+						<mx:DataGridColumn headerText="Is Admin" dataField="isAdmin"/>
+						<mx:DataGridColumn headerText="Is PM" dataField="isProjectManager"/>
+						<mx:DataGridColumn headerText="First Name" dataField="firstName"/>
+						<mx:DataGridColumn headerText="Middle Name" dataField="middleName"/>
+						<mx:DataGridColumn headerText="Last Name" dataField="lastName"/>
+						<mx:DataGridColumn headerText="Primary Phone No" dataField="primaryPhoneNumber"/>
+						<mx:DataGridColumn headerText="Secondary Phone No" dataField="secondaryPhoneNumber"/>
+						<mx:DataGridColumn headerText="E-mail" dataField="email"/>
+						<mx:DataGridColumn headerText="SSN" dataField="ssn"/>
+						<mx:DataGridColumn headerText="Birth Date" dataField="birthDay"/>
+					</mx:columns>
+				</mx:DataGrid>
+				
+				<mx:HBox horizontalAlign="right" width="100%">
+					<mx:Button id="btnAddUser" 
+						height="28" label="Add New" 
+						click="btnAddUserClickHandler()"/>
+						
+					<mx:Button id="btnOpenUser" 
+						height="28" label="Edit" enabled="{dgUsers.selectedItem != null}"
+						click="btnOpenUserClickHandler()"/>
+
+					<mx:Button id="btnUnacceptUser" 
+						height="28" label="Un Accept" enabled="{dgUsers.selectedItem != null}"
+						click="btnUnacceptUserClickHandler()"/>
+				</mx:HBox>
+			</mx:VBox>
+				
+			<mx:VBox width="100%" height="100%"
+				backgroundColor="#ffffdd"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				>
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="Unprocessed Users:" fontWeight="bold"/>
+				</mx:HBox>
+				
+				<mx:DataGrid id="dgFreeUsers" 
+					width="100%" height="100%"
+					dataProvider="{freeUsers}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Login" dataField="login"/>
+						<mx:DataGridColumn headerText="Password" dataField="password"/>
+						<mx:DataGridColumn headerText="Is Active" dataField="isActive"/>
+						<mx:DataGridColumn headerText="Hacks" dataField="hackingAttempts"/>
+						<mx:DataGridColumn headerText="Is Admin" dataField="isAdmin"/>
+						<mx:DataGridColumn headerText="Is PM" dataField="isProjectManager"/>
+						<mx:DataGridColumn headerText="First Name" dataField="firstName"/>
+						<mx:DataGridColumn headerText="Middle Name" dataField="middleName"/>
+						<mx:DataGridColumn headerText="Last Name" dataField="lastName"/>
+						<mx:DataGridColumn headerText="Primary Phone No" dataField="primaryPhoneNumber"/>
+						<mx:DataGridColumn headerText="Secondary Phone No" dataField="secondaryPhoneNumber"/>
+						<mx:DataGridColumn headerText="E-mail" dataField="email"/>
+						<mx:DataGridColumn headerText="SSN" dataField="ssn"/>
+						<mx:DataGridColumn headerText="Birth Date" dataField="birthDay"/>
+					</mx:columns>
+				</mx:DataGrid>
+
+				<mx:HBox horizontalAlign="right" width="100%">
+					<mx:Button id="btnAccept" 
+						height="28" label="Accept to Current Client"
+						enabled="{dgFreeUsers.selectedItem != null &amp;&amp; dgClients.selectedItem != null}" 
+						click="btnAcceptUserClickHandler()"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:HBox>
+	
+	
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false" includeInLayout="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,28 @@
+﻿@model Dalworth.LeadCentral.Domain.Customer
+
+@{
+    ViewBag.Title = "AddFunds";
+}
+
+@using (Html.BeginForm())
+{
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">@Html.ActionLink("Company Details", "Index", new { controller = "Company" }, new { @class = "button" })</div>
+      <h1>Add Funds to Balance</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Select Amount: $</td>
+              <td>@Html.TextBox("Amount", "20.00")</td>
+              <td><button type="submit" class="primary">Process payment</button></td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+}

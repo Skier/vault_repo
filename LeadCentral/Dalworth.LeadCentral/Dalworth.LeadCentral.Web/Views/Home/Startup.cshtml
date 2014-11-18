@@ -1,0 +1,46 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Dashboard.StartupModel
+
+@{
+    ViewBag.Title = "Startup";
+}
+
+<h2>Startup</h2>
+
+<ol class="startup">
+@if (Model.IsCompanyProfileInited)
+{
+  <li class="selected">Company detail Information</li>
+}
+else
+{
+  <li>@Html.ActionLink("Company detail Information", "CompanyEdit", "Profile")</li>
+}
+
+@if (Model.IsTrackingPhonesInited)
+{
+  <li class="selected">Purchase Phone Numbers</li>
+}
+else
+{
+  <li>@Html.ActionLink("Purchase Phone Numbers", "Index", "Phones")</li>
+}
+
+@if (Model.IsCampaignsInited)
+{
+  <li class="selected">Create Campaigns</li>
+}
+else
+{
+  <li>@Html.ActionLink("Create Campaigns", "Index", "Campaigns")</li>
+}
+
+@if (Model.IsOAuthInited)
+{
+  <li class="selected">Authorize access to Quickbooks data</li>
+}
+else
+{
+  <li>@Html.ActionLink("Authorize access to Quickbooks data", "Authorize", "Company")</li>
+}
+</ol>
+

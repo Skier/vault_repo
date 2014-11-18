@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Team Member" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.Asset;
+            import TractInc.Domain.Team;
+            import TractInc.Domain.TeamMember;
+            import tractIncStaffManager.StaffManagerController;
+            
+            [Bindable]
+            private var controller:TeamMemberController = null;
+            private var currentTeamMember:TeamMember = null;
+                
+            public static function open(ctrl:TeamMemberController, member:TeamMember, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, member);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:TeamMemberController, member:TeamMember):void
+            {
+                controller = ctrl;
+                currentTeamMember = member;
+            }
+            
+            public function init():void
+            {
+                this.cbAssetList.dataProvider =
+                    StaffManagerController.getInstance().model.staffManagerPackage.AssetList;
+                this.cbAssetList.labelField = "AssetName";
+                
+                if ( null != currentTeamMember ) {
+                    
+                    this.dtStartDate.value = currentTeamMember.StartDate;
+                    this.dtEndDate.value = currentTeamMember.EndDate;
+                    
+                    this.cbAssetList.selectedItem = 
+                            getAssetById(currentTeamMember.AssetId);
+                } else {
+                    currentTeamMember = new TeamMember();
+                }
+            }
+            
+            private function getAssetById(id:int):Asset
+            {
+                for each (var a:Asset in StaffManagerController.getInstance().model.staffManagerPackage.AssetList) {
+                    if ( id == a.AssetId ) {
+                        return a;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getTeamMember():TeamMember
+            {
+                currentTeamMember.AssetId = (cbAssetList.selectedItem as Asset).AssetId;
+                currentTeamMember.StartDate = this.dtStartDate.value;
+                currentTeamMember.EndDate = this.dtEndDate.value;
+                
+                return currentTeamMember;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveTeamMember(getTeamMember());
+            }
+
+            public function availablePersonChangeHandler():void 
+            {
+//                populatePersonForm(this.cbPersonList.selectedItem as Person);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{cbAssetList}" property="selectedItem" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form id="mainForm" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="Asset" width="100%" required="true">
+            <mx:ComboBox id="cbAssetList" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormHeading label="Dates"/>
+        <mx:FormItem label="Start Date" width="100%" required="true">
+            <components:CombinedDateField id="dtStartDate" width="100%"/>
+        </mx:FormItem>
+        <mx:FormItem label="End Date" width="100%" required="true">
+            <components:CombinedDateField id="dtEndDate" width="100%"/>
+        </mx:FormItem>
+    </mx:Form>
+            
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

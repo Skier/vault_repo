@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CallPropertiesView 
+    xmlns="truetract.plotter.components.tractViewClasses.call.propertyViews.*" xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:Geo="truetract.plotter.utils.*" xmlns:validators="truetract.plotter.validators.*"
+    creationComplete="{onCreationComplete()}" xmlns:components="truetract.plotter.components.*">
+        
+    <mx:Script>
+        <![CDATA[
+        	import truetract.plotter.utils.Angle;
+        	import truetract.plotter.domain.TractCall;
+            import truetract.plotter.utils.UnitOfMeasure;
+            import truetract.plotter.utils.UOMUtil;
+            import truetract.plotter.domain.callparams.*;
+            
+            import truetract.plotter.utils.GeoBearing;
+
+            import mx.events.ValidationResultEvent;
+
+            public var chordLengthUom:UnitOfMeasure;
+
+            private function onCreationComplete():void
+            {
+                chordLengthUomList.selectedItem = chordLengthUom;
+                tInBearingTxt.setFocus();
+            }
+            
+            override protected function getParameters():ParamCollection
+            {
+                if (!isFormValid())
+                    return null;
+                
+                var curveDegree:Angle = Angle.Parse(curveDegreeTxt.text);
+                var tInBearing:GeoBearing = GeoBearing.Parse(tInBearingTxt.text);
+                var chordLength:Number = Number(chordLengthTxt.text);
+
+                var params:ParamCollection = new ParamCollection();
+                
+                params.addItem( new TangentInBearingParam(tInBearing) );
+                params.addItem( new CurveDegreeParam(curveDegree) );
+                params.addItem( new ChordLengthParam(chordLength, UnitOfMeasure(chordLengthUomList.selectedItem) ));
+                
+                return params;
+            }
+             
+            override protected function getType():String
+            {
+                return TractCall.CALL_TYPE_CURVE;
+            }            
+
+            private function isFormValid():Boolean
+            {
+                var result:Boolean = true;
+                
+                if (chordV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (degreeV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (bearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                
+                return result;
+            }
+            
+            private function degreeInput_changeHandler(event:Event):void 
+            {
+            	var input:TextInput = event.currentTarget as TextInput;
+            	
+				input.text = input.text.replace("\u00b0", "*");
+				input.text = input.text.replace("'", "*");
+				input.text = input.text.replace("\"", "*");
+
+				var gradFound:Boolean = false;
+				var minFound:Boolean = false;
+				var secFound:Boolean = false;
+
+				var result:String = "";
+
+				for ( var i:int=0; i < input.text.length; i++ ) {
+					if (input.text.charAt(i) == "*" && !gradFound) {
+						result += "\u00b0";
+						gradFound = true;
+					} else if (input.text.charAt(i) == "*" && !minFound) {
+						result += "'";
+						minFound = true;
+					} else if (input.text.charAt(i) == "*" && !secFound) {
+						result += "\"";
+						secFound = true;
+					} else {
+						result += input.text.charAt(i);
+					}
+				}
+				
+				input.text = result;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:AngleValidator id="degreeV" 
+        source="{curveDegreeTxt}" property="text" required="true"/>
+        
+    <mx:NumberValidator id="chordV" 
+        source="{chordLengthTxt}" property="text" required="true" allowNegative="false" 
+        minValue="0.001"/>
+        
+    <validators:GeoBearingValidator id="bearingV" source="{tInBearingTxt}" property="text" 
+        required="true"/>
+
+    <subComponents>
+    
+        <mx:Form verticalGap="2" paddingBottom="0" paddingLeft="0" 
+            paddingRight="0" paddingTop="0" indicatorGap="5"
+            >
+            
+            <mx:FormItem label="Tan In" toolTip="Tangent In Bearing">
+                <mx:TextInput id="tInBearingTxt"
+                    toolTip="Tangent In Bearing"
+                	change="degreeInput_changeHandler(event)"
+                    text="{TangentInBearing.toString()}" width="100" enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Degree" toolTip="Degree of curve">
+                <mx:TextInput id="curveDegreeTxt" 
+                	change="degreeInput_changeHandler(event)"
+                    toolTip="Degree of curve" width="100"
+                    enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Ch ln" horizontalGap="3">
+                <mx:HBox horizontalGap="3">
+                    <mx:TextInput id="chordLengthTxt" 
+                        toolTip="Chord length" width="100" enter="commit()"/>
+                    
+                    <components:ExtendedComboBox id="chordLengthUomList" 
+                        toolTip="Chord length Units" showDataTips="true"
+                        labelField="Name" width="75"
+                        dataProvider="{UOMUtil.Instance().UnitList}" enter="commit()"/>
+                </mx:HBox>
+            </mx:FormItem>
+        </mx:Form>        
+    
+    </subComponents>
+    
+</CallPropertiesView>

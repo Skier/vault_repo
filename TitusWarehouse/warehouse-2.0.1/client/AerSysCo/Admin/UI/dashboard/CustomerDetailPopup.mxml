@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" width="400"
+	title="Edit Customer Data">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import AerSysCo.UI.Models.CustomerUI;
+			
+			[Bindable] public var customer:CustomerUI;
+			
+            public static function open(parent:DisplayObject, customer:CustomerUI, modal:Boolean = true):CustomerDetailPopup
+            {
+                var popup:CustomerDetailPopup = new CustomerDetailPopup();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                popup.customer = customer;
+                
+                return popup;
+            }
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function txtLimitChangeHandler():void 
+            {
+				if (isNaN(Number(txtLimit.text))) 
+				{
+					txtLimit.text = customer.maxOrderTotal.toFixed(2);
+				}
+            }
+
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%" height="100%" 
+		paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"
+		borderColor="#333333" borderStyle="solid" backgroundColor="#ffffff">
+		<mx:FormItem label="Brand" width="100%">
+			<mx:Label text="{customer.brandName}" fontWeight="bold"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Customer #" width="100%">
+			<mx:Label text="{customer.customerNumber}" fontWeight="bold"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Customer Name" width="100%">
+			<mx:Text text="{customer.salesRepCompanyName}" width="100%" fontWeight="bold"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Customer Address" width="100%">
+			<mx:Text text="{customer.addressString}" width="100%" fontWeight="bold"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Daily Limit ($)" width="100%">
+			<mx:TextInput id="txtLimit"	text="{customer.maxOrderTotal.toFixed(2)}"
+				textAlign="right" width="100"
+				change="txtLimitChangeHandler()"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Warehouse Hold" width="100%">
+			<mx:CheckBox id="cbCreditHold" selected="{!customer.creditStatus}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="MacPac Hold" width="100%">
+			<mx:CheckBox id="cbMacPacHold" selected="{!customer.mACPACStatus}" enabled="false"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Remaining Day Balance($)" width="100%">
+			<mx:Label text="{customer.dayBalance.toFixed(2)}" fontWeight="bold"	textAlign="right"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button id="btnCancelOrder" 
+			width="60" height="22" label="Cancel" color="#ffffff"/>
+
+		<mx:Button id="btnSubmitOrder" 
+			width="60" height="22" label="Submit" color="#ffffff"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

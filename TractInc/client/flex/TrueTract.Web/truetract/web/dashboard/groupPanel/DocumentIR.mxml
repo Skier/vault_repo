@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    backgroundAlpha="0.1" backgroundColor="#ffffff"
+    paddingRight="4">
+
+    <mx:Script>
+        <![CDATA[
+            import flash.net.navigateToURL;
+            import truetract.domain.DocumentAttachment;
+            
+            private function pdfCopy_clickHandler():void
+            {
+                var attach:DocumentAttachment = DocumentAttachment(data.PdfCopy);
+                var urlRequest:URLRequest = new URLRequest(attach.FileRef.FileUrl);
+
+                navigateToURL(urlRequest, '_blank');
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:NumberFormatter id="nf" precision="2"/>
+
+    <mx:VBox borderStyle="solid" width="100%" height="100%" verticalGap="-5">
+
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.toString()}" fontWeight="bold"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="{data.DocumentTypeName}" fontWeight="bold"/>
+    
+        </mx:HBox>
+
+        <mx:HBox width="100%" verticalAlign="middle" paddingRight="5">
+            <mx:VBox width="100%" verticalGap="-5">
+                <mx:HBox width="100%" horizontalGap="0">
+        
+                    <mx:Label text="{data.SellerRoleName}:"/>
+                    <mx:Label text="{data.Seller.AsNamed}" fontWeight="bold"/>
+            
+                </mx:HBox>
+        
+                <mx:HBox width="100%" horizontalGap="0">
+                    
+                    <mx:Label text="{data.BuyerRoleName}:"/>
+                    <mx:Label text="{data.Buyer.AsNamed}" fontWeight="bold" width="100%"/>
+        
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:Button
+                icon="@Embed(source='/assets/page_attach.png')" width="20" height="20"
+                toolTip="Document PDF Copy" styleName="toolButton"
+                visible="{data.PdfCopy != null}" includeInLayout="{data.PdfCopy != null}"
+                click="pdfCopy_clickHandler()" paddingLeft="-2"/>
+        </mx:HBox>
+
+
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{data.TractsCount}" fontWeight="bold" />
+            <mx:Label text="Tracts Plotted"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="Signed:"/>
+            <mx:Label text="{df.format(data.DateSigned)}" fontWeight="bold"/>
+    
+        </mx:HBox>
+    
+        <mx:HBox width="100%" horizontalGap="0">
+            
+            <mx:Label text="{nf.format(data.TractsAcres)}" fontWeight="bold"/>
+            <mx:Label text="Total Acres:"/>
+    
+            <mx:Spacer width="100%"/>
+    
+            <mx:Label text="Filled:"/>
+            <mx:Label text="{df.format(data.DateFiled)}" fontWeight="bold"/>
+    
+        </mx:HBox>
+        
+    </mx:VBox>
+
+</mx:VBox>

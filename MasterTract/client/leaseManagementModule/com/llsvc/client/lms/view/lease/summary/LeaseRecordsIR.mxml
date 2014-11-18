@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalCenter="0" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentRecordAttachment;
+			import mx.controls.Alert;
+			import flash.net.navigateToURL;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentRecord;
+		
+			import com.llsvc.domain.Lease;
+			
+            [Embed(source="assets/icons16/attach.png")]
+            [Bindable]
+            private var imgAttach:Class;
+            
+            private function imgClickHandler(event:Event):void 
+            {
+            	var idx:int = UIComponent(event.target).repeaterIndex;
+            	if (idx > -1) 
+            	{
+	            	var record:DocumentRecord = Lease(data).document.records[idx] as DocumentRecord;
+	            	if (record.attachment.file) 
+	            	{
+				        var request:URLRequest = new URLRequest("download?id=" + record.attachment.file.id.toString());
+		        		navigateToURL(request);
+	            	}
+            	}
+            }
+		]]>
+	</mx:Script>
+	
+	<mx:Repeater id="rptRecords" dataProvider="{Lease(data).document.records}" toolTip="{Lease(data).document.recordsAllStr}">
+		<mx:LinkButton width="20" height="20" 
+			icon="{imgAttach}" click="imgClickHandler(event)" toolTip="{Lease(data).document.recordsAllStr}"
+			visible="{DocumentRecord(rptRecords.currentItem).attachment != null &amp;&amp; DocumentRecord(rptRecords.currentItem).attachment.file != null}"
+			includeInLayout="{DocumentRecord(rptRecords.currentItem).attachment != null &amp;&amp; DocumentRecord(rptRecords.currentItem).attachment.file != null}"/>
+<!--
+		<mx:Image source="{imgAttach}" click="imgClickHandler(event)" toolTip="{Lease(data).document.recordsAllStr}"
+			visible="{DocumentRecord(rptRecords.currentItem).originalAttachment != null}"
+			includeInLayout="{DocumentRecord(rptRecords.currentItem).originalAttachment != null}"/>
+-->
+		<mx:Label text="{DocumentRecord(rptRecords.currentItem).getInfoStr()}" toolTip="{Lease(data).document.recordsAllStr}"/>
+	</mx:Repeater>
+	
+	<mx:Label text="NOT RECORDED" fontWeight="bold" color="#cc0000"
+		visible="{!(Lease(data).recordsAllStr.length > 0)}" includeInLayout="{!(Lease(data).recordsAllStr.length > 0)}"/>
+
+</mx:HBox>

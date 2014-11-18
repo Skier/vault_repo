@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%"
+	verticalAlign="middle"
+	horizontalScrollPolicy="off"
+	horizontalAlign="center"
+	paddingLeft="5"
+	paddingRight="5">
+	
+	<mx:Script>
+		<![CDATA[
+			import UI.landman.Composition;
+			import App.Entity.BillItemAttachmentDataObject;
+			import App.Entity.BillItemCompositionDataObject;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			private function onClickAttach():void
+			{
+				var compositeItem:BillItemCompositionDataObject = BillItemCompositionDataObject(data.compositeRecord);
+				CompositeAttachmentsView.Open(parentDocument.parentDocument, !compositeItem.isCompositeItemEditable(), compositeItem, Composition(data));
+			}
+			
+			private function onClickView():void 
+			{
+				var compositeItem:BillItemCompositionDataObject = BillItemCompositionDataObject(data.compositeRecord);
+				var attachment:BillItemAttachmentDataObject = compositeItem.AttachmentInfo;
+				
+				var url:URLRequest = new URLRequest(AppController.storageBaseUrl + AppController.BILL_ITEMS_STORAGE_DIRECTORY + "/" + attachment.FileName);
+				navigateToURL(url, "_blank");
+			}
+			
+			private function onClickDetach():void 
+			{
+	            Alert.show("Are you really want to remove attachment?", "Delete",
+				    Alert.YES | Alert.NO , null, 
+        	    	function (event:CloseEvent):void {
+				        if (event.detail == Alert.YES) {
+				        	Composition(data).isChanged = true;
+				        	Composition(data).isProceeded = false;
+							BillItemCompositionDataObject(data.compositeRecord).AttachmentInfo.IsDeleted = true;
+            			}
+	            	}, null, Alert.NO
+    	   		);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_attachment.png')"
+    	visible="{null != data.compositeRecord.AttachmentInfo &amp;&amp; !data.compositeRecord.AttachmentInfo.IsDeleted}"
+    	includeInLayout="{null != data.compositeRecord.AttachmentInfo &amp;&amp; !data.compositeRecord.AttachmentInfo.IsDeleted}"
+        click="onClickView()"
+        />
+    <mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_add.png')"
+    	visible="{(null == data.compositeRecord.AttachmentInfo || data.compositeRecord.AttachmentInfo.IsDeleted) &amp;&amp; Composition(data).isEditable}"
+    	includeInLayout="{(null == data.compositeRecord.AttachmentInfo || data.compositeRecord.AttachmentInfo.IsDeleted) &amp;&amp; Composition(data).isEditable}"
+        click="onClickAttach()"
+    	/>
+	<mx:Button
+    	width="20"
+    	height="20"
+        icon="@Embed(source='/common/attachment/document_delete.png')"
+    	visible="{null != data.compositeRecord.AttachmentInfo &amp;&amp; !data.compositeRecord.AttachmentInfo.IsDeleted &amp;&amp; Composition(data).isEditable}"
+    	includeInLayout="{null != data.compositeRecord.AttachmentInfo &amp;&amp; !data.compositeRecord.AttachmentInfo.IsDeleted &amp;&amp;  Composition(data).isEditable}"
+		click="onClickDetach()"
+		/>
+
+</mx:HBox>

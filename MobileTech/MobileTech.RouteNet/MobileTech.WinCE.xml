@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<application>
+	<settings InitDB ="false" 
+            VC ="false"
+            Sync ="false"/>
+  <database DBLocalFile ="MobileTech"
+            ConnectionString ="Data Source={0}"/>
+
+  <tcomm>
+    <versioncontrol VCUrl ="http://10.0.0.77/VersionControl/"
+                    VCPackageVer ="1.1.1.1"
+                    VCLogin ="VCUser"
+                    VCPassword ="VCUser"
+                    HttpUpdateUrl ="http://10.0.0.77/VersionControl/Download/"
+                    HttpUpdateTemp ="{0}\Temp"
+                    HttpUpdateLogin ="VCUser"
+                    HttpUpdatePassword ="VCUser"/>
+    <replication InternetUrl ="http://10.0.0.49/ReplicationAgent/sqlcesa30.dll"
+                 InternetLogin ="SyncUser" 
+                 InternetPassword ="SyncUser"
+                 MasterLogin ="SyncUser"
+                 MasterPassword ="SyncUser"
+                 MasterPublisher ="VS2005"
+                 MasterPublisherDb ="MTS_V4"
+                 MasterPublication ="MTSMaster"
+                 TransLogin ="SyncUser"
+                 TransPassword ="SyncUser"
+                 TransPublisher ="VS2005"
+                 TransPublisherDb ="MTS_V4"
+                 TransPublication ="MTSTrans"
+                 OtherPublication ="MTSOther"/>
+ </tcomm>               
+               
+</application>

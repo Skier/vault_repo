@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	backgroundColor="#FFFFFF">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.domain.LeadChangeHistory;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.events.CollectionEvent;
+			import com.affilia.util.DateUtil;
+			import mx.collections.ArrayCollection;
+			
+            [Embed(source="/assets/artsbuilderexecute.png")]
+            [Bindable]
+            private var imgForward:Class;
+            
+            [Embed(source="/assets/arr1.png")]
+            [Bindable]
+            private var imgArr1:Class;
+            
+            [Embed(source="/assets/arr2.png")]
+            [Bindable]
+            private var imgArr2:Class;
+            
+            [Bindable]
+            private var statuses:ArrayCollection = new ArrayCollection();
+            
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead { return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+				refreshUI();
+			}
+			
+			private var _leadChangeHistory:ArrayCollection;
+			[Bindable]
+			public function get leadChangeHistory():ArrayCollection { return _leadChangeHistory; }
+			public function set leadChangeHistory(value:ArrayCollection):void 
+			{
+				_leadChangeHistory = value;
+				_leadChangeHistory.addEventListener(CollectionEvent.COLLECTION_CHANGE, onHistoryChanged);
+				refreshUI();
+			}
+			
+			private function onHistoryChanged(e:*):void 
+			{
+				refreshUI();
+			}
+			
+			[Bindable] private var ageStr:String;
+			[Bindable] private var ageUnitsStr:String;
+			
+			private function refreshUI():void 
+			{
+				refreshAge();
+				refreshStatuses();
+			}
+			
+			private function refreshAge():void 
+			{
+				if (lead && lead.DateCreated) 
+				{
+					var now:Date = new Date();
+					var leadDate:Date = lead.DateCreated;
+					var ageMin:Number = (now.time - leadDate.time) / 60000;
+					if (ageMin < 60)
+					{
+						ageStr = int(ageMin).toString();
+						ageUnitsStr = "min old";
+					} else if (ageMin < 2880) 
+					{
+						ageStr = int(ageMin / 60).toString();
+						ageUnitsStr = "hrs old";
+					} else 
+					{
+						ageStr = int(ageMin / 1440).toString();
+						ageUnitsStr = "days old";
+					}
+				} else 
+				{
+					ageStr = ageUnitsStr = "";
+				}
+			}
+			
+			private function refreshStatuses():void 
+			{
+				statuses.removeAll();
+				
+				if (leadChangeHistory && leadChangeHistory.length > 0 && lead != null) 
+				{
+					for each (var item:LeadChangeHistory in leadChangeHistory) 
+					{
+						if (item.LeadStatusId > 0) 
+						{
+							var statusItem:Object = new Object();
+								statusItem["statusName"] = LeadStatus.getStatusName(item.LeadStatusId);
+								statusItem["statusDate"] = DateUtil.getDateTimeStr(item.DateChanged);
+							
+							if (item.LeadStatusId == lead.LeadStatusId)
+								statusItem["isCurrent"] = true;
+							else 
+								statusItem["isCurrent"] = false;
+							
+							statuses.addItemAt(statusItem, 0);
+						}
+					}
+				}
+				
+				addExtraStatus(statuses);
+			}
+			
+			private function addExtraStatus(statuses:ArrayCollection):void 
+			{
+				var currentStatus:Object;
+				if (statuses.length > 0) 
+				{
+					currentStatus = statuses.getItemAt(statuses.length - 1);
+				} else 
+				{
+					currentStatus = new Object();
+					currentStatus["statusName"] = LeadStatus.STATUS_NEW;
+					currentStatus["statusDate"] = "";
+					currentStatus["isCurrent"] = false;
+				}
+
+				if (currentStatus.statusName == LeadStatus.STATUS_CANCELLED || currentStatus.statusName == LeadStatus.STATUS_CONVERTED)
+					return;
+				
+				var nextStatus:Object = new Object();
+
+				if (currentStatus.statusName == LeadStatus.STATUS_NEW)
+					nextStatus["statusName"] = LeadStatus.STATUS_PENDING;
+				else if (currentStatus.statusName == LeadStatus.STATUS_PENDING)
+					nextStatus["statusName"] = LeadStatus.STATUS_CONVERTED;
+
+				nextStatus["statusDate"] = "";
+				nextStatus["isCurrent"] = false;
+				
+				statuses.addItem(nextStatus);
+
+				addExtraStatus(statuses);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" horizontalGap="4" verticalAlign="middle">
+		<mx:VBox height="100%" backgroundColor="#433DB0" color="#FFFFFF" horizontalAlign="center" verticalAlign="middle"
+			verticalGap="-4"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="4">
+			<mx:Label text="{ageStr}" fontWeight="bold" fontSize="12" color="#FFFFFF" width="100%" textAlign="center"/>
+			<mx:Label text="{ageUnitsStr}" color="#FFFFFF" fontSize="10" width="100%" textAlign="center"/>
+		</mx:VBox>
+		
+		<mx:HBox width="100%" height="35" verticalAlign="middle" horizontalGap="0">
+			<mx:Canvas width="100%" height="100%">
+				<mx:VBox height="100%" width="100%" 
+					backgroundColor="{lead.LeadStatusId == LeadStatusEnum.NEW ? 0x33CC00 : 0xEEEEEE}" 
+					horizontalAlign="center" verticalGap="-4">
+					<mx:Label text="{LeadStatus.STATUS_NEW}" fontWeight="bold" fontSize="12"
+						color="{lead.LeadStatusId == LeadStatusEnum.NEW ? 0xFFFFFF : 0x666666}"/>
+					<mx:Label text="{DateUtil.getDateTimeStr(lead.DateCreated)}" fontSize="10"
+						color="{lead.LeadStatusId == LeadStatusEnum.NEW ? 0xFFFFFF : 0x666666}"/>
+				</mx:VBox>
+				
+				<mx:Image source="{imgArr1}" right="0"/>
+			</mx:Canvas>
+			
+			<mx:Repeater id="rptStatuses" dataProvider="{statuses}">
+				<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+					<mx:VBox height="100%" width="100%" paddingLeft="30"
+						backgroundColor="{rptStatuses.currentItem.isCurrent ? 0x33CC00 : 0xEEEEEE}" 
+						horizontalAlign="center" verticalGap="-4">
+						<mx:Label text="{rptStatuses.currentItem.statusName}" fontWeight="bold" fontSize="12"
+							color="{rptStatuses.currentItem.isCurrent ? 0xFFFFFF : 0x666666}"/>
+						<mx:Label text="{rptStatuses.currentItem.statusDate}" fontSize="10"
+							color="{rptStatuses.currentItem.isCurrent ? 0xFFFFFF : 0x666666}"/>
+					</mx:VBox>
+<!--					
+					<mx:VBox height="100%" verticalAlign="middle">
+						<mx:Image source="{imgForward}"/>
+					</mx:VBox>
+-->
+					<mx:Image source="{imgArr2}" left="0"/>
+					<mx:Image source="{imgArr1}" right="0" visible="{rptStatuses.currentIndex &lt; (statuses.length - 1)}"/>
+				</mx:Canvas>
+			</mx:Repeater>
+		</mx:HBox>
+	</mx:HBox>
+	
+</mx:Canvas>

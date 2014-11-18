@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	styleName="contentBox">
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.titus.catalog.model.cart.Cart;
+			import com.titus.catalog.view.cart.CartService;
+			import com.titus.catalog.model.Submittal;
+			import com.titus.catalog.storage.DBStorage;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable] public var submittals:ArrayCollection;
+			
+			[Bindable] private var cart:Cart = Cart.getInstance();
+			
+			public function doClick(data:Object):void 
+			{
+				navigateToURL(new URLRequest(DBStorage.getInstance().getStorageURL() + "?fileid=" + Submittal(data).FileId.toString()), "_blank");
+			}
+			
+			private function onGetPackageClick():void 
+			{
+				CartService.getInstance().getPackage(Cart.getInstance()).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							navigateToURL(new URLRequest(event.result as String), "_blank");
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show("Can not get Package", "Package Error");
+						}
+					)
+				);
+			}
+			
+			private function onClearCartClick():void 
+			{
+				Cart.getInstance().clear();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:DataGrid
+		id="dgSubmittals"
+		width="100%"
+		height="100%"
+		dataProvider="{submittals}">
+		<mx:columns>
+			<mx:DataGridColumn
+				headerText="Type"
+				dataField="FileType"
+				width="200"/>
+			<mx:DataGridColumn
+				headerText="Document"
+				dataField="FileName">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Label
+							color="#0000FF"
+							useHandCursor="true"
+							mouseChildren="false"
+							buttonMode="true"
+							mouseEnabled="true"
+							textDecoration="underline"
+							text="{data.FileName}"
+							click="outerDocument.doClick(data)">
+						</mx:Label>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				headerText=" "
+				itemRenderer="com.titus.catalog.view.submittal.SubmittalActionsIR"
+				width="30"
+				sortable="false"/>
+		</mx:columns>
+	</mx:DataGrid>
+<!--	
+	<mx:VBox
+		width="100%"
+		height="100%">
+		<mx:DataGrid
+			id="dgCartItems"
+			width="100%"
+			height="100%"
+			dataProvider="{cart.items}">
+			<mx:columns>
+				<mx:DataGridColumn
+					headerText="Cart Item"
+					dataField="FileName"/>
+				<mx:DataGridColumn
+					headerText=" "
+					itemRenderer="com.titus.catalog.view.submittal.CartActionsIR"
+					width="30"
+					sortable="false"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox
+			width="100%"
+			horizontalAlign="left">
+			<mx:Button
+				label="Clear cart"
+				click="onClearCartClick()"
+				enabled="{0 &lt; ArrayCollection(dgCartItems.dataProvider).length}"/>
+			<mx:Button
+				label="Get package"
+				click="onGetPackageClick()"
+				enabled="{0 &lt; ArrayCollection(dgCartItems.dataProvider).length}"/>
+		</mx:HBox>
+	</mx:VBox>
+-->	
+</mx:VDividedBox>

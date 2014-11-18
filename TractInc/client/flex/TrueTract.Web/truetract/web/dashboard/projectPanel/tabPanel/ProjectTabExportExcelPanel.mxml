@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="creationCompleteHandler()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.AsyncToken;
+			import mx.controls.Alert;
+			import truetract.web.services.ProjectService;
+			import truetract.domain.ProjectTab;
+			import mx.rpc.Responder;
+			
+			private var fr:FileReference;
+			
+			[Bindable] private var downloadInProgress:Boolean = false;
+			[Bindable] private var exportInProgress:Boolean = false;
+			
+			[Bindable] private var errorMessage:String = null;
+		
+			public var projectTab:ProjectTab
+		
+			private function creationCompleteHandler():void 
+			{
+		        fr = new FileReference();
+		        
+		        fr.addEventListener(Event.OPEN, openExcelExportHandler);
+		        fr.addEventListener(ProgressEvent.PROGRESS, progressExcelExportHandler);
+		        fr.addEventListener(Event.COMPLETE, completeExcelExportHandler);
+		        fr.addEventListener(IOErrorEvent.IO_ERROR, errorExcelExportHandler);
+		        
+			}
+			
+            private function btnExcelExportClickHandler():void 
+            {
+            	errorMessage = null;
+            	
+            	if (projectTab == null) return;
+            		
+                exportInProgress = true;
+
+            	var asyncToken:AsyncToken = ProjectService.getInstance().exportTabToExcel(projectTab.ProjectTabId);
+                asyncToken.addResponder(new mx.rpc.Responder(
+                    function (event:ResultEvent):void
+                    {
+		                exportInProgress = false;
+		                
+                    	var request:URLRequest = new URLRequest(event.result as String);
+				        fr.download(request);
+                    },
+                    function (event:FaultEvent):void 
+                    {
+		                exportInProgress = false;
+                    
+                    	Alert.show("Can not export to Excel: " + event.fault.faultString);
+                    }
+                ));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	fr.cancel();
+            	downloadInProgress = false;
+            }
+            
+            private function openExcelExportHandler(event:Event):void  
+            {
+		        downloadInProgress = true;
+            }
+            
+            private function completeExcelExportHandler(event:Event):void 
+            {
+            	downloadInProgress = false;
+            }
+            
+            private function errorExcelExportHandler(event:IOErrorEvent):void 
+            {
+            	downloadInProgress = false;
+            	errorMessage = event.text;
+            }
+			
+            private function progressExcelExportHandler(event:ProgressEvent):void 
+            {
+            	pbExcelExport.setProgress(event.bytesLoaded, event.bytesTotal);
+            }
+            
+		]]>
+	</mx:Script>
+
+    <mx:Button id="btnExcelExport"
+        icon="@Embed(source='/assets/page_excel.png')" height="20" 
+        label="Export to Excel" fontWeight="normal" fontSize="9" verticalCenter="0"
+        visible="{!(exportInProgress || downloadInProgress)}"
+        includeInLayout="{!(exportInProgress || downloadInProgress)}"
+        styleName="toolButton"
+        toolTip="Export Runsheet to Excel file" 
+        click="btnExcelExportClickHandler()"/>
+    
+    <mx:Label text="Export to excel in progress"
+    	visible="{exportInProgress}" color="#0000cc"/>
+
+	<mx:HBox width="100%"
+    	visible="{downloadInProgress}"
+    	includeInLayout="{downloadInProgress}"
+		>
+	    <mx:ProgressBar id="pbExcelExport"
+	    	width="100%" minWidth="100"
+	    	label="Downloading %3%%" labelPlacement="right"/>
+	
+	    <mx:Button height="20" 
+	        label="Cancel" fontWeight="normal" fontSize="9" verticalCenter="0"
+	        styleName="toolButton"
+	        toolTip="Cancel downloading" 
+	        click="btnCancelClickHandler()"/>
+	</mx:HBox>
+	
+	<mx:Label minWidth="100" 
+		text="{errorMessage}" color="#cc0000" toolTip="{errorMessage}"
+		visible="{errorMessage != null}" includeInLayout="{errorMessage != null}"/>
+</mx:HBox>

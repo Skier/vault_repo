@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="1" paddingRight="1"
+	verticalAlign="middle" horizontalAlign="center"
+	>
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.ShoppingCartDetailUI;
+			
+			private function onItemClick():void 
+			{
+				ShoppingCartView(parentDocument.parentDocument).removeItem(ShoppingCartDetailUI(data));
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:LinkButton height="22" width="100%" label="Delete" click="onItemClick()" styleName="shoppingCartDeleteButton"/>
+</mx:Box>

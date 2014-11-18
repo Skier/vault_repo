@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    title="Select Project">
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Entity.AssetAssignmentDataObject;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.collections.ListCollectionView;
+        	import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+
+            [Bindable]
+            public var Controller: DiaryController;
+            
+            [Bindable]
+            private var _projects:ArrayCollection;
+            
+            [Bindable]
+            private var _date:Date;
+            
+            private var _event:DailyEvent;
+
+            public static function Open(parent:DisplayObject, date:Date, projects:ArrayCollection, event:DailyEvent = null):SelectProjectView {
+                var popup:SelectProjectView = new SelectProjectView();
+                popup._projects = projects;
+                popup._date = date;
+                popup._event = event;
+                popup.Controller = DiaryView(parent).Controller;
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+           
+                return popup;
+            }
+            
+            public function onClose():void {
+                PopUpManager.removePopUp(this);
+            }
+            
+            public function onOkClick():void {
+            	if (null == _event) {
+            		Controller.callItemsView(_date, AssetAssignmentDataObject(cbProjects.selectedItem));
+            		onClose();
+            	} else {
+            		enabled = false;
+            		Controller.changeProject(_event, AssetAssignmentDataObject(cbProjects.selectedItem), onClose);
+            	}
+            }
+
+        ]]>
+    </mx:Script>
+
+	<mx:VBox 
+		paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		>
+		<mx:HBox>
+		    <mx:ComboBox
+    			id="cbProjects"
+		    	rowCount="10"
+        		dataProvider="{_projects}"
+		        labelField="SubAFE"
+        		prompt=""/>
+		</mx:HBox>
+
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button
+				label="Ok"
+				click="onOkClick()"
+				enabled="{null != cbProjects.selectedItem}"/>
+			
+			<mx:Button
+				label="Cancel"
+				click="onClose()"/>
+		</mx:HBox>
+	</mx:VBox>
+
+</mx:TitleWindow>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Containers:ExtPanel 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:components="com.affilia.components.*" 
+	xmlns:Products="AerSysCo.UI.Catalog.Products.*" 
+	xmlns:Containers="AerSysCo.UI.Containers.*"
+	styleName="productsPanel" layout="vertical"
+	creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="addCatalogItems", type="AerSysCo.Events.CatalogItemsEvent")]
+        [Event(name="changeCurrentWarehouse", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.InventoryUI;
+			import AerSysCo.Events.CatalogItemsEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import AerSysCo.UI.Catalog.ProductsListView;
+			import mx.collections.ArrayCollection;
+			import AerSysCo.UI.Models.CatalogItemUI;
+			import AerSysCo.Events.CatalogItemEvent;
+			import mx.controls.DataGrid;
+			import mx.events.DataGridEvent;
+			import mx.events.ListEvent;
+			import AerSysCo.UI.Models.WarehouseUI;
+			import AerSysCo.UI.Models.CustomerUI;
+			
+			private var productView:ProductDetailView;
+			private var multiWarehousesView:ProductMultiWarehouseView;
+			
+			private var _currentCustomer:CustomerUI;
+			[Bindable]
+			public function get currentCustomer():CustomerUI {return _currentCustomer}
+			public function set currentCustomer(value:CustomerUI):void 
+			{
+				_currentCustomer = value;
+				
+				ChangeWatcher.watch(currentCustomer.shoppingCart, "totalItems", shoppingCartItemsChangeHandler);
+			}
+			
+			[Bindable]
+			public var productList:ArrayCollection;
+			
+			[Bindable]
+			public var warehouseList:ArrayCollection;
+
+			private var _currentWarehouse:WarehouseUI;
+			[Bindable]
+			public function get currentWarehouse():WarehouseUI { return _currentWarehouse; }
+			public function set currentWarehouse(value:WarehouseUI):void 
+			{
+				_currentWarehouse = value;
+				
+				ChangeWatcher.watch(this, "currentWarehouse", currentWarehouseChangeHandler);
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+				productsDataGrid.addEventListener("upKeyPressed", upKeyPressHandler);
+				productsDataGrid.addEventListener("downKeyPressed", downKeyPressHandler);
+			}
+			
+			private function upKeyPressHandler(e:Event):void 
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				
+//				return;
+				if (productsDataGrid.selectedIndex > 0) 
+				{
+					productsDataGrid.selectedIndex--;
+					productsDataGrid.editedItemPosition = {columnIndex:6, rowIndex:productsDataGrid.selectedIndex};
+				}
+			}
+			
+			private function downKeyPressHandler(e:Event):void 
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				
+//				return;
+				if ( productsDataGrid.selectedIndex < (productList.length - 1) ) 
+				{
+					productsDataGrid.selectedIndex++;
+					productsDataGrid.editedItemPosition = {columnIndex:6, rowIndex:productsDataGrid.selectedIndex};
+				}
+			}
+			
+			public function addCatalogItemFromMultiWarehouses(ci:CatalogItemUI):void 
+			{
+				multiWarehousesView = ProductMultiWarehouseView.open(Application.application as DisplayObject, ci, true);
+				multiWarehousesView.updateQty(currentWarehouse);
+				multiWarehousesView.addEventListener(CatalogItemsEvent.ADD_CATALOG_ITEMS, addCatalogItemsHandler);
+			}
+			
+			public function openCatalogItem(ci:CatalogItemUI):void 
+			{
+				productView = ProductDetailView.open(Application.application as DisplayObject, ci, true);
+			}
+			
+			private function addCatalogItemsHandler(e:CatalogItemsEvent):void 
+			{
+				dispatchEvent(e);
+				multiWarehousesView.close();
+			}
+			
+			private function shoppingCartItemsChangeHandler(e:*):void 
+			{
+				if (currentWarehouse) 
+				{
+					refreshQtyAvailable();
+				}
+			}
+			
+			private function currentWarehouseChangeHandler(e:*):void 
+			{
+				if (currentWarehouse) 
+				{
+					initWarehouseCombo();
+					initWarehouseColumnHeader();
+					refreshQtyAvailable();
+
+					dispatchEvent(new Event("changeCurrentWarehouse"));
+				}
+			}
+			
+			private function refreshQtyAvailable():void 
+			{
+				for each (var ci:CatalogItemUI in productList) 
+				{
+					ci.updateQtyAvailable(currentWarehouse, currentCustomer);
+				}
+			}
+			
+			private function getAvailableQty(ci:CatalogItemUI):int 
+			{
+				var result:int = 0;
+				
+				for each (var inv:InventoryUI in ci.inventories) 
+				{
+					if (inv.warehouseId == currentWarehouse.warehouseId) 
+					{
+						var qtySC:int = currentCustomer.shoppingCart.getQty(ci.modelItem.modelItemId, inv.warehouseId);
+						result += inv.qty - qtySC;
+					}
+				}
+				
+				return result;
+			}
+			
+			private function initWarehouseColumnHeader():void 
+			{
+				var firstLine:String = currentWarehouse.warehouseName;
+				columnStock.lines.setItemAt(firstLine, 0);
+			}
+			
+			private function initWarehouseCombo():void 
+			{
+				for (var i:int = 0; i < warehouseList.length; i++) 
+				{
+					if (WarehouseUI(warehouseList[i]).warehouseId == currentWarehouse.warehouseId) 
+					{
+						cbWarehouse.selectedIndex = i;
+					}
+				}
+			}
+
+			private function sortByPrice(obj1:Object, obj2:Object):int
+			{
+				if (obj1 == null || obj2 == null) 
+				{
+					return 0;
+				}
+				
+				var price1:Number = 
+					CatalogItemUI(obj1).modelItem.price;
+				var price2:Number = 
+					CatalogItemUI(obj2).modelItem.price;
+				if (price1 < price2) 
+				{
+					return 1;
+				} else if (price1 > price2)
+				{
+					return -1;
+				} else 
+				{
+					return 0;
+				}
+			}
+
+			private function sortByQuantityInStock(obj1:Object, obj2:Object):int
+			{
+				if (obj1 == null || obj2 == null) 
+				{
+					return 0;
+				}
+				
+				var qty1:int = 
+					CatalogItemUI(obj1).qtyAvailable;
+				var qty2:Number = 
+					CatalogItemUI(obj2).qtyAvailable;
+				if (qty1 < qty2) 
+				{
+					return 1;
+				} else if (qty1 > qty2)
+				{
+					return -1;
+				} else 
+				{
+					return 0;
+				}
+			}
+			
+			private function btnAddToCartClickHandler(event:*):void 
+			{
+				var addedItems:ArrayCollection = new ArrayCollection();
+				
+				for each (var product:CatalogItemUI in productList) 
+				{
+					if (product.qtyNeeded > 0) 
+					{
+						product.currentWarehouse = currentWarehouse;
+						addedItems.addItem(product);
+					}
+				}
+				
+				if (addedItems.length > 0) 
+				{
+					dispatchEvent(new CatalogItemsEvent(CatalogItemsEvent.ADD_CATALOG_ITEMS, addedItems));
+				} else
+				{
+					Alert.show("Order QTY indicated is 0.\nPlease update the quantity for your purchase.");
+				}
+			}
+			
+			private function cbWarehouseChangeHandler():void 
+			{
+				currentWarehouse = cbWarehouse.selectedItem as WarehouseUI;
+				initWarehouseColumnHeader();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" 
+		styleName="panelTopHeader">
+		<mx:Label text="Warehouse:" fontWeight="bold"/>
+		<mx:ComboBox id="cbWarehouse" 
+			height="22" dataProvider="{warehouseList}" labelField="warehouseName"
+			enabled="{warehouseList.length &gt; 1}"
+			change="cbWarehouseChangeHandler()"/>
+			
+		<mx:Spacer width="100%"/>
+		
+		<mx:Button id="btnAddToCartTop" label="Add To Cart" 
+			height="24"
+			styleName="productsAddButton"
+			click="btnAddToCartClickHandler(event)"/>
+	</mx:HBox>
+
+	<Products:ProductsDataGrid id="productsDataGrid" 
+		width="100%" height="100%" minWidth="630"
+		dataProvider="{productList}"
+		styleName="productsDataGrid"
+		editable="true">
+		<Products:columns>
+			<mx:DataGridColumn dataField="edtail" headerText=" " editable="false"
+				itemRenderer="AerSysCo.UI.Catalog.Products.ProductDetailIR"
+				width="24" minWidth="24" sortable="false"/>
+			<components:MultiLinesHeaderColumn 
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['SKU'])}"
+				dataField="sku" editable="false"
+				width="45" minWidth="45" textAlign="center"/>
+			<components:MultiLinesHeaderColumn 
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['Model'])}"
+				dataField="modelName" editable="false"
+				width="70" minWidth="70" textAlign="center"/>
+			<components:MultiLinesHeaderColumn 
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['Description'])}"
+				dataField="description" editable="false"
+				width="200" minWidth="200"/>
+			<components:MultiLinesHeaderColumn 
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['Price'])}"
+				dataField="priceString"  editable="false"
+				width="50" minWidth="50" textAlign="right"
+				sortCompareFunction="sortByPrice"/>
+
+			<components:MultiLinesHeaderColumn id="columnStock"
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['', 'Stock'])}"
+				itemRenderer="AerSysCo.UI.Catalog.Products.ProductAvailableIR"
+				editable="false"
+				width="60" minWidth="60"
+				sortCompareFunction="sortByQuantityInStock"/>
+
+			<components:MultiLinesHeaderColumn dataField="qtyNeeded" headerText="QTY" 
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['Order', 'QTY'])}"
+				rendererIsEditor="true" editable="false"
+				itemRenderer="AerSysCo.UI.Catalog.Products.ProductQtyIR"
+				textAlign="right"
+				width="45" minWidth="45"/>
+
+			<components:MultiLinesHeaderColumn dataField="qtyNeeded"
+				headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+				lines="{new ArrayCollection(['Additional', 'Stock'])}"
+				headerText="Multi Warehouse" editable="false"
+				itemRenderer="AerSysCo.UI.Catalog.Products.ProductMultiWarehouseIR"
+				width="80" minWidth="80" sortable="false" textAlign="center"/>
+		</Products:columns>
+	</Products:ProductsDataGrid>
+</Containers:ExtPanel>

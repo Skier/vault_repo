@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:facility="com.ebs.eroof.view.facility.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.service.FacilityLoader;
+			import mx.core.Application;
+			import com.ebs.eroof.view.section.SectionEditPopup;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.ebs.eroof.model.wrapper.Facility;
+			
+			[Bindable]
+			private var model:Facility;
+			
+			public function init(model:Facility):void 
+			{
+				this.model = model;
+				if (!model.isLoaded)
+					loadSections();
+			}
+			
+			private function loadSections():void 
+			{
+				var loader:FacilityLoader = new FacilityLoader(model);
+				loader.addEventListener("facilityLoaded", onFacilityLoaded);
+				loader.loadSections();
+			}
+			
+			private function onFacilityLoaded(event:Event):void 
+			{
+				trace("facility loaded");
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#ffffee"
+		borderColor="#999999" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%"
+			paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+			backgroundColor="#e8e8e8" borderColor="#999999" borderStyle="solid" cornerRadius="2">
+			<mx:Label text="Facility detail" fontSize="16" fontWeight="bold" color="#0000AA"/>
+			<mx:ProgressBar width="100" indeterminate="true" visible="{!model.isLoaded}" label="" labelPlacement="left"/>
+		</mx:HBox>
+		
+		<mx:TabNavigator width="100%" height="100%" 
+			historyManagementEnabled="false" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+			<mx:VBox label="Summary" width="100%" height="100%">
+				<facility:FacilitySummaryPanel width="100%" height="100%" model="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Sections" width="100%" height="100%" 
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				horizontalAlign="right" 
+				backgroundColor="#F8F8F8" borderStyle="solid" borderColor="#CCCCCC" cornerRadius="2">
+				<mx:DataGrid id="dgSections" width="100%" height="100%" dataProvider="{model.sectionsCollection}">
+					<mx:columns>
+						<mx:DataGridColumn dataField="name" headerText="Segment Name"/>
+						<mx:DataGridColumn dataField="sqFt" headerText="SqFt" width="100" textAlign="right"/>
+						<mx:DataGridColumn dataField="estCostPerSqFt" headerText="Est.Cost per SqFt" width="100" textAlign="right"/>
+						<mx:DataGridColumn dataField="estCost" headerText="Est.Cost" width="100" textAlign="right"/>
+					</mx:columns>
+				</mx:DataGrid>
+				
+				<mx:VBox width="100%" 
+					visible="{dgSections.selectedItem != null}" includeInLayout="{dgSections.selectedItem != null}"
+					paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+					borderColor="#dddddd" borderStyle="solid" cornerRadius="2"
+					backgroundColor="#eeeeee" fontSize="12">
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:Label text="Roof Name:" width="100" textAlign="right"/>
+						<mx:Label text="{Section(dgSections.selectedItem).name}" fontWeight="bold"/>
+					</mx:HBox>
+					
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:Label text="SqFt:" width="100" textAlign="right"/>
+						<mx:Label text="{Section(dgSections.selectedItem).sqFt}" fontWeight="bold"/>
+					</mx:HBox>
+
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:Label text="Est.Cost per SqFt:" width="100" textAlign="right"/>
+						<mx:Label text="{Section(dgSections.selectedItem).estCostPerSqFt}" fontWeight="bold"/>
+					</mx:HBox>
+
+					<mx:HBox width="100%" verticalAlign="middle">
+						<mx:Label text="Est.Cost:" width="100" textAlign="right"/>
+						<mx:Label text="{Section(dgSections.selectedItem).estCost}" fontWeight="bold"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:VBox>
+
+			<mx:VBox label="Map" width="100%" height="100%">
+				<facility:FacilityMapEditor width="100%" height="100%" model="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Site Plan" width="100%" height="100%">
+				<facility:FacilitySitePlanView width="100%" height="100%" model="{model}"/>
+			</mx:VBox>
+
+			<mx:VBox label="Details" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Deficiencies" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Inspections" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Expenditures" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Warranties" width="100%" height="100%">
+			</mx:VBox>
+
+			<mx:VBox label="Reports" width="100%" height="100%">
+				<facility:FacilityReportsView width="100%" height="100%" model="{model}"/>
+			</mx:VBox>
+		</mx:TabNavigator>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    title="Shipping Options" xmlns:CheckOut="AerSysCo.UI.Ordering.CheckOut.*"
+    styleName="shippingOptionsPanel"
+    >
+
+    <mx:Metadata>
+        [Event(name="previousStepRequest", type="flash.events.Event")]
+        [Event(name="continueCheckout", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import AerSysCo.UI.MainController;
+            import AerSysCo.Server.Context;
+            import AerSysCo.UI.Models.ShippingOptionUI;
+            import AerSysCo.Server.ShippingOption;
+            import AerSysCo.UI.Models.ShoppingCartShipmentUI;
+            import AerSysCo.Service.WarehouseStorage;
+            import AerSysCo.UI.Models.ShippingAddressUI;
+            import AerSysCo.UI.Catalog.CatalogController;
+            import AerSysCo.UI.Models.CustomerUI;
+            import mx.core.Application;
+            import mx.managers.PopUpManager;
+            import AerSysCo.Server.ShoppingCartShipment;
+            
+            public const OPTIONS_WIDTH:int = 90;
+            
+            [Bindable] public var currentCustomer:CustomerUI;
+            
+            private function btnPrevClickHandler():void 
+            {
+                dispatchEvent(new Event("previousStepRequest"));
+            }
+            
+            private function btnContinueClickHandler():void 
+            {
+                dispatchEvent(new Event("continueCheckout"));
+                
+            }
+            
+            public function updateShipments():Boolean 
+            {
+                var isValid:Boolean = true;
+                var shipments:Object = new Object();
+                
+                for (var i:int = 0; i < currentCustomer.shoppingCart.shipmentsFiltered.length; i++) 
+                {
+                    var soBox:ShipmentShippingOptionsBox = boxShippingOptions[i] as ShipmentShippingOptionsBox;
+                    
+                    if (!soBox.updateShipment()) {
+                        isValid = false;
+                    }
+                    
+                    var s:ShoppingCartShipmentUI = currentCustomer.shoppingCart.shipmentsFiltered[i] as ShoppingCartShipmentUI;
+                    if (shipments[s.poNumber] == null) 
+                    {
+                        shipments[s.poNumber] = s;
+                    } else 
+                    {
+                        Alert.show("PO Numbers are not unique");
+                        isValid = false;
+                    }
+                }
+                
+                return isValid;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" height="100%"
+        styleName="shippingOptionsContent">
+        <mx:VBox height="100%">
+            <mx:HBox horizontalGap="0">
+                <mx:Label id="lblWarehouse" text="" width="130" textAlign="right"/>
+                <mx:Repeater id="rptHeaders"
+                    dataProvider="{ShoppingCartShipmentUI(currentCustomer.shoppingCart.shipments.getItemAt(0)).shipmentOptions}">
+                    <mx:Label id="lblOptionHeaders"
+                        text="{ShippingOptionUI(rptHeaders.currentItem).shippigType.shippingType}" 
+                        fontWeight="bold" width="{OPTIONS_WIDTH}"  textAlign="center" />
+               
+                        
+                </mx:Repeater>
+                <mx:Label id="lblLiftgate" text="Liftgate Required" fontWeight="bold"   width="150" textAlign="center"/>
+                <mx:Label id="lblPONumber" text="Enter PO Number(s)*" fontWeight="bold"  width="150" textAlign="center"/>
+            </mx:HBox>
+
+            <mx:HRule width="100%"/>
+
+            <mx:Repeater id="rptShipments" width="100%"
+                dataProvider="{currentCustomer.shoppingCart.shipmentsFiltered}">
+                <CheckOut:ShipmentShippingOptionsBox id="boxShippingOptions" 
+                    width="100%" shipment="{ShoppingCartShipmentUI(rptShipments.currentItem)}"/>
+            </mx:Repeater>
+
+            <mx:HRule width="100%"/>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Label text="*PO Number must be unique" fontWeight="bold"/>
+
+    <mx:HBox width="100%"
+        styleName="panelTopHeader">
+        <mx:Spacer width="100%"/>
+        <mx:Button id="btnPrev" 
+            height="24" label="Previous" 
+            styleName="checkOutButton"
+            click="btnPrevClickHandler()"/>
+            
+        <mx:Button id="btnContinue" 
+            height="24" label="Continue" 
+            styleName="checkOutButton"
+            click="btnContinueClickHandler()"/>
+    </mx:HBox>
+</mx:Panel>

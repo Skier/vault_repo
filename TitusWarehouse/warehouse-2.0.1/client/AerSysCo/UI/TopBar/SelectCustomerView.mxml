@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:components="com.affilia.components.*"
+	layout="vertical" width="350"
+	title="Select a Customer">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.DynamicEvent;
+			import mx.managers.PopUpManager;
+			import AerSysCo.UI.Models.CustomerUI;
+
+			[Bindable]
+			public var customerList:ArrayCollection;
+
+			private var _currentCustomer:CustomerUI;
+			[Bindable] 
+			public function get currentCustomer():CustomerUI {return _currentCustomer;}
+			public function set currentCustomer(value:CustomerUI):void 
+			{
+				_currentCustomer = value;
+
+				initCbCustomers(value);
+			}
+			
+            public static function open(parent:DisplayObject, customerList:ArrayCollection, modal:Boolean = true):SelectCustomerView
+            {
+                var popup:SelectCustomerView = new SelectCustomerView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                popup.customerList = customerList;
+                
+                return popup;
+            }
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+
+			private function initCbCustomers(value:CustomerUI):void 
+			{
+				if (value == null) 
+				{
+					cbCustomers.selectedIndex = -1;
+					return;
+				}
+				
+				var customers:ArrayCollection = cbCustomers.dataProvider as ArrayCollection;
+				
+				for each (var item:CustomerUI in customers) 
+				{
+					if (value.customerId == item.customerId) 
+					{
+						var idx:int = customers.getItemIndex(item);
+						if (idx != -1)
+							cbCustomers.selectedIndex = idx;
+
+						return;
+					}
+				}
+			}
+			
+			private function btnOkClickHandler():void 
+			{
+				var event:DynamicEvent = new DynamicEvent("customerChange");
+				event.customer = cbCustomers.selectedItem as CustomerUI;
+
+				dispatchEvent(event);
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" styleName="selectCustomerContent">
+		<mx:Box styleName="imageBuilding" width="16" height="16"/>
+		
+		<components:AutoComplete id="cbCustomers"
+			height="22" width="100%" maxWidth="300"
+			dataProvider="{customerList}" 
+			labelField="salesRepCompanyName"/>
+	</mx:HBox>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button id="btnOk" height="24" label="Ok"/>
+		<mx:Button height="24" label="Cancel" click="close()"/>
+	</mx:ControlBar>
+
+</mx:TitleWindow>

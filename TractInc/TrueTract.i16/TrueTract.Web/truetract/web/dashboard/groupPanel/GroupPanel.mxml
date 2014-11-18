@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<groupPanel:GroupPanel_code
+    label="{group.groupName}"
+    show="{showHandler()}"
+    paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:groupPanel="truetract.web.dashboard.groupPanel.*" 
+    xmlns:documentList="truetract.web.dashboard.documentList.*" 
+    xmlns:drawingList="truetract.web.dashboard.drawingList.*" 
+    xmlns:dashboard="truetract.web.dashboard.*" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:documentDetail="truetract.web.dashboard.documentPanel.documentDetail.*" 
+    xmlns:filter="truetract.web.dashboard.groupPanel.filter.*">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.web.dashboard.DashboardModel;
+        ]]>
+    </mx:Script>
+
+    <mx:VBox
+        visible="{group.groupName == DashboardModel.ALL_ITEMS_GROUP_NAME &amp;&amp;
+            isFilterSpecified(group.documentFilter) == false}"
+        includeInLayout="{group.groupName == DashboardModel.ALL_ITEMS_GROUP_NAME &amp;&amp;
+            isFilterSpecified(group.documentFilter) == false}" width="100%" 
+        borderStyle="solid" borderColor="#7599ee" color="#7599ee" fontSize="11">
+        <mx:Text text="Filter should be specified for group [All Items]"/>
+    </mx:VBox>
+
+    <filter:FiterInfoPanel
+        filter="{group.documentFilter}" width="100%" 
+        visible="{isFilterSpecified(group.documentFilter) == true}"
+        includeInLayout="{isFilterSpecified(group.documentFilter) == true}"
+        borderStyle="solid" borderColor="#7599ee" color="#7599ee" fontSize="11"
+        resetFilterRequest="resetFilterRequestHandler()"/>
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <components:ExtendedPopUpButton id="moveToFolderButton"
+            label="Move to Folder" popUp="{folderListMenu}"
+            enabled="{documentList.selectedItem != null}"
+            openAlways="true" 
+            popUpWidth="{moveToFolderButton.width}" styleName="toolButton"/>
+
+        <mx:Button 
+            visible="{!group.systemGroup}"
+            includeInLayout="{!group.systemGroup}"
+            label="Remove from Folder" styleName="toolButton"
+            enabled="{documentList.selectedItem != null}"
+            click="removeFromFolderButton_clickHandler()"/>
+
+        <mx:Button 
+            label="Open" styleName="toolButton"
+            click="documentList_dblClickHandler()" enabled="{documentList.selectedItem != null}"/>
+
+        <mx:Button 
+            label="Filter" styleName="toolButton" 
+            icon="@Embed(source='/assets/page_white_find.png')"
+            click="filterButton_clickHandler()"/>
+        
+    </mx:HBox>
+
+    <mx:VDividedBox width="100%" height="100%">
+
+        <mx:List id="documentList"
+            dataProvider="{group.groupDocumentsList}"
+            itemRenderer="truetract.web.dashboard.groupPanel.DocumentIR"
+            doubleClickEnabled="true" width="100%" height="100%" 
+            doubleClick="documentList_dblClickHandler()"
+            change="documentList_changeHandler()"/>
+    
+        <documentDetail:DocumentDetailView id="detailView"
+            docum="{Document(documentList.selectedItem)}" 
+            width="100%" minHeight="100"
+            addTract="detailView_addTractHandler()"
+            openTract="detailView_openTractHandler(event)"/>
+        
+    </mx:VDividedBox>
+
+</groupPanel:GroupPanel_code>

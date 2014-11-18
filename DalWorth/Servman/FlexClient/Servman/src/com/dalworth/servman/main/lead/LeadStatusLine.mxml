@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	backgroundColor="#FFFFFF">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CollectionEvent;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.servman.domain.LeadChangeHistory;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.domain.Lead;
+			import mx.collections.ArrayCollection;
+			
+            [Embed(source="/assets/artsbuilderexecute.png")]
+            [Bindable]
+            private var imgForward:Class;
+            
+            [Bindable]
+            private var statuses:ArrayCollection = new ArrayCollection();
+            
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead { return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+				refreshUI();
+			}
+			
+			private var _leadChangeHistory:ArrayCollection;
+			[Bindable]
+			public function get leadChangeHistory():ArrayCollection { return _leadChangeHistory; }
+			public function set leadChangeHistory(value:ArrayCollection):void 
+			{
+				_leadChangeHistory = value;
+				_leadChangeHistory.addEventListener(CollectionEvent.COLLECTION_CHANGE, onHistoryChanged);
+				refreshUI();
+			}
+			
+			private function onHistoryChanged(e:*):void 
+			{
+				refreshUI();
+			}
+			
+			[Bindable] private var ageStr:String;
+			[Bindable] private var ageUnitsStr:String;
+			
+			private function refreshUI():void 
+			{
+				refreshAge();
+				refreshStatuses();
+			}
+			
+			private function refreshAge():void 
+			{
+				if (lead && lead.DateCreated) 
+				{
+					var now:Date = new Date();
+					var leadDate:Date = lead.DateCreated;
+					var ageMin:Number = (now.time - leadDate.time) / 60000;
+					if (ageMin < 60)
+					{
+						ageStr = ageMin.toFixed(0);
+						ageUnitsStr = "min old";
+					} else if (ageMin < 2880) 
+					{
+						ageStr = (ageMin / 60).toFixed(0);
+						ageUnitsStr = "hrs old";
+					} else 
+					{
+						ageStr = (ageMin / 1440).toFixed(0);
+						ageUnitsStr = "days old";
+					}
+				} else 
+				{
+					ageStr = ageUnitsStr = "";
+				}
+			}
+			
+			private function refreshStatuses():void 
+			{
+				statuses.removeAll();
+				
+				if (leadChangeHistory && leadChangeHistory.length > 0 && lead != null) 
+				{
+					for each (var item:LeadChangeHistory in leadChangeHistory) 
+					{
+						if (item.LeadStatusId > 0) 
+						{
+							var statusItem:Object = new Object();
+								statusItem["statusName"] = LeadStatus.getStatusName(item.LeadStatusId);
+								statusItem["statusDate"] = DateUtil.getDateTimeStr(item.DateChanged);
+							
+							if (item.LeadStatusId == lead.LeadStatusId)
+								statusItem["isCurrent"] = true;
+							else 
+								statusItem["isCurrent"] = false;
+							
+							statuses.addItemAt(statusItem, 0);
+						}
+					}
+				}
+				
+				addExtraStatus(statuses);
+			}
+			
+			private function addExtraStatus(statuses:ArrayCollection):void 
+			{
+				var currentStatus:Object;
+				if (statuses.length > 0) 
+				{
+					currentStatus = statuses.getItemAt(statuses.length - 1);
+				} else 
+				{
+					currentStatus = new Object();
+					currentStatus["statusName"] = LeadStatus.STATUS_NEW;
+					currentStatus["statusDate"] = "";
+					currentStatus["isCurrent"] = false;
+				}
+
+				if (currentStatus.statusName == LeadStatus.STATUS_CANCELLED || currentStatus.statusName == LeadStatus.STATUS_CONVERTED)
+					return;
+				
+				var nextStatus:Object = new Object();
+
+				if (currentStatus.statusName == LeadStatus.STATUS_NEW)
+					nextStatus["statusName"] = LeadStatus.STATUS_CONTACTED;
+				else if (currentStatus.statusName == LeadStatus.STATUS_CONTACTED)
+					nextStatus["statusName"] = LeadStatus.STATUS_QUALIFIED;
+				else if (currentStatus.statusName == LeadStatus.STATUS_QUALIFIED)
+					nextStatus["statusName"] = LeadStatus.STATUS_CONVERTED;
+
+				nextStatus["statusDate"] = "";
+				nextStatus["isCurrent"] = false;
+				
+				statuses.addItem(nextStatus);
+
+				addExtraStatus(statuses);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox height="100%" backgroundColor="#FF7700" color="#FFFFFF" horizontalAlign="center" verticalGap="0">
+		<mx:Label text="{ageStr}" fontWeight="bold" fontSize="16" color="#FFFFFF" />
+		<mx:Label text="{ageUnitsStr}" color="#FFFFFF" />
+	</mx:VBox>
+	
+	<mx:VBox height="100%" width="100%" 
+		backgroundColor="{lead.LeadStatusId == LeadStatus.STATUS_NEW_ID ? 0x33CC00 : 0xEEEEEE}" 
+		horizontalAlign="center" verticalGap="0">
+		<mx:Label text="{LeadStatus.STATUS_NEW}" fontWeight="bold" fontSize="13"
+			color="{lead.LeadStatusId == LeadStatus.STATUS_NEW_ID ? 0xFFFFFF : 0x666666}"/>
+		<mx:Label text="{DateUtil.getDateTimeStr(lead.DateCreated)}" fontSize="9"
+			color="{lead.LeadStatusId == LeadStatus.STATUS_NEW_ID ? 0xFFFFFF : 0x666666}"/>
+	</mx:VBox>
+	
+	<mx:Repeater id="rptStatuses" dataProvider="{statuses}">
+		<mx:VBox height="100%" verticalAlign="middle">
+			<mx:Image source="{imgForward}"/>
+		</mx:VBox>
+	
+		<mx:VBox height="100%" width="100%" 
+			backgroundColor="{rptStatuses.currentItem.isCurrent ? 0x33CC00 : 0xEEEEEE}" 
+			horizontalAlign="center" verticalGap="0">
+			<mx:Label text="{rptStatuses.currentItem.statusName}" fontWeight="bold" fontSize="13"
+				color="{rptStatuses.currentItem.isCurrent ? 0xFFFFFF : 0x666666}"/>
+			<mx:Label text="{rptStatuses.currentItem.statusDate}" fontSize="9"
+				color="{rptStatuses.currentItem.isCurrent ? 0xFFFFFF : 0x666666}"/>
+		</mx:VBox>
+	</mx:Repeater>
+
+</mx:HBox>

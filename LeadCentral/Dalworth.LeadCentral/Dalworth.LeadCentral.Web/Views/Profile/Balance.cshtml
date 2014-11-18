@@ -1,0 +1,85 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Profile.TransactionList
+
+@{
+    ViewBag.Title = "Transactions";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <h1>Balance Information</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right; vertical-align:middle;">Billing Status</td>
+              <td><b>@(Model.BillingStatus ?? "Unknown")</b></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Current Balance</td>
+              <td>@if (Model.CurrentBalance > 0){<b>@string.Format("{0:C}", Model.CurrentBalance)</b>}
+                        else{<b style="color:#D00;">@string.Format("{0:C}", Model.CurrentBalance)</b>}
+                <span>@Html.ActionLink("Add Funds", "AddFunds", new{controller="Profile"}, new{@class="button"})</span></td>
+            </tr>
+          </table>
+        </div>
+    <br/>
+
+    @using (Html.BeginForm("Balance", "Profile", FormMethod.Get))
+    {
+    <div class="filter" style="border-bottom: none;">
+    <table style="width:100%;">
+        <tr>
+        <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">Created from:</span>
+            @Html.TextBoxFor(model => model.DateFrom, new { @class = "date-input", @id = "date-from" })</td>
+        <td class="left" style="white-space: nowrap;"><span style="margin-left: 15px;">to:</span>
+            @Html.TextBoxFor(model => model.DateTo, new { @class = "date-input", @id = "date-to" })</td>
+        <td class="left" style="width:100%;vertical-align:bottom;">
+            <div style="float:right;">
+            <button type="submit">Refresh</button>
+            @Html.ActionLink("Clear", "Balance", new { controller = "Profile" }, new { @class = "button" })
+            </div>
+        </td>
+        </tr>
+    </table>
+    </div>
+    }
+
+@{
+    var grid = new WebGrid(Model.Transactions, rowsPerPage: 20);
+    var columns = new List<WebGridColumn>
+                      {
+                          grid.Column("DateCreated", "Created", canSort : false),
+                          grid.Column("TransactionType", "Type", canSort : false),
+                          grid.Column("Description", "Description", canSort : false),
+                          grid.Column("Quantity", "Quantity", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0}", item.Quantity))</span></text> ),
+                          grid.Column("Amount", "Amount", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0:C}", item.Amount))</span></text> ),
+                          grid.Column("CurrentBalance", "Current Balance", canSort : false, 
+                                format:@<text><span style="float:right;">@(string.Format("{0:C}", item.CurrentBalance))</span></text> )
+                      };
+}
+    @grid.GetHtml(
+            columns: grid.Columns(columns.ToArray()),
+            mode: WebGridPagerModes.All,
+            firstText: "First",
+            previousText: "Prev",
+            nextText: "Next",
+            lastText: "Last",
+            numericLinksCount: 10,
+            tableStyle: "list"
+    )
+
+    </div>
+  </div>
+

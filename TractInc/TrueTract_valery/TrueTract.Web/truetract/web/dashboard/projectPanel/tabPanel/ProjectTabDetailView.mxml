@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+    xmlns="truetract.web.dashboard.projectPanel.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:contactPanel="truetract.web.dashboard.projectPanel.tabPanel.contactPanel.*" 
+    xmlns:tabPanel="truetract.web.dashboard.projectPanel.tabPanel.*"
+    verticalGap="2"
+	borderColor="#333399" borderStyle="solid" borderThickness="1"
+	paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+	backgroundColor="#eeeeee" styleName="CollapsiblePanel"
+	>
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+        [Event(name="addDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+        	import truetract.web.dashboard.projectPanel.ProjectTabsLayout;
+        	import mx.events.CollectionEventKind;
+        	import mx.events.CollectionEvent;
+        	import mx.events.PropertyChangeEvent;
+        	import mx.events.CloseEvent;
+        	import mx.core.Application;
+        	import truetract.web.wizards.addDocumentWizard.AddDocumentWizardView;
+        	import truetract.web.util.TokenResponder;
+        	import truetract.web.AppModel;
+        	import truetract.web.services.DocumentService;
+        	import truetract.web.dashboard.documentPanel.documentEditor.DocumentEditorView;
+            import truetract.domain.mementos.ProjectTabDocumentMemento;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.AsyncToken;
+            import truetract.web.services.ProjectService;
+            import truetract.domain.mementos.ProjectTabMemento;
+            import mx.core.IUIComponent;
+            import mx.events.DynamicEvent;
+            import mx.core.DragSource;
+            import truetract.domain.DocumentAttachment;
+            import truetract.domain.Document;
+            import truetract.domain.ProjectTab;
+            import truetract.domain.ProjectTabDocument;
+            import truetract.web.dashboard.events.DocumentEvent;
+
+            import mx.events.DragEvent;
+            import mx.core.UIComponent;
+            import mx.collections.ArrayCollection;
+            import mx.controls.List;
+            import mx.controls.Button;
+            import mx.controls.CheckBox;
+            import mx.controls.Alert;
+            import mx.managers.DragManager;
+
+            [Bindable] public var projectTab:ProjectTab;
+            [Bindable] public var readOnly:Boolean = false;
+
+            private var projectService:ProjectService = ProjectService.getInstance();
+            private var documentService:DocumentService = DocumentService.getInstance();
+            
+            public function initDocListener():void
+            {
+                projectTab.DocumentsList.addEventListener(CollectionEvent.COLLECTION_CHANGE, documentsListChangeHandler);
+            }
+
+			private function documentsListChangeHandler(event:CollectionEvent):void {
+        		if (event.kind == CollectionEventKind.ADD && event.items.length > 0) {
+    				var index:int = projectTab.DocumentsList.getItemIndex(event.items[0]);
+    				if (index != -1) 
+    				{
+    					documentDG.selectedIndex = index;
+    				}
+        		}
+        	}
+
+            private function doEditTabInfo():void
+            {
+                var memento:Object = projectTab.getMemento();
+
+                var popup:ProjectTabEditView = ProjectTabEditView.open(this, true);
+                popup.projectTab = projectTab;
+                popup.addEventListener("commit", 
+                    function(event:Event):void
+                    {
+                        var asynToken:AsyncToken = projectService.updateProjectTab(projectTab);
+                        asynToken.addResponder(new mx.rpc.Responder(
+                            function (event:ResultEvent):void
+                            {
+                                popup.close();
+                            },
+                            function (event:FaultEvent):void { }
+                        ));
+                    }
+                );
+                popup.addEventListener("cancel", 
+                    function(event:Event):void
+                    {
+                        projectTab.setMemento(memento);
+                    }
+                );
+            }
+
+            private function doCloseTab():void 
+            {
+                projectTab.DocumentsList.removeEventListener(CollectionEvent.COLLECTION_CHANGE, documentsListChangeHandler);
+            	parentDocument.closeProjectTab(projectTab);
+            }
+
+            private function panel_dragEnterHandler(event:DragEvent):void
+            {
+                var dragObj:Array= event.dragSource.dataForFormat("items") as Array;
+            }
+            
+            private function documentDG_dragOverHandler(event:DragEvent):void
+            {
+                var dragObj:Array= event.dragSource.dataForFormat("items") as Array;
+
+                if (event.dragInitiator != documentDG && dragObj && dragObj.length > 0 
+                    && (dragObj[0] is Document || dragObj[0] is ProjectTabDocument))
+                {
+                    DragManager.showFeedback(DragManager.COPY);
+                    documentDG.showDropFeedback(event);
+                } 
+                else 
+                {
+                    DragManager.showFeedback(DragManager.NONE);
+                }
+            }
+
+            private function documentDG_dragDropHandler(event:DragEvent):void
+            {
+                documentDG.hideDropFeedback(event);
+
+                var dragObj:Array= event.dragSource.dataForFormat("items") as Array;
+
+                if (event.dragInitiator != documentDG && dragObj)
+                {
+                    projectService.addTabDocuments(projectTab, dragObj);
+                }
+            }
+
+            private function documentDG_dragEnterHandler(event:DragEvent):void
+            {
+                var dragObj:Array= event.dragSource.dataForFormat("items") as Array;
+
+                if (dragObj && dragObj.length > 0 
+                    && (dragObj[0] is Document || dragObj[0] is ProjectTabDocument))
+                {
+                    DragManager.acceptDragDrop(IUIComponent(event.currentTarget));
+                }
+            }
+
+            public function documentDG_doubleClickHandler():void
+            {
+                var tabDocument:ProjectTabDocument = ProjectTabDocument(documentDG.selectedItem);
+				
+				openTabDocument(tabDocument);
+            }
+
+            public function actualizeDocumentClickHandler():void
+            {
+                var tabDocument:ProjectTabDocument = ProjectTabDocument(documentDG.selectedItem);
+				
+                if (tabDocument)
+                {
+	                Alert.show("Are you really want to get latest version of the document?", 
+                       "Get Latest Document", Alert.YES | Alert.NO, null, 
+                       function (event:CloseEvent):void 
+                       {
+                            if (event.detail == Alert.YES)
+                            {
+			                    actualizeDocument(tabDocument.DocumentRef);
+                            }
+                        });
+                }
+            }
+
+            public function openTabDocument(tabDocument:ProjectTabDocument):void
+            {
+                var tabDocumentMemento:ProjectTabDocumentMemento = 
+                    ProjectTabDocumentMemento(tabDocument.getMemento());
+
+                var popup:ProjectTabDocumentEditView = 
+                	ProjectTabDocumentEditView.open(Application.application as DisplayObject, tabDocument, true);
+
+				popup.readOnly = readOnly;
+                popup.addEventListener("commit", 
+                    function(event:Event):void
+                    {
+                        var asynToken:AsyncToken = projectService.updateProjectTabDocument(tabDocument);
+                        asynToken.addResponder(new mx.rpc.Responder(
+                            function (event:ResultEvent):void
+                            {
+                                popup.close();
+                            },
+                            function (event:FaultEvent):void { }
+                        ));
+                    }
+                );
+                popup.addEventListener("cancel", 
+                    function(event:Event):void
+                    {
+                        tabDocument.setMemento(tabDocumentMemento);
+                    }
+                );
+            }
+            
+            public function actualizeDocument(doc:Document):void 
+            {
+                projectService.actualizeDocument(projectTab.ProjectRef, doc);
+            }
+
+            public function openDocument(document:Document):void 
+            {
+            	var event:DocumentEvent = new DocumentEvent(DocumentEvent.OPEN_DOCUMENT, document);
+            	event.docTarget = this;
+            	
+	            dispatchEvent(event);
+            }
+
+            public function openPdfCopy(document:Document):void 
+            {
+            	if (!document) return;
+            		
+                if (document.PdfCopy) {
+                    var file:DocumentAttachment = DocumentAttachment(document.PdfCopy);
+
+                    navigateToURL(new URLRequest(file.FileRef.FileUrl), '_blank');
+                }
+            }
+
+            private function addDocumentButton_clickHandler():void
+            {
+            	dispatchEvent(new DocumentEvent(DocumentEvent.ADD_DOCUMENT, null, this));
+            }
+            
+            public function removeDocument(tabDocument:ProjectTabDocument):void 
+            {
+                if (tabDocument)
+                {
+	                Alert.show("Are you really want to remove current document from runsheet ?", 
+                       "Remove Document", Alert.YES | Alert.NO, null, 
+                       function (event:CloseEvent):void 
+                       {
+                            if (event.detail == Alert.YES)
+                            {
+			                    projectService.deleteProjectTabDocuments(projectTab, [tabDocument]);
+                            }
+                        });
+                }
+            }
+
+            public function changeProjectTabDocumentIsActiveStatus(tabDocument:ProjectTabDocument):void 
+            {
+                if (!tabDocument) return;
+                
+		        for each (var item:ProjectTabDocument in projectTab.DocumentsList)
+		        {
+		        	if (item.IsActive && item != tabDocument) {
+			            item.IsActive = false;
+						projectService.updateProjectTabDocument(item);
+		        	}
+		        }
+		
+                tabDocument.IsActive = !tabDocument.IsActive;
+
+                var asynToken:AsyncToken = projectService.updateProjectTabDocument(tabDocument);
+                asynToken.addResponder(new mx.rpc.Responder(
+                    function (event:ResultEvent):void
+                    {
+                        projectTab.setActiveDocument(tabDocument);
+                    },
+                    function (event:FaultEvent):void { }
+                ));
+            }
+            
+			protected function sortByDateSigned(obj1:Object, obj2:Object):int 
+			{
+				var tabDoc1:ProjectTabDocument = obj1 as ProjectTabDocument;
+				var tabDoc2:ProjectTabDocument = obj2 as ProjectTabDocument;
+			
+				if (tabDoc1.DocumentRef.DateSigned < tabDoc2.DocumentRef.DateSigned) {
+					return -1;
+				} else if (tabDoc1.DocumentRef.DateSigned > tabDoc2.DocumentRef.DateSigned) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+	
+			protected function sortByDateFiled(obj1:Object, obj2:Object):int 
+			{
+				var tabDoc1:ProjectTabDocument = obj1 as ProjectTabDocument;
+				var tabDoc2:ProjectTabDocument = obj2 as ProjectTabDocument;
+			
+				if (tabDoc1.DocumentRef.DateFiled < tabDoc2.DocumentRef.DateFiled) {
+					return -1;
+				} else if (tabDoc1.DocumentRef.DateFiled > tabDoc2.DocumentRef.DateFiled) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+	
+            private function panelDocumentInfoUpdateActiveDocumentHandler():void 
+            {
+				projectService.updateProjectTabDocument(projectTab.ActiveTabDocument);
+            } 
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" verticalAlign="middle">
+ 		<mx:Image id="imgTab"
+ 			source="@Embed(source='/assets/tab.png')"/>
+
+    	<mx:Label text="{projectTab.Name}" fontWeight="bold"/>
+    	
+	    <mx:Button id="editTabButton"
+	    	includeInLayout="{!readOnly}"
+	    	visible="{!readOnly}"
+	        icon="@Embed(source='/assets/tab_edit.png')" width="20" height="20" 
+	        styleName="toolButton" toolTip="Edit Tab Name"
+	        click="doEditTabInfo()"/>
+
+	    <mx:Spacer width="100%"/>
+<!--
+		<mx:Image source="@Embed(source='/assets/close.png')" 
+			toolTip="Close Tab Detail" click="doCloseTab()"/>
+ -->
+
+	    <mx:Button id="closeTabButton"
+	        icon="@Embed(source='/assets/close.png')" height="20" width="20"
+	        styleName="toolButton" toolTip="Close Tab Detail"
+	        click="doCloseTab()"
+	        paddingLeft="1" paddingRight="1" paddingTop="1" paddingBottom="1"/>
+
+    </mx:HBox>
+
+    <mx:TabNavigator width="100%">
+    	<mx:VBox id="boxTabInfo" 
+    		width="100%" label="Primary Document"
+        	paddingLeft="5" paddingRight="5" paddingBottom="5">
+        	<tabPanel:ProjectTabDocumentPanel id="panelDocumentInfo"
+        		width="100%" height="100%"
+        		readOnly="{readOnly}"
+        		activeTabDocument="{projectTab.ActiveTabDocument}"
+        		updateActiveDocument="panelDocumentInfoUpdateActiveDocumentHandler()"/>
+    	</mx:VBox>
+        <mx:VBox width="100%" height="{boxTabInfo.height}" 
+        	label="Contacts"
+        	paddingLeft="5" paddingRight="5" paddingBottom="5">
+        	<contactPanel:ProjectTabContactPanel id="panelContacts"
+        		width="100%" height="100%"
+        		readOnly="{readOnly}"
+        		projectTab="{projectTab}"/>
+        </mx:VBox>
+
+    </mx:TabNavigator>
+
+    <mx:HBox width="100%">
+        <mx:Label text="Runsheet" fontWeight="bold"/>
+
+        <mx:Button 
+            icon="@Embed(source='/assets/page_add.png')" height="20" 
+            label="Add Document" fontWeight="normal" fontSize="9" verticalCenter="0"
+            styleName="toolButton"
+	    	includeInLayout="{!readOnly}"
+	    	visible="{!readOnly}"
+            toolTip="Add Document to Runsheet" 
+            click="addDocumentButton_clickHandler()"/>
+
+		<tabPanel:ProjectTabExportExcelPanel projectTab="{projectTab}" width="100%"/>
+    </mx:HBox>
+
+    <mx:DataGrid id="documentDG" 
+        dataProvider="{projectTab.DocumentsList}" sortableColumns="{!readOnly}" dragEnabled="{!readOnly}"
+        fontSize="9" height="100%" width="100%" minWidth="150"
+        allowMultipleSelection="{!readOnly}" 
+        doubleClickEnabled="{!readOnly}"
+        itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.ProjectTabDocumentGridIR"
+        itemDoubleClick="documentDG_doubleClickHandler()"
+        dragEnter="documentDG_dragEnterHandler(event)"
+        dragOver="documentDG_dragOverHandler(event)"
+        dragDrop="documentDG_dragDropHandler(event)">
+        <mx:columns>
+            <mx:DataGridColumn headerText=" " width="20" minWidth="20" dataField="status"
+            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.DocStatusIR" sortable="false"/>
+            <mx:DataGridColumn headerText="Instrument" width="85" dataField="DocumentTypeName"/>
+            <mx:DataGridColumn headerText="Date Signed" width="75" dataField="DateSigned" sortCompareFunction="sortByDateSigned"/>
+            <mx:DataGridColumn headerText="Date Filed" width="75" dataField="DateFiledDisplayValue" sortCompareFunction="sortByDateFiled"/>
+            <mx:DataGridColumn headerText="Grantor" dataField="SellerName"/>
+            <mx:DataGridColumn headerText="Grantee" dataField="BuyerName"/>
+            <mx:DataGridColumn headerText="Description" dataField="Description" sortable="false"
+                itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.LongTextIR"/>
+            <mx:DataGridColumn headerText="Remarks" dataField="Remarks" sortable="false" 
+                itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.LongTextIR"/>
+            <mx:DataGridColumn headerText="Tracts" width="50" minWidth="50" dataField="TractsStr" textAlign="center"/>
+            <mx:DataGridColumn headerText="Primary" width="50" minWidth="50" dataField="status" sortable="false"
+            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.ProjectTabDocumentIsActiveIR"/>
+            <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status" sortable="false"
+            	itemRenderer="truetract.web.dashboard.projectPanel.tabPanel.ProjectTabDocumentActionsIR"/>
+        </mx:columns>
+    </mx:DataGrid>
+</mx:VBox>

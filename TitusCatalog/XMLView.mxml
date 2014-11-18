@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Application
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    width="100%"
+    height="100%"
+    creationComplete="onCreationComplete()">
+    
+    <mx:Script>
+        <![CDATA[
+        	import entity.TokenDataObject;
+        	import entity.TextDataObject;
+        	import entity.PageDataObject;
+        	import entity.CatalogDataObject;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.remoting.RemoteObject;
+        	import mx.controls.Label;
+        	import mx.controls.Text;
+        	import mx.collections.ArrayCollection;
+        	import mx.containers.Canvas;
+        	
+        	[Bindable]
+        	private var _catalogInfo:CatalogDataObject;
+        	
+        	[Bindable]
+        	private var _currentPage:int = 0;
+        	
+        	[Bindable]
+        	public function get currentPage():int {
+        		return _currentPage;
+        	}
+        	public function set currentPage(value:int):void {
+        		_currentPage = value;
+        		loadPage();
+        	}
+        
+            private function onCreationComplete():void {
+            	var service:RemoteObject = new RemoteObject("GenericDestination");
+            	service.source = "XMLViewService.MainService";
+            	
+               	service.GetCatalog.addEventListener(ResultEvent.RESULT, onCatalogLoaded);
+               	service.GetCatalog.addEventListener(FaultEvent.FAULT, onCatalogLoadFailed);
+            
+            	service.GetCatalog(0);
+        	}
+        	
+        	private function onCatalogLoaded(result:ResultEvent):void {
+        		_catalogInfo = CatalogDataObject(result.result);
+        		
+        		loadPage();
+        		
+        		toolBar.enabled = true;
+        	}
+        	
+        	private function loadPage():void {
+        		mainBox.removeAllChildren();
+        		
+        		var pages:ArrayCollection = new ArrayCollection(_catalogInfo.Pages);
+        		var pageInfo:PageDataObject = PageDataObject(pages.getItemAt(_currentPage));
+        		
+           		var canvas:Canvas = new Canvas();
+           		canvas.width = pageInfo.Width;
+           		canvas.height = pageInfo.Height;
+           		canvas.setStyle("backgroundColor", 0xFFFFFF);
+           		
+           		mainBox.addChild(canvas);
+           		
+            	for each (var textInfo:TextDataObject in pageInfo.Texts) {
+            		var minX:int = pageInfo.Width;
+            		var maxX:int = 0;
+            		
+   	        		for each (var tokenInfo:TokenDataObject in textInfo.Tokens) {
+       	    			var child:Label = new Label();
+           				child.x = tokenInfo.Left;
+           				child.y = tokenInfo.Top;
+           				child.rotation = tokenInfo.Rotation;
+           				child.text = tokenInfo.Text;
+           				// child.scaleX = 0.9;
+       	    			// child.truncateToFit = false;
+       	    			
+           				child.setStyle("fontName", tokenInfo.FontName);
+            			child.setStyle("fontSize", tokenInfo.FontSize);
+            			child.setStyle("fontWeight", (tokenInfo.IsBold)? "bold": "normal");
+            			child.setStyle("fontStyle", (tokenInfo.IsItalic)? "italic": "normal");
+            			child.setStyle("color", tokenInfo.FontColor);
+            			
+   	        			canvas.addChild(child);
+   	        			
+   	        			if (minX > child.x) {
+   	        				minX = child.x;
+   	        			}
+   	        			
+   	        			if (maxX < child.x) {
+   	        				maxX = child.x;
+   	        			}
+   	        		}
+           		}
+        	}
+        	
+        	private function onCatalogLoadFailed(fault:FaultEvent):void {
+        		
+        	}
+        
+            private function zoomIn():void {
+            	mainBox.scaleX += 0.2;
+            	mainBox.scaleY += 0.2;
+            }
+
+            private function zoomOut():void {
+            	mainBox.scaleX -= 0.2;
+            	mainBox.scaleY -= 0.2;
+            }
+            
+            private function prevPage():void {
+            	currentPage = currentPage - 1;
+            }
+
+            private function nextPage():void {
+            	currentPage = currentPage + 1;
+            }
+
+        ]]>
+    </mx:Script>    
+
+	<mx:VBox
+		id="toolBar"
+		enabled="false">
+		<mx:HBox
+			width="100%">
+			<mx:Button
+				label="+"
+				fontWeight="bold"
+				click="zoomIn()"/>
+			<mx:Button
+				label="-"
+				fontWeight="bold"
+				click="zoomOut()"/>
+			<mx:Button
+				label="&lt;&lt;"
+				fontWeight="bold"
+				click="prevPage()"
+				enabled="{0 &lt; currentPage}"/>
+			<mx:Button
+				label=">>"
+				fontWeight="bold"
+				click="nextPage()"
+				enabled="{_catalogInfo.Pages.length - 1 > currentPage}"/>
+		</mx:HBox>
+	
+		<mx:Canvas
+			id="mainBox"
+			width="100%"
+			height="100%" />
+	</mx:VBox>
+    
+</mx:Application>

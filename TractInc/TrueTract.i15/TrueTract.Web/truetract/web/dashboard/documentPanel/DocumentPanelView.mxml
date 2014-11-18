@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    label="{controller.document.toString()}"
+    paddingBottom="5" paddingLeft="5" paddingTop="5" paddingRight="5" 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:documentDetail="truetract.web.dashboard.documentList.documentDetail.*"
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:documentPanel="truetract.web.dashboard.documentPanel.*">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.rpc.AsyncToken;
+            import mx.collections.ArrayCollection;
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+            import truetract.plotter.domain.Document;
+
+            public function setDocument(value:Document):void
+            {
+                controller = new DocumentPanelController(value, this);
+            }
+
+            public function getDocBranchUid():String
+            { 
+                return (controller && controller.document) ? controller.document.DocBranchUid : null;
+            }
+
+            [Bindable] private var controller:DocumentPanelController;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+        ]]>
+    </mx:Script>
+
+    <mx:VBox paddingLeft="20" paddingTop="10" paddingRight="20" paddingBottom="10"
+            width="100%" backgroundColor="#ffffff" borderStyle="solid" 
+            borderColor="#000000" verticalGap="0">
+
+        <documentPanel:DocumentFieldsEditor id="docEditor"
+            docum="{Document(revisionsDG.selectedItem)}"/>
+        
+        <mx:HBox width="100%">
+
+            <mx:Button 
+                visible="{docEditor.editable}" includeInLayout="{docEditor.editable}"
+                label="Save" styleName="toolButton" 
+                click="controller.saveButtonClickHandler()"
+                />
+
+            <mx:Button 
+                visible="{docEditor.editable}" includeInLayout="{docEditor.editable}"
+                label="Cancel" styleName="toolButton" 
+                click="docEditor.discardChanges(); docEditor.editable = false"/>
+
+            <mx:Button 
+                visible="{!docEditor.editable}" includeInLayout="{!docEditor.editable}"
+                label="Edit" styleName="toolButton" 
+                enabled="{revisionsDG.selectedItem.IsActive == true}"
+                click="docEditor.editable = true;"/>
+
+            <mx:Button 
+                visible="{!docEditor.editable}" includeInLayout="{!docEditor.editable}"
+                label="Activate" styleName="toolButton" 
+                enabled="{revisionsDG.selectedItem.IsActive == false}"/>
+        </mx:HBox>
+
+    </mx:VBox>
+
+    <components:GlassHeaders headerTitle="REVISIONS"/>
+
+    <mx:DataGrid id="revisionsDG" 
+        dataProvider="{controller.documentRevisions}" selectedIndex="0"
+        change="controller.revisionChangedHandler()"
+        width="100%" height="100%" sortableColumns="false">
+
+        <mx:columns>
+            <mx:DataGridColumn headerText="Modified" dataField="DateModifiedString" width="150"/>
+            <mx:DataGridColumn headerText="Created By" dataField="CreatedBy" width="150"/>
+            <mx:DataGridColumn headerText="Active" dataField="IsActive" width="150"/>
+            <mx:DataGridColumn headerText="Description"/>
+        </mx:columns>
+
+    </mx:DataGrid>
+
+    <documentDetail:DocumentDetailView 
+        docum="{Document(revisionsDG.selectedItem)}" 
+        width="100%" height="100%"/>
+
+</mx:VBox>

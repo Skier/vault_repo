@@ -1,0 +1,122 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8E64A6C8-61F6-4EA3-80A3-FD0B8318D0B0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Intuit.Platform.Client.Core</RootNamespace>
+    <AssemblyName>Intuit.Platform.Client.Core</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\Intuit.Platform.Client.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Intuit.Platform.Client.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdminInfo.cs" />
+    <Compile Include="BillingInfo.cs" />
+    <Compile Include="CustomPlatformHost.cs" />
+    <Compile Include="DatabaseCreateStatus.cs" />
+    <Compile Include="DbInfo.cs" />
+    <Compile Include="EditResult.cs" />
+    <Compile Include="EncodingFixer.cs" />
+    <Compile Include="Entitlement.cs" />
+    <Compile Include="EntitlementInfo.cs" />
+    <Compile Include="FederationInfo.cs" />
+    <Compile Include="FieldInfo.cs" />
+    <Compile Include="IDbid.cs" />
+    <Compile Include="ImportResult.cs" />
+    <Compile Include="IntuitServicesType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IRequestAuthorizer.cs" />
+    <Compile Include="IPlatformHost.cs" />
+    <Compile Include="PlatformApiRequestXmlDocument.cs" />
+    <Compile Include="PlatformSessionContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="PlatformApiXmlHttpPostRequest.cs" />
+    <Compile Include="PlatformClientException.cs" />
+    <Compile Include="PlatformHost.cs" />
+    <Compile Include="PlatformApiXmlHttpError.cs" />
+    <Compile Include="QueryComparisionOperators.cs" />
+    <Compile Include="Record.cs" />
+    <Compile Include="RecordSet.cs" />
+    <Compile Include="RoleInfo.cs" />
+    <Compile Include="Schema.cs" />
+    <Compile Include="SchemaVersion.cs" />
+    <Compile Include="UserInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Intuit.Common.Util\Intuit.Common.Util.csproj">
+      <Project>{A88AADC5-BBB1-44D9-A9B1-B44C4F99215B}</Project>
+      <Name>Intuit.Common.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Intuit.Sb.Cdm\Intuit.Sb.Cdm.csproj">
+      <Project>{1354CDE6-C21F-4514-8D56-9E85E2602405}</Project>
+      <Name>Intuit.Sb.Cdm</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

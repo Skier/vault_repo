@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Segment;
+			import com.ebs.eroof.model.wrapper.Company;
+			
+			[Bindable]
+			public var model:Company;
+
+		]]>
+	</mx:Script>
+
+	<mx:NumberFormatter id="nf" useThousandsSeparator="true" precision="0"/>
+	<mx:CurrencyFormatter id="cf" useThousandsSeparator="true" precision="2"/>
+
+	<mx:VBox width="100%" height="100%">
+		<mx:DataGrid id="dgSegments" width="100%" height="100%" dataProvider="{model.segmentCollection}">
+			<mx:columns>
+				<mx:DataGridColumn dataField="name" headerText="Segment Name"/>
+				<mx:DataGridColumn dataField="totalClients" headerText="# of client" width="50" textAlign="right"/>
+				<mx:DataGridColumn dataField="totalFacilities" headerText="# of fac" width="50" textAlign="right"/>
+				<mx:DataGridColumn dataField="totalSections" headerText="# of sect" width="70" textAlign="right"/>
+				<mx:DataGridColumn dataField="totalSqFt" headerText="Sq Ft" width="100" textAlign="right"/>
+				<mx:DataGridColumn dataField="totalValue" headerText="Total Value" width="150" textAlign="right"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:VBox width="100%" 
+			visible="{dgSegments.selectedItem != null}" includeInLayout="{dgSegments.selectedItem != null}"
+			paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+			borderColor="#dddddd" borderStyle="solid" cornerRadius="2"
+			backgroundColor="#eeeeee" fontSize="12">
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Segment Name:" width="100" textAlign="right"/>
+				<mx:Label text="{Segment(dgSegments.selectedItem).name}" fontWeight="bold"/>
+			</mx:HBox>
+			
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Total SqFt:" width="100" textAlign="right"/>
+				<mx:Label text="{nf.format(Segment(dgSegments.selectedItem).totalSqFt)}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Label text="Total Value:" width="100" textAlign="right"/>
+				<mx:Label text="{cf.format(Segment(dgSegments.selectedItem).totalValue)}" fontWeight="bold"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

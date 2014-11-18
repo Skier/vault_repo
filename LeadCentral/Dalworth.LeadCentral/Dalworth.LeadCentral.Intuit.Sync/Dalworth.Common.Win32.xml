@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application Trace="True">
+	<settings/>
+  
+  <database ConnectionString="server=localhost;user id=root; password=++Winston; database=leadcentral_main; pooling=true"/>
+  
+	<sync 
+    SyncInterval="3000"
+    CallDirectory="C:/LeadCentral/calls"
+    EmailTemplateDir="C:/LeadCentral/sync/emailTemplates" 
+    EmailTemplateCreateLead="CreateLeadNotification.html" 
+    EmailTemplateLowBalance="" 
+    EmailNotificationFrom="support@dalworth.com"
+  />
+
+  <lead_central_common CallUrl="https://app.theleadcentral.com/calls"/>
+	<log FlushEveryRecord="true"/>
+  
+</application>
+

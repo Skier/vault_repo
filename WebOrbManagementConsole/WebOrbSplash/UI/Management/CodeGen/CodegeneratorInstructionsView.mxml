@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow  
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="606" 
+	height="446" 
+	title="Code Instructions"
+	creationComplete="OnCreationComplete();"
+	close="OnClose()" 
+	showCloseButton="true">
+<mx:Script>
+    <![CDATA[
+    	import UI.AppSettings;
+    	import mx.managers.PopUpManager;
+    import UI.Management.CodeGen.CodeItem;
+    import UI.Management.CodeGen.CodeTreeDataDescriptor;
+    import UI.Management.CodeGen.CodeFormat;
+    import UI.Management.ManagementController;
+    
+	[Bindable]
+	public var Model:CodegeneratorModel;
+
+	private function OnClose():void
+	{
+		PopUpManager.removePopUp(this);
+	}
+	
+	private function OnCreationComplete():void
+	{
+		PopUpManager.centerPopUp(this);	
+	}
+	
+	
+    ]]>
+</mx:Script>
+	<mx:TextArea editable="false" x="10" y="10" width="568" height="364" text="{Model.Info}"/>
+	<mx:CheckBox x="10" y="382" id="m_ignore" label="Don't show next time" change="{AppSettings.Instance.ShowCodegenInstructions = !m_ignore.selected}" selected="{!AppSettings.Instance.ShowCodegenInstructions}" />
+	<mx:Button x="513" y="380" label="Close" click="{OnClose()}" width="65"/>
+</mx:TitleWindow >

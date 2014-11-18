@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:section="com.ebs.eroof.view.section.*">
+	
+    <mx:Metadata>
+        [Event(name="setEditMode", type="flash.events.Event")]
+        [Event(name="setViewMode", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			private var _isEditing:Boolean;
+			[Bindable]
+			public function get isEditing():Boolean { return _isEditing; }
+			public function set isEditing(value:Boolean):void 
+			{
+				_isEditing = value;
+
+				if (_isEditing)
+					setEditMode();
+				else 
+					setViewMode();
+			}
+			
+			private var _section:Section;
+			[Bindable]
+			public function get model():Section { return _section; }
+			public function set model(value:Section):void 
+			{
+				_section = value;
+				setViewMode();
+			}
+			
+			[Bindable]
+			public var isEditable:Boolean = false;
+			
+			private function setEditMode():void 
+			{
+				vsModes.selectedChild = editor;
+				editor.section = model;
+				dispatchEvent(new Event("setEditMode"));
+			}
+			
+			private function setViewMode():void 
+			{
+				vsModes.selectedChild = viewer;
+				viewer.section = model;
+				dispatchEvent(new Event("setViewMode"));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsModes" width="100%" height="100%">
+		<section:SectionRoofSystemView id="viewer" width="100%" height="100%" endEditSection="seteditMode()"/>
+		<section:SectionRoofSystemEditor id="editor" width="100%" height="100%" endEditSection="setViewMode()"/>
+	</mx:ViewStack>
+</mx:Canvas>

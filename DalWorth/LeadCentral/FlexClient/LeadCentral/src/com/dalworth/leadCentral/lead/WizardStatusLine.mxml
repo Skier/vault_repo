@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Label;
+			import mx.controls.Image;
+			import mx.containers.VBox;
+			import mx.collections.ArrayCollection;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ChildExistenceChangedEvent;
+			import mx.containers.ViewStack;
+			
+			[Embed(source="/assets/icons32/bullet_orange.png")]
+			[Bindable]
+			private var bulletOrange:Class;
+			
+			[Embed(source="/assets/icons32/bullet_white.png")]
+			[Bindable]
+			private var bulletWhite:Class;
+			
+			[Bindable]
+			private var items:ArrayCollection;
+			
+			[Bindable]
+			private var index:int;
+			public function set selectedIndex(value:int):void 
+			{
+				index = value;
+				refreshUI();
+			}
+			
+			private function refreshUI():void 
+			{
+				boxItems.removeAllChildren();
+				for each (var item:Object in items) 
+				{
+					boxItems.addChild(getBoxByItem(item));
+				}
+			}
+			
+			private function onInit():void 
+			{
+				items = new ArrayCollection();
+				items.addItem({label:"Customer Lookup"});
+				items.addItem({label:"Edit Customer"});
+				items.addItem({label:"Create Job"});
+			}
+			
+			private function getBoxByItem(item:Object):VBox 
+			{
+				var result:VBox = new VBox();
+					result.percentWidth = 100;
+					result.setStyle("verticalGap", 0);
+				
+				var topBox:HBox = new HBox();
+					topBox.percentWidth = 100;
+					topBox.height = 32;
+					topBox.setStyle("horizontalAlign", "center");
+					topBox.setStyle("verticalAlign", "middle");
+				
+				var bottomBox:HBox = new HBox();
+					bottomBox.percentWidth = 100;
+					bottomBox.setStyle("horizontalAlign", "center");
+					bottomBox.setStyle("verticalAlign", "middle");
+				
+				var image:Image = new Image();
+					image.source = items.getItemIndex(item) > index ? bulletWhite : bulletOrange;
+
+				var label:Label = new Label();
+					label.text = item.label as String;
+					label.setStyle("color", items.getItemIndex(item) > index ? 0xCCCCCC : 0x666666);
+					label.setStyle("fontSize", 12);
+					label.setStyle("fontWeight", items.getItemIndex(item) == index ? "bold" : "normal");
+					//label.setStyle("horizontalAlign", "center");
+				
+				topBox.addChild(image);
+				bottomBox.addChild(label);
+				result.addChild(topBox);
+				result.addChild(bottomBox);
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="32" verticalAlign="middle">
+		<mx:HRule strokeColor="#CCCCCC" strokeWidth="2" width="100%"/>
+	</mx:HBox>
+	<mx:HBox id="boxItems" width="100%"/>
+</mx:Canvas>

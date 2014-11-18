@@ -1,0 +1,60 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Partner
+@model PartnerEdit
+
+@{
+    ViewBag.Title = "Create";
+}
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Index", new { controller = "Partners" }, new { @class = "button" })</div>
+      <h1>New Business Partner</h1>
+    </div>
+    @Html.HiddenFor(model => model.PartnerId)
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+                <td style="text-align:right;font-size:16px;"><span class="required">*</span> Name</td>
+                <td>
+                @Html.TextBoxFor(model => model.PartnerName, new { @style = "font-size:16px;width:250px;" })
+                @Html.ValidationMessageFor(model => model.PartnerName)</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><span class="required">*</span> Email</td>
+                <td>
+                @Html.TextBoxFor(model => model.PartnerEmail, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.PartnerEmail)</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><span class="required">*</span> Phone</td>
+                <td>
+                @Html.TextBoxFor(model => model.PartnerPhone)
+                @Html.ValidationMessageFor(model => model.PartnerPhone)</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Address</td>
+                <td>
+                @Html.TextAreaFor(model => model.Address, 4, 30, new { @class = "partner_address", @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.Address)</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Sales Rep</td>
+              <td>@Html.DropDownList("SalesRepId", new SelectList(Model.SalesRepList, "Id", "ScreenName", Model.SalesRepId))</td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Test Partner</td>
+                <td>@Html.CheckBoxFor(model => model.IsTestPartner) <i>&nbsp;&nbsp;If select - partner will not be included in reports</i></td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+    }

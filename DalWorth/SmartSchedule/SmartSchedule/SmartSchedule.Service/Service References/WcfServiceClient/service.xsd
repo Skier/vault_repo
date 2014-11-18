@@ -1,0 +1,511 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:element name="ProcessBookingRecommendations">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessBookingRecommendationsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnqueueOptimization">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="date" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnqueueOptimizationResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessPendingOptimizations">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessPendingOptimizationsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ApplyOptimizationResult">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="schedule" nillable="true" type="q1:Schedule" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ApplyOptimizationResultResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CanInsertVisit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="visitId" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CanInsertVisitResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="CanInsertVisitResult" nillable="true" type="q2:VisitAddResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFullViewInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="date" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFullViewInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetFullViewInfoResult" nillable="true" type="q3:VisitsFullChangeDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultTechnicians">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultTechniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GetDefaultTechniciansResult" nillable="true" type="q4:ArrayOfTechnician" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="date" type="xs:dateTime" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+        <xs:element minOccurs="0" name="eliminateDetails" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GetTechniciansResult" nillable="true" type="q5:ArrayOfTechnician" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianArrangement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="orderedTechnicians" nillable="true" type="q6:ArrayOfTechnician" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianArrangementResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="technicianDefaultId" type="xs:int" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetailsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetTechnicianDetailsResult" nillable="true" type="q7:ArrayOfTechnicianDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianDetail">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="affectedTechnicianDetails" nillable="true" type="q8:ArrayOfTechnicianDetail" />
+        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="removedDates" nillable="true" type="q9:ArrayOfdateTime" />
+        <xs:element minOccurs="0" name="defaultTechnicianId" type="xs:int" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianDetailResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="SaveTechnicianDetailResult" nillable="true" type="q10:ArrayOfTechnicianDetailValidationError" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetZipCodes">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetZipCodesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetZipCodesResult" nillable="true" type="q11:ArrayOfKeyValueOfstringZipCodeh17jAC3z" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InsertZipCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="zip" nillable="true" type="q12:ZipCode" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InsertZipCodeResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GecocodeAddress">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GecocodeAddressResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GecocodeAddressResult" type="q13:Coordinate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GecocodeZip">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="zip" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GecocodeZipResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GecocodeZipResult" type="q14:Coordinate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportTickets">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportTicketsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExistingSnapshotDate">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExistingSnapshotDateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetExistingSnapshotDateResult" nillable="true" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateSnapshot">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateSnapshotResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSnapshotChanges">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSnapshotChangesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetSnapshotChangesResult" nillable="true" type="q15:ArrayOfVisitChangeItem" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServices">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServicesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GetServicesResult" nillable="true" type="q16:ArrayOfService" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MarkTimeAs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="interval" nillable="true" type="q17:TimeInterval" />
+        <xs:element minOccurs="0" name="technicianId" type="xs:int" />
+        <xs:element minOccurs="0" name="markAsWorking" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MarkTimeAsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnscheduleVisit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="visitId" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnscheduleVisitResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Subscribe">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="subscriberType" type="q18:WcfSubscriberTypeEnum" />
+        <xs:element minOccurs="0" name="scheduleDate" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubscribeResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Unsubscribe">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnsubscribeResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateVisit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="visit" nillable="true" type="q19:Visit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateVisitResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BookDelayedVisit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="visitId" type="xs:int" />
+        <xs:element minOccurs="0" name="newTimeFrameId" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BookDelayedVisitResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="BookDelayedVisitResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBucketProcessingOptions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bucketVisitId" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBucketProcessingOptionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetBucketProcessingOptionsResult" nillable="true" type="q20:BucketProcessingOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitTempExclusivity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="saveInfo" nillable="true" type="q21:DelayedVisitSaveInfo" />
+        <xs:element minOccurs="0" name="tempExclusiveTechnicianId" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitTempExclusivityResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitIgnoreExclusivity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="saveInfo" nillable="true" type="q22:DelayedVisitSaveInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitIgnoreExclusivityResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitChangeFrame">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="saveInfo" nillable="true" type="q23:DelayedVisitSaveInfo" />
+        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="frameChangeOption" nillable="true" type="q24:VisitAddResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitChangeFrameResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitExtendWorkingHours">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="saveInfo" nillable="true" type="q25:DelayedVisitSaveInfo" />
+        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="extension" nillable="true" type="q26:WorkingHoursExtensionResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessDelayedVisitExtendWorkingHoursResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveDelayedVisit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q27="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="saveInfo" nillable="true" type="q27:DelayedVisitSaveInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveDelayedVisitResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="KeepAliveDummy">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="KeepAliveDummyResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OnViewModelChanged">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="info" nillable="true" type="q28:CallbackInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OnOptimizationRequested">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q29="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="schedule" nillable="true" type="q29:Schedule" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultTechniciansWeb">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultTechniciansWebResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q30="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" minOccurs="0" name="GetDefaultTechniciansWebResult" nillable="true" type="q30:ArrayOfTechnician" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetailsByServmanIdWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="technicianServmanId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetailsByServmanIdWebResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q31="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetTechnicianDetailsByServmanIdWebResult" nillable="true" type="q31:ArrayOfTechnicianDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetailsWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="technicianDefaultId" type="xs:int" />
+        <xs:element minOccurs="0" name="defaultSettings" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTechnicianDetailsWebResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q32="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="GetTechnicianDetailsWebResult" nillable="true" type="q32:ArrayOfTechnicianDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianDetailWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q33="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="affectedTechnicianDetails" nillable="true" type="q33:ArrayOfTechnicianDetail" />
+        <xs:element xmlns:q34="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="removedDates" nillable="true" type="q34:ArrayOfdateTime" />
+        <xs:element minOccurs="0" name="defaultTechnicianId" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveTechnicianDetailWebResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q35="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="SaveTechnicianDetailWebResult" nillable="true" type="q35:ArrayOfTechnicianDetailValidationError" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ValidateTechnicianDetailsWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q36="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="affectedTechnicianDetails" nillable="true" type="q36:ArrayOfTechnicianDetail" />
+        <xs:element xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="removedDates" nillable="true" type="q37:ArrayOfdateTime" />
+        <xs:element minOccurs="0" name="defaultTechnicianId" type="xs:int" />
+        <xs:element minOccurs="0" name="deepValidation" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ValidateTechnicianDetailsWebResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q38="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain.WCF" minOccurs="0" name="ValidateTechnicianDetailsWebResult" nillable="true" type="q38:ArrayOfTechnicianDetailValidationError" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

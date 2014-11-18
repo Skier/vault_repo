@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:lease="com.llsvc.client.lms.view.lease.*"
+	paddingLeft="5" paddingRight="5" horizontalGap="5" xmlns:document="com.llsvc.client.lms.view.document.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.DocumentAttachment;
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (!viewLeaseGeneralInfo.getResult())
+					result = false;
+
+				if (!viewLeaseNotes.getResult())
+					result = false;
+				
+//				if (boxOrigAttachment.file != null) 
+//				{
+//					if (!lease.document.originalAttachment){
+//						lease.document.originalAttachment = new DocumentAttachment();
+//					}
+//					lease.document.originalAttachment.description = DocumentAttachment.ORIGINAL_DOC_FILE;
+//					lease.document.originalAttachment.file = boxOrigAttachment.file;
+//					lease.document.originalAttachment.name = boxOrigAttachment.fileName;
+//				} else 
+//				{
+//					lease.document.originalAttachment = null;
+//				}
+				
+				lease.document.user = LocalCash.getInstance().getCurrentUser();
+					
+				return result;
+			}
+			
+			private function removeAttachmentHandler():void 
+			{
+				boxOrigAttachment.file = null;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="300" height="100%">
+		<document:DocFavoritActors width="100%" height="100"/>
+
+		<mx:HBox width="100%"
+			verticalAlign="middle" paddingLeft="4" paddingRight="4"
+			backgroundColor="#ffff99">
+			<mx:Label text="Orig.Doc:"/>
+		
+			<document:DocAttachmentBox id="boxOrigAttachment"
+				width="100%"
+				removeOriginalAttachmentRequest="removeAttachmentHandler()"/>
+		</mx:HBox>
+
+		<document:DocActors width="100%" height="100%" docum="{lease.document}"/>
+	</mx:VBox>
+
+	<mx:VBox width="100%" height="100%">
+		<lease:LeaseRecording id="viewLeaseRecording" width="100%" height="100%" lease="{lease}"/>
+		<lease:LeaseGeneralInfo id="viewLeaseGeneralInfo" width="100%" lease="{lease}"/>
+		<lease:LPRNotes id="viewLeaseNotes" width="100%" lease="{lease}"/>
+	</mx:VBox>
+</mx:HDividedBox>

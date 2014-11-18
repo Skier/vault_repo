@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="500" height="150"
+    title="Select Call Action" >
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.servman.main.lead.LeadCreatePopup;
+        	import mx.core.Application;
+        	import com.dalworth.servman.main.lead.LeadEditPopup;
+        	import com.dalworth.servman.main.MainAppModel;
+        	import com.dalworth.servman.domain.Lead;
+        	import mx.managers.PopUpManager;
+        	import com.dalworth.servman.domain.PhoneCall;
+        	import mx.controls.Alert;
+        	
+        	private var phoneCall:PhoneCall;
+
+            public static function open(parent:DisplayObject, call:PhoneCall, modal:Boolean = true):CallActionSelector
+            {
+                var popup:CallActionSelector = new CallActionSelector();
+                popup.phoneCall = call;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCancel():void 
+            {
+            	close();
+            }
+			
+            private function onCreateLead():void 
+            {
+            	var lead:Lead = new Lead();
+            	lead.CreatedByUserId = MainAppModel.getInstance().currentUser.Id;
+            	lead.PhoneCallId = phoneCall.Id;
+            	lead.Phone = phoneCall.PhoneFrom;
+            	lead.FirstName = phoneCall.CallerName;
+            	lead.BusinessPartnerId = phoneCall.BusinessPartnerId;
+            	
+            	LeadCreatePopup.open(Application.application as DisplayObject, lead);
+				//LeadEditPopup.open(Application.application as DisplayObject, lead);
+            	
+            	close();
+            }
+			
+            private function onCreateProject():void 
+            {
+            	Alert.show("Doesn't realized yet !");
+            	close();
+            }
+			
+        ]]>
+    </mx:Script>
+
+	<mx:VBox width="100%" height="100%" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		
+		<mx:Label text="Please select, what you want to do with current call." fontSize="12"/>
+		<mx:HBox width="100%" height="100%" horizontalGap="15">
+			<mx:Button label="Cancel Call" width="100%" height="100%" click="onCancel()" fontSize="14"/>
+			<mx:Button label="Create Lead" width="100%" height="100%" click="onCreateLead()" fontSize="14"/>
+			<mx:Button label="Create Project" width="100%" height="100%" click="onCreateProject()" fontSize="14" enabled="false"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+</mx:TitleWindow>

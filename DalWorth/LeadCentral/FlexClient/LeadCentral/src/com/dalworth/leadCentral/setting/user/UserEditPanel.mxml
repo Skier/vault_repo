@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:user="com.dalworth.leadCentral.setting.user.*" xmlns:controls="com.affilia.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.Fault;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.controls.Alert;
+			import com.dalworth.leadCentral.service.UserService;
+			import com.dalworth.leadCentral.MainModel;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.leadCentral.domain.User;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.Responder;
+			
+			private var _user:User;
+			[Bindable]
+			public function get user():User { return _user; }
+			public function set user(value:User):void 
+			{
+				_user = value;
+				initRoles();
+			}
+			
+			[Bindable]
+			public var isReadOnly:Boolean;
+			
+			[Bindable]
+			private var roles:ArrayCollection;
+			
+			private function initRoles():void 
+			{
+				roles = new ArrayCollection();
+				if (MainModel.getInstance().currentUser.RoleName == User.ROLE_ADMINISTRATOR)
+					roles.addItem({data:User.ROLE_ADMINISTRATOR, label:"Administrator"});
+				roles.addItem({data:User.ROLE_STAFF, label:"Staff"});
+				roles.addItem({data:User.ROLE_BUSINESS_PARTNER, label:"Business Partner"});
+			}
+			
+			public function isValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vEmail.enabled = true;
+				if (vEmail.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vFirstName.enabled = true;
+				if (vFirstName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vLastName.enabled = true;
+				if (vLastName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vRoleName.enabled = true;
+				if (vRoleName.validate().type == ValidationResultEvent.INVALID)
+				{
+					comboRole.errorString = "User Role should be selected";
+					result = false;
+				}
+				
+				return result;
+			}
+			
+			public function getUser():User 
+			{
+				var result:User = new User();
+					result.applyFields(user);
+					result.IsActive = cbIsActive.selected;
+					result.FirstName = txtFirstName.text;
+					result.LastName = txtLastName.text;
+					result.Email = txtEmail.text;
+					result.Address = txtAddress.text;
+					result.RoleName = comboRole.value as String;
+					result.Name = result.FirstName + " " + result.LastName;
+				return result;
+			}
+			
+			private function onReinvite():void 
+			{
+				UserService.getInstance().inviteUser(user, "", 
+					new mx.rpc.Responder(
+						function (e:ResultEvent):void {Alert.show("Invitation was sent to User")},
+						function (e:FaultEvent):void {Alert.show(e.fault.message)}
+						));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:EmailValidator id="vEmail" source="{txtEmail}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vFirstName" source="{txtFirstName}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vLastName" source="{txtLastName}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:NumberValidator id="vRoleName" source="{comboRole}" property="selectedIndex" minValue="0" required="true" enabled="false"/>
+
+	<mx:HBox width="100%" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#FFFFCC" 
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+		<mx:Form width="100%" minWidth="250" 
+			paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+			<mx:FormItem label="First Name" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtFirstName" width="100%" text="{user.FirstName}" enabled="{!isReadOnly}"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="Last Name" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtLastName" width="100%" text="{user.LastName}" enabled="{!isReadOnly}"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="Email" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtEmail" width="100%" text="{user.Email}" enabled="{!isReadOnly}"/>
+			</mx:FormItem>
+
+			<mx:FormItem label="User Role" width="100%">
+				<controls:ComboBox id="comboRole" 
+					dataProvider="{roles}" labelField="label" value="{user.RoleName}" valueField="data" 
+					width="100%" fontSize="12"
+					enabled="{user.Id != MainModel.getInstance().currentUser.Id &amp;&amp; !isReadOnly}"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:VBox width="100%" height="100%" minWidth="150">
+			<mx:HBox width="100%" horizontalAlign="right" fontSize="13" 
+				verticalAlign="middle" borderColor="#FFCC33" cornerRadius="2" borderStyle="solid"
+				paddingLeft="4" paddingRight="4" paddingTop="1" paddingBottom="1"
+				backgroundColor="#F5F5F5">
+				<mx:Label text="User status:"/>
+				<mx:Spacer width="100%" height="15"/>
+				<mx:CheckBox id="cbIsActive" label="is Active" selected="{user.IsActive}" 
+					enabled="{user.Id != MainModel.getInstance().currentUser.Id &amp;&amp; !isReadOnly}"/>
+			</mx:HBox>
+			
+			<mx:Label text="Address:"/>
+			
+			<mx:TextArea id="txtAddress" width="100%" height="100%" text="{user.Address}" enabled="{!isReadOnly}"/>
+			
+			<mx:HBox width="100%" horizontalAlign="right" enabled="{user.Id != 0}"
+				visible="{user.Id != MainModel.getInstance().currentUser.Id &amp;&amp; user.Id &gt; 0}"
+				includeInLayout="{user.Id != MainModel.getInstance().currentUser.Id &amp;&amp; user.Id &gt; 0}">
+				<mx:LinkButton label="Reinvite user" click="onReinvite()" 
+					enabled="{!isReadOnly}" 
+					visible="{user.IsActive}" includeInLayout="{user.IsActive}"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2"
+	targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:include schemaLocation="IntuitCdmBaseTypes.xsd"/>
+	<xs:group name="PaymentMethodReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>That minimal subset of payment method information which is included on a transaction, so that a client viewing the transaction object need not make an additional data request to another service in order to render the transaction in human readable form. Note: the range of ItemType is ItemTypeEnum defined in asset-ops domain</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PaymentMethodId" type="IdType" minOccurs="0"/>
+			<xs:element name="PaymentMethodName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="SalesRepReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>That minimal subset of sales rep information which is included on a transaction, so that a client viewing the transaction object need not make an additional request to another service in order to render the transaction in human readable form</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesRepId" type="IdType" minOccurs="0"/>
+			<xs:element name="SalesRepName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 5
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PriceLevelReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>That minimal subset of price level information which is included on a transaction, so that a client viewing the transaction object need not make an additional request to another service in order to render the transaction in human readable form</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PriceLevelId" type="IdType" minOccurs="0"/>
+			<xs:element name="PriceLevelName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="SalesTaxCodeReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>That minimal subset of sales tax code information which is included on a transaction, so that a client viewing the transaction object need not make an additional request to another service in order to render the transaction in human readable form</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesTaxCodeId" type="IdType" minOccurs="0"/>
+			<xs:element name="SalesTaxCodeName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 3
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="SalesTermReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>That minimal subset of sales term information which is included on a transaction, so that a client viewing the transaction object need not make an additional request to another service in order to render the transaction in human readable form</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesTermId" type="IdType" minOccurs="0"/>
+			<xs:element name="SalesTermName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="TaxChoiceGroup">
+		<xs:annotation>
+			<xs:documentation>An optional hint which may be used by the client as a guideline in calculating the taxes to be applied to the entire transaction.  The authoritative source for the amount and specific taxes applied to the transaction is contained within the tax lines.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:group ref="TaxReferenceGroup" minOccurs="0"/>
+			<xs:group ref="TaxGroupReferenceGroup" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="TaxGroupReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>The minimal set of information required to specify a reference to a tax group.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TaxGroupId" type="IdType" minOccurs="0"/>
+			<xs:element name="TaxGroupName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="TaxReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>The minimal set of information required to specify a reference to a tax.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TaxId" type="IdType" minOccurs="0"/>
+			<xs:element name="TaxName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+Cloud Max Length: 256
+[b]QuickBooks Notes[/b][br /]
+Max Length: 31
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

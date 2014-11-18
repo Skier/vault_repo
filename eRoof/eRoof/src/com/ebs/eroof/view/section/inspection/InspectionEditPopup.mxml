@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Layer Editor" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ListCollectionView;
+			import mx.events.CollectionEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import com.ebs.controls.SelectableInput;
+			import com.ebs.eroof.dto.Inspections_DTO;
+			import com.ebs.eroof.model.wrapper.Inspection;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var inspection:Inspection;
+
+			[Bindable]
+			public var inspectionDTO:Inspections_DTO;
+			
+            public static function open(parent:DisplayObject, inspection:Inspection, modal:Boolean = true):InspectionEditPopup
+            {
+                var popup:InspectionEditPopup = new InspectionEditPopup();
+                
+                popup.inspection = inspection;
+                popup.inspectionDTO = inspection.inspectionDTO;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function onCreate():void 
+            {
+            	initCombos();
+            }
+            
+            private function initCombos():void 
+            {
+            	if (inspection == null)
+            		return;
+
+				trace("combo inited");
+				
+           		comboInspectionType.selectedItemVal = inspection.inspectionDTO.InspectionType;
+           		comboInspectorCompany.selectedItemVal = inspection.inspectionDTO.InspectorCompany;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vInspectionDate.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vInspectionType.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vInspectorCompany.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vInspectorName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	if (vAssessment.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	inspection.inspectionDTO.InspectionDate = dateInspectionDate.selectedDate;
+            	inspection.inspectionDTO.InspectionType = comboInspectionType.selectedItem as String;
+            	inspection.inspectionDTO.InspectorCompany = comboInspectorCompany.selectedItem as String;
+            	inspection.inspectionDTO.InspectorName = txtInspectorName.text;
+            	inspection.inspectionDTO.Assessment = txtAssessment.text;
+            }
+            
+            private function storeModel():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreModel, inspection.inspectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(inspection.inspectionDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreModel(storedObject:Inspections_DTO):void 
+            {
+            	inspection.inspectionDTO = storedObject;
+            	dispatchEvent(new Event("closeRequest"));
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	if (!isFormValid())
+            		return;
+            		
+            	storeModel();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:DateValidator id="vInspectionDate" source="{dateInspectionDate}" property="selectedDate" required="true"/>
+	<mx:StringValidator id="vInspectionType" source="{comboInspectionType}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vInspectorCompany" source="{comboInspectorCompany}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vInspectorName" source="{txtInspectorName}" property="text" required="true"/>
+	<mx:StringValidator id="vAssessment" source="{txtAssessment}" property="text" required="false"/>
+	
+	<mx:Form id="inspectionForm">
+		<mx:FormItem label="Inspection Date" required="true" width="100%">
+			<mx:DateField id="dateInspectionDate" selectedDate="{inspectionDTO.InspectionDate}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Inspection Type" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboInspectionType" 
+				dtoType="{Inspections_DTO}" dto="{inspectionDTO}"  
+				selectedItemVal="{inspectionDTO.InspectionType}" 
+				tableField="InspectionType" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Inspector Company" required="true" width="100%">
+			<view:QuickBaseItemComboBox id="comboInspectorCompany" 
+				dtoType="{Inspections_DTO}" dto="{inspectionDTO}" 
+				selectedItemVal="{inspectionDTO.InspectorCompany}"
+				tableField="InspectorCompany" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Inspector Name" required="true" width="100%">
+			<mx:TextInput id="txtInspectorName" text="{inspectionDTO.InspectorName}" width="100%"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Assessment" required="true" width="100%">
+			<mx:TextArea id="txtAssessment" text="{inspectionDTO.Assessment}" width="100%" height="80"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

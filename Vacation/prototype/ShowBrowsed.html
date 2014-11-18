@@ -1,0 +1,49 @@
+<?
+    if (isset($_SESSION["location"])) {
+        echo(LocationInfo::getPath($_SESSION["location"], $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_FOUND_RENTALS) ?></b>:
+
+<form action="ShowBrowsed.php" method="get">
+    <table>
+        <?
+        if (0 == count($this->requests)) {
+        ?>
+            <tr>
+                <td><? echo(MSG_NOT_FOUND_RENTALS) ?></td>
+            </tr>
+        <?
+        } else {
+
+            for ($index = 0; $index < count($this->requests); $index ++) 
+            {
+            ?>
+                <tr>
+                    <td width=10%> <? echo(1 + $index) ?> </td>
+                    <td width=90%>
+                        <a href="ShowRental.php&rentalId=<? echo($this->requests[$index]->getRequestId()); ?>">
+                            <? echo($this->requests[$index]->getRentalName()) ?>
+                        </a>
+                        <br>    
+                        <? echo($this->requests[$index]->getRentalAddress()) ?>
+                        <? echo($this->requests[$index]->getRentalDescription()) ?>
+                        <? echo($this->requests[$index]->getStatus()) ?>
+                        <? echo($this->requests[$index]->getRatesDescription()) ?>
+                        <? echo(($this->requests[$index]->getIsPetFriendly()))?(MSG_PET_FRIENDLY):("") ?>
+                        <? echo(($this->requests[$index]->getIsNoSmoking()))?(MSG_NO_SMOKING):("") ?>
+                    </td>
+                <tr>
+            <?
+            }
+        }
+        ?>
+        <tr>
+            <td colspan=2 align="right">
+                <a href="FindByBrowsing.php"><? echo(MSG_FIND_BY_BROWSING) ?></a>
+            </td>
+        </tr>
+    </table>
+</form>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    verticalAlign="middle"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.utils.ScaleValue;
+            import truetract.plotter.utils.UnitOfMeasure;
+            import truetract.plotter.utils.UOMUtil;
+
+            import mx.events.ValidationResultEvent;
+
+            [Bindable]
+            public var Model:ScaleValue;
+            
+            public function get Text():String {
+                return Model.toString();
+            }
+
+            public function Commit():Boolean {
+                if (!isFromValid()) return false;
+
+                Model.inchValue = Number(inchTxt.text);
+                Model.uomValue = Number(uomTxt.text);
+                Model.uom = UnitOfMeasure(uomList.selectedItem);
+                
+                return true;
+            }
+            
+            private function isFromValid():Boolean {
+                var result:Boolean = true;
+                
+                if (inchV.validate().type == ValidationResultEvent.INVALID) result = false;
+                if (uomV.validate().type == ValidationResultEvent.INVALID) result = false;
+                
+                return result;
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:NumberValidator id="inchV" source="{inchTxt}" property="text" required="true"/>
+    <mx:NumberValidator id="uomV" source="{uomTxt}" property="text" required="true"/>
+    
+    <mx:TextInput width="40" id="inchTxt" enter="dispatchEvent(new Event('enter'))" text="{Model.inchValue}" styleName="scaleInput"/>
+    <mx:Label text="inch ="/>
+    <mx:TextInput width="40" id="uomTxt" enter="dispatchEvent(new Event('enter'))" text="{Model.uomValue}" styleName="scaleInput"/>
+    <mx:ComboBox labelField="Name" id="uomList" 
+        selectedIndex="{uomList.dataProvider.getItemIndex(Model.uom)}"
+        dataProvider="{UOMUtil.getInstance().unitList}"></mx:ComboBox>
+    
+</mx:HBox>

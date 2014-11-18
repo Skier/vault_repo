@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	verticalGap="5">
+    
+    <mx:Script>
+        <![CDATA[
+        	import common.StatusesRegistry;
+        	import mx.collections.ListCollectionView;
+        	import App.Entity.ProjectDataObject;
+        	import App.Entity.AssetDataObject;
+        	import App.Entity.AFEDataObject;
+        	import App.Entity.AssetAssignmentDataObject;
+        	import App.Entity.ClientDataObject;
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+            import UI.manager.admin.AdminController;
+            import UI.manager.ManagerController;
+            
+            public static const CLIENTS_FILTER_DATA:ArrayCollection = new ArrayCollection(
+            	[{ label: "Active" }, { label: "Inactive"}, { label: "All" }]
+            );
+            
+            public static const AFES_FILTER_DATA:ArrayCollection = new ArrayCollection(
+            	[{ label: "ISSUED" }, { label: "EXPIRED"}, { label: "LOCKED" }, { label: "UNLOCKED" }, { label: "All" }]
+            );
+            
+            public static const PROJECTS_FILTER_DATA:ArrayCollection = new ArrayCollection(
+            	[{ label: "ISSUED" }, { label: "EXPIRED"}, { label: "LOCKED" }, { label: "UNLOCKED" }, { label: "All" }]
+            );
+            
+            [Bindable]
+            public var controller:ClientsController;
+            
+            private var clients:ArrayCollection;
+            
+            public function set parentController(parent:AdminController):void 
+            {
+                controller = new ClientsController(this as ClientsView, parent);
+            }
+            
+            public function getClientById(id:int):ClientDataObject
+            {
+            	return controller.getClientById(id);
+            }
+            
+            private function setAssetLabels(item:AssetDataObject, column:DataGridColumn):String 
+            {
+            	if (column.dataField == "name") {
+            		return item.BusinessName;
+            	} else {
+            		return "";
+            	}
+            }
+            
+            public function onClientChange(client:ClientDataObject = null):void {
+            	dgAfes.dataProvider = null;
+            	dgSubAfes.dataProvider = null;
+            	dgAssignments.dataProvider = null;
+            	
+            	if (null == client) {
+            		if ((null != dgClients.selectedItem)
+            				&& ListCollectionView(dgClients.dataProvider).contains(dgClients.selectedItem)) {
+            			dgAfes.dataProvider = ArrayCollection(controller.model.afesByClient[ClientDataObject(dgClients.selectedItem).ClientId]);
+            		}
+            	} else {
+            		dgAfes.dataProvider = ArrayCollection(controller.model.afesByClient[client.ClientId]);
+            	}
+            	
+            	ListCollectionView(dgAfes.dataProvider).refresh();
+            }
+            
+            public function onAfeChange(afe:AFEDataObject = null):void {
+            	dgSubAfes.dataProvider = null;
+            	dgAssignments.dataProvider = null;
+            	
+            	if (null == afe) {
+            		if ((null != dgAfes.selectedItem)
+            				&& ListCollectionView(dgAfes.dataProvider).contains(dgAfes.selectedItem)) {
+            			dgSubAfes.dataProvider = ArrayCollection(controller.model.projectsByAfe[AFEDataObject(dgAfes.selectedItem).AFE]);
+            		}
+            	} else {
+            		dgSubAfes.dataProvider = ArrayCollection(controller.model.projectsByAfe[afe.AFE]);
+            	}
+            	
+            	ListCollectionView(dgSubAfes.dataProvider).refresh();
+            }
+            
+            public function onProjectChange(project:ProjectDataObject = null):void {
+            	dgAssignments.dataProvider = null;
+            	
+            	if (null == project) {
+            		if ((null != dgSubAfes.selectedItem)
+            				&& ListCollectionView(dgSubAfes.dataProvider).contains(dgSubAfes.selectedItem)) {
+            			dgAssignments.dataProvider = ArrayCollection(controller.model.assetsByProject[ProjectDataObject(dgSubAfes.selectedItem).SubAFE]);
+            		}
+            	} else {
+            		dgAssignments.dataProvider = ArrayCollection(controller.model.assetsByProject[project.SubAFE]);
+            	}
+            }
+            
+            public function onClientFilterChange():void {
+            	var selectedClient:ClientDataObject = ClientDataObject(dgClients.selectedItem);
+            	
+            	ListCollectionView(dgClients.dataProvider).refresh();
+            	if (!ListCollectionView(dgClients.dataProvider).contains(selectedClient)) {
+            		onClientChange();
+            	}
+            	
+            	cbAfeFilter.invalidateDisplayList();
+            	cbProjectFilter.invalidateDisplayList();
+            }
+            
+            public function onAfeFilterChange():void {
+            	var selectedAfe:AFEDataObject = AFEDataObject(dgAfes.selectedItem);
+            	
+            	ListCollectionView(dgAfes.dataProvider).refresh();
+            	if (!ListCollectionView(dgAfes.dataProvider).contains(selectedAfe)) {
+            		onAfeChange();
+            	}
+            	
+            	cbProjectFilter.invalidateDisplayList();
+            }
+            
+            public function onProjectFilterChange():void {
+            	var selectedProject:ProjectDataObject = ProjectDataObject(dgSubAfes.selectedItem);
+            	
+            	ListCollectionView(dgSubAfes.dataProvider).refresh();
+            	if (!ListCollectionView(dgSubAfes.dataProvider).contains(selectedProject)) {
+            		onProjectChange();
+            	}
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox
+    	width="100%"
+    	height="40%"
+    	backgroundColor="#eeeeee"
+        borderColor="#999999"
+        borderStyle="solid"
+        paddingLeft="5"
+        paddingRight="5"
+        paddingTop="5"
+        paddingBottom="5"
+        >
+        <mx:HBox width="100%">
+            <mx:Label text="Client:" fontWeight="bold"/>
+            <mx:Spacer width="100%"/>
+            <mx:ComboBox
+            	id="cbClientsFilter"
+            	dataProvider="{CLIENTS_FILTER_DATA}"
+            	labelField="label"
+            	change="onClientFilterChange()"/>
+        </mx:HBox>
+        <mx:DataGrid
+        	id="dgClients" 
+            width="100%"
+            height="100%" minWidth="300"
+            doubleClickEnabled="true"
+            itemDoubleClick="controller.onClickEditClient()"
+            dataProvider="{controller.model.clients}"
+            change="onClientChange()"
+            >
+            <mx:columns>
+                <mx:DataGridColumn headerText="Client Name" dataField="ClientName" width="150"/>
+                <mx:DataGridColumn headerText="Client Address" dataField="ClientAddress"/>
+                <mx:DataGridColumn width="100" headerText="" dataField="ActiveString"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <mx:Button label="New" click="controller.onClickNewClient()"/>
+            <mx:Button label="Edit" click="controller.onClickEditClient()" enabled="{dgClients.selectedItem != null}"/>
+            <mx:Button label="Delete" click="controller.onClickDeleteClient()" enabled="{dgClients.selectedItem != null}"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:HDividedBox
+    	width="100%"
+    	height="60%"
+    	verticalGap="5"
+    	backgroundColor="#eeeeee"
+        borderColor="#999999"
+        borderStyle="solid"
+        paddingLeft="5"
+        paddingRight="5"
+        paddingTop="5"
+        paddingBottom="5"
+        >
+        <mx:VBox width="35%" height="100%">
+            <mx:HBox width="100%">
+                <mx:Label text="Related AFEs:" fontWeight="bold"/>
+                <mx:Spacer width="100%"/>
+                <mx:ComboBox
+                	id="cbAfeFilter"
+                	dataProvider="{AFES_FILTER_DATA}"
+                	change="onAfeFilterChange()"
+                	labelField="label"
+                	enabled="{null != dgClients.selectedItem}"
+                	/>
+            </mx:HBox>
+            <mx:DataGrid
+            	id="dgAfes" 
+                width="100%"
+                height="100%"
+                minWidth="300"
+	            doubleClickEnabled="true"
+	            itemDoubleClick="controller.onClickEditAfe()"
+	            change="onAfeChange()"
+                >
+                <mx:columns>
+                    <mx:DataGridColumn headerText="Afe Code" dataField="AFE" width="150"/>
+                    <mx:DataGridColumn headerText="Afe Name" dataField="AFEName"/>
+                    <mx:DataGridColumn headerText="Status" dataField="AFEStatus"/>
+                </mx:columns>
+            </mx:DataGrid>
+            <mx:HBox width="100%" horizontalAlign="right">
+                <mx:Button label="New" click="controller.onClickNewAfe()" enabled="{dgClients.selectedItem != null}"/>
+                <mx:Button label="Edit" click="controller.onClickEditAfe()" enabled="{dgAfes.selectedItem != null}"/>
+                <mx:Button label="Delete" click="controller.onClickDeleteAfe()" enabled="{dgAfes.selectedItem != null}"/>
+            </mx:HBox>
+        </mx:VBox>
+        <mx:HBox width="65%" height="100%">
+	        <mx:VBox width="70%" height="100%">
+	            <mx:HBox width="100%">
+	                <mx:Label text="Related projects:" fontWeight="bold"/>
+	                <mx:Spacer width="100%"/>
+	                <mx:ComboBox
+    	            	id="cbProjectFilter"
+        	        	dataProvider="{PROJECTS_FILTER_DATA}"
+            	    	change="onProjectFilterChange()"
+                		labelField="label"
+                		enabled="{null != dgAfes.selectedItem}"
+                		/>
+	            </mx:HBox>
+	            <mx:DataGrid
+	            	id="dgSubAfes" 
+	                width="100%"
+	                height="100%"
+	                minWidth="300"
+		            doubleClickEnabled="true"
+		            itemDoubleClick="controller.onClickEditSubAfe()"
+		            change="onProjectChange()"
+	                >
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText="Project Name" dataField="SubAFE"/>
+	                    <mx:DataGridColumn headerText="Short Name" dataField="ShortName"/>
+	                    <mx:DataGridColumn headerText="Status" dataField="SubAFEStatus"/>
+	                    <mx:DataGridColumn headerText="Is Temporary" dataField="TemporaryString"/>
+	                </mx:columns>
+	            </mx:DataGrid>
+	            <mx:HBox width="100%" horizontalAlign="right">
+	                <mx:Button label="New" click="controller.onClickNewSubAfe()" enabled="{dgClients.selectedItem != null &amp;&amp; dgAfes.selectedItem != null}"/>
+	                <mx:Button label="Edit" click="controller.onClickEditSubAfe()" enabled="{dgSubAfes.selectedItem != null}"/>
+	                <mx:Button label="Delete" click="controller.onClickDeleteSubAfe()" enabled="{dgSubAfes.selectedItem != null}"/>
+	            </mx:HBox>
+	        </mx:VBox>
+            <mx:VBox width="30%" height="100%">
+            	<mx:Label text="Assigned to project:" fontWeight="bold"/>
+	            <mx:DataGrid
+	            	id="dgAssignments" 
+	                width="100%"
+	                minWidth="150"
+	                height="{dgSubAfes.height}"
+	                >
+	                <mx:columns>
+	                    <mx:DataGridColumn
+	                    	headerText="Asset Name"
+	                    	dataField="BusinessName"/>
+	                </mx:columns>
+            	</mx:DataGrid>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:HDividedBox>
+
+</mx:VDividedBox>

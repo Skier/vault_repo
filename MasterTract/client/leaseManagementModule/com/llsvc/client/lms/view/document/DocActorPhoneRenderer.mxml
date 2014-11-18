@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%">
+	
+	<mx:Script>
+		<![CDATA[
+	
+			import com.llsvc.domain.DocumentActorPhone;
+			
+			[Bindable] public var phone:DocumentActorPhone;
+
+		]]>
+	</mx:Script>
+	
+	<mx:Label width="100%" text="{phone.phone}"/>
+	<mx:CheckBox enabled="false" selected="{phone.isPrimary}" label="is primary"/>
+</mx:HBox>

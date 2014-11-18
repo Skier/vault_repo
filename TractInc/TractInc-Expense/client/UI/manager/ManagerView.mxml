@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	height="100%"
+	backgroundColor="#c0c0c0"
+	xmlns:dashboard="UI.manager.dashboard.*" 
+	xmlns:bill="UI.manager.bill.*" 
+	xmlns:invoice="UI.manager.invoice.*" 
+	xmlns:payment="UI.manager.payment.*" 
+	xmlns:admin="UI.manager.admin.*">
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var controller:ManagerController;
+			
+			public function set parentController(appController:AppController):void 
+			{
+				controller = new ManagerController(this as ManagerView, appController);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:HBox
+    	width="100%"
+    	paddingRight="15"
+    	horizontalAlign="right"
+    	verticalAlign="middle"
+        includeInLayout="{controller.appController.Model.CurrentUser != null}" 
+        visible="{controller.appController.Model.CurrentUser != null}">
+        <mx:Label
+        	text="Manager Work Center"
+        	fontSize="16"
+        	color="#990000"
+        	fontWeight="bold"/>
+        <mx:Spacer width="100%"/>
+        <mx:Label text="Welcome, "/>
+        <mx:Label text="{controller.appController.Model.CurrentUser.Login}" fontWeight="bold"/>
+        <mx:LinkButton label="Logout" click="controller.Logout()" textDecoration="underline"/>
+    </mx:HBox>
+    
+    <mx:HBox width="100%" backgroundColor="#dddddd">
+    	<mx:LinkButton label="Summary" click="controller.SetManagerState(ManagerModel.VIEW_STATE_DASHBOARD)" enabled="{vsManager.selectedChild != dashboardView}"/>
+    	<mx:Label text="|"/>
+    	<mx:LinkButton label="Bills" click="controller.SetManagerState(ManagerModel.VIEW_STATE_BILL)" enabled="{vsManager.selectedChild != billView}"/>
+    	<mx:Label text="|"/>
+    	<mx:LinkButton label="Invoices" click="controller.SetManagerState(ManagerModel.VIEW_STATE_INVOICE)" enabled="{vsManager.selectedChild != invoiceView}"/>
+    	<mx:Label text="|"/>
+    	<mx:LinkButton label="Payments" click="controller.SetManagerState(ManagerModel.VIEW_STATE_PAYMENT)" enabled="{vsManager.selectedChild != paymentView}"/>
+    	<mx:Label text="|"/>
+    	<mx:LinkButton label="Administrator" click="controller.SetManagerState(ManagerModel.VIEW_STATE_ADMIN)" enabled="{vsManager.selectedChild != adminView}"/>
+    	<mx:Label text="|" visible="{0 == controller.model.data.Clients.length}" includeInLayout="{0 == controller.model.data.Clients.length}"/>
+    	<mx:LinkButton label="Import Data" click="controller.importData()" visible="{0 == controller.model.data.Clients.length}" includeInLayout="{0 == controller.model.data.Clients.length}"/>
+    </mx:HBox>
+    
+    <mx:ViewStack id="vsManager" width="100%" height="100%">
+    	<dashboard:DashView id="dashboardView" parentController="{controller}"/>
+    	<bill:SummaryView id="billView" parentController="{controller}"/>
+    	<invoice:InvoiceManagerView id="invoiceView" parentController="{controller}"/>
+    	<payment:PaymentView id="paymentView"/>
+    	<admin:AdminView id="adminView" parentController="{controller}"/>
+    </mx:ViewStack>
+    
+</mx:VBox>

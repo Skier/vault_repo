@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*"
+	creationComplete="onCreate()" xmlns:bp="com.dalworth.servman.main.bp.*" xmlns:salesRep="com.dalworth.servman.main.salesRep.setting.salesRep.*" xmlns:salesRep1="com.dalworth.servman.main.owner.setting.salesRep.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import com.dalworth.servman.events.SalesRepEvent;
+			import com.dalworth.servman.domain.SalesRep;
+			import mx.core.Application;
+			import com.dalworth.servman.main.bp.BusinessPartnerCreatePopup;
+			import com.dalworth.servman.events.BusinessPartnerEvent;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_EMAIL:String = "columnEmail";
+			private static const COLUMN_PHONE:String = "columnPhone";
+			
+			[Bindable]
+			public var isEditMode:Boolean = false;
+			
+			[Bindable]
+			private var model:SalesRepsModel = SalesRepsModel.getInstance();
+			
+			[Bindable]
+			private var controller:SalesRepsController;
+			
+			public function init():void 
+			{
+				isEditMode = false;
+				
+				controller = new SalesRepsController(this);
+				controller.initModel();
+				if (vsSalesReps != null)
+					vsSalesReps.selectedIndex = 0;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Sales Representatives ";
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is SalesRep) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return SalesRep(item).ShowAs;
+						
+						case COLUMN_EMAIL :
+							return SalesRep(item).RelatedUser != null ? SalesRep(item).RelatedUser.Email : "";
+						
+						case COLUMN_PHONE :
+							return SalesRep(item).RelatedUser != null ? SalesRep(item).RelatedUser.Phone : "";
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onCreate():void 
+			{
+				viewSalesRepEditor.addEventListener(SalesRepEvent.SALES_REP_SAVE, onSalesRepSave);
+				viewSalesRepEditor.addEventListener("closeSalesRepEditor",
+					function(event:*):void 
+					{
+						isEditMode = false;
+						
+						vsSalesReps.selectedChild = viewSalesRepsList;
+						viewSalesRepEditor.setSalesRep(null);
+						BreadCrumbModel.getInstance().breadCrumbString = "Settings > Sales Representatives ";
+					});  
+			}
+			
+			private function onSalesRepSave(event:SalesRepEvent):void 
+			{
+				var salesRepUser:SalesRep = event.salesRepUser;
+				if(!model.salesReps.contains(salesRepUser))
+					model.salesReps.addItem(salesRepUser);
+				var idx:int = model.salesReps.getItemIndex(salesRepUser);
+				dgSalesReps.selectedIndex = idx;
+				dgSalesReps.scrollToIndex(idx);
+			}
+			
+			private function onNewClick():void 
+			{
+				var salesRep:SalesRep = new SalesRep();
+				salesRep.IsActive = true;
+				var popup:SalesRepCreatePopup = SalesRepCreatePopup.open(Application.application as DisplayObject, salesRep);
+				popup.addEventListener(SalesRepEvent.SALES_REP_SAVE, onSalesRepSave);
+			}
+			
+			private function onSalesRepDoubleClick():void 
+			{
+				var salesRep:SalesRep = dgSalesReps.selectedItem as SalesRep;
+				vsSalesReps.selectedChild = viewSalesRepEditor;
+				viewSalesRepEditor.setSalesRep(salesRep);
+				isEditMode = true;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Sales Representatives > Sales Rep [" + salesRep.ShowAs + "]";
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsSalesReps" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewSalesRepsList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:DataGrid id="dgSalesReps" dataProvider="{model.salesReps}" width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="onSalesRepDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" labelFunction="getLabel" dataField="{COLUMN_NAME}" minWidth="100"/>
+						<mx:DataGridColumn headerText="Email" labelFunction="getLabel" dataField="{COLUMN_EMAIL}" width="150" minWidth="100"/>
+						<mx:DataGridColumn headerText="Phone" labelFunction="getLabel" dataField="{COLUMN_PHONE}" width="150" minWidth="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox height="100%" width="150">
+				<mx:Button width="100%" height="35" label="Create New" click="onNewClick()"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<salesRep1:SalesRepEditView id="viewSalesRepEditor" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:HBox>

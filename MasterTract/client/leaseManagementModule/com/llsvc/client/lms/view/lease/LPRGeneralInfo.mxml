@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0" xmlns:component="com.llsvc.component.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				if (!isValid())
+					return false;
+					
+				lease.netAcres = Number(txtNetAcres.text);
+					
+				if (cbBonus.selected) 
+				{
+					lease.bonusRate = Number(txtBonusRate.currency);
+					lease.bonusAmount = Number(txtBonusAmount.currency);
+				} else 
+				{
+					lease.bonusRate = 0;
+					lease.bonusAmount = 0;
+				}
+				
+				return true;
+			}
+			
+			private function isValid():Boolean 
+			{
+				return vGroup.validate(true);
+			}
+			
+	        private static function addMonths(d:Date, x:int) : Date {
+	            var y:Number = Math.floor(x / 12); x -= 12*y;
+	            var m:Number = d.month + x;
+	            if (m > 11) {
+	                y += 1;
+	                m -= 12;
+	            } else if (m < 0) {
+	                y -= 1;
+	                m += 12;
+	            }
+	            return new Date(d.fullYear+y, m, d.date, d.hours, d.minutes, d.seconds, d.milliseconds);
+	        }
+			
+		]]>
+	</mx:Script>
+	
+	<component:ValidatorsGroup id="vGroup">
+		<mx:NumberValidator id="vNetAcres" source="{txtNetAcres}" property="text" minValue="0" required="false"/> 
+		<mx:CurrencyValidator id="vBonusRate" source="{txtBonusRate}" property="text" minValue="0" required="false"/> 
+		<mx:CurrencyValidator id="vBonusAmount" source="{txtBonusAmount}" property="text" minValue="0" required="false"/> 
+	</component:ValidatorsGroup>
+
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="General Info"/>
+	</mx:HBox>
+	
+    <mx:VBox width="100%" backgroundColor="#FFFFFF"
+    	paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+    	<mx:HBox width="100%">
+        	<mx:Label text=" Term:"/>
+        	<mx:Label text="{lease.term}" fontWeight="bold"/>
+        	<mx:Label text="monthes "/>
+        	<mx:Label text=" Royalty:"/>
+        	<mx:Label text="{lease.royalty.toString()}" fontWeight="bold"/>
+    	</mx:HBox>
+
+    	<mx:HBox width="100%">
+        	<mx:Label text=" Lease:"/>
+        	<mx:Label text="{lease.leaseDate.toDateString()}" fontWeight="bold"/>
+        	<mx:Label text=" Effective:"/>
+        	<mx:Label text="{lease.effectiveDate.toDateString()}" fontWeight="bold"/>
+    	</mx:HBox>
+
+    	<mx:HBox width="100%">
+        	<mx:Label text=" Expires On:"/>
+        	<mx:Label id="lblExpires" 
+        		text="{	addMonths(lease.effectiveDate, lease.term).toDateString() }" 
+        		fontWeight="bold"/>
+    	</mx:HBox>
+
+        <mx:Form width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        	backgroundColor="#eeeeee" borderColor="#999999" borderStyle="solid" borderThickness="1">
+	        <mx:FormItem label="Net Acres">
+	            <mx:TextInput id="txtNetAcres" 
+	            	width="60" text="{isNaN(lease.netAcres) ? 0 : lease.netAcres.toString()}" textAlign="right"
+	            	change="lease.netAcres = isNaN(Number(txtNetAcres.text)) ? 0 : Number(txtNetAcres.text)"/>
+	        </mx:FormItem>
+
+        	<mx:FormItem>
+	        	<mx:CheckBox id="cbBonus" 
+	        		label="Bonus" verticalCenter="0" width="80"
+	        		selected="{lease.bonusRate &gt; 0 || lease.bonusAmount &gt; 0}"/>
+        	</mx:FormItem>
+        	
+        	<mx:HBox width="100%">
+		        <mx:FormItem label="Bonus Rate"
+		        	visible="{cbBonus.selected}">
+
+		            <component:CurrencyInput id="txtBonusRate" 
+		            	width="60" currency="{isNaN(lease.bonusRate) ? 0 : lease.bonusRate.toString()}" textAlign="right"
+		            	/>
+		        </mx:FormItem>
+	
+		        <mx:FormItem label="Bonus Amount"
+		        	visible="{cbBonus.selected}">
+		            <component:CurrencyInput id="txtBonusAmount" 
+		            	width="60" currency="{isNaN(lease.bonusAmount) ? 0 : lease.bonusAmount.toString()}" textAlign="right"
+		            	/>
+		        </mx:FormItem>
+        	</mx:HBox>
+        </mx:Form>
+    </mx:VBox>
+</mx:VBox>

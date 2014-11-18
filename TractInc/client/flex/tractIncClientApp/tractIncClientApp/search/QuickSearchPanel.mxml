@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+	dropShadowEnabled="true"
+	borderColor="#cccccc" borderStyle="solid"
+	backgroundColor="#ffffcc" backgroundAlpha="0.3" shadowDistance="1" shadowDirection="center"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			
+			private function btnSearchClickHandler():void 
+			{
+				Alert.show("Don't realized yet !");
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="Quick Search:"/>
+
+	<mx:HBox width="100%" horizontalGap="1">
+		<mx:TextInput id="txtSearchString" width="100%"/>
+
+		<mx:Button id="btnSearch"
+			icon="@Embed(source='/assets/magnifier.png')" height="{txtSearchString.height}" width="{txtSearchString.height}"
+			horizontalCenter="0" verticalCenter="0"
+            styleName="toolButton"
+            click="btnSearchClickHandler()"/>
+	</mx:HBox>
+</mx:VBox>

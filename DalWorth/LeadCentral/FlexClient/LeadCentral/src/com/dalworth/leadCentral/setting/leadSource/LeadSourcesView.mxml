@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	initialize="onInit()"
+	creationComplete="onCreate()" xmlns:leadSource="com.dalworth.leadCentral.setting.leadSource.*" xmlns:help="com.dalworth.leadCentral.help.*" xmlns:controls="com.affilia.controls.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.registry.UserRegistry;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.domain.Lead;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.leadSource.LeadSourceTreeDataDescriptor;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import com.dalworth.leadCentral.events.LeadSourceEvent;
+			import mx.core.Application;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_LEAD_SOURCE:String = "Lead Source";
+			private static const COLUMN_SALES_REP:String = "Sales Rep";
+			private static const COLUMN_BUSINESS_PARTNER:String = "Business Partner";
+
+            [Embed(source="/assets/icons16/user.png")]
+            [Bindable]
+            private var imgUser:Class;
+
+            [Embed(source="/assets/icons16/user--exclamation.png")]
+            [Bindable]
+            private var imgUserAttention:Class;
+
+            [Embed(source="/assets/icons16/building.png")]
+            [Bindable]
+            private var imgBuilding:Class;
+
+            [Embed(source="/assets/icons16/building--exclamation.png")]
+            [Bindable]
+            private var imgBuildingAttention:Class;
+
+            [Embed(source="/assets/icons16/user-business-boss.png")]
+            [Bindable]
+            private var imgBoss:Class;
+
+            [Embed(source="/assets/icons16/telephone-network.png")]
+            [Bindable]
+            private var imgTelephone:Class;
+
+            [Embed(source="/assets/icons24/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+			[Bindable]
+			public var isEditMode:Boolean = false;
+			
+			[Bindable]
+			private var model:LeadSourcesModel;
+			private var controller:LeadSourcesController;
+			//private var treeDataDescriptor:LeadSourceTreeDataDescriptor;
+			
+			public function init():void 
+			{
+				isEditMode = false;
+				controller.initModel();
+				if (vsLeadSources != null)
+					vsLeadSources.selectedIndex = 0;
+			}
+			
+			public function onInit():void 
+			{
+				model = LeadSourcesModel.getInstance();
+				controller = new LeadSourcesController(this);
+			}
+
+			private function onCreate():void 
+			{
+				viewLeadSourceEditor.addEventListener(LeadSourceEvent.LEAD_SOURCE_SAVE, onLeadSourceSave);
+				viewLeadSourceEditor.addEventListener("closeLeadSourceEditor",
+					function(event:*):void 
+					{
+						isEditMode = false;
+						
+						vsLeadSources.selectedChild = viewLeadSources;
+						viewLeadSourceEditor.setLeadSource(null);
+					});  
+			}
+			
+			private function onLeadSourceSave(event:LeadSourceEvent):void 
+			{
+				var leadSource:LeadSource = event.leadSource;
+				controller.updateModel(leadSource);
+
+				callLater(selectItem, [leadSource]);
+			}
+			
+			private function selectItem(leadSource:LeadSource):void 
+			{
+				if (leadSource == null)
+				{
+					dgLeadSources.selectedIndex = -1;
+				} else 
+				{
+					var idx:int = model.leadSources.getItemIndex(leadSource);
+					dgLeadSources.selectedIndex = idx;
+					dgLeadSources.scrollToIndex(idx);
+				}
+			}
+
+			private function onNewClick():void 
+			{
+				var leadSource:LeadSource = new LeadSource();
+				leadSource.IsActive = true;
+				
+				if (MainModel.getInstance().currentUser.RoleName == User.ROLE_STAFF)
+					leadSource.OwnedByUserId = MainModel.getInstance().currentUser.Id;
+
+				openLeadSource(leadSource);
+			}
+			
+			private function openLeadSource(leadSource:LeadSource):void 
+			{
+				if (MainModel.getInstance().currentUser.RoleName == User.ROLE_BUSINESS_PARTNER)
+					return;
+					
+				vsLeadSources.selectedChild = viewLeadSourceEditor;
+				viewLeadSourceEditor.setLeadSource(leadSource);
+				isEditMode = true;
+			}
+
+			private function onLeadSourceDoubleClick():void 
+			{
+				var leadSource:LeadSource = dgLeadSources.selectedItem as LeadSource;
+				openLeadSource(leadSource);
+			}
+
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is LeadSource) 
+				{
+					var leadSource:LeadSource = item as LeadSource;
+					
+					switch (column.headerText) 
+					{
+						case COLUMN_LEAD_SOURCE :
+							return leadSource.Name;
+						
+						case COLUMN_SALES_REP :
+							if (leadSource.OwnedByUserId > 0)
+								return User(UserRegistry.getInstance().getLocal(leadSource.OwnedByUserId)).Name;
+							else
+								return "";
+						
+						case COLUMN_BUSINESS_PARTNER :
+							if (leadSource.UserId > 0)
+								return User(UserRegistry.getInstance().getLocal(leadSource.UserId)).Name;
+							else
+								return "";
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=134";
+			
+			private function onRefreshFilter():void 
+			{
+				var salesRepId:int = 0;
+				if (comboSalesRep.selectedIndex > 0)
+					salesRepId = comboSalesRep.value as int;
+					
+				var businessPartnerId:int = 0;
+				if (comboBusinessPartner.selectedIndex > 0)
+					businessPartnerId = comboBusinessPartner.value as int;
+					
+				controller.refreshFilter(salesRepId, businessPartnerId);
+			}
+			
+			private function onClearFilter():void 
+			{
+				comboSalesRep.selectedIndex = 0;
+				comboBusinessPartner.selectedIndex = 0;
+				controller.refreshFilter(0,0);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsLeadSources" width="100%" height="100%" creationPolicy="all">
+		<mx:VBox id="viewLeadSources" width="100%" height="100%" backgroundColor="#FFFFFF" verticalGap="0">
+			<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+			
+			<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+				backgroundColor="#FFFFDD">
+				<mx:Label text="Manage Lead Sources" fontSize="24" color="#666666"/>
+				<mx:Spacer width="100%"/>
+				<mx:Button height="35" label="Create New" click="onNewClick()" fontSize="14" icon="{imgPlus}" 
+					visible="{MainModel.getInstance().currentUser.RoleName != User.ROLE_BUSINESS_PARTNER}"/>
+			</mx:HBox> 
+
+			<mx:Spacer width="100%" height="5"/>
+			
+			<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+				<mx:VBox width="100%" height="100%"
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+					borderColor="#CCCCCC" borderStyle="solid">
+					<mx:HBox width="100%" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#EEEEFF"
+						paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4" verticalAlign="bottom">
+						<mx:VBox borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#FFFFFF" backgroundAlpha="0.3"
+						paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" verticalGap="2">
+							<mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Sales Rep:" width="200" textAlign="right"/>
+								<controls:ComboBox id="comboSalesRep" 
+									labelField="Name" width="200" fontSize="12"
+									dataProvider="{model.salesReps}" valueField="Id" value="{model.salesRepId}"/>
+							</mx:HBox>
+							<mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle">
+								<mx:Label text="Business Partner:" width="200" textAlign="right"/>
+								<controls:ComboBox id="comboBusinessPartner" 
+									labelField="Name" width="200" fontSize="12"
+									dataProvider="{model.businessPartners}" valueField="Id" value="{model.businessPartnerId}"/>
+							</mx:HBox>
+						</mx:VBox>
+						<mx:Spacer width="100%"/>
+						<mx:VBox verticalGap="4" verticalAlign="bottom" height="100%">
+							<mx:Button label="Refresh" click="onRefreshFilter()" width="100"/>
+							<mx:Button label="Clear" click="onClearFilter()" width="100"/>
+						</mx:VBox>
+					</mx:HBox>
+					
+					<mx:Text text="No Lead Sources created." 
+						visible="{model.leadSources == null || model.leadSources.length == 0}"
+						includeInLayout="{model.leadSources == null || model.leadSources.length == 0}"/>
+					<mx:VBox width="100%" height="100%" visible="{model.leadSources.length &gt; 0}" includeInLayout="{model.leadSources.length &gt; 0}">
+						<mx:DataGrid id="dgLeadSources" width="100%" height="100%" dataProvider="{model.leadSources}"
+							sortableColumns="false"
+							draggableColumns="false" doubleClickEnabled="true" itemDoubleClick="onLeadSourceDoubleClick()">
+							<mx:columns>
+								<mx:DataGridColumn headerText="" width="20"/>
+								<mx:DataGridColumn headerText="{COLUMN_LEAD_SOURCE}" labelFunction="getLabel"/>
+								<mx:DataGridColumn headerText="{COLUMN_SALES_REP}" labelFunction="getLabel"/>
+								<mx:DataGridColumn headerText="{COLUMN_BUSINESS_PARTNER}" labelFunction="getLabel"/>
+							</mx:columns>
+						</mx:DataGrid>
+					</mx:VBox>
+				</mx:VBox>
+				
+				<leadSource:LeadSourcePhonesPanel width="370" height="100%" leadSource="{dgLeadSources.selectedItem as LeadSource}"
+					visible="{dgLeadSources.selectedItem != null}" includeInLayout="{dgLeadSources.selectedItem != null}"/>
+			</mx:HDividedBox>
+		</mx:VBox>
+
+		<leadSource:LeadSourceEditView id="viewLeadSourceEditor" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:VBox>

@@ -1,0 +1,52 @@
+﻿@model Dalworth.LeadCentral.Web.Models.Company.CompanyEdit
+
+@{
+    ViewBag.Title = "Company Info Edit";
+}
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "Index", new { controller = "Profile"}, new { @class="button" } )
+      </div>
+      <h1>Company Profile</h1>
+    </div>
+    <div class="content">
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;font-size:16px;"><span class="required">*</span> Company Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.CustomerName, new { @style = "font-size:16px;width:250px;" })
+                @Html.ValidationMessageFor(model => model.CustomerName)</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Contact Person</td>
+              <td>
+                @Html.TextBoxFor(model => model.CustomerContactPerson, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.CustomerContactPerson)</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Phone</td>
+              <td><b>+1</b>@Html.TextBoxFor(model => model.CustomerPhone)
+                @Html.ValidationMessageFor(model => model.CustomerPhone)</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;"><span class="required">*</span> Email</td>
+              <td>
+                @Html.TextBoxFor(model => model.CustomerEmail, new { @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.CustomerEmail)</td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+}
+

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" 
+	verticalGap="5" 
+	xmlns:clause="com.llsvc.client.lms.view.lease.detail.clause.*"
+	creationComplete="creationCompleteHandler()">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import com.llsvc.domain.events.LeaseClauseEvent;
+			import com.llsvc.domain.LeaseClause;
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			private function removeTerm(term:LeaseClause):void 
+			{
+				var idx:int = lease.clauses.getItemIndex(term);
+				if (idx > -1) {
+					lease.clauses.removeItemAt(idx);
+				}
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+				dgTerms.addEventListener(LeaseClauseEvent.CLAUSE_DELETE, termDeleteHandler);
+			}
+			
+			private function termDeleteHandler(event:LeaseClauseEvent):void 
+			{
+                Alert.show("Do you really want to remove term ?", 
+                   "Remove Term", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES) 
+                        {
+                        	removeTerm(event.leaseClause);
+                        }
+                    });
+			}
+			
+ 			private function openTerm(term:LeaseClause):void 
+ 			{
+ 				term.lease = lease;
+ 				var popup:LeaseClauseEditView = 
+ 					LeaseClauseEditView.open(Application.application as DisplayObject, term, true);
+ 				
+ 				popup.addEventListener("submitRequest",
+ 					function(event:Event):void
+ 					{
+ 						if (!lease.clauses.contains(popup.clause)) 
+ 						{
+ 							lease.clauses.addItem(popup.clause);
+ 						}
+ 						
+ 						popup.close();
+ 					})
+ 			} 
+ 			
+ 			private function btnAddClickHandler():void 
+ 			{
+	 			var term:LeaseClause = new LeaseClause();
+	 			term.isActive = true;
+	 			openTerm(term);
+ 			} 
+ 			
+ 			private function dgTermsDoubleClickHandler():void 
+ 			{
+ 				if (dgTerms.selectedItem != null)
+ 					openTerm(dgTerms.selectedItem as LeaseClause);
+ 			}
+ 			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		
+		<mx:HBox width="100%" backgroundColor="#dddddd" verticalAlign="middle"
+			borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+			<mx:Label text="Terms for current Lease:"/>
+			
+			<mx:Spacer width="100%"/>
+	
+	        <mx:Button toolTip="Add Term"
+	        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')"
+	        	click="btnAddClickHandler()"/>
+		</mx:HBox>
+		
+		<controls:ColoredDataGrid id="dgTerms" 
+			width="100%" height="100%" minWidth="450" dataProvider="{lease.clauses}"
+			doubleClickEnabled="true" itemDoubleClick="dgTermsDoubleClickHandler()">
+			<controls:columns>
+				<mx:DataGridColumn width="90" headerText="Term" dataField="name"/>
+				<mx:DataGridColumn headerText="Subject" dataField="description"/>
+				<mx:DataGridColumn width="60" headerText="Created" dataField="createdStr" textAlign="center"/>
+				<mx:DataGridColumn width="60" headerText="Modified" dataField="modifiedStr" textAlign="center"/>
+<!--
+				<mx:DataGridColumn width="40" headerText="Active" textAlign="center" itemRenderer="com.llsvc.client.lms.view.lease.detail.clause.TermIsActiveIR"/>
+-->
+				<mx:DataGridColumn width="40" headerText="Alarms" textAlign="center" itemRenderer="com.llsvc.client.lms.view.lease.detail.clause.TermAlarmsIR"/>
+				<mx:DataGridColumn width="20" headerText=" " itemRenderer="com.llsvc.client.lms.view.lease.detail.clause.TermActionsIR"/>
+			</controls:columns>
+		</controls:ColoredDataGrid>
+	</mx:VBox>
+	
+	<clause:TermEditPanel id="panelTermDetail"
+		paddingLeft="5" paddingRight="5" paddingBottom="5"
+		visible="{dgTerms.selectedItem != null}"
+		includeInLayout="{dgTerms.selectedItem != null}"
+		width="100%" height="280" minHeight="280" 
+		term="{dgTerms.selectedItem as LeaseClause}"
+		netAcres="{lease.netAcres}"/>
+</mx:VDividedBox>

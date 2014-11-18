@@ -1,0 +1,75 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Campaign
+@model CampaignEdit
+
+@{
+    ViewBag.Title = "Create New";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-start").datepicker();
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+  @Html.ValidationSummary(true)
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @if (Model.CurrentPartner == null)
+        {
+            <text>@Html.ActionLink("Cancel", "Index", new{controller="Campaigns"}, new{@class="button"})</text>
+        } else
+        {
+            <text>@Html.ActionLink("Cancel", "Details", new { controller = "Partners", id = Model.CurrentPartner.Id }, new { @class = "button" })</text>
+        }
+        </div>
+      <h1>Create New Campaign</h1>
+    </div>
+    <div class="content">
+        @Html.HiddenFor(model => model.CurrentCampaign.Id)
+        @Html.HiddenFor(model => model.CurrentCampaign.DateCreated)
+        @Html.HiddenFor(model => model.CurrentCampaign.DateEnd)
+        @Html.HiddenFor(model => model.DenyChangePartner)
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;font-size:16px;"><span class="required">*</span> Name</td>
+              <td>
+                @Html.TextBoxFor(model => model.CampaignName, new { @style = "font-size:16px;width:250px;" })
+                @Html.ValidationMessageFor(model => model.CampaignName)
+              </td>
+            </tr>
+            @if (Model.CurrentPartner == null)
+            {
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.DropDownList("PartnerId", new SelectList(Model.PartnerList, "Id", "PartnerName", Model.CurrentCampaign.BusinessPartnerId))</td>
+            </tr>
+            }
+            else
+            {
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.ActionLink(Model.CurrentPartner.PartnerName, "Details", new { controller = "Partners", id = Model.CurrentPartner.Id })</td>
+            </tr>
+            }
+            <tr>
+              <td style="text-align:right;">Assigned to Sales Rep</td>
+              <td>@Html.DropDownList("UserId", new SelectList(Model.UserList, "Id", "Name", Model.CurrentCampaign.UserId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Start Date</td>
+              <td>@Html.TextBoxFor(model => model.CurrentCampaign.DateStart,
+                    new { Value = Model.CurrentCampaign.DateStart.ToString("MM/dd/yyyy"), @class = "date-input", @id = "date-start" })</td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+
+}

@@ -1,0 +1,143 @@
+import mx.rpc.AsyncToken;
+import flash.events.Event;
+import mx.controls.TextInput;
+import mx.events.DataGridEventReason;
+import mx.events.DataGridEvent;
+import mx.collections.ArrayCollection;
+import mx.controls.Alert;
+import mx.rpc.events.FaultEvent;
+import mx.rpc.events.ResultEvent;
+import mx.rpc.remoting.RemoteObject;
+
+private var ${entity}RemoteObject:RemoteObject;
+
+private function init():void
+{
+    ${entity}RemoteObject = new RemoteObject( "GenericDestination" );
+    ${entity}RemoteObject.source = "${namespace}.${entity}DAO";
+    ${entity}RemoteObject.addEventListener( FaultEvent.FAULT, gotError );
+    ${entity}RemoteObject.get${entity}s.addEventListener( ResultEvent.RESULT, received${entity}Records );
+    ${entity}RemoteObject.get${entity}s();       
+#if ( !$multitable )    
+    ${gridId}.addEventListener(Event.CHANGE, handleSelectionChange); 
+    ${gridId}.addEventListener(KeyboardEvent.KEY_DOWN, handleRemovePressed);       
+#end    
+}
+            
+public function gotError( fault:FaultEvent ):void
+{
+    Alert.show("Server reported an error - " + fault.fault.faultString, "Error"); 
+}
+
+public function received${entity}Records( result:ResultEvent ):void
+{
+    ${gridId}.dataProvider = new ArrayCollection( result.result as Array );
+}
+            
+#if ( !$multitable )    
+
+public function clearEditor() : void
+{
+#foreach( $column in $columns )
+	${column}_.text = "";
+#end
+}
+
+public function handleSelectionChange( event:Event ):void
+{
+    var currentSelection:Object = ${gridId}.selectedItem;
+#foreach( $column in $columns )
+	${column}_.text = currentSelection.$column;
+#end
+}
+
+public function doUpdateWithForm( event:MouseEvent ):void
+{
+	if (
+#foreach( $column in $columns )
+        ${column}_.text.length == 0 ||
+#end
+		0 == 1 ) {
+        Alert.show( "All fields are required", "Incomplete Form" );
+        return;
+	}
+	
+    var updateObject:Object = new Object();
+#foreach( $column in $columns )
+        updateObject.$column = ${column}_.text;
+#end
+
+    var asyncToken:AsyncToken = ${entity}RemoteObject.update${entity}( updateObject );
+    asyncToken.addResponder( new mx.rpc.Responder(
+        function( event:ResultEvent ):void
+        {
+            ${gridId}.dataProvider[ ${gridId}.selectedIndex ] = updateObject;
+            Alert.show( "Record has been saved", "Success" );
+        },
+        function( fault:FaultEvent):void
+        {
+            gotError( fault );
+        }
+    )); 
+}
+            
+public function doInsertWithForm( event:MouseEvent ) : void
+{
+/*
+	if (
+#foreach( $column in $columns )
+        ${column}_.text.length == 0 ||
+#end
+		0 == 1 ) {
+        Alert.show( "All fields are required", "Incomplete Form" );
+        return;
+	}
+*/
+	
+    var insertObject:Object = new Object();
+#foreach( $column in $columns )
+        insertObject.$column = ${column}_.text;
+#end
+
+    var asyncToken:AsyncToken = ${entity}RemoteObject.insert${entity}( insertObject );
+    asyncToken.addResponder( new mx.rpc.Responder(
+        function( event:ResultEvent ):void
+        {
+		    ${entity}RemoteObject.get${entity}s();
+		    clearEditor();
+            Alert.show( "Record has been added. Refreshing...", "Success" );
+        },
+        function( fault:FaultEvent):void
+        {
+            gotError( fault );
+        }
+    )); 
+}
+            
+public function handleRemovePressed( event:KeyboardEvent): void
+{
+	// handle remove
+	if ( 46 == event.keyCode ) {
+        var currentSelection:Object = ${gridId}.selectedItem;
+    	var removeObject:Object = new Object();
+#foreach( $column in $columns )
+        removeObject.$column = currentSelection.${column};
+#end
+
+	    var asyncToken:AsyncToken = ${entity}RemoteObject.remove${entity}( removeObject );
+	    asyncToken.addResponder( new mx.rpc.Responder(
+	        function( event:ResultEvent ):void
+	        {
+			    ${entity}RemoteObject.get${entity}s();
+			    clearEditor();
+	            Alert.show( "Record has been removed. Refreshing...", "Success" );
+	        },
+	        function( fault:FaultEvent):void
+	        {
+	            gotError( fault );
+	        }
+	    )); 
+	}
+}
+
+#end

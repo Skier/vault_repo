@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    title="Start Page"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="src.deedplotter.components.*"
+    showCloseButton="true"
+    close="closePopUp()" creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.Tract;
+            import mx.events.ItemClickEvent;
+            import mx.collections.ArrayCollection;
+            import src.AppController;
+            import src.ScopeScetchController;
+            import mx.managers.PopUpManager;
+
+            public static function open(parent:DisplayObject, modal:Boolean):StartPageView
+            {
+                var popup:StartPageView = new StartPageView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public var scopeController:ScopeScetchController;
+            [Bindable] public var appController:AppController;
+
+            [Bindable] private var recentDrawingsArray:ArrayCollection;
+            [Bindable] private var recentTractsArray:ArrayCollection;
+            [Bindable] private var noItemsArray:ArrayCollection = new ArrayCollection(['no items']);
+
+            private function creationCompleteHandler():void
+            {
+            }
+
+            private function createTract():void
+            {
+                if (scopeController)
+                    scopeController.CreateNewAttachedTract(false);
+                
+                closePopUp();
+            }
+
+            private function createDrawing():void
+            {
+                if (scopeController)
+                    scopeController.CreateNewTract(false);
+
+                closePopUp();
+            }
+
+            private function openTract():void
+            {
+                scopeController.CreateNewAttachedTract();
+
+                closePopUp();
+            }
+
+            private function openDrawing():void
+            {
+                scopeController.SelectTract(false);
+
+                closePopUp();
+            }
+            
+            private function closePopUp():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function linkBarItemClickHandler(event:ItemClickEvent):void
+            {
+                var tract:Tract = appController.Model.Storage.GetTract(event.item.Uid);
+                scopeController.OpenTract(tract);
+
+                closePopUp();
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:HBox 
+        width="100%" verticalAlign="middle" backgroundColor="#ffffff" borderStyle="solid" 
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <mx:Image source="@Embed(source='/assets/scopemapping_logo.png')"/>
+        
+        <mx:Label text="Deed Pro" fontSize="30" fontWeight="bold"/>
+    </mx:HBox>
+
+    <mx:HBox width="100%" height="100%">
+        <mx:VBox width="100%" height="100%">
+            <components:GlassHeaders  headerTitle="RECENT DRAWING"/>
+
+            <components:ExtendedLinkBar 
+                dataProvider="{appController.Model.Storage.TractList}" 
+                labelField="Description" direction="vertical"
+                height="150" width="200" borderStyle="solid" backgroundColor="#ffffff"
+                buttonTextAlign="left"
+                itemClick="linkBarItemClickHandler(event)"/>
+        </mx:VBox>
+        
+        <mx:VBox height="100%" width="100%">
+            <components:GlassHeaders  headerTitle="RECENT TRACTS"/>
+
+            <components:ExtendedLinkBar
+                dataProvider="{recentTractsArray}" 
+                labelField="Description" direction="vertical"
+                height="150" width="200" borderStyle="solid" backgroundColor="#ffffff"
+                buttonTextAlign="left"
+                itemClick="linkBarItemClickHandler(event)"/>
+        </mx:VBox>
+    </mx:HBox>
+        
+    <mx:HBox width="100%" verticalAlign="middle">
+        <mx:Label text="Open:" width="50"/>
+        <mx:LinkButton label="Drawing.." click="openDrawing()"/>
+        <mx:VRule height="10"/>
+        <mx:LinkButton label="Tract.." click="openTract()"/>
+    </mx:HBox>
+    
+    <mx:HBox width="100%" verticalAlign="middle">
+        <mx:Label text="Create:" width="50"/>
+        <mx:LinkButton label="Drawing.." click="createDrawing()"/>
+        <mx:VRule height="10"/>
+        <mx:LinkButton label="Tract.." click="createTract()"/>
+    </mx:HBox>
+
+</mx:TitleWindow>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%">
+	
+		<mx:LinkButton label="Add Entity Officers"
+			click="controller.OnClickAddParticipantEntityParty()"
+			textDecoration="underline" color="#000099"
+			visible="{controller.Model.entityParts.length == 0}"
+			includeInLayout="{controller.Model.entityParts.length == 0}"
+			/>
+
+		<mx:VBox width="100%"
+			visible="{controller.Model.entityParts.length > 0}"
+			includeInLayout="{controller.Model.entityParts.length > 0}"
+			>
+
+			<mx:HBox backgroundColor="#cccccc" width="100%">
+				<mx:Label text="Entity Officers" fontWeight="bold"/>
+				<mx:Spacer width="100%"/>
+			</mx:HBox>
+		
+			<mx:VBox width="100%">
+				
+				<mx:DataGrid id="dgParticipantEntityParts" 
+					dataProvider="{controller.Model.entityParts}" 
+					width="100%" height="80">
+					<mx:columns>
+						<mx:DataGridColumn headerText="First Name" dataField="fName"/>
+						<mx:DataGridColumn headerText="Middle Name" dataField="mName"/>
+						<mx:DataGridColumn headerText="Last Name" dataField="lName"/>
+						<mx:DataGridColumn headerText="SSN" dataField="SSN"/>
+					</mx:columns>
+				</mx:DataGrid>
+		
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="Add" click="controller.OnClickAddParticipantEntityParty()"/>
+					<mx:Button label="Edit" click="controller.OnClickEditParticipantEntityParty()" enabled="{dgParticipantEntityParts.selectedItem != null}"/>
+					<mx:Button label="Remove" click="controller.OnClickRemoveParticipantEntityParty()" enabled="{dgParticipantEntityParts.selectedItem != null}"/>
+				</mx:HBox>
+		
+			</mx:VBox>
+
+		</mx:VBox>
+	
+	</mx:VBox>
+
+</mx:VBox>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()" xmlns:controls="com.affilia.controls.*"
+	creationComplete="onCreate()">
+
+    <mx:Metadata>
+        [Event(name="filterChange", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.lead.LeadFilter;
+			import mx.core.UIComponent;
+			
+            [Embed(source="/assets/icons16/toggle.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+            [Embed(source="/assets/icons16/toggle_collapse.png")]
+            [Bindable]
+            private var imgMinus:Class;
+
+			[Bindable]
+			private var isCollapsible:Boolean = false;
+			
+			[Bindable]
+			public var denyRefresh:Boolean = false;
+			
+			[Bindable]
+			private var model:LeadsFilterModel;
+			private var controller:LeadsFilterController;
+			
+			private function onInit():void 
+			{
+				model = LeadsFilterModel.getInstance();
+				controller = new LeadsFilterController(this as UIComponent);
+			}
+			
+			private function onCreate():void 
+			{
+				//expand();
+			}
+			
+			public function init():void 
+			{
+				controller.initModel();
+				setFilterModel();
+				//dispatchEvent(new Event("filterChange"));
+			}
+			
+			public function getFilter():LeadFilter
+			{
+				if (model != null && model.leadSources.length > 0)
+					return model.leadFilter;
+				
+				return null;
+			}
+			
+			private function collapse():void 
+			{
+				isCollapsible = true;
+				lblFilterDescription.text = model.getFilterDescription();
+			}
+			
+			private function expand():void 
+			{
+				isCollapsible = false;
+			}
+			
+			private function toggleView():void 
+			{
+				if (isCollapsible)
+					expand();
+				else
+					collapse();
+			}
+			
+			private function onHeaderDoubleClick():void 
+			{
+				expand();
+			}
+			
+			private function setFilterModel():void 
+			{
+				model.leadFilter.LeadStatuses = new Array();
+				if (comboStatuses.selectedItem != null)
+				{
+					switch (comboStatuses.selectedIndex)
+					{
+						case 0:
+							model.leadFilter.LeadStatuses.push(LeadStatusEnum.NEW);
+							model.leadFilter.LeadStatuses.push(LeadStatusEnum.PENDING);
+							break;
+
+						case 1:
+							model.leadFilter.LeadStatuses.push(LeadStatusEnum.CANCELLED);
+							break;
+
+						case 2:
+							model.leadFilter.LeadStatuses.push(LeadStatusEnum.CONVERTED);
+							break;
+					}
+				}
+				
+				model.leadFilter.DateFrom = dateFrom.selectedDate != null ? new Date(dateFrom.selectedDate.time) : null;
+				model.leadFilter.DateTo = dateTo.selectedDate != null ? new Date(dateTo.selectedDate.time + (1000*60*60*24)) : null;
+				
+				model.leadFilter.LeadSourceId = (comboLeadSource.selectedItem != null) ? comboLeadSource.value as int : 0;
+				
+				if (lblFilterDescription && model)
+					lblFilterDescription.text = model.getFilterDescription();
+			}
+			
+			private function onSetFilter():void 
+			{
+				setFilterModel();
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			private function onResetFilter():void 
+			{
+				comboStatuses.selectedIndex = 0;
+				dateFrom.selectedDate = null;
+				dateTo.selectedDate = null;
+				comboLeadSource.selectedIndex = 0;
+				
+				setFilterModel();
+				dispatchEvent(new Event("filterChange"));
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" verticalGap="0">
+		<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#7CB8EB"
+			paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:Image source="{isCollapsible ? imgPlus : imgMinus}" click="toggleView()"/>
+			<mx:Label text="Filter:" fontWeight="bold" color="#FFFFFF"/>
+			<mx:Label id="lblFilterDescription" fontSize="12" fontWeight="bold" color="#2A6285" width="100%" minWidth="200"
+				doubleClickEnabled="true" doubleClick="onHeaderDoubleClick()"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" backgroundColor="#EEEEFF" 
+				paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" verticalGap="3"
+				visible="{!isCollapsible}" includeInLayout="{!isCollapsible}">
+			<mx:VBox verticalGap="3"
+				paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3"
+				backgroundColor="#FFFFFF" backgroundAlpha="0.3"
+				borderColor="#CCCCCC" borderStyle="solid" cornerRadius="4">
+				<mx:HBox width="100%" horizontalGap="3">
+					<mx:Label text="Status:" fontSize="12" width="120" textAlign="right"/>
+					<controls:ComboBox id="comboStatuses" dataProvider="{model.statusesDropdownCollection}" width="250" fontSize="12"/>
+
+					<mx:Label text="Date period:" fontSize="12" width="120" textAlign="right"/>
+					<mx:Label text="from" fontSize="12" width="100%" textAlign="right"/>
+					<mx:DateField id="dateFrom" selectedDate="{model.leadFilter.DateFrom}"/>
+					<mx:Label text="to" fontSize="12"/>
+					<mx:DateField id="dateTo" selectedDate="{model.leadFilter.DateTo}"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%" horizontalGap="3">
+					<mx:Label text="Lead Source:" fontSize="12" width="120" textAlign="right"/>
+					<controls:ComboBox id="comboLeadSource" 
+						width="250" minWidth="100" fontSize="12" 
+						dataProvider="{model.leadSources}" labelField="Name"
+						value="{model.leadFilter.LeadSourceId}" valueField="Id"/>
+				</mx:HBox>
+			</mx:VBox>
+
+			<mx:VBox horizontalAlign="right" horizontalGap="3" width="100%">
+				<mx:Button label="Refresh" click="onSetFilter()" fontSize="12" width="100" enabled="{!denyRefresh}"/>
+				<mx:Button label="Clear" click="onResetFilter()" fontSize="12" width="100" textAlign="center" enabled="{!denyRefresh}"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

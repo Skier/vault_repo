@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="customerTopBar">
+	
+    <mx:Metadata>
+        [Event(name="currentCustomerChangeRequest", type="AerSysCo.Events.CustomerEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.Events.CustomerEvent;
+			import mx.core.Application;
+			import mx.events.DynamicEvent;
+			import AerSysCo.UI.Models.CustomerUI;
+			import mx.collections.ArrayCollection;
+		
+			[Bindable]
+			public var customerList:ArrayCollection;
+			
+			[Bindable] 
+			public var currentCustomer:CustomerUI;
+
+			private function btnChangeClickHandler():void 
+			{
+				dispatchEvent(new CustomerEvent(CustomerEvent.CURRENT_CUSTOMER_CHANGE_REQUEST, null));
+			}
+
+			private function btnSelectClickHandler():void 
+			{
+				dispatchEvent(new CustomerEvent(CustomerEvent.CURRENT_CUSTOMER_CHANGE_REQUEST, null));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Box styleName="imageBuilding" width="16" height="16"/>
+
+	<mx:HBox 
+		visible="{currentCustomer == null}"
+		includeInLayout="{currentCustomer == null}"
+		styleName="customerTopBarAlert">
+		<mx:Label text="Please Select an Account:"/>
+		<mx:LinkButton label="Select" click="btnSelectClickHandler()" enabled="{customerList.length > 0}"/>
+	</mx:HBox>
+	<mx:HBox verticalAlign="middle" width="100%"
+		visible="{currentCustomer != null}"
+		includeInLayout="{currentCustomer != null}">
+		<mx:Label text="Account:"/>
+
+		<mx:Label text="{currentCustomer.salesRepCompanyName}" fontWeight="bold" width="100%" minWidth="100"
+			toolTip="{currentCustomer.salesRepCompanyName}"/>
+
+		<mx:Button label="Change" height="22" width="70" minWidth="50" 
+			styleName="mainTopBarButton"
+			click="btnChangeClickHandler()" enabled="{customerList.length > 0}"/>
+
+		<mx:HBox
+			visible="{currentCustomer != null &amp;&amp; currentCustomer.creditStatus != 0}"
+			includeInLayout="{currentCustomer != null &amp;&amp; currentCustomer.creditStatus != 0}">
+			<mx:Label text="Max.Order Limit:"/>
+			<mx:Label text="${currentCustomer.dayBalance.toFixed(2)}" fontWeight="bold"/>
+		</mx:HBox>
+
+		<mx:HBox horizontalScrollPolicy="off"
+			styleName="customerTopBarAlert"
+			visible="{currentCustomer != null &amp;&amp; currentCustomer.creditStatus == 0}"
+			includeInLayout="{currentCustomer != null &amp;&amp; currentCustomer.creditStatus == 0}">
+			<mx:Label text="Credit Hold"/>
+		</mx:HBox>
+	</mx:HBox>
+</mx:HBox>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" creationComplete="onCreate()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import com.dalworth.leadCentral.domain.LeadSourceTrackingPhone;
+			import com.dalworth.leadCentral.service.registry.TrackingPhoneRegistry;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			private var isOwnPhonesLoaded:Boolean = false;
+
+			private var isLeadSourceChanged:Boolean = false;
+
+			private var _leadSource:LeadSource;
+			[Bindable]
+			public function get leadSource():LeadSource { return _leadSource; }
+			public function set leadSource(value:LeadSource):void 
+			{
+				_leadSource = value;
+				isLeadSourceChanged = true;
+				refreshPhoneNumbers();
+			}
+			
+			[Bindable] private var ownPhoneNumbers:ArrayCollection;
+			[Bindable] private var trackingPhoneNumbers:ArrayCollection;
+			
+			private function refreshPhoneNumbers():void 
+			{
+				refreshOwnPhones();
+				refreshTrackingPhones();
+			}
+			
+			private function refreshOwnPhones():void 
+			{
+				ownPhoneNumbers.removeAll();
+				
+				if (isBusy)
+					return;
+					
+				if (leadSource == null)
+					return;
+					
+				isLeadSourceChanged = false;
+				
+				PhoneService.getInstance().getLeadSourcePhones(leadSource, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							if (isLeadSourceChanged)
+								refreshOwnPhones();
+							else 
+								ownPhoneNumbers.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}
+					));
+			}
+			
+			private function refreshTrackingPhones():void 
+			{
+				if (leadSource == null)
+					return;
+					
+				PhoneService.getInstance().getCompanyPhoneNumbers( 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							var source:Array = new Array();
+							for each (var phone:TrackingPhone in TrackingPhoneRegistry.getInstance().getAll())
+							{
+								for each (var link:LeadSourceTrackingPhone in phone.LeadSourceTrackingPhones)
+								{
+									if (link.LeadSourceId == leadSource.Id)
+										source.push(phone);
+								}
+							}
+							trackingPhoneNumbers.source = source;
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}
+					));
+			}
+
+			private function onInit():void 
+			{
+				ownPhoneNumbers = new ArrayCollection();
+				trackingPhoneNumbers = new ArrayCollection();
+			}
+			
+			private function onCreate():void 
+			{
+				//todo:
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" verticalGap="0">
+		<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" backgroundColor="#FFFFDD">
+			<mx:Label text="Related Phone Numbers:" fontSize="16" width="100%"/>
+		</mx:HBox>
+
+		<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="5">
+			<mx:VBox width="100%" height="100%" verticalGap="0">
+				<mx:HBox width="100%" verticalAlign="middle" 
+					backgroundColor="#EEEEEE" 
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+					borderColor="#CCCCCC" borderStyle="solid">
+					<mx:Label text="Contact Phone Numbers:"/>
+				</mx:HBox>
+				
+				<mx:DataGrid id="dgOwnPhones" width="100%" height="100%" dataProvider="{ownPhoneNumbers}"
+					sortableColumns="false" draggableColumns="false" editable="false">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Phone Number" dataField="PhoneNumber"/>
+						<mx:DataGridColumn headerText="Description" dataField="Description"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<mx:HRule width="100%"/>
+
+			<mx:VBox width="100%" height="100%" verticalGap="0">
+				<mx:HBox width="100%" verticalAlign="middle" 
+					backgroundColor="#EEEEEE" 
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+					borderColor="#CCCCCC" borderStyle="solid">
+					<mx:Label text="Tracking Phone Numbers:"/>
+				</mx:HBox>
+				
+				<mx:DataGrid id="dgTrackingPhones" width="100%" height="100%" dataProvider="{trackingPhoneNumbers}"
+					sortableColumns="false" draggableColumns="false" editable="false">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Phone Number" dataField="ScreenNumber"/>
+						<mx:DataGridColumn headerText="Description" dataField="Description"/>
+						<mx:DataGridColumn headerText="Assignments" 
+							itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.AssignmentsIR" textAlign="center"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:VBox>
+
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" 
+    height="100%" 
+    verticalGap="0"
+    xmlns:module="com.llsvc.module.*"
+    xmlns:desktop="com.llsvc.startup.desktop.*" 
+    xmlns:maps="com.llsvc.maps.*" 
+    xmlns:lms_map="com.llsvc.client.lms.map.*" 
+    creationComplete="creationCompleteHandler()"
+    xmlns:local="*" xmlns:surface="com.llsvc.surface.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.Alert;
+        	import mx.containers.Box;
+			import mx.rpc.Responder;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			
+        	import com.llsvc.domain.User;
+//          import TractInc.Domain.Module;
+//          import TractInc.Domain.User;
+			import com.llsvc.domain.CoverageTract;
+			import com.llsvc.util.TractDescriptionUtil;
+			import com.llsvc.coverage.storage.CoverageStorage;
+            
+            [Bindable] private var isAdminMode:Boolean = false;
+            
+            public function init(user:Object):void 
+            {
+            	isAdminMode = false;
+                callLater(controller.init, [user]);
+
+                if (User(user).isAdmin && boxAdmin != null) 
+	                boxAdmin.restart();
+                //callLater(initAdmin, [user]);
+            }
+            
+            public function creationCompleteHandler():void
+            {
+//                mainMenu.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+//                mainMenu.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+            }
+            
+            public function openAdminPart():void 
+            {
+            	isAdminMode = true;
+            	boxAdmin.restart();
+            }
+                   
+            public function closeAdminPart():void 
+            {
+            	isAdminMode = false;
+            }
+            
+            private function btnAdminClickHandler():void 
+            {
+            	if (isAdminMode)
+            		closeAdminPart();
+            	else 
+            		openAdminPart(); 
+            }
+
+            private function onFindCoverageTractButton():void 
+            {
+//            	mx.controls.Alert.show("onFindCoverageTractButton");
+        		var responder:mx.rpc.Responder = new mx.rpc.Responder(
+        			 findCoverageTractsResultHandler, 
+        			 findCoverageTractsFaultHandler);
+        		var mask:CoverageTract = new CoverageTract();
+        		mask.type = 0;
+        		mask.name = ("" == maskName.text ? null : maskName.text); 
+        		mask.township = ("" == maskTownship.text ? null : maskTownship.text); 
+        		mask.range = ("" == maskRange.text ? null : maskRange.text); 
+        		mask.section = ("" == maskSection.text ? null : maskSection.text); 
+				CoverageStorage.instance.findCoverageTracts(mask, responder);
+            }
+            
+            private function onParseCoverageTractDescriptionButton():void 
+            {
+            	var ct:CoverageTract = this.coverageResultList.selectedItem as CoverageTract;
+            	if ( null != ct ) {
+            		var results:ArrayCollection = TractDescriptionUtil.parse(ct.tractDescription);
+			    	var externals:String = "Description: ";
+			    	for each (var i:String in results) {
+			    		externals += i + ",";
+			    	}  
+	            	mx.controls.Alert.show(externals);
+            	} else {
+	            	mx.controls.Alert.show("Please select tract");
+	            }
+            }
+            
+		    private function findCoverageTractsResultHandler(event:ResultEvent):void 
+		    {
+		    	this.coverageResultList.dataProvider = event.result;
+		    }
+		    
+		    private function findCoverageTractsFaultHandler(event:FaultEvent):void 
+		    {
+		        Alert.show(event.fault.message);
+		    }
+		    
+		    private function tractDescription(tract:CoverageTract):String 
+		    {
+		        return tract.toString();
+		    }
+        ]]>
+    </mx:Script>
+    
+    <mx:Metadata>
+        [Event(name="logoutEvent", type="com.llsvc.startup.events.LogoutEvent")]
+    </mx:Metadata>
+
+    <desktop:DesktopController id="controller" view="{this}"/>
+    
+    <mx:WipeUp id="minimizeEffect" duration="400"/> 
+    <mx:WipeDown id="appearEffect" duration="400"/> 
+    
+    <mx:HBox id="taskBar" width="100%" backgroundColor="#dddddd" borderStyle="outset" borderThickness="2" verticalAlign="middle" visible="false">
+		<mx:ToggleButtonBar dataProvider="{vsStaticModules}" buttonHeight="28" visible="{!isAdminMode}"/>
+
+<!--    
+        <mx:MenuBar id="mainMenu" 
+                dataProvider="{controller.model.menuData}" 
+                itemClick="controller.runModule(event)"
+                labelField="label"/>
+-->                
+<!--
+        <mx:HBox id="runningModulesBar">
+
+            <mx:VRule height="20"/>
+
+        </mx:HBox>
+-->        
+        <mx:Spacer width="100%"/>
+		<mx:TextArea visible="false" width="0" height="0"/>
+		<mx:Tree visible="false" width="0" height="0"/>
+<!--        
+<flexlib:TreeGrid visible="false" width="0" height="0">
+<flexlib:columns>
+                <flexlib:TreeGridColumn dataField="@name" />
+                <mx:DataGridColumn dataField="@desc" />
+            </flexlib:columns>
+</flexlib:TreeGrid>            
+-->
+
+		<mx:Button label="{isAdminMode ? 'Close Admin Panel' : 'Open Admin Panel'}" 
+			visible="{controller.model.currentUser.isAdmin}" click="btnAdminClickHandler()" height="28"/>
+
+        <mx:Label text="{controller.model.currentUser.login}"/>
+        <mx:VRule height="20"/>
+        <mx:LinkButton id="btnLogout" label="Logout" click="controller.btnLogout_clickHandler()"/>
+    
+    </mx:HBox>
+    
+    <mx:Canvas id="desktop" width="100%" height="100%">
+<!--
+    	<maps:BaseMap id="generalMap"/>
+-->
+<!--    	
+    	<lms_map:WholeMap id="generalMap" width="100%" height="100%"/>
+-->
+<!-- -->   
+        <mx:ViewStack id="vsStaticModules" width="100%" height="100%">
+			<mx:Canvas label="Home" width="100%" height="100%"/>
+	    	<lms_map:WholeMap id="generalMap"
+	    		label="Main Map" 
+	    		width="100%" height="100%"/>
+        	<local:withoutModule
+        		label="Leases"
+        		user="{controller.model.currentUser}"/>
+<!--        		
+			<surface:surfaceTractManager label="Surface Tracts" width="100%" height="100%"/>
+-->			
+			<mx:Canvas label="Projects" width="100%" height="100%"/>
+			<mx:VBox label="Test">
+				<mx:HBox>
+					<mx:Label text="Name"/>
+					<mx:TextInput id="maskName" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Township"/>
+					<mx:TextInput id="maskTownship" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Range"/>
+					<mx:TextInput id="maskRange" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Section"/>
+					<mx:TextInput id="maskSection" />
+				</mx:HBox>
+				<mx:List id="coverageResultList" labelFunction="tractDescription" width="100%"/>
+				<mx:HBox>
+					<mx:Button id="findCTButton" label="findCoverageTracts" click="onFindCoverageTractButton()"/>
+					<mx:Button id="parseCTDescriptionButton" label="parseCoverageTractDescription" click="onParseCoverageTractDescriptionButton()"/>
+				</mx:HBox>
+			</mx:VBox>
+        </mx:ViewStack>
+<!-- -->        
+        	
+    	<local:MasterTractAdmin id="boxAdmin"
+    		label="Admin" visible="{isAdminMode}" includeInLayout="{isAdminMode}"
+    		width="100%" height="100%"/>
+
+        <mx:ViewStack id="vsDynamicModules" width="100%" height="100%"/>
+    </mx:Canvas>
+
+</mx:VBox>

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1354CDE6-C21F-4514-8D56-9E85E2602405}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Intuit.Sb.Cdm</RootNamespace>
+    <AssemblyName>Intuit.Sb.Cdm</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>Intuit.Sb.Cdm.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated\RestDataFilter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QboEstimateStatusEnum.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Intuit.Sb.Cdm.snk" />
+    <None Include="XML\asset-ops\asset-ops-components.xsd" />
+    <None Include="XML\asset-ops\asset-ops-entities.xsd" />
+    <None Include="XML\asset-ops\assetOpsSharedTypes.xsd" />
+    <None Include="XML\common\ActionScriptObjGen.xsd" />
+    <None Include="XML\common\CompanyMetaData.xsd" />
+    <None Include="XML\common\Groups.xsd" />
+    <None Include="XML\common\IntuitCdmBaseTypes.xsd" />
+    <None Include="XML\common\IntuitCustomFieldCdmTypes.xsd" />
+    <None Include="XML\common\MetaData.xsd" />
+    <None Include="XML\common\RestDataFilter.xsd" />
+    <None Include="XML\customer\CustomerCdmTypes.xsd" />
+    <None Include="XML\customer\PartyCdmTypes.xsd" />
+    <None Include="XML\employee\Employee.xsd" />
+    <None Include="XML\employee\EmployeeTypes.xsd" />
+    <None Include="XML\employee\PayrollItem.xsd" />
+    <None Include="XML\finance\Finance.xsd" />
+    <None Include="XML\finance\Report.xsd" />
+    <None Include="XML\Intuit\abstract.xsd" />
+    <None Include="XML\qbo\qbo.xsd" />
+    <None Include="XML\qbo\qbopayroll.xsd" />
+    <None Include="XML\qbo\QboReports.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="XML\schemagen.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>CD "$(ProjectDir)XML"
+"C:\Program Files\Microsoft SDKs\Windows\v6.0A\bin\xsd.exe" /P:"$(ProjectDir)XML\schemagen.xml"
+</PreBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,499 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{94C6482A-95E8-4DDD-80A5-26397F8D00DF}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.Web.RugCleaning</RootNamespace>
+    <AssemblyName>Dalworth.Server.Web.RugCleaning</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Index.aspx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ContactUs.aspx.cs">
+      <DependentUpon>ContactUs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContactUs.aspx.designer.cs">
+      <DependentUpon>ContactUs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CustomerReviews.aspx.cs">
+      <DependentUpon>CustomerReviews.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomerReviews.aspx.designer.cs">
+      <DependentUpon>CustomerReviews.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Faq.aspx.cs">
+      <DependentUpon>Faq.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Faq.aspx.designer.cs">
+      <DependentUpon>Faq.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FeedbackReceipt.aspx.cs">
+      <DependentUpon>FeedbackReceipt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FeedbackReceipt.aspx.designer.cs">
+      <DependentUpon>FeedbackReceipt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="HomeCare.aspx.cs">
+      <DependentUpon>HomeCare.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HomeCare.aspx.designer.cs">
+      <DependentUpon>HomeCare.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Index.aspx.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Index.aspx.designer.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="InterestingLinks.aspx.cs">
+      <DependentUpon>InterestingLinks.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="InterestingLinks.aspx.designer.cs">
+      <DependentUpon>InterestingLinks.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Link.cs" />
+    <Compile Include="PrivacyPolicy.aspx.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PrivacyPolicy.aspx.designer.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuoteRequestReceipt.aspx.cs">
+      <DependentUpon>QuoteRequestReceipt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="QuoteRequestReceipt.aspx.designer.cs">
+      <DependentUpon>QuoteRequestReceipt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningAllen.aspx.cs">
+      <DependentUpon>RugCleaningAllen.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningAllen.aspx.designer.cs">
+      <DependentUpon>RugCleaningAllen.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningArea.aspx.cs">
+      <DependentUpon>RugCleaningArea.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningArea.aspx.designer.cs">
+      <DependentUpon>RugCleaningArea.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningArlington.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningArlington.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningArlington.aspx.designer.cs">
+      <DependentUpon>RugCleaningArlington.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningCarrollton.aspx.cs">
+      <DependentUpon>RugCleaningCarrollton.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningCarrollton.aspx.designer.cs">
+      <DependentUpon>RugCleaningCarrollton.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningColleyville.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningColleyville.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningColleyville.aspx.designer.cs">
+      <DependentUpon>RugCleaningColleyville.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningCoppell.aspx.cs">
+      <DependentUpon>RugCleaningCoppell.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningCoppell.aspx.designer.cs">
+      <DependentUpon>RugCleaningCoppell.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningDallas.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningDallas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningDallas.aspx.designer.cs">
+      <DependentUpon>RugCleaningDallas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningFlowerMound.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningFlowerMound.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningFlowerMound.aspx.designer.cs">
+      <DependentUpon>RugCleaningFlowerMound.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningFortWorth.aspx.cs">
+      <DependentUpon>RugCleaningFortWorth.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningFortWorth.aspx.designer.cs">
+      <DependentUpon>RugCleaningFortWorth.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningFrisco.aspx.cs">
+      <DependentUpon>RugCleaningFrisco.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningFrisco.aspx.designer.cs">
+      <DependentUpon>RugCleaningFrisco.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningGrapevine.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningGrapevine.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningGrapevine.aspx.designer.cs">
+      <DependentUpon>RugCleaningGrapevine.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningHighlandPark.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningHighlandPark.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningHighlandPark.aspx.designer.cs">
+      <DependentUpon>RugCleaningHighlandPark.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningKarastan.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningKarastan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningKarastan.aspx.designer.cs">
+      <DependentUpon>RugCleaningKarastan.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningKeller.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningKeller.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningKeller.aspx.designer.cs">
+      <DependentUpon>RugCleaningKeller.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningMansfield.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>RugCleaningMansfield.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningMansfield.aspx.designer.cs">
+      <DependentUpon>RugCleaningMansfield.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningMasterPage.Master.cs">
+      <DependentUpon>RugCleaningMasterPage.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningMasterPage.Master.designer.cs">
+      <DependentUpon>RugCleaningMasterPage.Master</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningMcKinney.aspx.cs">
+      <DependentUpon>RugCleaningMcKinney.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningMcKinney.aspx.designer.cs">
+      <DependentUpon>RugCleaningMcKinney.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningOriental.aspx.cs">
+      <DependentUpon>RugCleaningOriental.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningOriental.aspx.designer.cs">
+      <DependentUpon>RugCleaningOriental.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningPersian.aspx.cs">
+      <DependentUpon>RugCleaningPersian.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningPersian.aspx.designer.cs">
+      <DependentUpon>RugCleaningPersian.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningPlano.aspx.cs">
+      <DependentUpon>RugCleaningPlano.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningPlano.aspx.designer.cs">
+      <DependentUpon>RugCleaningPlano.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningProcess.aspx.cs">
+      <DependentUpon>RugCleaningProcess.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningProcess.aspx.designer.cs">
+      <DependentUpon>RugCleaningProcess.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningRichardson.aspx.cs">
+      <DependentUpon>RugCleaningRichardson.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningRichardson.aspx.designer.cs">
+      <DependentUpon>RugCleaningRichardson.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugCleaningSouthlake.aspx.cs">
+      <DependentUpon>RugCleaningSouthlake.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugCleaningSouthlake.aspx.designer.cs">
+      <DependentUpon>RugCleaningSouthlake.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugEmergency.aspx.cs">
+      <DependentUpon>RugEmergency.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugEmergency.aspx.designer.cs">
+      <DependentUpon>RugEmergency.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugPad.aspx.cs">
+      <DependentUpon>RugPad.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugPad.aspx.designer.cs">
+      <DependentUpon>RugPad.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugProtection.aspx.cs">
+      <DependentUpon>RugProtection.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugProtection.aspx.designer.cs">
+      <DependentUpon>RugProtection.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RugRepairs.aspx.cs">
+      <DependentUpon>RugRepairs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RugRepairs.aspx.designer.cs">
+      <DependentUpon>RugRepairs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ServicePartners.aspx.cs">
+      <DependentUpon>ServicePartners.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ServicePartners.aspx.designer.cs">
+      <DependentUpon>ServicePartners.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SiteMap.aspx.cs">
+      <DependentUpon>SiteMap.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SiteMap.aspx.designer.cs">
+      <DependentUpon>SiteMap.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SitemapXml.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>SitemapXml.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SitemapXml.aspx.designer.cs">
+      <DependentUpon>SitemapXml.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="VideoRugCleaning.aspx.cs">
+      <DependentUpon>VideoRugCleaning.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="VideoRugCleaning.aspx.designer.cs">
+      <DependentUpon>VideoRugCleaning.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dalworth.Server.Domain\Dalworth.Server.Domain.csproj">
+      <Project>{5E8A7EFF-721F-401F-993E-D464C4EFFDEA}</Project>
+      <Name>Dalworth.Server.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server.Web.Common\Dalworth.Server.Web.Common.csproj">
+      <Project>{FA1AAC9A-C91F-466A-81B1-F3B9D967E2F7}</Project>
+      <Name>Dalworth.Server.Web.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{FA543470-1332-48A2-A600-0BEE5BC1CF86}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="calendar\calendar-blue.css" />
+    <Content Include="calendar\calendar-setup.js" />
+    <Content Include="calendar\calendar.js" />
+    <Content Include="calendar\lang\calendar-en.js" />
+    <Content Include="ContactUs.aspx" />
+    <Content Include="CustomerReviews.aspx" />
+    <Content Include="Error.aspx" />
+    <Content Include="Faq.aspx" />
+    <Content Include="favicon.ico" />
+    <Content Include="Feedback.aspx" />
+    <Content Include="FeedbackReceipt.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="HomeCare.aspx" />
+    <Content Include="ie.css" />
+    <Content Include="InterestingLinks.aspx" />
+    <Content Include="i\addthis.gif" />
+    <Content Include="i\arrows-ffffff.png" />
+    <Content Include="i\bbb.png" />
+    <Content Include="i\body_bg.png" />
+    <Content Include="i\bookmark.png" />
+    <Content Include="i\bottom_content_bg.png" />
+    <Content Include="i\button_bg.png" />
+    <Content Include="i\call_now0.png" />
+    <Content Include="i\cleaning_fine_textile.png" />
+    <Content Include="i\contact_dalworth_rug_cleaning.png" />
+    <Content Include="i\contact_dalworth_rug_cleaning_gppc.png" />
+    <Content Include="i\content_top_bg.png" />
+    <Content Include="i\dalworth_rug_cleaning_facebook.png" />
+    <Content Include="i\facebookico.png" />
+    <Content Include="i\fav.png" />
+    <Content Include="i\footer_bg.png" />
+    <Content Include="i\footer_bg_big.png" />
+    <Content Include="i\form_bg.png" />
+    <Content Include="i\googleico.png" />
+    <Content Include="i\headerpimp.png" />
+    <Content Include="i\institute.png" />
+    <Content Include="i\mail.png" />
+    <Content Include="i\mark.png" />
+    <Content Include="i\menuhover.png" />
+    <Content Include="i\menu_bg.png" />
+    <Content Include="i\more.png" />
+    <Content Include="i\oriental_rug_cleaning_header.png" />
+    <Content Include="i\pimpa1.png" />
+    <Content Include="i\pimpa2.png" />
+    <Content Include="i\pimpa3.png" />
+    <Content Include="i\qoute.png" />
+    <Content Include="i\shadow.png" />
+    <Content Include="i\star.png" />
+    <Content Include="i\staractive.png" />
+    <Content Include="i\top_bg.png" />
+    <Content Include="i\twitter.png" />
+    <Content Include="i\video.png" />
+    <Content Include="i\wrapper_bg.png" />
+    <Content Include="i\yahooico.png" />
+    <Content Include="i\yelpico.png" />
+    <Content Include="photo\oriental-rug-cleaning.jpg" />
+    <Content Include="photo\i2.jpg" />
+    <Content Include="PrivacyPolicy.aspx" />
+    <Content Include="QuoteRequestReceipt.aspx" />
+    <Content Include="robots.txt" />
+    <Content Include="RugCleaningAllen.aspx" />
+    <Content Include="RugCleaningArea.aspx" />
+    <Content Include="RugCleaningArlington.aspx" />
+    <Content Include="RugCleaningCarrollton.aspx" />
+    <Content Include="RugCleaningColleyville.aspx" />
+    <Content Include="RugCleaningCoppell.aspx" />
+    <Content Include="RugCleaningDallas.aspx" />
+    <Content Include="RugCleaningFlowerMound.aspx" />
+    <Content Include="RugCleaningFortWorth.aspx" />
+    <Content Include="RugCleaningFrisco.aspx" />
+    <Content Include="RugCleaningGrapevine.aspx" />
+    <Content Include="RugCleaningHighlandPark.aspx" />
+    <Content Include="RugCleaningKarastan.aspx" />
+    <Content Include="RugCleaningKeller.aspx" />
+    <Content Include="RugCleaningMansfield.aspx" />
+    <Content Include="RugCleaningMasterPage.Master" />
+    <Content Include="RugCleaningMcKinney.aspx" />
+    <Content Include="RugCleaningOriental.aspx" />
+    <Content Include="RugCleaningPersian.aspx" />
+    <Content Include="RugCleaningPlano.aspx" />
+    <Content Include="RugCleaningProcess.aspx" />
+    <Content Include="RugCleaningRichardson.aspx" />
+    <Content Include="RugCleaningSouthlake.aspx" />
+    <Content Include="RugEmergency.aspx" />
+    <Content Include="RugPad.aspx" />
+    <Content Include="RugProtection.aspx" />
+    <Content Include="RugRepairs.aspx" />
+    <Content Include="ServicePartners.aspx" />
+    <Content Include="SiteMap.aspx" />
+    <Content Include="SitemapXml.aspx" />
+    <Content Include="ss.swf" />
+    <Content Include="style.css" />
+    <Content Include="swfobject.js" />
+    <Content Include="VideoRugCleaning.aspx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>3090</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/Dalworth.Server.Web.RugCleaning</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

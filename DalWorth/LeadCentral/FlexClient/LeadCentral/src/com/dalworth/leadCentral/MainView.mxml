@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	initialize="onInit()"
+	left="5" right="5" top="5" bottom="5" xmlns:staff="com.dalworth.leadCentral.staff.*" xmlns:owner="com.dalworth.leadCentral.owner.*" xmlns:businessPartner="com.dalworth.leadCentral.businessPartner.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import com.dalworth.leadCentral.domain.User;
+			import com.dalworth.leadCentral.businessPartner.BusinessPartnerView;
+			import com.dalworth.leadCentral.staff.StaffView;
+			import mx.core.UIComponent;
+			import com.dalworth.leadCentral.owner.OwnerView;
+			
+			import mx.events.ItemClickEvent;
+			
+			[Bindable]
+			private var model:MainModel;
+			private var controller:MainController;
+			
+			private function onInit():void 
+			{
+				model = MainModel.getInstance();
+				controller = new MainController(this);
+				controller.initModel();
+				addEventListener(MainModel.INIT_MODEL_COMPLETE, onInitComplete);
+				addEventListener(MainModel.UPDATE_INTERFACE, onUpdateInterface);
+				addEventListener("FaultInit", onInitFault);
+			}
+			
+			private function onUpdateInterface(e:*):void 
+			{
+				txtLog.verticalScrollPosition = txtLog.maxVerticalScrollPosition;
+			}
+			
+			private function onInitFault(event:Event):void 
+			{
+				btnRestart.visible = btnRestart.includeInLayout = true;
+			}
+			
+			private function restartApp(e:* = null):void 
+			{
+				navigateToURL(new URLRequest(MainModel.getInstance().applicationUrl), "_top");
+			}
+			
+			private function onInitComplete(event:Event):void 
+			{
+				boxInit.visible = false;
+				boxInit.includeInLayout = false;
+				
+				Application.application.addEventListener(MainModel.SESSION_EXPIRED_STRING, 
+					function (event:Event):void 
+					{
+						logout();
+					});
+				
+				initContent();
+			}
+			
+			private function logout():void 
+			{
+				navigateToURL(new URLRequest(model.applicationUrl), "_top");
+			}
+			
+			private function initContent():void 
+			{
+				var content:UIComponent;
+				
+				switch (model.currentUser.RoleName)
+				{
+					case User.ROLE_ADMINISTRATOR:
+						content = new OwnerView();
+						break;
+						
+					case User.ROLE_STAFF:
+						content = new StaffView();
+						break;
+
+					case User.ROLE_BUSINESS_PARTNER:
+						content = new BusinessPartnerView();
+						break;
+				}
+				
+				content.percentWidth = 100;
+				content.percentHeight = 100;
+
+				boxContent.addChild(content);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="boxContent" width="100%" height="100%"/>
+
+	<mx:VBox id="boxInit" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Panel title="Init application" width="350" height="200" layout="vertical" horizontalAlign="center" 
+			borderColor="#FFFFFF" borderStyle="solid" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+			<mx:TextArea id="txtLog" width="100%" height="100%" editable="false" text="{model.logContent}"/>
+			<mx:ProgressBar width="100%"  height="10" indeterminate="true" labelPlacement="center" label=""/>
+			<mx:Button id="btnRestart" label="Restart Application" click="restartApp()"
+				visible="false" includeInLayout="false"/>
+		</mx:Panel>
+	</mx:VBox>
+
+	<mx:VBox id="boxClose" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false">
+		<mx:Panel title="Session expired" width="350" height="200" layout="vertical" horizontalAlign="center" 
+			borderColor="#FF0000" borderStyle="solid" dropShadowEnabled="true" shadowDirection="center" shadowDistance="0">
+			<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+				<mx:Text text="Application sessions is expired. Please refresh application." 
+					fontSize="14" color="#CC0000" fontWeight="bold" width="100%"/>
+				<mx:Button label="Restart Application" click="restartApp()"/>
+			</mx:VBox>
+		</mx:Panel>
+	</mx:VBox>
+</mx:Canvas>

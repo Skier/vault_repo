@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    toolTip="{Document(data.DocumentRef).IsActive ? null : 'Found new version of this document in the system' }"
+    verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Document;
+
+        	[Embed(source="/assets/checked.png")]
+        	[Bindable]
+        	private var imgChecked:Class;
+        	
+        	[Embed(source="/assets/warning.png")]
+        	[Bindable]
+        	private var imgWarning:Class;
+        	
+        	private function onClickHandler():void 
+        	{
+        		if (Document(data.DocumentRef) == null || Document(data.DocumentRef).IsActive)
+        			return;
+        		
+        		if (ProjectTabDetailView(parentDocument).readOnly)
+        			return;
+        			
+        		ProjectTabDetailView(parentDocument).actualizeDocumentClickHandler();
+        	}
+        	
+		]]>
+	</mx:Script>
+ 	
+ 	<mx:Image source="{Document(data.DocumentRef).IsActive ? imgChecked : imgWarning}" click="onClickHandler()"/>
+	
+</mx:Box>

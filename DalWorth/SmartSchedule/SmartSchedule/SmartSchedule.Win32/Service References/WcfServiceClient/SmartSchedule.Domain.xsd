@@ -1,0 +1,447 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/SmartSchedule.Domain" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="Schedule">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Cost" type="xs:double" />
+      <xs:element minOccurs="0" name="DefaultTechnicians" nillable="true" type="tns:ArrayOfTechnicianDefault" />
+      <xs:element minOccurs="0" name="DelayedVisits" nillable="true" type="tns:ArrayOfVisit" />
+      <xs:element minOccurs="0" name="InitialCost" type="xs:double" />
+      <xs:element minOccurs="0" name="IsEmpty" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ScheduleDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Technicians" nillable="true" type="tns:ArrayOfTechnician" />
+      <xs:element minOccurs="0" name="TimeFrames" nillable="true" type="tns:ArrayOfTimeFrame" />
+      <xs:element minOccurs="0" name="Visits" nillable="true" type="tns:ArrayOfVisit" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Schedule" nillable="true" type="tns:Schedule" />
+  <xs:complexType name="ArrayOfTechnicianDefault">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianDefault" nillable="true" type="tns:TechnicianDefault" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianDefault" nillable="true" type="tns:ArrayOfTechnicianDefault" />
+  <xs:complexType name="TechnicianDefault">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CompanyId" type="xs:int" />
+          <xs:element minOccurs="0" name="DepotAddress" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DepotLatitude" type="xs:float" />
+          <xs:element minOccurs="0" name="DepotLongitude" type="xs:float" />
+          <xs:element minOccurs="0" name="DisplaySequence" type="xs:int" />
+          <xs:element minOccurs="0" name="DriveTimeMinutes" type="xs:int" />
+          <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="HourlyRate" type="xs:decimal" />
+          <xs:element minOccurs="0" name="HourlyRate150to300" type="xs:decimal" />
+          <xs:element minOccurs="0" name="HourlyRateMore300" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="IsContractor" type="xs:boolean" />
+          <xs:element minOccurs="0" name="MaxNonExclusiveVisitsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="MaxVisitsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ServmanId" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TechnicianDefault" nillable="true" type="tns:TechnicianDefault" />
+  <xs:complexType name="DomainObject">
+    <xs:sequence />
+  </xs:complexType>
+  <xs:element name="DomainObject" nillable="true" type="tns:DomainObject" />
+  <xs:complexType name="ArrayOfVisit">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Visit" nillable="true" type="tns:Visit" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVisit" nillable="true" type="tns:ArrayOfVisit" />
+  <xs:complexType name="Visit">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="AdsourceAcronym" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Area" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="BusinessPhone" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CallDateTime" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="CanBook" type="xs:boolean" />
+          <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ConfirmedTimeFrame" nillable="true" type="tns:TimeFrame" />
+          <xs:element minOccurs="0" name="Cost" type="xs:decimal" />
+          <xs:element minOccurs="0" name="CustomerExclusiveTechnicianDefaultId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CustomerExclusiveTechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CustomerName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CustomerRank" type="xs:int" />
+          <xs:element minOccurs="0" name="Details" nillable="true" type="tns:ArrayOfVisitDetail" />
+          <xs:element minOccurs="0" name="DurationCost" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ExclusiveCompanyId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ExclusiveTechnicianDefaultId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ExclusiveTechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ExpCred" type="xs:boolean" />
+          <xs:element minOccurs="0" name="ForbiddenTechnicianDefaultId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ForbiddenTechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="HomePhone" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="IsBlockout" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsCalledCustomer" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsEstimate" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsEstimateAndDo" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsFixed" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsRework" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsTechnicianEmailSent" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsTempIgnoreExclusivity" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Latitude" type="xs:float" />
+          <xs:element minOccurs="0" name="Longitude" type="xs:float" />
+          <xs:element minOccurs="0" name="Mapsco" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="OriginatedCompleteDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="OriginatedTechnicianDefaultId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="OriginatedTechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="OriginatedTicketNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SdPercent" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ServType" type="xs:int" />
+          <xs:element minOccurs="0" name="ServmanBaseTimeFrameId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ServmanBaseTimeFrameText" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SnapshotDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="SpecName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Street" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TaxPercent" type="xs:decimal" />
+          <xs:element minOccurs="0" name="TechnicianId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="TempExclusiveTechnicianId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="TempExclusiveTechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TicketNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TimeEnd" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="TimeFrameId" type="xs:int" />
+          <xs:element minOccurs="0" name="TimeStart" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Zip" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Visit" nillable="true" type="tns:Visit" />
+  <xs:complexType name="TimeFrame">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="TimeEnd" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="TimeStart" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TimeFrame" nillable="true" type="tns:TimeFrame" />
+  <xs:complexType name="ArrayOfVisitDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VisitDetail" nillable="true" type="tns:VisitDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVisitDetail" nillable="true" type="tns:ArrayOfVisitDetail" />
+  <xs:complexType name="VisitDetail">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Amount" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="ItemSequence" type="xs:int" />
+          <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ServiceId" type="xs:int" />
+          <xs:element minOccurs="0" name="ServiceName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="VisitId" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VisitDetail" nillable="true" type="tns:VisitDetail" />
+  <xs:complexType name="ArrayOfTechnician">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Technician" nillable="true" type="tns:Technician" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnician" nillable="true" type="tns:ArrayOfTechnician" />
+  <xs:complexType name="Technician">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CompanyId" type="xs:int" />
+          <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="DeniedServicesMap" nillable="true" type="q1:ArrayOfKeyValueOfintTechnicianServiceDenyh17jAC3z" />
+          <xs:element minOccurs="0" name="DepotAddress" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DepotLatitude" type="xs:float" />
+          <xs:element minOccurs="0" name="DepotLongitude" type="xs:float" />
+          <xs:element minOccurs="0" name="DisplaySequence" type="xs:int" />
+          <xs:element minOccurs="0" name="DriveTimeMinutes" type="xs:int" />
+          <xs:element minOccurs="0" name="HourlyRate" type="xs:decimal" />
+          <xs:element minOccurs="0" name="HourlyRate150to300" type="xs:decimal" />
+          <xs:element minOccurs="0" name="HourlyRateMore300" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="IsContractor" type="xs:boolean" />
+          <xs:element minOccurs="0" name="MaxNonExclusiveVisitsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="MaxVisitsCount" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="PrimaryZipCodes" nillable="true" type="q2:ArrayOfstring" />
+          <xs:element minOccurs="0" name="ScheduleDate" type="xs:dateTime" />
+          <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="SecondaryZipCodes" nillable="true" type="q3:ArrayOfstring" />
+          <xs:element minOccurs="0" name="ServmanId" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TechnicianDefaultId" type="xs:int" />
+          <xs:element minOccurs="0" name="WorkingIntervals" nillable="true" type="tns:ArrayOfTechnicianWorkTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Technician" nillable="true" type="tns:Technician" />
+  <xs:complexType name="TechnicianServiceDeny">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IsForNonExclusive" type="xs:boolean" />
+          <xs:element minOccurs="0" name="ServiceId" type="xs:int" />
+          <xs:element minOccurs="0" name="ServiceName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TechnicianId" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TechnicianServiceDeny" nillable="true" type="tns:TechnicianServiceDeny" />
+  <xs:complexType name="ArrayOfTechnicianWorkTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianWorkTime" nillable="true" type="tns:TechnicianWorkTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianWorkTime" nillable="true" type="tns:ArrayOfTechnicianWorkTime" />
+  <xs:complexType name="TechnicianWorkTime">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="TechnicianId" type="xs:int" />
+          <xs:element minOccurs="0" name="TimeEnd" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="TimeStart" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TechnicianWorkTime" nillable="true" type="tns:TechnicianWorkTime" />
+  <xs:complexType name="ArrayOfTimeFrame">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TimeFrame" nillable="true" type="tns:TimeFrame" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTimeFrame" nillable="true" type="tns:ArrayOfTimeFrame" />
+  <xs:complexType name="VisitAddResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CostChange" type="xs:double" />
+      <xs:element minOccurs="0" name="IsAddAllowed" type="xs:boolean" />
+      <xs:element minOccurs="0" name="OtherFrame" nillable="true" type="tns:TimeFrame" />
+      <xs:element minOccurs="0" name="SecondaryArea" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Technician" nillable="true" type="tns:Technician" />
+      <xs:element minOccurs="0" name="VisitToAddTimeStart" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VisitAddResult" nillable="true" type="tns:VisitAddResult" />
+  <xs:complexType name="UserResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Error" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserResult" nillable="true" type="tns:UserResult" />
+  <xs:complexType name="User">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="IsActive" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Login" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserRoleId" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="User" nillable="true" type="tns:User" />
+  <xs:complexType name="ArrayOfUser">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="User" nillable="true" type="tns:User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUser" nillable="true" type="tns:ArrayOfUser" />
+  <xs:simpleType name="UserActionTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BucketResolve">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TechnicianSettingsEditDaily">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TechnicianSettingsEditDefault">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">3</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Visit">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">4</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Blockout">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">6</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SuspendRecommendationsModify">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">8</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="UserActionTypeEnum" nillable="true" type="tns:UserActionTypeEnum" />
+  <xs:complexType name="TimeInterval">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="End" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Start" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TimeInterval" nillable="true" type="tns:TimeInterval" />
+  <xs:simpleType name="SortField">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="User" />
+      <xs:enumeration value="Action" />
+      <xs:enumeration value="Technician" />
+      <xs:enumeration value="ActionDate" />
+      <xs:enumeration value="DashboardDate" />
+      <xs:enumeration value="Ticket" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="SortField" nillable="true" type="tns:SortField" />
+  <xs:complexType name="ArrayOfUserAction">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserAction" nillable="true" type="tns:UserAction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserAction" nillable="true" type="tns:ArrayOfUserAction" />
+  <xs:complexType name="UserAction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ActionDate" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DashboardDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="ID" type="xs:long" />
+          <xs:element minOccurs="0" name="TechnicianDefaultId" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="TechnicianName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Text" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TicketNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserActionTypeId" type="xs:int" />
+          <xs:element minOccurs="0" name="UserId" type="xs:int" />
+          <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserAction" nillable="true" type="tns:UserAction" />
+  <xs:complexType name="Service">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Service" nillable="true" type="tns:Service" />
+  <xs:complexType name="ArrayOfTechnicianWorkTimeDefaultPreset">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TechnicianWorkTimeDefaultPreset" nillable="true" type="tns:TechnicianWorkTimeDefaultPreset" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTechnicianWorkTimeDefaultPreset" nillable="true" type="tns:ArrayOfTechnicianWorkTimeDefaultPreset" />
+  <xs:complexType name="TechnicianWorkTimeDefaultPreset">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PresetNumber" type="xs:int" />
+          <xs:element minOccurs="0" name="TechnicianId" type="xs:int" />
+          <xs:element minOccurs="0" name="TimeEnd" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="TimeStart" nillable="true" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TechnicianWorkTimeDefaultPreset" nillable="true" type="tns:TechnicianWorkTimeDefaultPreset" />
+  <xs:complexType name="ZipCode">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DomainObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AreaId" type="xs:int" />
+          <xs:element minOccurs="0" name="Latitude" type="xs:float" />
+          <xs:element minOccurs="0" name="Longitude" type="xs:float" />
+          <xs:element minOccurs="0" name="Zip" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ZipCode" nillable="true" type="tns:ZipCode" />
+  <xs:complexType name="Coordinate">
+    <xs:annotation>
+      <xs:appinfo>
+        <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ErrorText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsValid" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Latitude" type="xs:float" />
+      <xs:element minOccurs="0" name="Longitude" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Coordinate" nillable="true" type="tns:Coordinate" />
+  <xs:complexType name="ArrayOfService">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Service" nillable="true" type="tns:Service" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfService" nillable="true" type="tns:ArrayOfService" />
+  <xs:complexType name="ArrayOfVisitAddResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VisitAddResult" nillable="true" type="tns:VisitAddResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVisitAddResult" nillable="true" type="tns:ArrayOfVisitAddResult" />
+  <xs:complexType name="ArrayOfWorkingHoursExtensionResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="WorkingHoursExtensionResult" nillable="true" type="tns:WorkingHoursExtensionResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfWorkingHoursExtensionResult" nillable="true" type="tns:ArrayOfWorkingHoursExtensionResult" />
+  <xs:complexType name="WorkingHoursExtensionResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CostChange" type="xs:double" />
+      <xs:element minOccurs="0" name="IsPossibleWithWorkingHours" type="xs:boolean" />
+      <xs:element minOccurs="0" name="NewWorkInterval" nillable="true" type="tns:TechnicianWorkTime" />
+      <xs:element minOccurs="0" name="OldWorkInterval" nillable="true" type="tns:TechnicianWorkTime" />
+      <xs:element minOccurs="0" name="SecondaryArea" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Technician" nillable="true" type="tns:Technician" />
+      <xs:element minOccurs="0" name="VisitInExtendedHours" nillable="true" type="tns:Visit" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WorkingHoursExtensionResult" nillable="true" type="tns:WorkingHoursExtensionResult" />
+</xs:schema>

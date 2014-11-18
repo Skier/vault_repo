@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+    creationComplete="OnCreationComplete()"
+    currentState="noMessageView">
+
+    <mx:Script>
+        <![CDATA[
+            import UI.MessageBox.MessageBoxController;
+        	import Domain.MailAddress;
+            import Domain.Message;
+
+            [Bindable]
+            public var ParentController:MessageBoxController;
+            
+            [Bindable]
+            private var Controller:MessageDetailController;
+            
+            private function OnCreationComplete():void
+            {
+                Controller = new MessageDetailController( MessageDetailView(this), ParentController );
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:states>
+        <mx:State name="noMessageView">
+            <mx:SetProperty target="{messageView}" name="visible" value="false"/>
+            <mx:SetProperty target="{messageView}" name="includeInLayout" value="false"/>
+        </mx:State>
+        <mx:State name="messageView">
+            <mx:SetProperty target="{noMessageView}" name="visible" value="false"/>
+            <mx:SetProperty target="{noMessageView}" name="includeInLayout" value="false"/>
+        </mx:State>
+        <mx:State name="messageBodyLoading" basedOn="noMessageView">
+            <mx:SetProperty target="{statusLabel}" name="text" value="Message Body is being loaded. Please wait.."/>
+        </mx:State>
+    </mx:states>
+
+    <mx:Box id="messageView" width="100%" height="100%" verticalGap="1" 
+        paddingRight="5" paddingLeft="5" paddingTop="5" paddingBottom="5" >
+    
+        <mx:Form width="100%" verticalGap="0" fontWeight="bold" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+            <mx:FormItem label="From :" width="100%">
+                <mx:Text width="100%" text="{Controller.Model.From.DisplayValue}" fontWeight="normal"/>
+            </mx:FormItem>
+            <mx:FormItem label="To :" width="100%">
+                <mx:Text width="100%" text="{MailAddress.AddressListToString(Controller.Model.To)}" fontWeight="normal" />
+            </mx:FormItem>
+            <mx:FormItem label="Cc :" width="100%" visible="{Controller.Model.Cc.length > 0}" 
+                includeInLayout="{Controller.Model.Cc.length > 0}">
+                <mx:Text text="{MailAddress.AddressListToString(Controller.Model.Cc)}" fontWeight="normal"/>
+            </mx:FormItem>
+            <mx:FormItem label="Subject :" width="100%">
+                <mx:Text text="{Controller.Model.Subject}" fontWeight="normal"/>
+            </mx:FormItem>
+        </mx:Form>
+
+        <mx:HBox id="attachmentsBox" width="100%" verticalAlign="middle" 
+            horizontalGap="1"
+            visible="{Controller.Model.Body.Attachments.length > 0}"
+            includeInLayout="{Controller.Model.Body.Attachments.length > 0}">
+            
+	        <mx:Image source="@Embed('/Images/attachment_icon.gif')"/>
+	        
+	        <mx:LinkBar id="attachmentBar" width="100%" itemClick="Controller.OnAttachmentClick(event)"
+	            dataProvider="{Controller.Model.Body.Attachments}"/>
+                
+        </mx:HBox>
+
+		<mx:LinkButton label="This message contains HTML part. Click here to see it."
+		    color="#993300"
+		    includeInLayout="{Controller.Model.Body.HtmlBody != null}"
+			visible="{Controller.Model.Body.HtmlBody != null}" 
+			click="Controller.OnHtmlBodyLinkClick()" id="linkbutton1"/>
+
+		<mx:Box width="100%" height="100%">
+		    <mx:TextArea borderStyle="solid" borderColor="#505b70" text="{Controller.Model.Body.PlainBody}"
+		        editable="false"
+		        fontFamily="Courier New"
+		        fontSize="13"
+		    	paddingLeft="5" paddingRight="5"
+		    	width="100%" height="100%"/>
+		</mx:Box>
+		        
+    </mx:Box>
+
+    <mx:Box id="noMessageView" horizontalAlign="center" verticalAlign="middle" width="100%" height="100%"> 
+        <mx:Label text="No message loaded" id="statusLabel"/>
+    </mx:Box>
+    
+</mx:VBox>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:projectTypes="com.dalworth.servman.dashboard.leads.projectTypes.*" 
+	xmlns:daily="com.dalworth.servman.dashboard.leads.daily.*"
+	initialize="onInit()">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.SalesRep;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.service.registry.BusinessPartnerRegistry;
+			import com.affilia.util.DateUtil;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.service.registry.LeadTypeRegistry;
+			import com.dalworth.servman.domain.Lead;
+			
+			private static const COLUMN_PARTNER:String = "columnPartner";
+			private static const COLUMN_TYPE:String = "columnType";
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_NOTES:String = "columnNotes";
+			private static const COLUMN_DATE_CREATED:String = "columnDateCreated";
+			private static const COLUMN_DATE_UPDATED:String = "columnDateUpdated";
+			
+			[Bindable]
+			private var model:DashboardContentModel;
+			private var controller:DashboardContentController;
+			
+			public function setContent(content:Object):void 
+			{
+				controller.setContent(content);
+			}
+			
+			private function onDatePeriodChange():void 
+			{
+				controller.setDatePeriod(dateStart.selectedDate, dateEnd.selectedDate);
+			}
+			
+			private function getBusinessPartnerName(id:int):String 
+			{
+				var businessPartner:BusinessPartner = BusinessPartnerRegistry.getInstance().getLocal(id) as BusinessPartner;
+				if (businessPartner)
+					return businessPartner.ShowAs;
+				else 
+					return "";
+			}
+			
+			private function onInit():void 
+			{
+				model = DashboardContentModel.getInstance();
+				controller = new DashboardContentController(this);
+				addEventListener("leadsChanged", onLeadsChanged);
+			}
+			
+			private function onLeadsChanged(event:Event):void 
+			{
+				viewLeadsByType.setLeads(model.leads);
+				viewDailyLeads.setLeads(model.leads);
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is Lead) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_PARTNER :
+							return getBusinessPartnerName(Lead(item).BusinessPartnerId);
+						
+						case COLUMN_TYPE :
+							return LeadTypeRegistry.getInstance().getLocal(Lead(item).LeadTypeId).Name;
+						
+						case COLUMN_NAME :
+							return (Lead(item).FirstName + " " + Lead(item).LastName);
+						
+						case COLUMN_NOTES :
+						return (Lead(item).CustomerNotes);
+						
+						case COLUMN_DATE_CREATED :
+						return DateUtil.getDateTimeStr(Lead(item).DateCreated);
+						
+						case COLUMN_DATE_UPDATED :
+						return DateUtil.getDateTimeStr(Lead(item).DateLastUpdated);
+						
+						default :
+						return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function getTimeStr(value:Number):String
+			{
+				var result:String = "";
+				
+				var ageUnitsStr:String = "";
+				if (value < 60)
+				{
+					result = int(value).toString();
+					ageUnitsStr = "min";
+				} else if (value < 2880) 
+				{
+					result = int(value / 60).toString();
+					ageUnitsStr = "hrs";
+				} else 
+				{
+					result = int(value / 1440).toString();
+					ageUnitsStr = "days";
+				}
+				
+				return (result + ageUnitsStr);
+			}
+			
+			private function getPctStr(value:Number):String 
+			{
+				var result:String = "";
+				
+				result += "(";
+				result += value.toFixed(1);
+				result += "%)";
+				
+				return result;
+			}
+			
+			 
+			
+			
+		]]>
+	</mx:Script>
+	<mx:CurrencyFormatter id="curr"/>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#EEEEEE" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		verticalGap="0">
+		<mx:HBox width="100%" backgroundColor="#DDDDDD" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+			paddingLeft="5" paddingRight="5" paddingTop="2" paddingBottom="2">
+			<mx:Label text="{model.contentName}" fontSize="14" color="#666666"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="Date period:" fontWeight="bold"/>
+			<mx:DateField id="dateStart" selectedDate="{model.startDate}"/>
+			<mx:DateField id="dateEnd" selectedDate="{model.endDate}"/>
+			<mx:Button label="Refresh" click="onDatePeriodChange()" cornerRadius="2"/>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" height="100%" 
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			verticalGap="5">
+			<mx:HBox width="100%" horizontalGap="5">
+				<mx:VBox height="100%" width="100%">
+					<mx:HBox width="100%" visible="{model.currentUser != null}">
+						<mx:Box width="70" height="90" 
+							backgroundColor="#FFFFFF" borderColor="#999999" borderStyle="solid" 
+							shadowDirection="center" shadowDistance="0" dropShadowEnabled="true">
+							<mx:Image width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" source="{}"/>
+						</mx:Box>
+						<mx:Grid width="100%" verticalGap="0">
+							<mx:GridRow width="100%">
+								<mx:GridItem>
+									<mx:Label text="Name:" fontSize="12" width="80" textAlign="right"/>
+								</mx:GridItem>
+								<mx:GridItem width="100%">
+									<mx:Label text="{model.currentUser.Name}" fontSize="12" fontWeight="bold" width="100%" minWidth="50"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow width="100%">
+								<mx:GridItem>
+									<mx:Label text="Phone:" fontSize="12" width="80" textAlign="right"/>
+								</mx:GridItem>
+								<mx:GridItem width="100%">
+									<mx:Label text="{model.currentUser.Phone}" fontSize="12" fontWeight="bold"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow width="100%">
+								<mx:GridItem>
+									<mx:Label text="Email:" fontSize="12" width="80" textAlign="right"/>
+								</mx:GridItem>
+								<mx:GridItem width="100%">
+									<mx:Label text="{model.currentUser.Email}" fontSize="12" fontWeight="bold"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow width="100%">
+								<mx:GridItem>
+									<mx:Label text="Address:" fontSize="12" width="80" textAlign="right"/>
+								</mx:GridItem>
+								<mx:GridItem width="100%">
+									<mx:Text text="{model.currentUser.Address}" fontSize="12" fontWeight="bold" width="100%"/>
+								</mx:GridItem>
+							</mx:GridRow>
+						</mx:Grid>
+					</mx:HBox>
+					
+					<mx:VBox width="100%" borderStyle="solid" borderColor="#999999" backgroundColor="#215187"
+						cornerRadius="2" verticalGap="2">
+						<mx:HBox width="100%">
+							<mx:Label text="Total Leads:" fontSize="12" width="120" textAlign="right" color="#FFFFFF"/>
+							<mx:Label text="{model.totalLeads.toString()}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:HBox>
+						<mx:HBox width="100%">
+							<mx:Label text="Contacted:" fontSize="12" width="120" textAlign="right" color="#FFFFFF"/>
+							<mx:Label text="{model.contactedLeads.toString() + getPctStr(model.contactedLeadsPct)}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:HBox>
+						<mx:HBox width="100%">
+							<mx:Label text="Avg contact time:" fontSize="12" width="120" textAlign="right" color="#FFFFFF"/>
+							<mx:Label text="{getTimeStr(model.averageContactTime)}" fontSize="12" fontWeight="bold" color="#FFFFFF"/>
+						</mx:HBox>
+						<mx:HBox width="100%">
+							<mx:Label text="Converted:" fontSize="12" width="120" textAlign="right" color="#FFFFFF"/>
+							<mx:Text text="{model.convertedLeads.toString() + getPctStr(model.convertedLeadsPct)}" fontSize="12" fontWeight="bold" width="100%" color="#FFFFFF"/>
+						</mx:HBox>
+						<mx:HBox width="100%">
+							<mx:Label text="Closed amount:" fontSize="14" width="120" textAlign="right" color="#FFFFCC"/>
+							<mx:Text text="{curr.format(model.closedAmount)}" fontSize="14" fontWeight="bold" width="100%" color="#FFFFCC"/>
+						</mx:HBox>
+					</mx:VBox>
+				</mx:VBox>
+				
+				<mx:VBox width="100%" height="100%" borderColor="#CCCCCC" borderStyle="solid">
+					<projectTypes:LeadsProjectTypesView id="viewLeadsByType" width="100%" height="100%" backgroundColor="#FFFFFF" backgroundAlpha="0.8"/>
+				</mx:VBox>
+			</mx:HBox>
+			
+			<mx:VBox width="100%" height="100%">
+				<mx:ViewStack id="vsDaily" width="100%" height="100%" borderColor="#CCCCCC" borderStyle="solid"
+					paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+					<mx:VBox label="Leads Graph" width="100%" height="100%">
+						<daily:LeadsDailyView id="viewDailyLeads" width="100%" height="100%" backgroundColor="#FFFFFF" backgroundAlpha="0.8"
+							startDate="{model.startDate}" endDate="{model.endDate}"/>
+					</mx:VBox>
+	
+					<mx:VBox label="Leads Grid" width="100%" height="100%">
+						<mx:DataGrid id="dgLeads" dataProvider="{model.leads}" width="100%" height="100%" minWidth="300"
+							sortableColumns="false" draggableColumns="false" editable="false">
+							<mx:columns>
+								<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.servman.main.owner.lead.LeadStatusIR"/>
+								<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.servman.main.owner.lead.LeadCallIR"/>
+								<mx:DataGridColumn headerText="Business Partner" itemRenderer="mx.controls.Label" labelFunction="getLabel" dataField="{COLUMN_PARTNER}" width="100" minWidth="50"/>
+								<mx:DataGridColumn headerText="Type" itemRenderer="mx.controls.Label" labelFunction="getLabel" dataField="{COLUMN_TYPE}" width="80" minWidth="40"/>
+								<mx:DataGridColumn headerText="Customer" itemRenderer="mx.controls.Label" labelFunction="getLabel" dataField="{COLUMN_NAME}" width="100" minWidth="50"/>
+								<mx:DataGridColumn headerText="Time Created" itemRenderer="mx.controls.Label" labelFunction="getLabel" dataField="{COLUMN_DATE_CREATED}" width="100" minWidth="50"/>
+								<mx:DataGridColumn headerText="Last Updated" itemRenderer="mx.controls.Label" labelFunction="getLabel" dataField="{COLUMN_DATE_UPDATED}" width="100" minWidth="50"/>
+							</mx:columns>
+						</mx:DataGrid>
+					</mx:VBox>
+				</mx:ViewStack>
+				
+				<mx:ToggleButtonBar dataProvider="{vsDaily}"/>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	verticalAlign="middle"
+	horizontalAlign="center"
+	click="onClickNotes()"
+	width="100%">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import App.Entity.BillItemCompositionDataObject;
+			import App.Entity.BillDataObject;
+			import App.Entity.BillItemDataObject;
+			import mx.core.Application;
+			
+        	[Embed(source="/common/notes/note.png")]
+        	[Bindable]
+        	private var imgNotes:Class;
+        	
+			private function onClickNotes():void {
+				NotesView.Open(data, Application.application as DisplayObject, true,
+					function():void {
+						if (null != data.Notes) {
+							lblNotes.text = "(" + data.Notes.length.toString() + ")";
+						}
+					}
+				);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox 
+		visible="{((data is BillItemDataObject) &amp;&amp; (0 != data.BillItemTypeIdTemp) &amp;&amp; !data.IsMarkedToRemove) || (data is BillDataObject) || (data is BillItemCompositionDataObject)}"
+		includeInLayout="{((data is BillItemDataObject) &amp;&amp; (0 != data.BillItemTypeIdTemp) &amp;&amp; !data.IsMarkedToRemove) || (data is BillDataObject) || (data is BillItemCompositionDataObject)}"
+		>
+		
+		<mx:Image
+			source="{imgNotes}"/>
+	
+	    <mx:Label
+	    	id="lblNotes"
+	    	text="({data.Notes.length})" fontWeight="bold"
+	    	visible="{data.Notes.length > 0}"
+	    	includeInLayout="{data.Notes.length > 0}"
+	    	/>
+	
+		<mx:Label
+			text="notes"/>
+	
+	</mx:HBox>
+
+</mx:HBox>

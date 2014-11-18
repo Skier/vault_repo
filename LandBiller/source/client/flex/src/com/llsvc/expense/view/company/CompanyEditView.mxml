@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	title="Company Edit" width="370" xmlns:controls="com.llsvc.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import com.llsvc.registry.MainModel;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.services.CompanyService;
+			import com.llsvc.domain.Company;
+			import mx.rpc.Responder;
+
+			[Bindable] private var isBusy:Boolean = false;
+			
+			[Bindable] public var company:Company;
+			
+            public static function open(parent:DisplayObject, company:Company, modal:Boolean = true):CompanyEditView
+            {
+                var popup:CompanyEditView = new CompanyEditView();
+                
+                popup.company = company;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vCompanyName.validate().type == ValidationResultEvent.INVALID) 
+					result = false;
+
+				return result;
+			}
+			
+			private function startRemoting():void 
+			{
+				isBusy = true;
+			}
+			
+			private function stopRemoting():void 
+			{
+				isBusy = false;
+			}
+			
+			private function getCompany():Company 
+			{
+				company.name = txtCompanyName.text;
+				company.description = txtDescription.text;
+				company.user = MainModel.instance.currentUser;
+				company.userid = MainModel.instance.currentUser.userid;
+				
+				return company;
+			}
+			
+			public function save(company:Company):void 
+			{
+				if (company == null)
+				{
+					trace("Company is null!");
+					return;
+				}
+
+				startRemoting();				
+				CompanyService.instance.saveCompany(company).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							dispatchEvent(new Event("companySavingComplete"));
+						}, faultHandler));
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show("Company saving failed !\n" + event.fault.message); 
+			}
+				
+			private function btnCancelClickHandler(event:*):void 
+			{
+				dispatchEvent(new Event("cancelRequest"));
+			}
+			
+			private function btnOkClickHandler(event:*):void 
+			{
+				if (!isFormValid())
+					return;
+					
+				save(getCompany());
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="vCompanyName" source="{txtCompanyName}" property="text" maxLength="50" required="true"/>
+
+	<mx:Form width="100%">
+		<mx:FormItem label="Company" required="true" width="100%">
+			<mx:TextInput id="txtCompanyName" width="100%" text="{company.name}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Description" required="false" width="100%">
+			<mx:TextInput id="txtDescription" width="100%" text="{company.description}"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ProgressBar labelPlacement="right" label="" indeterminate="true" width="100%"
+		visible="{isBusy}" includeInLayout="{isBusy}"/>
+
+	<mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button height="24" label="Ok" enabled="{!isBusy}" click="btnOkClickHandler(event)"/>
+		<mx:Button height="24" label="Cancel" enabled="{!isBusy}" click="btnCancelClickHandler(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

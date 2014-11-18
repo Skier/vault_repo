@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle" horizontalAlign="center">
+
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.Tract;
+		]]>
+	</mx:Script>
+
+	<mx:CheckBox id="checkIsSelected" height="16" width="16" minHeight="16" minWidth="16" label=""
+		selected="{Tract(data).IsSelected}" 
+		click="{Tract(data).IsSelected = !Tract(data).IsSelected}"/>
+</mx:HBox>

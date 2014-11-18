@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+            [Embed(source="assets/icons16/disk.png")]
+            [Bindable]
+            private var imgSave:Class;
+            
+            [Embed(source="assets/icons16/add.png")]
+            [Bindable]
+            private var imgAdd:Class;
+        ]]>
+    </mx:Script>
+
+    <mx:Image source="{imgSave}" width="16" height="16" toolTip="Save Video"/>
+    
+    <mx:Image source="{imgAdd}" width="16" height="16" toolTip="Add Video To Package"/>
+</mx:HBox>

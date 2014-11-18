@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="500" title="Phone Editor">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.events.LeadSourcePhoneEvent;
+        	import com.dalworth.leadCentral.domain.LeadSourcePhone;
+        	import mx.managers.PopUpManager;
+        	import mx.events.ValidationResultEvent;
+            
+			private var _phone:LeadSourcePhone;
+			[Bindable]
+			public function get phone():LeadSourcePhone { return _phone; }
+			public function set phone(value:LeadSourcePhone):void 
+			{
+				_phone = value;
+			}
+			
+            public static function open(parent:DisplayObject, phone:LeadSourcePhone, modal:Boolean = true):PhoneEditPopup
+            {
+                var popup:PhoneEditPopup = new PhoneEditPopup();
+                
+                popup.phone = phone;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+			private function isFormValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vPhone.enabled = true;
+				if (vPhone.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+
+			private function onOkClick():void 
+			{
+				if (!isFormValid())
+					return;
+				
+				phone.PhoneNumber = txtPhone.text;
+				phone.Description = txtDescription.text;
+				dispatchEvent(new LeadSourcePhoneEvent(LeadSourcePhoneEvent.PHONE_COMMIT, phone));
+				close();
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:PhoneNumberValidator id="vPhone" source="{txtPhone}" property="text" required="true" enabled="false"/>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+		borderColor="#999999" borderStyle="solid">
+			<mx:Form width="100%" height="100%" minWidth="250" labelWidth="100"
+				paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+				<mx:FormItem label="Number" width="100%" required="true" fontSize="16">
+					<mx:TextInput id="txtPhone" width="100%" text="{phone.PhoneNumber}" editable="{phone.Id == 0}" fontSize="16"/>
+				</mx:FormItem>
+
+				<mx:FormItem label="Description" width="100%" height="100%" required="true" fontSize="12">
+					<mx:TextArea id="txtDescription" width="100%" height="100%" text="{phone.Description}" fontSize="12"/>
+				</mx:FormItem>
+			</mx:Form>
+	</mx:VBox>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%" fontSize="12">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" click="onOkClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

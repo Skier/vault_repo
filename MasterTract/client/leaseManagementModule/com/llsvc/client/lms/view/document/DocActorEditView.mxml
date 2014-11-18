@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	title="Document {actorRole} Edit" xmlns:component="com.llsvc.component.*">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentActorPhone;
+			import com.llsvc.domain.DocumentActor;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+
+			private var _docActor:DocumentActor;
+			[Bindable]
+			public function get docActor():DocumentActor { return _docActor; }
+			public function set docActor(value:DocumentActor):void 
+			{
+				_docActor = value;
+				
+				phones = new ArrayCollection();
+				for each (var obj:Object in _docActor.phones) 
+				{
+					phones.addItem(ObjectUtil.copy(obj));
+				}
+			}
+			
+			[Bindable] public var actorRole:String;
+			
+			[Bindable] private var stateList:ArrayCollection = LocalCash.getInstance().getStates();
+			[Bindable] private var errorMessage:String = "";
+			[Bindable] private var phones:ArrayCollection;
+			
+            public static function open(parent:DisplayObject, modal:Boolean):DocActorEditView
+            {
+                var popup:DocActorEditView = new DocActorEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	if (txtName.text.length > 0)
+            		return true;
+            		
+            	if (txtName.text.length > 0
+            		&& comboState.selectedItem != null 
+            		&& txtAddress1.text.length > 0 
+            		&& txtCity.text.length > 0
+            		&& txtZip.text.length > 0)
+            	{
+            		return true;
+            	} else 
+            	{
+            		return false;
+            	}
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+            	errorMessage = "";
+
+	        	if (isFormValid()) 
+	        	{
+			        docActor.name = txtName.text;
+			        
+			        docActor.address.address1 = txtAddress1.text;
+			        docActor.address.address2 = txtAddress2.text;
+			        docActor.address.city = txtCity.text;
+			        docActor.address.state = comboState.selectedItem as State;
+			        docActor.address.zip = txtZip.text;
+			        
+			        docActor.isCompany = cbIsEntity.selected;
+			        
+			        if (cbIsEntity.selected) {
+				        docActor.taxId = maskedEntityTaxId.text;
+			        } else {
+				        docActor.taxId = maskedPersonTaxId.text;
+			        }
+//			        docActor.taxId = txtTaxId.text;
+			        
+			        docActor.phones.removeAll();
+			        for each (var obj:Object in phones) 
+			        {
+			        	docActor.phones.addItem(obj);
+			        }
+			        
+			        dispatchEvent(new Event("commitRequest"));
+	        	} else 
+	        	{
+            		errorMessage = "Not all required fields selected !";
+	        	}
+	        }
+	        
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+	        private function btnAddPhoneHandler():void 
+	        {
+	        	if (phones.length >=10) 
+	        	{
+	        		Alert.show("Only 10 phone number allowed!");
+	        		return;
+	        	}
+		        
+		        var newPhone:DocumentActorPhone = new DocumentActorPhone();
+		        phones.addItem(newPhone);
+	        }
+	        
+	        private function phoneNoChangeHandler(event:Event):void 
+	        {
+	        	var ti:mx.controls.TextInput = event.currentTarget as mx.controls.TextInput;
+	        	var index:int = ti.repeaterIndex;
+	        	
+	        	DocumentActorPhone(phones[index]).phone = ti.text;
+	        }
+        
+	        private function isPrimaryChangeHandler(event:Event):void 
+	        {
+	        	var cb:mx.controls.CheckBox = event.currentTarget as mx.controls.CheckBox;
+	        	var index:int = cb.repeaterIndex;
+	        	
+	        	DocumentActorPhone(phones[index]).isPrimary = cb.selected;
+	        }
+        
+	        private function btnRemoveClickHandler(event:Event):void 
+	        {
+	        	var b:mx.controls.Button = event.currentTarget as mx.controls.Button;
+	        	var index:int = b.repeaterIndex;
+	        	
+                Alert.show("Do you really want to delete Phone ?", 
+                   "Delete Phone", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (e:CloseEvent):void 
+                   {
+                        if (e.detail == Alert.YES)
+                        {
+				        	phones.removeItemAt(index);
+                        }
+                    });
+	        }
+	        
+	        [Bindable] private var localFName:String;
+	        [Bindable] private var localMName:String;
+	        [Bindable] private var localLName:String;
+	        private function txtNameChangeHandler():void 
+	        {
+	        	if (txtName.text.length > 0 && !cbIsEntity.selected) {
+	        		boxParsedName.visible = true;
+	        		boxParsedName.includeInLayout = true;
+	        	} else {
+	        		boxParsedName.visible = false;
+	        		boxParsedName.includeInLayout = false;
+	        	}
+
+	        	var ar:Array = txtName.text.split(" ");
+	        	if (ar.length > 0) {
+	        		localFName = ar[0] as String;
+	        	} else {
+	        		localFName = "";
+	        	}
+	        	if (ar.length > 1) {
+	        		localMName = ar[1] as String;
+	        	} else {
+	        		localMName = "";
+	        	}
+	        	if (ar.length > 2) {
+	        		localLName = ar[2] as String;
+	        	} else {
+	        		localLName = "";
+	        	}
+	        }
+	        
+	        private function cbIsEntityChangeHandler():void 
+	        {
+	        	if (txtName.text.length > 0 && !cbIsEntity.selected) {
+	        		boxParsedName.visible = true;
+	        		boxParsedName.includeInLayout = true;
+	        	} else {
+	        		boxParsedName.visible = false;
+	        		boxParsedName.includeInLayout = false;
+	        	}
+	        }
+        
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formMain" width="100%" labelWidth="60" 
+		borderColor="#999999" borderStyle="solid" borderThickness="1"
+		paddingLeft="15" paddingRight="15" paddingTop="15" paddingBottom="15"
+		verticalGap="2">
+		<mx:HBox width="100%" backgroundColor="#ffffff" verticalAlign="middle"
+			paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+			<mx:CheckBox id="cbIsEntity" label="Is Entity" selected="{docActor.isCompany}" change="cbIsEntityChangeHandler()"/>
+	
+			<mx:FormItem width="100%" label="Name:" labelWidth="40">
+				<component:SelectableInput id="txtName" width="100%" text="{docActor.name}"
+					change="txtNameChangeHandler()"/>
+			</mx:FormItem>
+		</mx:HBox>
+		
+		<mx:HBox id="boxParsedName" width="100%" visible="false" includeInLayout="false">
+			<mx:Label text="First Name:"/>
+			<mx:Label text="{localFName}" fontWeight="bold"/>
+			<mx:Label text="Mid Name:"/>
+			<mx:Label text="{localMName}" fontWeight="bold"/>
+			<mx:Label text="Last Name:"/>
+			<mx:Label text="{localLName}" fontWeight="bold"/>
+		</mx:HBox>
+		
+		<mx:Spacer height="4"/>
+		
+		<mx:VBox width="100%" backgroundColor="#ffffdd" verticalGap="2"
+			paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+			<mx:FormItem label="State:" labelWidth="57">
+				<controls:ComboBox id="comboState" 
+					valueField="fips" value="{docActor.address.state.fips}" 
+					labelField="name" dataProvider="{stateList}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem width="100%" label="Address:" labelWidth="57">
+				<component:SelectableInput id="txtAddress1" width="100%" text="{docActor.address.address1}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem width="100%" labelWidth="57">
+				<component:SelectableInput id="txtAddress2" width="100%" text="{docActor.address.address2}"/>
+			</mx:FormItem>
+			
+			<mx:HBox width="100%">
+				<mx:FormItem label="City:" labelWidth="57">
+					<component:SelectableInput id="txtCity" text="{docActor.address.city}" width="100"/>
+				</mx:FormItem>
+	
+				<mx:FormItem label="ZIP:" labelWidth="37">
+					<component:SelectableInput id="txtZip" text="{docActor.address.zip}" maxChars="20" width="90"/>
+				</mx:FormItem>
+			</mx:HBox>
+
+			<mx:FormItem width="100%" label="Tax ID:" labelWidth="57">
+				<mx:Canvas width="100%">
+					<component:MaskedInput id="maskedEntityTaxId"
+						visible="{cbIsEntity.selected}" 
+						inputMask="##-#######" width="100%" text="{docActor.taxId}"/>
+					<component:MaskedInput id="maskedPersonTaxId" 
+						visible="{!cbIsEntity.selected}" 
+						inputMask="###-##-####" width="100%" text="{docActor.taxId}"/>
+				</mx:Canvas>
+<!--				
+				<mx:TextInput id="txtTaxId" 
+					width="100%" text="{docActor.taxId}"/>
+-->
+			</mx:FormItem>
+		</mx:VBox>
+		
+		<mx:Spacer height="4"/>
+		
+		<mx:VBox width="100%" 
+			backgroundColor="#ffffff" backgroundAlpha="0.5"
+			borderColor="#B9B9B9" borderStyle="solid" borderThickness="1">
+			<mx:HBox width="100%" paddingLeft="5" verticalAlign="middle" backgroundColor="#B9B9B9">
+				<mx:Label text="Phones" fontWeight="bold"/>
+
+				<mx:Spacer width="100%"/>
+
+		        <mx:Button toolTip="Add Phone"
+		        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+		        	icon="@Embed('assets/icon_plus.png')"
+		        	click="btnAddPhoneHandler()"/>
+			</mx:HBox>
+			
+			<controls:PercentBoxFixed width="100%" height="100%" verticalGap="1" minHeight="80">
+				<mx:Repeater id="rptPhones" dataProvider="{phones}">
+					<mx:HBox width="100%">
+						<mx:Spacer width="50"/>
+						
+						<component:SelectableInput id="txtPhoneNo" width="100%" 
+							text="{DocumentActorPhone(rptPhones.currentItem).phone}"
+							change="phoneNoChangeHandler(event)"/>
+						
+						<mx:CheckBox id="cbIsPrimary" label="is primary" 
+							selected="{DocumentActorPhone(rptPhones.currentItem).isPrimary}"
+							change="isPrimaryChangeHandler(event)"/>
+
+		                <mx:Button id="btnRemove" 
+		                	width="30" height="24" icon="@Embed('assets/icons16/delete.png')" toolTip="Delete record"
+		                	click="btnRemoveClickHandler(event)"/>
+					</mx:HBox>
+				</mx:Repeater>
+			</controls:PercentBoxFixed>
+		</mx:VBox>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+		<mx:Label fontSize="12" color="#ff0000" text="{errorMessage}" minWidth="200"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

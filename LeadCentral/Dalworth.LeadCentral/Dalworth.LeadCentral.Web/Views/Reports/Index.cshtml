@@ -1,0 +1,13 @@
+﻿@model object
+
+@{
+    ViewBag.Title = "Reports";
+}
+
+<h2>Reports</h2>
+
+<ul class="startup">
+  <li>@Html.ActionLink("Business Partner Signup By Sales Rep", "Signup", "Reports")</li>
+  <li>@Html.ActionLink("Incoming calls by Business Partner", "IncomingCalls", "Reports")</li>
+  <li>@Html.ActionLink("Revenue by Business Partner", "PartnersRevenue", "Reports")</li>
+</ul>

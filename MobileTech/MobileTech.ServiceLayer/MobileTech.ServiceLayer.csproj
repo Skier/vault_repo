@@ -1,0 +1,142 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MobileTech.ServiceLayer</RootNamespace>
+    <AssemblyName>MobileTech.ServiceLayer</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>MobileTech</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PocketPC;WINCE</DefineConstants>
+    <FileAlignment>512</FileAlignment>
+    <NoWarn>1701;1702;1701;1702</NoWarn>
+    <DebugType>full</DebugType>
+    <FxCopLogFile>obj\Debug\CodeAnalysisLog.xml</FxCopLogFile>
+    <FxCopRuleAssemblies>DesignRules.dll;GlobalizationRules.dll;InteroperabilityRules.dll;MaintainabilityRules.dll;NamingRules.dll;PerformanceRules.dll;ReliabilityRules.dll;SecurityRules.dll;UsageRules.dll</FxCopRuleAssemblies>
+    <FxCopInputAssembly>bin\Debug\MobileTech.ServiceLayer.dll</FxCopInputAssembly>
+    <FxCopUseTypeNameInSuppression>true</FxCopUseTypeNameInSuppression>
+    <FxCopModuleSuppressionsFile>ModuleSuppressions.cs</FxCopModuleSuppressionsFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>
+    </LangVersion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <FxCopRules>
+    </FxCopRules>
+    <FxCopSpellCheckLanguages>
+    </FxCopSpellCheckLanguages>
+    <RunFxCop>false</RunFxCop>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;PocketPC;WINCE</DefineConstants>
+    <Optimize>true</Optimize>
+    <FileAlignment>512</FileAlignment>
+    <NoWarn>1701;1702;1701;1702</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <FxCopLogFile>obj\Release\CodeAnalysisLog.xml</FxCopLogFile>
+    <FxCopRuleAssemblies>DesignRules.dll;GlobalizationRules.dll;InteroperabilityRules.dll;MaintainabilityRules.dll;NamingRules.dll;PerformanceRules.dll;ReliabilityRules.dll;SecurityRules.dll;UsageRules.dll</FxCopRuleAssemblies>
+    <FxCopInputAssembly>bin\Release\MobileTech.ServiceLayer.dll</FxCopInputAssembly>
+    <FxCopUseTypeNameInSuppression>true</FxCopUseTypeNameInSuppression>
+    <FxCopModuleSuppressionsFile>ModuleSuppressions.cs</FxCopModuleSuppressionsFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>
+    </LangVersion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <FxCopRules>
+    </FxCopRules>
+    <FxCopSpellCheckLanguages>
+    </FxCopSpellCheckLanguages>
+    <RunFxCop>false</RunFxCop>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MobileTech, Version=1.0.2076.26808, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe, Version=3.0.3600.0, Culture=neutral, PublicKeyToken=3be235df1c8d2ad3, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EventService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MobileTech.Domain\MobileTech.Domain.csproj">
+      <Project>{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}</Project>
+      <Name>MobileTech.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

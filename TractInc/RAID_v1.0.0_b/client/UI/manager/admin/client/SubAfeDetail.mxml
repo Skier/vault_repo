@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+    title="{'Edit project info. AFE: ' + subAfe.AFE + ', Client: ' + subAfe.RelatedAfe.RelatedClient.ClientName}">
+
+    <mx:Script>
+        <![CDATA[
+        	import App.Domain.AssetAssignment;
+        	import weborb.data.ActiveCollection;
+            import mx.controls.Alert;
+            import mx.rpc.events.FaultEvent;
+            import weborb.data.DynamicLoadEvent;
+            import mx.collections.ArrayCollection;
+            import mx.managers.PopUpManager;
+            import App.Domain.SubAfeStatus;
+            import App.Domain.ActiveRecords;
+            import App.Domain.SubAfe;
+
+            [Bindable]
+            private var statuses:ActiveCollection;
+
+            [Bindable]
+            public var subAfe:SubAfe;
+            
+            [Bindable]
+            public var afes:ActiveCollection;
+            
+//            [Bindable]
+//            public var assignments1:ActiveCollection;
+            
+            [Bindable]
+            private var isTemporary:Boolean;
+            
+            [Bindable]
+            private var _isLoaded:Boolean = false;
+            
+            [Bindable]
+            public function get isLoaded():Boolean {
+            	return _isLoaded;
+            }
+            public function set isLoaded(value:Boolean):void {
+            	cbAfe.selectedIndex = ArrayCollection(cbAfe.dataProvider).getItemIndex(subAfe.RelatedAfe);
+            	_isLoaded = value;
+            }
+            
+            public function checkLoaded():void {
+            	isLoaded = statuses.IsLoaded && afes.IsLoaded;// && assignments.IsLoaded;
+            }
+            
+            public static function Open(subAfe:SubAfe, parent:DisplayObject, modal:Boolean = true):SubAfeDetail {
+                var popup:SubAfeDetail = new SubAfeDetail();
+                popup.subAfe = subAfe;
+                popup.isTemporary = subAfe.Temporary;
+                popup.init();
+    
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function init():void 
+            {
+            	isLoaded = false;
+            	
+                statuses = ActiveRecords.SubAfeStatus.findAll();
+                statuses.addEventListener("loaded", onStatusesLoaded);
+                statuses.addEventListener(FaultEvent.FAULT, onFault);
+
+//                assignments = subAfe.RelatedAssetAssignment;
+//                if (assignments.IsLoaded) {
+//                	checkLoaded();
+//                } else {
+//                	assignments.addEventListener("loaded", onAssignmentsLoaded);
+//                	assignments.addEventListener(FaultEvent.FAULT, onFault);
+//                }
+                
+                afes = subAfe.RelatedAfe.RelatedClient.RelatedAfe;
+                if (afes.IsLoaded) {
+                	checkLoaded();
+                } else {
+                	afes.addEventListener("loaded", onAfesLoaded);
+                	afes.addEventListener(FaultEvent.FAULT, onFault);
+                }
+            }
+            
+            private function onStatusesLoaded(event:DynamicLoadEvent):void 
+            {
+                statuses.removeEventListener("loaded", onStatusesLoaded);
+                statuses.removeEventListener(FaultEvent.FAULT, onFault);
+                statuses = event.data as ActiveCollection;
+                cbSubAfeStatus.selectedIndex = statuses.getItemIndex(subAfe.RelatedSubAfeStatus);
+                
+                checkLoaded();
+            }
+            
+            private function onAssignmentsLoaded(event:DynamicLoadEvent):void 
+            {
+//                assignments.removeEventListener("loaded", onAssignmentsLoaded);
+//                assignments.removeEventListener(FaultEvent.FAULT, onFault);
+//                assignments = event.data as ActiveCollection;
+                
+                checkLoaded();
+            }
+            
+            private function onAfesLoaded(event:DynamicLoadEvent):void 
+            {
+                afes.removeEventListener("loaded", onAfesLoaded);
+                afes.removeEventListener(FaultEvent.FAULT, onFault);
+                afes = event.data as ActiveCollection;
+                
+                checkLoaded();
+            }
+            
+            private function onFault(event:FaultEvent):void 
+            {
+                statuses.removeEventListener("loaded", onStatusesLoaded);
+                statuses.removeEventListener(FaultEvent.FAULT, onFault);
+//                assignments.removeEventListener("loaded", onAssignmentsLoaded);
+//                assignments.removeEventListener(FaultEvent.FAULT, onFault);
+                afes.removeEventListener("loaded", onAfesLoaded);
+                afes.removeEventListener(FaultEvent.FAULT, onFault);
+                Alert.show(event.fault.message);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox
+    	id="inputBox"
+    	width="100%"
+    	enabled="{isLoaded}">
+        <mx:HBox
+        	visible="{subAfe.IsPrimaryKeyInitialized &amp;&amp; cbTemporary.selected}"
+        	includeInLayout="{subAfe.IsPrimaryKeyInitialized &amp;&amp; cbTemporary.selected}">
+            <mx:Label text="AFE:" width="120" textAlign="right"/>
+            <mx:ComboBox
+            	id="cbAfe"
+            	width="200"
+            	labelField="AFE"
+                dataProvider="{afes}"/>
+        </mx:HBox>
+        <mx:HBox
+        	visible="{!subAfe.IsPrimaryKeyInitialized || isTemporary}"
+        	includeInLayout="{!subAfe.IsPrimaryKeyInitialized || isTemporary}">
+            <mx:CheckBox
+            	id="cbTemporary"
+            	change="{subAfe.Temporary = cbTemporary.selected}"
+            	selected="{subAfe.Temporary}"/>
+            <mx:Label text="Is Temporary"/>
+        </mx:HBox>
+	    <mx:HRule
+	    	visible="{!subAfe.IsPrimaryKeyInitialized || cbTemporary.selected}"
+	    	includeInLayout="{!subAfe.IsPrimaryKeyInitialized || cbTemporary.selected}"
+	    	width="100%"/>
+        <mx:HBox>
+            <mx:Label text="Project Name:" width="120" textAlign="right"/>
+            <mx:TextInput id="txtSubAfeName" text="{subAfe.SubAFE}" width="200" maxChars="50"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Short Name:" width="120" textAlign="right"/>
+            <mx:TextInput id="txtSubAfeShortName" text="{subAfe.ShortName}" width="100" maxChars="10"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Status:" width="120" textAlign="right"/>
+            <mx:ComboBox
+            	id="cbSubAfeStatus"
+            	width="120"
+            	labelField="SubAFEStatus"
+                dataProvider="{statuses}"
+                selectedIndex="{statuses.getItemIndex(subAfe.RelatedSubAfeStatus)}"/>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:HRule width="100%"/>
+    
+    <mx:HBox width="100%" horizontalAlign="right">
+        <mx:Button id="btnSubmit" label="Ok"
+            enabled="{txtSubAfeName.text.length > 0 &amp;&amp; cbSubAfeStatus.selectedItem != null &amp;&amp; isLoaded}"/>
+        <mx:Button id="btnCancel" label="Cancel"/>
+    </mx:HBox>
+    
+</mx:TitleWindow>

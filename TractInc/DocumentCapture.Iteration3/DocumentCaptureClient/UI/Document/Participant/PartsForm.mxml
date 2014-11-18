@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	left="5" right="5" bottom="5" top="5"
+	paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+	borderColor="#bbbbbb" borderStyle="solid" cornerRadius="3"
+	backgroundColor="#eeeeee"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			public var controller:ParticipantController;
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox backgroundColor="#cccccc" width="100%">
+		<mx:Label text="Entity parts:" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+
+	<mx:VBox id="partsForm" width="100%">
+		
+		<mx:DataGrid id="dgParticipantEntityParts" 
+			dataProvider="{controller.Model.entityParts}" 
+			width="100%" height="80">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Firstname" dataField="fName"/>
+				<mx:DataGridColumn headerText="Midname" dataField="mName"/>
+				<mx:DataGridColumn headerText="Lastname" dataField="lName"/>
+				<mx:DataGridColumn headerText="SSN" dataField="SSN"/>
+			</mx:columns>
+		</mx:DataGrid>
+
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button label="Add" click="controller.OnClickAddParticipantEntityParty()"/>
+			<mx:Button label="Edit" click="controller.OnClickEditParticipantEntityParty()" enabled="{dgParticipantEntityParts.selectedItem != null}"/>
+			<mx:Button label="Remove" click="controller.OnClickRemoveParticipantEntityParty()" enabled="{dgParticipantEntityParts.selectedItem != null}"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+
+</mx:VBox>

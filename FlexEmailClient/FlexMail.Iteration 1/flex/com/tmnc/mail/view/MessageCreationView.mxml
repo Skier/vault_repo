@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Panel 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:view="com.tmnc.mail.view.*"
+    xmlns:c="com.tmnc.mail.view.controls.*"
+    xmlns:fc="com.adobe.flex.extras.controls.*"
+    xmlns:Attachment="com.tmnc.mail.view.Attachment.*"    
+    title="Create New Message"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    width="100%" height="100%" show="onShow()" backgroundColor="#cccccc">
+        
+    <mx:Script>
+        <![CDATA[
+            import mx.utils.UIDUtil;
+            import com.tmnc.mail.vo.*;
+            import com.tmnc.mail.model.MailBoxModel;
+            import com.tmnc.mail.view.Attachment.AttachmentList;
+            import com.tmnc.mail.control.events.MessageEvent;
+            
+            import mx.events.ValidationResultEvent;
+            import mx.collections.ArrayCollection;
+            import mx.core.*;
+            import mx.controls.*;   
+
+            [Bindable]
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+            
+            private var messageUid:String;
+            public var inReplyTo:String;
+           
+            private function onCancelClick():void{
+                model.workflowState = MailBoxModel.VIEWING_INBOX_MAIL_SCREEN;
+            }
+      
+            private function onSendClick():void {
+                if (toEmailV.validate().type == ValidationResultEvent.INVALID){
+                    return;
+                }
+                
+                if (attachmentPanel.attachmentList.hasBusyItems){
+                    Alert.show("Some of your attachments is still uploading. Please wait.");
+                    return;
+                }
+                
+                var message:MessageInfo  = new MessageInfo();
+                
+                message.To = parseEmailAddresses(ToEmail.text);
+                message.Cc = parseEmailAddresses(CcEmail.text);
+                message.Bcc = parseEmailAddresses(BccEmail.text);
+                message.Subject = subjectTxt.text;
+                message.Uid = messageUid;
+                message.InReplyTo = inReplyTo;
+                message.Body = new MessageBodyInfo();
+                
+                var fileNameList:Array = attachmentPanel.attachmentList.items;
+                if (fileNameList.length > 0){
+                    for (var i:int; i < fileNameList.length; i++ ){
+                        var file:FileInfo = new FileInfo();
+                        file.Name = fileNameList[i].fileName;
+                        message.Body.Attachments.push(file);
+                    }
+                }
+
+                var plainView:ViewInfo  = new ViewInfo();
+                plainView.ContentType = ViewInfo.CONTENT_TYPE_PLAIN;
+                plainView.Text = body.text;
+                message.Body.Views.push(plainView);
+                
+                if (!body.usePlainText){
+                    var htmlView:ViewInfo  = new ViewInfo();
+                    htmlView.ContentType = ViewInfo.CONTENT_TYPE_HTML;
+                    htmlView.Text = body.msgBodyText;
+                    message.Body.Views.push(htmlView);
+                }
+        
+                var event:MessageEvent = new MessageEvent(MessageEvent.EVENT_SEND, message);
+                Application.application.dispatchEvent(event);
+            }
+            
+            private function parseEmailAddresses(addressList:String):Array {
+                var result:Array = [];
+
+                if (addressList.length > 3){
+                    var stringArray:Array = addressList.split(",");
+    
+                    for each (var token:String in stringArray) {
+                        if (token.length < 3) continue;
+                        result.push(EmailAddressInfo.createFromString(token));
+                    }
+                }
+                
+                return result;
+            }
+            
+            private function onShow():void {
+                messageUid = UIDUtil.createUID();
+                
+                var urlResuest:URLRequest = model.uploadRequestURL;
+
+                var variables:URLVariables = new URLVariables();
+                variables.uid = messageUid;
+                urlResuest.data = variables;
+
+                attachmentPanel.attachmentList.uploadRequestURL = urlResuest;
+            }
+            
+            private function makeLocalCopy(array:Array):ArrayCollection {
+                return new ArrayCollection(array);
+            }
+            
+        ]]>
+    </mx:Script>  
+
+    <mx:StringValidator id="toEmailV" source="{ToEmail}" property="text"/>
+    
+    <mx:Form width="100%" height="111" paddingTop="5" paddingBottom="5" verticalGap="4" verticalScrollPolicy="off" id="form1">
+        <mx:FormItem label="To:" width="100%" required="true">
+            <c:EmailInputField id="ToEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+            dataProvider="{makeLocalCopy(model.accountContactEmails)}"/>                
+        </mx:FormItem>
+        <mx:FormItem label="CC:" width="100%">
+            <c:EmailInputField id="CcEmail" width="100%" keepLocalHistory="false" lookAhead="false" text="" 
+            dataProvider="{makeLocalCopy(model.accountContactEmails)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="BCC" width="100%">
+        <c:EmailInputField id="BccEmail" width="100%" keepLocalHistory="false" lookAhead="false"
+            dataProvider="{makeLocalCopy(model.accountContactEmails)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Subject" width="100%">
+            <mx:TextInput id="subjectTxt" width="100%"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:HBox width="100%" height="100%" id="hbox1" horizontalGap="4" backgroundColor="#cccccc" 
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <Attachment:AttachmentPanel y="4" id="attachmentPanel" 
+            width="300" height="100%" backgroundColor="#cccccc" borderStyle="solid"/>
+        <c:MessageBodyEditor id="body" width="100%" height="100%" backgroundColor="#cccccc" borderStyle="solid" headerHeight="10"/>
+    </mx:HBox>
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Send" id="Send" click="onSendClick()"/>
+        <mx:Button label="Cancel" id="cancelButton" click="onCancelClick()"/>
+    </mx:ControlBar>
+
+</mx:Panel>

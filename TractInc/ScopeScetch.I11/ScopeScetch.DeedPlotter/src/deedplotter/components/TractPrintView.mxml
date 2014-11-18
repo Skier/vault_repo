@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TractPrintView_code
+    xmlns="src.deedplotter.components.tractPrintViewClasses.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:containers="src.deedplotter.containers.*"
+    xmlns:components="src.deedplotter.components.*"
+    backgroundAlpha="0.8" alpha="1.0"
+    creationComplete="view_creationCompleteHandler(event)" >
+
+    <mx:Metadata>
+        [Event(name="close", type="flash.events.Event")]
+    </mx:Metadata>
+    
+    <mx:Script>
+        <![CDATA[
+            
+            private const SCREEN_DPI:Number = 96;
+            private const PRINT_PAGE_MARGIN:Number = SCREEN_DPI / 2;
+
+            //parameter "text" needs just for binding
+            private function calculateLabelScale(label:Label, text:String):Number
+            {
+                label.validateNow();
+
+                var labelWidth:Number = label.width;
+                var textWidth:Number = label.textWidth;
+
+                if (isNaN(labelWidth) || isNaN(textWidth) || textWidth == 0) {
+                    return 1;
+                }
+
+                return Math.min(labelWidth / textWidth, 1);
+            }
+        ]]>
+    </mx:Script>
+    
+    
+    <mx:Parallel id="resizeMove">
+        <mx:Resize id="pageResizeEffectParalel" 
+            target="{printPage}" effectEnd="resizeEffect_endHandler(event)"/>
+        <mx:Move id="tractMoveEffectParalel" target="{tractView}"/>
+    </mx:Parallel>
+
+    <mx:Zoom id="pageZoomEffect" target="{printPage}" effectEnd="zoomEffect_endHandler(event)"/>
+    <mx:Zoom id="tractZoomEffect" target="{tractView}"/>
+    <mx:Move id="tractMoveEffect" target="{tractView}" effectEnd="tractView.invalidateDisplayList()"/>
+
+    <mx:DateFormatter id="dateFormatter" formatString="D-M-YY EEE" />
+
+    <mx:VBox width="100%" height="100%" verticalGap="3">
+        <mx:HBox horizontalGap="3">
+        
+        <components:GlassHeaders headerTitle="PRINT PREVIEW"/>
+
+            <mx:HBox horizontalGap="3">
+                <mx:ComboBox id="previewScale" toolTip="Zoom"
+                    selectedIndex="0" change="previewScale_changeHandler(event)">
+                    <mx:Array>
+                        <mx:Object label="50%" scaleValue="0.5" />
+                        <mx:Object label="75%" scaleValue="0.75" />
+                        <mx:Object label="100%" scaleValue="1"/>
+                    </mx:Array>
+                </mx:ComboBox>
+                
+                <mx:ComboBox id="pageSize" width="80" selectedIndex="0"
+                    toolTip="Page Size"
+                    change="pageSize_changeHandler(event)">
+                    <mx:Array>
+                        <mx:Object label="letter" width="{8.5 * SCREEN_DPI}" 
+                            height="{11.69 * SCREEN_DPI}" />
+                        <mx:Object label="legal" width="{8.5 * SCREEN_DPI}" 
+                            height="{14 * SCREEN_DPI}" />
+                    </mx:Array>
+                </mx:ComboBox>
+        
+                <mx:ComboBox id="pageOrientation" 
+                    width="80" selectedIndex="0" change="pageSize_changeHandler(event)">
+                    <mx:Array>
+                        <mx:Object label="Portrait"/>
+                        <mx:Object label="Landscape"/>
+                    </mx:Array>
+                </mx:ComboBox>
+                            
+                <mx:Spacer width="100%"/>
+                
+                <mx:CheckBox id="bitmapPrinting" 
+                    label="pring as bitmap" visible="false" includeInLayout="false"/>
+                
+                <mx:Button label="Print" click="doPrinting()"/>
+                
+                <mx:Button label="Close" click="close()"/>
+            </mx:HBox>    
+        </mx:HBox>
+
+        <mx:HBox id="toolbar" horizontalAlign="center" horizontalGap="3">
+
+            <mx:Label text="Tract Scaling"/>
+            
+            <components:ScaleInput id="scaleInput" 
+                scaleValue="{dataFrame.Scale}" showIcon="true" 
+                change="dataFrame.Scale = scaleInput.scaleValue" commitOnEnter="true"
+                enableIcon="true" editOnClick="true"/>
+
+            <mx:HBox horizontalGap="1" verticalAlign="middle">
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom_in.png')" toolTip="Tract Zoom In"
+                    styleName="toolButton" width="25" height="25"
+                    click="zoomIn()"/>
+                
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom_out.png')" toolTip="Tract Zoom Out"
+                    styleName="toolButton" width="25" height="25"
+                    click="zoomOut()"/>
+    
+                <mx:Button 
+                    icon="@Embed(source='/assets/zoom.png')" toolTip="Size To Page" 
+                    styleName="toolButton" width="25" height="25"
+                    click="fitToPage()"/>
+    
+                <mx:Button 
+                    icon="@Embed(source='/assets/center2.png')"
+                    toolTip="Center Tract"
+                    styleName="toolButton" width="25" height="25"
+                    click="doTractCentering()"/>
+    
+                <mx:Button 
+                    icon="@Embed(source='/assets/map_edit.png')"
+                    toolTip="Edit Scale Bar Properties"
+                    styleName="toolButton" width="25" height="25"
+                    click="showScaleBarProperties()"/>
+                    
+                <mx:Button 
+                    icon="@Embed(source='/assets/page_white_acrobat.png')"
+                    toolTip="Export to PDF"
+                    styleName="toolButton" width="25" height="25"
+                    click="exportTractToPdf()"/>
+                    
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Box id="previewArea" 
+            width="100%" height="100%" backgroundColor="#808080"
+            paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
+            horizontalAlign="left" verticalAlign="top"
+            backgroundAlpha="0.77" borderStyle="solid" borderColor="#400040">
+            
+            <mx:VBox id="printPage" 
+                backgroundColor="#ffffff" clipContent="false" horizontalAlign="center" 
+                borderStyle="solid" dropShadowEnabled="true" shadowDistance="3" 
+                shadowDirection="right"
+                paddingTop="{PRINT_PAGE_MARGIN}" paddingLeft="{PRINT_PAGE_MARGIN}" 
+                paddingRight="{PRINT_PAGE_MARGIN}" paddingBottom="{PRINT_PAGE_MARGIN}"
+                borderColor="#000000">
+                
+                <containers:GeoCanvas id="dataFrame" 
+                    width="100%" height="100%"
+                    borderColor="#000000" borderStyle="solid"
+                    borderSkin="src.deedplotter.skins.TractPrintViewBorderSkin"
+                    scaleChanged="dataFrame_scaleChangedHandler(event)"
+                    mouseButton="{src.deedplotter.containers.DraggableCanvas.PRIMARY_MOUSE_BUTTON}">
+
+                    <components:TractView id="tractView" 
+                        mouseEnabled="false" mouseChildren="false" showArea="true" 
+                        showTractPoints="false" surfaceScale="{dataFrame.Scale}"/>
+
+                </containers:GeoCanvas>
+
+                <mx:HBox width="100%" horizontalGap="0" >
+
+                    <mx:VBox
+                        verticalGap="-5" fontFamily="Arial" fontSize="13" 
+                        width="30%" height="100%" clipContent="false"
+                        visible="{tract.ParentDocument != null}" horizontalScrollPolicy="off">
+
+                        <mx:Label id="buyerLabel"
+                            scaleX="{calculateLabelScale(buyerLabel, buyerLabel.text)}"
+                            scaleY="{buyerLabel.scaleX}"
+                            text="{tract.ParentDocument.BuyerRoleName + ': ' + 
+                                   tract.ParentDocument.Buyer.AsNamed}"
+                            width="100%" />
+
+                        <mx:Label 
+                            text="{tract.ParentDocument.SellerRoleName + ': ' +
+                                  tract.ParentDocument.Seller.AsNamed}"
+                            width="100%"/>
+
+                        <mx:Label 
+                            text="State: {tract.ParentDocument.StateName}"
+                            width="100%" />
+
+                        <mx:Label 
+                            text="County: {tract.ParentDocument.CountyName}"
+                            width="100%" />
+
+                        <mx:Label 
+                            text="Doc Type: {tract.ParentDocument.DocumentTypeName}"
+                            width="100%"/>
+
+                        <mx:Label 
+                            text="Doc No: {tract.ParentDocument.DocumentNo}"
+                            width="100%"/>
+    
+                        <mx:Label 
+                            text="Vol: {tract.ParentDocument.Volume}"
+                            width="100%"/>
+
+                        <mx:Label 
+                            text="Pg: {tract.ParentDocument.Page}"
+                            width="100%"/>
+
+                    </mx:VBox>        
+                    
+                    <mx:VBox id="centerTractInfo"
+                        horizontalScrollPolicy="off"
+                        height="100%" width="40%" clipContent="false"
+                        horizontalAlign="center" fontFamily="Arial">
+
+                        <mx:Label id="tractDescrLbl"
+                            scaleX="{calculateLabelScale(tractDescrLbl, tractDescrLbl.text)}"
+                            scaleY="{tractDescrLbl.scaleX}"
+                            text="{tract.Description}" fontSize="25" width="100%" 
+                            textAlign="center" truncateToFit="true"/>
+
+                        <mx:Label id="tractBuyerLbl"
+                            scaleX="{calculateLabelScale(tractBuyerLbl, tractBuyerLbl.text)}"
+                            scaleY="{tractBuyerLbl.scaleX}"
+                            text="{tract.ParentDocument ? tract.ParentDocument.Buyer.AsNamed : ''}"
+                            visible="{tract.ParentDocument != null}"
+                            includeInLayout="{tract.ParentDocument != null}"
+                            fontSize="25" width="100%" textAlign="center" truncateToFit="true"/>
+
+                        <mx:Label 
+                            text="{tract.calledString}" fontSize="20" width="100%" 
+                            textAlign="center" truncateToFit="true"/>
+
+                        <components:ScaleBar id="scaleBar"
+                            scaleValue="{dataFrame.Scale}" verticalGap="0"
+                            width="100%" minWidth="200"/>
+
+                    </mx:VBox>
+                    
+                    <mx:VBox
+                        fontFamily="Arial" fontSize="13" height="100%" 
+                        horizontalAlign="right" width="30%" clipContent="false"
+                        verticalScrollPolicy="off" horizontalScrollPolicy="off"
+                        visible="{tract.ParentDocument != null}">
+
+                        <mx:Box verticalGap="-5" clipContent="false">
+                            <mx:Label
+                                text="Date Signed: {dateFormatter.format(tract.ParentDocument.DateSigned)}"/>
+    
+                            <mx:Label 
+                                text="Date Filed: {dateFormatter.format(tract.ParentDocument.DateFiled)}"/>
+                        </mx:Box>
+
+                    </mx:VBox>
+                    
+                </mx:HBox>
+                
+            </mx:VBox>
+
+        </mx:Box>
+
+    </mx:VBox>
+
+</TractPrintView_code>

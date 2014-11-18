@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#eeeeee" borderStyle="solid" cornerRadius="2" 
+	xmlns:tract="com.llsvc.client.lms.view.tract.*"
+	creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="editRangeRequest", type="flash.events.Event")]
+        [Event(name="deleteRangeRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.component.SelectableInput;
+			import mx.rpc.Responder;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.domain.Tract;
+			import com.llsvc.client.lm.storage.Storage;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.core.Application;
+			import com.llsvc.domain.LeaseBreakdown;
+			import com.llsvc.domain.DocumentActorPhone;
+			import mx.events.ItemClickEvent;
+			import com.llsvc.domain.DocumentActor;
+			
+            [Embed(source="assets/icons16/arrow_down.png")]
+            [Bindable]
+            private var imgDown:Class;
+			
+            [Embed(source="assets/icons16/arrow_right.png")]
+            [Bindable]
+            private var imgRight:Class;
+			
+			[Bindable] public var editable:Boolean = true; 
+			private var sectionPopup:TractSectionEditView;
+						
+			private var _range:TractRange;
+			[Bindable]
+			public function get range():TractRange {return _range;}
+			public function set range(value:TractRange):void 
+			{
+				_range = value;
+				
+				if (_range.needNewSection) 
+				{
+					_range.needNewSection = false;
+					addSection();
+				}
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+//				lstSections.addEventListener("editSectionRequest", editSectionHandler);
+//				lstSections.addEventListener("deleteSectionRequest", deleteSectionHandler);
+			}
+			
+			private function editSectionHandler(event:Event):void 
+			{
+				event.stopPropagation();
+				var section:TractSection = TractsSectionIR(event.target).data as TractSection;
+				openSection(section);
+			}
+			
+			private function deleteSectionHandler(event:Event):void 
+			{
+				event.stopPropagation();
+				var section:TractSection = TractsSectionIR(event.target).data as TractSection;
+				deleteSection(section);
+			}
+			
+			[Bindable] private var expanded:Boolean = false;
+			private var detail:TractsRangeDetail;
+			
+			private function arrowClickHandler():void 
+			{
+				toggleState();
+			}
+			
+			public function collapse():void 
+			{
+				expanded = false;
+				detail.visible = false;
+				detail.includeInLayout = false;
+			}
+			
+			public function expand():void 
+			{
+				expanded = true;
+				
+				if (detail == null) 
+				{
+					detail = new TractsRangeDetail();
+					detail.setStyle("top", 24);
+					detail.percentWidth = 100;
+					detail.range = range;
+					detail.addEventListener("editSectionRequest", editSection);
+					detail.addEventListener("deleteSectionRequest", deleteSectionRequestHandler);
+
+					this.addChild(detail);
+				} else 
+				{
+					detail.visible = true;
+					detail.includeInLayout = true;
+				}
+			}
+			
+			public function toggleState():void 
+			{
+				if (expanded)
+					collapse()
+				else 
+					expand();
+			}
+			
+	        private function buttonBarClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                	dispatchEvent(new Event("editRangeRequest", true));
+	                    break;
+	                case 1:
+	                	dispatchEvent(new Event("deleteRangeRequest", true));
+	                    break;
+	            }
+	        }
+	        
+	        private function openSection(section:TractSection):void 
+	        {
+	        	sectionPopup = TractSectionEditView.open(Application.application as DisplayObject, true);
+	        	sectionPopup.section = section;
+	        	sectionPopup.addEventListener("commitRequest", commitSectionHandler);
+	        }
+	        
+	        private function commitSectionHandler(event:Event):void 
+	        {
+	        	sectionPopup.enabled = false;
+	        	
+	        	var tract:LeaseTract = new LeaseTract();
+		        	tract.township = range.township;
+		        	tract.range = range.range;
+		        	tract.section = sectionPopup.section.section;
+		        	tract.tract = sectionPopup.section.tract;
+
+	        	var tractMask:Tract = new Tract();
+		        	tractMask.township = tract.townshipStr;
+		        	tractMask.townshipDir = tract.townshipDirStr;
+		        	tractMask.range = tract.rangeStr;
+		        	tractMask.rangeDir = tract.rangeDirStr;
+		        	tractMask.meridian = tract.meridianStr;
+		        	tractMask.section = tract.section;
+	        	
+	        	Storage.instance.findTracts(tractMask, 
+	        		new mx.rpc.Responder(findTractsResultHandler, findTractsFaultHandler));
+	        }
+	        
+	        private function findTractsResultHandler(event:ResultEvent):void 
+	        {
+	        	var notExists:String = "";
+				var existingTracts:ArrayCollection = event.result as ArrayCollection;
+				sectionPopup.section.geoTracts.removeAll();
+				for each (var qq:String in sectionPopup.parsedQQs) 
+				{
+					var tract:Tract = getTractByQQ(qq, existingTracts);
+					if (tract == null) 
+					{
+						notExists += (qq + "\n");
+					} else 
+					{
+						sectionPopup.section.geoTracts.addItem(tract);
+					}
+				}
+				
+				if (notExists.length > 0) {
+					Alert.show("Can not link next QQs to geoTracts:\n" + notExists);
+					sectionPopup.section.checkOutTracts();
+					sectionPopup.enabled = true;
+				} else {
+					sectionPopup.section.checkInTracts();
+					
+	    			if (!range.sections.contains(sectionPopup.section)) 
+	    			{
+	    				range.sections.addItem(sectionPopup.section);
+	    			}
+	    			
+	    			sectionPopup.close();
+				}
+	        }
+	        
+	        private function findTractsFaultHandler(event:FaultEvent):void 
+	        {
+	        	Alert.show(event.fault.faultString);
+				sectionPopup.enabled = true;
+	        }
+	        
+	        private function getTractByQQ(key:String, tracts:ArrayCollection):Tract 
+	        {
+	        	for each (var tract:Tract in tracts) 
+	        	{
+	        		if (tract.qq == key || tract.lot == key)
+	        			return tract;
+	        	}
+	        	
+	        	return null;
+	        } 
+	        
+	        private function addSection():void 
+	        {
+	        	var section:TractSection = new TractSection(range);
+	        	section.expanded = true;
+	        	expand();
+	        	openSection(section);
+	        }
+	        
+	        private function editSection(event:Event):void 
+	        {
+	        	event.stopPropagation();
+	        	var section:TractSection = TractsSectionRenderer(event.target).section;
+	        	openSection(section);
+	        }
+	        
+	        private function deleteSectionRequestHandler(event:Event):void 
+	        {
+	        	event.stopPropagation();
+	        	var section:TractSection = TractsSectionRenderer(event.target).section;
+				deleteSection(section);
+	        }
+        
+	        private function deleteSection(section:TractSection):void 
+	        {
+                Alert.show("Do you really want to delete Section ?", 
+                   "Delete Section", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                        	var i:int = range.sections.getItemIndex(section);
+                        	if (i != -1)
+                        		range.sections.removeItemAt(i);
+                        }
+                    });
+	        }
+        
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#f8f8f8">
+		<mx:Button width="20" height="20" icon="{expanded ? imgDown : imgRight}" click="arrowClickHandler()"/>
+
+		<mx:Label text="{range.key}" click="arrowClickHandler()" fontWeight="bold" minWidth="150"/>
+
+		<mx:Spacer width="100%"/>
+		
+        <mx:ButtonBar id="bbUtil" 
+        	itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="27" buttonHeight="24"
+        	visible="{editable}" includeInLayout="{editable}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/pencil.png')" toolTip="Edit township/range"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')" toolTip="Delete township/range"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+
+        <mx:Button toolTip="Add new Section"
+        	visible="{editable}" includeInLayout="{editable}" 
+        	width="24" height="24" verticalCenter="0" horizontalCenter="0" 
+        	icon="@Embed('assets/icon_plus.png')" click="addSection()"/>
+	</mx:HBox>
+<!--
+	<mx:Canvas top="24" width="100%"
+		visible="{expanded}" includeInLayout="{expanded}">
+		<tract:SectionsContainer left="20" width="100%" verticalGap="2" 
+			sections="{range.sections}"
+			editSectionRequest="editSection(event)"
+			deleteSectionRequest="deleteSectionRequestHandler(event)"/>
+	</mx:Canvas>
+-->
+</mx:Canvas>

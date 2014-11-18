@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:lease="com.llsvc.client.lms.view.lease.*"
+    paddingLeft="5" 
+    paddingRight="5"
+    creationComplete="init();" 
+    xmlns:document="com.llsvc.client.lms.view.document.*">
+
+    <mx:Script>
+        <![CDATA[
+            import com.llsvc.domain.LeaseTractQQ;
+            import mx.collections.ArrayCollection;
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.HTTPService;
+            import mx.controls.Alert;
+            import mx.controls.Image;
+        
+            import com.yahoo.maps.api.core.location.BoundingBox;
+            import com.yahoo.maps.api.YahooMap;
+            import com.yahoo.maps.api.YahooMapEvent;
+            import com.yahoo.maps.webservices.geocoder.Geocoder;
+            import com.yahoo.maps.webservices.geocoder.GeocoderResultSet;
+            import com.yahoo.maps.webservices.geocoder.GeocoderResult;
+            import com.yahoo.maps.webservices.geocoder.events.GeocoderEvent;
+            import com.yahoo.maps.api.core.location.LatLon;
+            import com.yahoo.maps.api.core.location.BoundingBox;
+    
+            import com.afcomponents.umap.gui.MapTypeControl;
+            import com.afcomponents.umap.overlays.KMLLayer;
+            import com.afcomponents.umap.core.UMap;
+            import com.afcomponents.umap.gui.ZoomControl;
+            import com.afcomponents.umap.gui.MapTypeControl;
+            import com.afcomponents.umap.types.LatLng;
+            import com.afcomponents.umap.events.DisplayEvent;
+            import com.afcomponents.umap.events.MapEvent;
+            import com.afcomponents.umap.providers.TileLayer;
+            import com.afcomponents.umap.types.LatLngBounds;
+            
+            //import com.google.maps.MapEvent;
+            import com.google.maps.MapMoveEvent;
+            import com.google.maps.MapZoomEvent;
+            import com.google.maps.Map;
+            import com.google.maps.MapType;
+            import com.google.maps.LatLng;
+            import com.google.maps.InfoWindowOptions;
+            import com.google.maps.overlays.Marker;
+            import com.google.maps.controls.MapTypeControl;
+            import com.google.maps.controls.ZoomControl;
+            import com.google.maps.controls.PositionControl;
+            
+            import com.llsvc.domain.Tract;
+            import com.llsvc.domain.Lease;
+            import com.llsvc.domain.LeaseTract;
+            import com.llsvc.util.TractDescriptionUtil;
+            import com.llsvc.framework.storage.Storage;
+            
+            private static const YAHOO_APP_ID:String = "2SSffdjV34HQnJzB3YV4eNzGj2lmN4HJneSsiW0LgkxXLOYzK2fXx981FM.UWzUtbbjO0kD7fA--";
+            
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+
+            private var _tractGraphics:Graphics = null;            
+            private var _yahooMap:YahooMap = null;
+            private var _umap:UMap = null;
+            private var _gmap:Map = null;
+            
+            private var tractCount:int = 0;
+            private var tractCountDown:int = 0;
+            private var selectedTracts:ArrayCollection = new ArrayCollection();
+            private var geoServerUrlPrefix:String = null;
+                        
+            private function getGeoServerUrlPrefix():String {
+//              return "http://llsvc.demo.logicland.com.ua/geoserver/";
+                return geoServerUrlPrefix;  
+            }
+            
+            private function init():void {
+                var responder:mx.rpc.Responder = new mx.rpc.Responder(onGetGeoServerUrlResultHandler, 
+                        onGetGeoServerUrlFaultHandler);
+                Storage.instance.getGeoServerUrl(responder);
+            }
+            
+            private function onGetGeoServerUrlResultHandler(event:ResultEvent):void {
+                geoServerUrlPrefix = event.result.toString();
+                init2();
+            }
+    
+            private function onGetGeoServerUrlFaultHandler(event:FaultEvent):void {
+                Alert.show(event.fault.message);
+            }
+            
+            private function init2():void
+            {
+                _yahooMap = new YahooMap(); 
+                _yahooMap.addEventListener(YahooMapEvent.MAP_INITIALIZE, handleYahooInitialize, false, 0, true);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_ZOOM, handleYahooZoom);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_DRAG_STOP, handleYahooDragStop);
+                _yahooMap.addEventListener(YahooMapEvent.MAP_TYPE_CHANGED, handleYahooMapTypeChanged);
+                
+                _yahooMap.init(LeaseMap.YAHOO_APP_ID, yahooContainer.width, yahooContainer.height);
+/*                
+                _yahooMap.addEventListener(YahooMapEvent.MAP_DRAG_START, handleMapDragStart);
+//                _yahooMap.addEventListener(MouseEvent.CLICK, handleMouseDoubleClick);
+                _yahooMap.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+*/                
+                
+//                _yahooMap.addScaleBar();
+                _yahooMap.addPanControl(); // adds ability to pan and click on the map.
+//                _yahooMap.addZoomWidget(); // adds a zoom control widget to the map.
+//                _yahooMap.addTypeWidget(); // adds a map type control widget to the map.
+                _yahooMap.alpha = 0.5;
+                this.yahooContainer.addChild(_yahooMap); // adds the yahoomap object to the display list.
+
+/*
+                _umap = new UMap();
+                _umap.alpha = 0.4;
+                _umap.setSize(umapContainer.width, umapContainer.height);
+                umapContainer.addChild(_umap);
+                _umap.addEventListener(MapEvent.READY, handleUmapReady);
+*/                
+/*                
+                _umap.addEventListener(MapEvent.ZOOM_STOP, handleVEZoom);
+                _umap.addEventListener("dragStart", handleMapDragStart);
+                _umap.addEventListener("dragStop", handleMapDragStop);
+*/                
+/*
+                _gmap = new Map();
+                _gmap.key = "ABQIAAAAJ6Rar5WlFPCijGheORRzuxQhaumIq7volme6zJnHwPPRj9JQAxRrZiqnVU4szTsneiwfoSOgTd5rVw";
+                _gmap.setSize(new Point(gmapContainer.width, gmapContainer.height));
+                _gmap.addEventListener(com.google.maps.MapEvent.MAP_READY, handleGMapReady);
+                _gmap.addEventListener(MapMoveEvent.MOVE_END, handleGMapMoveEnd);
+                _gmap.addEventListener(MapZoomEvent.ZOOM_END, handleGMapMoveEnd);
+                _gmap.alpha = 0.5;
+
+                gmapContainer.addChild(_gmap);
+                
+                _gmap.addControl(new com.google.maps.controls.ZoomControl());
+                _gmap.addControl(new com.google.maps.controls.PositionControl());
+                _gmap.addControl(new com.google.maps.controls.MapTypeControl());
+*/                
+//              _tractGraphics = _gmap.graphics;
+//              _tractGraphics = this.mapCanvas.graphics;
+                _tractGraphics = this._yahooMap.graphics;
+            }
+            
+            private function handleYahooInitialize(event:YahooMapEvent):void {
+                _yahooMap.zoomLevel = 9; 
+                _yahooMap.centerLatLon = new LatLon(32.1875, -94.375);
+                if (_lease) {
+                    _lease.tracts.addEventListener("tractsReloaded", onTractsReloaded);
+                }
+                if ( _lease && 0 != _lease.tracts.length ) {
+                    reloadLease();
+                } else {
+                    reflectMap();
+                }
+            }
+
+            private function handleYahooZoom(event:YahooMapEvent):void {
+                reflectMap();
+            }
+            
+            private function handleYahooDragStop(event:YahooMapEvent):void {
+                reflectMap();
+            }
+            
+            private function handleYahooMapTypeChanged(event:YahooMapEvent):void {
+                mapStatus.text = _yahooMap.mapType; 
+            }
+            
+            private function handleUmapReady(event:MapEvent):void {
+/*                          
+                var tl:TileLayer = new A2ETileLayer();
+                _umap.control.mapType.addLayer(tl);
+              Alert.show("handleUmapReady: umap is ready.");
+*/              
+            }
+                
+            private function handleGMapReady(event:Event):void {
+                _gmap.setCenter(new com.google.maps.LatLng(32.1875, -94.375), 9, MapType.NORMAL_MAP_TYPE);
+                //Alert.show("handleGMapReady: GMmap is ready.");
+            }
+                
+            private function handleGMapMoveEnd(event:Event):void {
+                reflectMap();
+            }
+                
+            private function reflectMap():void {
+/* Yahoo Map */             
+                var b:BoundingBox = _yahooMap.getMapBounds();
+                if ( null != b ) {
+                	var layers:String = getGeoServerLayers();
+//Alert.show("reflectMap: layers=" + layers);                	
+                	if ( "" != layers ) { 
+	                    var url:String = getBaseWMSUrl("GetMap");
+	                    var img:Image = new Image();
+	                    img.addEventListener(Event.COMPLETE, onGetMapLoadComplete);
+	                    img.load(url);
+	                }
+                }
+/* Google Maps          
+                var url:String = getBaseWMSUrl("GetMap");
+                var img:Image = new Image();
+                img.addEventListener(Event.COMPLETE, onGetMapLoadComplete);
+                img.load(url);
+*/
+      
+/*                
+                if ( lease.tracts.length != tractCount ) {
+                    Alert.show("reflectMap: lease.tracts.length=" + lease.tracts.length + ", tractCount=" + tractCount);
+                    tractCount = lease.tracts.length;
+                    tractCountDown = tractCount;
+                    selectedTracts.removeAll();
+                    for each (var lt:LeaseTract in lease.tracts) {
+                        processTractQuery(lt);
+                    }
+                }
+*/
+                _tractGraphics = this._yahooMap.graphics;                 
+                _tractGraphics.clear();
+                for each (var tract:Object in selectedTracts) {
+                        renderTract(tract);
+                }
+                _tractGraphics.endFill();
+            }
+
+            private function getBaseWMSUrl(method:String) : String {
+/* Yahoo Map */             
+                var bb:BoundingBox = this._yahooMap.getMapBounds();
+                var bbs:String = bb.minLon + "," + bb.minLat + "," + bb.maxLon + "," + bb.maxLat;
+/* Google Map               
+                var bb:com.google.maps.LatLngBounds = _gmap.getLatLngBounds();
+                var bbs:String = bb.getWest() + "," + bb.getSouth() + "," + bb.getEast() + "," + bb.getNorth();
+*/                
+                var url:String = getGeoServerUrlPrefix() + "wms?" + 
+                    "bbox=" + bbs +
+                    "&Format=image/png" +
+                    "&request=" + method + 
+                    "&layers=" + getGeoServerLayers() +
+                    "&styles=" +
+                    "&width=" + mapCanvas.width + 
+                    "&height=" + mapCanvas.height +
+                    "&transparent=false" +
+                    "&srs=EPSG:32055"; //EPSG:4269"; //EPSG:32055"; //EPSG:900913"; //EPSG:4326"; //EPSG:45555";
+//                    "&srs=EPSG:45555"; //EPSG:900913"; //EPSG:4326"; //EPSG:45555";
+
+                return url;             
+            }
+            
+            private function onGetMapLoadComplete(e:Event):void {
+                var img:Image = Image(e.target);
+//              img.content.alpha = 1;
+//              img.content.blendMode = BlendMode.MULTIPLY;
+                this.wmsContainer.removeAllChildren();
+                this.wmsContainer.addChild(img);
+            }
+
+            private function trimAlpha(s:String):String {
+                var r:String = "";
+                for (var i:int = 0; i<s.length; i++) {
+                    if ( '0' <= s.charAt(i) && s.charAt(i) <= '9' ) {
+                        r = r + s.charAt(i);
+                    }
+                }
+                return r;
+            }
+            
+            private function processLeaseQuery(l:Lease):void {
+                var request:String = "<?xml version=\"1.0\"?>" +
+                    "<wfs:GetFeature " +
+                    "   version=\"1.1.0\"" +                    
+                    "   service=\"WFS\"" +
+                    "   resultType=\"Hits\"" +
+                    "   xmlns:wfs=\"http://www.opengis.net/wfs\"" + 
+                    "   xmlns:gml=\"http://www.opengis.net/gml\"" +
+                    "   xmlns:ogc=\"http://www.opengis.net/ogc\"" +
+                    "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                    "   xsi:schemaLocation=\"http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd\">" +
+                    "   <wfs:Query typeName=\"topp:doc_lease_tract_qq_view\" xmlns:topp=\"http://www.openplans.org/topp\"> " +
+                    "       <wfs:PropertyName>topp:the_geom</wfs:PropertyName> " +
+                    "       <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"> " +
+                    "           <ogc:PropertyIsEqualTo> " +
+                    "               <ogc:PropertyName>topp:lease_id</ogc:PropertyName> " +
+                    "               <ogc:Literal>" + l.document.id + "</ogc:Literal> " +
+                    "           </ogc:PropertyIsEqualTo> " +
+                    "       </ogc:Filter> " +
+                    "   </wfs:Query> " +
+                    "</wfs:GetFeature> ";
+
+                var url:String = getGeoServerUrlPrefix() + "wfs";
+                var hs:HTTPService = new HTTPService();
+                hs.useProxy = false;
+                hs.url = url;
+                hs.contentType = "text/xml";
+                hs.method = "POST";
+                hs.addEventListener(mx.rpc.events.ResultEvent.RESULT, onLeaseQueryResult);
+                hs.addEventListener(mx.rpc.events.FaultEvent.FAULT, onLeaseQueryFault);
+                hs.send(request);
+            }
+
+            private function onLeaseQueryResult(e:mx.rpc.events.ResultEvent):void {
+                var x:XML = new XML(e.message.body);
+                if ( 1 < x.elements().length() ) {
+                    processLeaseQueryResponse(x);
+                } else {
+                    Alert.show("Nothing found.", "Error");
+                }
+            }
+            
+            private function onLeaseQueryFault(e:mx.rpc.events.FaultEvent):void {
+                Alert.show("onTractQuery: Fault: " + e.fault.faultString);
+            }
+
+            private function processLeaseQueryResponse(x:XML):void {
+                var wfs:Namespace = x.namespace('wfs');
+                var gml:Namespace = x.namespace('gml');
+                var topp:Namespace = x.namespace('topp');
+  
+                
+                if ( 0 < x.gml::featureMember.length() ) {
+//Alert.show("processLeaseQueryResponse: features count=" + x.gml::featureMember.length());                	
+                	for each(var o:Object in x.gml::featureMember) {
+                    	selectedTracts.addItem(o);
+                 	}
+/*                 	
+  <gml:boundedBy>
+    <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4269">
+      <gml:coordinates decimal="." cs="," ts=" ">-105.19555664,43.09579086 -105.13144684,43.13219452</gml:coordinates>
+    </gml:Box>
+  </gml:boundedBy>
+*/
+					var boundedBy:Object = x.gml::boundedBy.gml::Box.gml::coordinates[0].text();
+                	var pairs:Array = boundedBy.split(' ');
+                    var p1:Array = pairs[0].split(',');
+                    var p2:Array = pairs[1].split(',');
+                    
+                	var bbox:BoundingBox = new BoundingBox(new LatLon(p1[1], p1[0]), new LatLon(p2[1], p2[0]));
+//Alert.show("processLeaseQueryResponse: bbox=" + bbox);                	
+                	this._yahooMap.setMapBounds(bbox);
+                	this.reflectMap();
+                }
+            }
+
+            private function renderTract(survey:Object): void {
+// Alert.show("renderTract: survey=" + survey);              
+//                this._yahooMap.graphics.clear();
+                _tractGraphics = _yahooMap.graphics;
+                var wfs:Namespace = survey.namespace('wfs');
+                var gml:Namespace = survey.namespace('gml');
+                var topp:Namespace = survey.namespace('topp');
+                var coords:String = survey.topp::doc_lease_tract_qq_view.topp::the_geom.gml::MultiPolygon.gml::polygonMember.gml::Polygon.gml::outerBoundaryIs.gml::LinearRing.gml::coordinates[0].text();
+//Alert.show("renderTract: coords=" + coords);              
+                var pairs:Array = coords.split(' ');
+            
+                var sp:Point = null;
+                for each (var p:String in  pairs) {
+                    var pair:Array = p.split(',');
+                    var cp:Point = this._yahooMap.getLatLonToXY(new LatLon(pair[1], pair[0]));
+//                  var cp:Point = this._gmap.fromLatLngToPoint(new com.google.maps.LatLng(pair[1], pair[0]));
+//Alert.show("renderTract: lat=" + pair[1] + ", lng=" + pair[0] + ", cp.x=" + cp.x + ", cp.y=" + cp.y);             
+                    if ( null == sp ) {
+                        sp = cp;
+                        _tractGraphics.beginFill(0xcccccc);
+                        _tractGraphics.lineStyle(2, 0x00FFFF);
+                        _tractGraphics.moveTo(sp.x, sp.y);
+                    } else {
+                        _tractGraphics.lineTo(cp.x, cp.y);
+                    }
+                }
+//                this._yahooMap.graphics.endFill();
+            }
+
+            private function reloadLease():void {
+//              Alert.show("reloadTracts: lease.tracts.length=" + lease.tracts.length + ", tractCount=" + tractCount);
+				processLeaseQuery(lease);
+            }
+            
+            private function onTractsReloaded(event:Event):void {
+                reloadLease();
+            }
+            
+            private function onTestClick(event:Event):void {
+                var req:URLRequest = new URLRequest("shapefile?leaseId=" + this.lease.document.id);
+                flash.net.navigateToURL(req, "_blank");
+            }
+            
+            private function onZoomChanged(event:Event):void {
+                if ( event.currentTarget == this.zoomIn ) {
+                    _yahooMap.zoomLevel --;
+                } else if ( event.currentTarget == this.zoomOut ) {
+                    _yahooMap.zoomLevel ++;
+                } 
+            }
+            
+            private function onMapBoxChanged(event:Event):void {
+                if ( event.currentTarget == this.mapTypeEnabled ) {
+                    _yahooMap.mapType = "map";
+                } else if ( event.currentTarget == this.satTypeEnabled ) {
+                    _yahooMap.mapType = "satellite";
+                } else if ( event.currentTarget == this.hybTypeEnabled ) {
+                    _yahooMap.mapType = "hybrid";
+                } 
+            }
+            
+            private function onLayerBoxChanged(event:Event):void {
+                this.reflectMap();
+            }
+            
+            private function getGeoServerLayers():String {
+                var result:String = "";
+                var hasLayer:Boolean = false;
+                if ( twpEnabled.selected ) {
+                    result += "topp:tobin_twn";
+                    hasLayer = true;
+                }
+/**/                
+                if ( secEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:tobin_sec";
+                    hasLayer = true;
+                }
+/**/                
+                if ( qqEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:tobin_qq";
+                    hasLayer = true;
+                }
+
+                // PLSS data                
+                if ( plssTwpEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    result += "topp:plss_twn";
+                    hasLayer = true;
+                }
+                if ( plssSecEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    hasLayer = true;
+                    result += "topp:plss_sec";
+                }
+/**/                
+                if ( intQqEnabled.selected ) {
+                    if ( hasLayer ) {
+                        result += ",";
+                    } 
+                    hasLayer = true;
+                    result += "topp:doc_lease_tract_qq_view";
+                }
+                return result;
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:HBox width="100%" height="100%" horizontalGap="5">
+        <mx:VBox width="100%" height="100%">
+            <mx:Label id="mapStatus"/>
+            <mx:Button label="Export Shapefile" click="onTestClick(event)"/>
+            <mx:HBox>
+                <mx:Button id="zoomIn" label="Zoom In" click="onZoomChanged(event)"/>
+                <mx:Button id="zoomOut" label="Zoom Out" click="onZoomChanged(event)"/>
+            </mx:HBox>
+            <mx:Box id="mapTypeBox">
+                <mx:RadioButton id="mapTypeEnabled" label="Map" change="onMapBoxChanged(event)"/>
+                <mx:RadioButton id="satTypeEnabled" label="Satellite" change="onMapBoxChanged(event)"/>
+                <mx:RadioButton id="hybTypeEnabled" label="Hybrid" change="onMapBoxChanged(event)"/>
+            </mx:Box>
+            <mx:Box id="layersBox">
+                <mx:CheckBox id="plssTwpEnabled" label="PLSS TWP" change="onLayerBoxChanged(event)"/>
+                <mx:CheckBox id="plssSecEnabled" label="PLSS SEC" change="onLayerBoxChanged(event)"/>
+                
+                <mx:CheckBox id="twpEnabled" label="Tobin TWP" change="onLayerBoxChanged(event)"/>
+                <mx:CheckBox id="secEnabled" label="Tobin SEC" change="onLayerBoxChanged(event)"/>
+                <mx:CheckBox id="qqEnabled" label="Tobin QQ" change="onLayerBoxChanged(event)"/>
+                
+                <mx:CheckBox id="intQqEnabled" label="Leased" change="onLayerBoxChanged(event)"/>
+            </mx:Box>
+        </mx:VBox>
+        <mx:Canvas id="mapCanvas" clipContent="true" width="800" height="600" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <mx:Canvas id="wmsContainer" visible="true" width="100%" height="100%"/>
+            <mx:UIComponent id="umapContainer" visible="false" width="100%" height="100%"/>
+            <mx:UIComponent id="yahooContainer" visible="true" width="100%" height="100%"/>
+            <mx:UIComponent id="gmapContainer" visible="false" width="100%" height="100%"/>
+        </mx:Canvas>
+    </mx:HBox>
+    
+</mx:VBox>

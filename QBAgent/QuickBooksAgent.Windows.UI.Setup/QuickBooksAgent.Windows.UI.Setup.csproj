@@ -1,0 +1,177 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F75883F5-54A0-4629-9094-8CFFAD6C960A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QuickBooksAgent.Windows.UI.Setup</RootNamespace>
+    <AssemblyName>qagent.setup</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>QuickBooksAgent.Windows.UI.Setup</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SpDebug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\SP\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SMARTPHONE</DefineConstants>
+    <FileAlignment>512</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsCE.Forms" />
+    <Reference Include="Microsoft.WindowsMobile.PocketOutlook, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="About\AboutController.cs" />
+    <Compile Include="About\AboutModel.cs" />
+    <Compile Include="About\AboutView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="About\AboutView.Designer.cs">
+      <DependentUpon>AboutView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Application\ApplicationModel.cs" />
+    <Compile Include="Application\ApplicationView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Application\ApplicationView.Designer.cs">
+      <DependentUpon>ApplicationView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Application\ApplicationController.cs" />
+    <Compile Include="Connection\ConnectionController.cs" />
+    <Compile Include="Connection\ConnectionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Connection\ConnectionView.Designer.cs">
+      <DependentUpon>ConnectionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Menu\SetupMenuModel.cs" />
+    <Compile Include="Menu\SetupMenuController.cs" />
+    <Compile Include="Menu\SetupMenuView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Menu\SetupMenuView.Designer.cs">
+      <DependentUpon>SetupMenuView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Register\RegisterController.cs" />
+    <Compile Include="Register\RegisterView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Register\RegisterView.Designer.cs">
+      <DependentUpon>RegisterView.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickBooksAgent.Domain\QuickBooksAgent.Domain.csproj">
+      <Project>{9E79227D-559C-4098-A37F-B43F87A756E2}</Project>
+      <Name>QuickBooksAgent.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.QBSDK\QuickBooksAgent.QBSDK.csproj">
+      <Project>{FE5CDDDF-94E9-405A-9DBF-531F91E6F235}</Project>
+      <Name>QuickBooksAgent.QBSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows.UI.Controls\QuickBooksAgent.Windows.UI.Controls.csproj">
+      <Project>{6B1B2BE3-E169-4B7A-8350-C9418385276E}</Project>
+      <Name>QuickBooksAgent.Windows.UI.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent.Windows\QuickBooksAgent.Windows.csproj">
+      <Project>{44411246-FF53-488A-AA72-1F887E823BB8}</Project>
+      <Name>QuickBooksAgent.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuickBooksAgent\QuickBooksAgent.csproj">
+      <Project>{951A1DEB-1305-4D9A-B280-99C667F48248}</Project>
+      <Name>QuickBooksAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="About\AboutView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AboutView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Application\ApplicationView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ApplicationView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Connection\ConnectionView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ConnectionView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Menu\SetupMenuView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SetupMenuView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Register\RegisterView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>RegisterView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

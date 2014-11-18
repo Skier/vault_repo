@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    width="100%" height="100%" minWidth="500"
+    xmlns:cmAssetRate="tractIncStaffManager.asset.rate.*">
+    
+    <mx:Script>
+        <![CDATA[
+        ]]>
+    </mx:Script>
+
+    <cmAssetRate:AssetRateController id="controller" view="{this}"/>
+    <mx:HBox width="100%" height="100%">
+        <mx:DataGrid id="masterDataGrid" click="controller.masterGridOnClickHandler(event)" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="25" dataField="ContractId"/>
+                <mx:DataGridColumn headerText="Contract" width="95" dataField="ContractName"/>
+                <mx:DataGridColumn headerText="actions" width="56" minWidth="56" dataField="status"
+                        itemRenderer="tractIncStaffManager.asset.rate.ActionIR"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:DataGrid id="detailDataGrid" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Id" width="25" dataField="AssetRateId"/>
+                <mx:DataGridColumn headerText="Bill Item Type" width="95" labelFunction="controller.billItemTypeLabelFunction"/>
+                <mx:DataGridColumn headerText="Rate" width="85" dataField="Rate"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:HBox>
+    <mx:Button id="addButton" label="Add Asset Rates" 
+            click="controller.addButtonOnClickHandler(event)"
+            visible="{null != controller.asset}"/>
+    
+</mx:VBox>

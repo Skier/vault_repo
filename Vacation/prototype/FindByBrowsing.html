@@ -1,0 +1,26 @@
+<?
+    if (!is_null($this->parentId) && ("" != $this->parentId)) {
+        echo(LocationInfo::getPath($this->parentId, $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SPECIFY_LOCATION) ?></b>:
+
+<form action="FindByBrowsing.php" method="get">
+    <table>
+        <tr>
+            <td>
+                <?
+                for ($index = 0; $index < count($this->locations); $index ++) {
+                    ?>
+                    <a href="<? echo($this->m_url) ?>?parentId=<? echo($this->locations[$index]->getLocationId()) ?>">
+                        <? echo($this->locations[$index]->getLocationName()) ?>
+                    </a><br />
+                    <?
+                }
+                ?>
+            </td>
+        </tr>
+    </table>
+</form>

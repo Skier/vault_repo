@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            private var _leases:ArrayCollection;
+            [Bindable]
+            public function get leases():ArrayCollection { return _leases; }
+            public function set leases(value:ArrayCollection):void 
+            {
+                _leases = value;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Box width="100%" height="100%" paddingLeft="5" paddingRight="5">
+        <mx:DataGrid id="dgLeases" dataProvider="{leases}" width="100%" height="100%">
+            <mx:columns>
+                <mx:DataGridColumn headerText="Lessor"/>
+                <mx:DataGridColumn headerText="Lessee"/>
+                <mx:DataGridColumn headerText="Lease Date" width="70"/>
+                <mx:DataGridColumn headerText="Eff. Date" width="70"/>
+                <mx:DataGridColumn headerText="Term" width="60"/>
+                <mx:DataGridColumn headerText="Royalty" width="50"/>
+                <mx:DataGridColumn headerText="Bonus Rate" width="60"/>
+                <mx:DataGridColumn headerText="Bonus Amt" width="80"/>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:Box>
+</mx:VBox>

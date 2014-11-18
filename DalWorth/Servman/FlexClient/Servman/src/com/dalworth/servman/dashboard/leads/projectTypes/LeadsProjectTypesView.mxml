@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.charts.series.PieSeries;
+			
+			private var controller:LeadsProjectTypesController;
+			
+			[Bindable] 
+			private var model:LeadsProjectTypesModel;
+			
+			public function setLeads(value:ArrayCollection):void 
+			{ 
+				controller.setLeads(value); 
+				pcTypes.dataProvider = model.typesCollection;
+			}
+						
+			private function onInit():void 
+			{
+				controller = new LeadsProjectTypesController(this);
+				model = LeadsProjectTypesModel.getInstance();
+				
+				//initTestData();
+			}
+			
+	        public function set selectedType(item:Object):void
+	        {
+	            var index:int = -1;
+	            for each (var obj:Object in model.typesCollection)
+	            {
+	            	if (obj['name'] == item['name'])
+	            		index = model.typesCollection.getItemIndex(obj);
+	            }
+
+	            var explodeData:Array = [];
+	            explodeData[index] = 0.15;
+	            PieSeries(pcTypes.series[0]).perWedgeExplodeRadius = explodeData;
+	        }
+
+		    private function typeChange(item:Object):void
+        	{
+            	selectedType = item;
+        	}
+
+		]]>
+	</mx:Script>
+	
+    <mx:SeriesInterpolate id="interpolate" elementOffset="10"/>
+	
+	<mx:Label text="Leads by Types:" fontSize="12" fontWeight="bold"/>
+
+    <mx:Legend dataProvider="{pcTypes}" right="0" top="0"/>
+
+    <mx:PieChart id="pcTypes" name="Total leads by project type" showDataTips="true" width="100%" height="100%"
+    	itemClick="typeChange(event.hitData.item)">
+        <mx:series>
+            <mx:Array>
+                <mx:PieSeries field="total" nameField="name" labelPosition="callout" showDataEffect="{interpolate}">
+                  <mx:fills>
+                    <mx:Array>
+                        <mx:RadialGradient>
+                            <mx:entries>
+                                <mx:Array>
+                                    <mx:GradientEntry color="#EF7651" ratio="0"/>
+                                    <mx:GradientEntry color="#994C34" ratio="1"/>
+                                </mx:Array>
+                            </mx:entries>
+                        </mx:RadialGradient>
+                        <mx:RadialGradient>
+                            <mx:entries>
+                                <mx:Array>
+                                    <mx:GradientEntry color="#E9C836" ratio="0"/>
+                                    <mx:GradientEntry color="#AA9127" ratio="1"/>
+                                </mx:Array>
+                            </mx:entries>
+                        </mx:RadialGradient>
+                        <mx:RadialGradient>
+                            <mx:entries>
+                                <mx:Array>
+                                    <mx:GradientEntry color="#6FB35F" ratio="0"/>
+                                    <mx:GradientEntry color="#497B54" ratio="1"/>
+                                </mx:Array>
+                            </mx:entries>
+                        </mx:RadialGradient>
+                        <mx:RadialGradient>
+                            <mx:entries>
+                                <mx:Array>
+                                    <mx:GradientEntry color="#A1AECF" ratio="0"/>
+                                    <mx:GradientEntry color="#47447A" ratio="1"/>
+                                </mx:Array>
+                            </mx:entries>
+                        </mx:RadialGradient>
+                        <mx:RadialGradient>
+                            <mx:entries>
+                                <mx:Array>
+                                    <mx:GradientEntry color="#BA9886" ratio="0"/>
+                                    <mx:GradientEntry color="#AE775B" ratio="1"/>
+                                </mx:Array>
+                            </mx:entries>
+                        </mx:RadialGradient>
+                    </mx:Array>
+                </mx:fills>
+                </mx:PieSeries>
+            </mx:Array>
+        </mx:series>
+    </mx:PieChart>
+</mx:Canvas>

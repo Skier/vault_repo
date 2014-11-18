@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	creationComplete="onCreate()"
+	verticalGap="0" xmlns:lease="com.llsvc.client.lms.view.lease.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import flash.net.navigateToURL;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.DocumentAttachment;
+			import com.llsvc.domain.File;
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			[Bindable] private var inProcess:Boolean = false;
+			private var fileRefList:FileReferenceList;
+
+			public function getResult():Boolean 
+			{
+				return true;
+			}
+			
+			private function openAttachment(attach:DocumentAttachment):void 
+			{
+            	var file:File = attach.file;
+		        var request:URLRequest = new URLRequest("download?id=" + file.id.toString());
+        		navigateToURL(request, "_blank");
+			}
+			
+			private function onCreate():void 
+			{
+				dgFurnishedFiles.addEventListener("removeAttachment", removeAttachmentHandler);
+				dgFurnishedFiles.addEventListener("openAttachment", openAttachmentHandler);
+			}
+			
+			private function removeAttachmentHandler(e:Event):void 
+			{
+				e.stopPropagation();
+				e.preventDefault();
+
+				var item:DocumentAttachment = dgFurnishedFiles.selectedItem as DocumentAttachment;
+				var idx:int = lease.document.attachments.getItemIndex(item);
+				if (idx > -1)
+					lease.document.attachments.removeItemAt(idx);
+			}
+			
+			private function openAttachmentHandler(e:Event):void 
+			{
+				e.stopPropagation();
+				e.preventDefault();
+
+				var attach:DocumentAttachment = dgFurnishedFiles.selectedItem as DocumentAttachment;
+				openAttachment(attach);
+			}
+			
+            private function onAdd():void 
+            {
+            	if (fileRefList == null)
+	            	fileRefList = new FileReferenceList();
+
+				var docFilter:FileFilter = new FileFilter("PDF Documents", "*.pdf");
+				var imgFilter:FileFilter = new FileFilter("Images", "*.jpg;*.gif;*.png;*.jpeg");
+
+                fileRefList.addEventListener(Event.SELECT, onFilesSelected); 
+        		fileRefList.browse([docFilter]);
+            }
+            
+            private function onOpen():void 
+            {
+            	var attach:DocumentAttachment = dgFurnishedFiles.selectedItem as DocumentAttachment;
+            	openAttachment(attach);
+            }
+            
+            private function onRemove():void 
+            {
+                Alert.show("Do you really want to remove attached file ?", 
+                   "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+			            	dispatchEvent(new Event("removeAttachmentRequest"));
+                        }
+                    });
+            }
+            
+        	private function onFilesSelected(e:Event):void 
+        	{
+        		var userId:int = LocalCash.getInstance().getCurrentUser().id;
+        		
+        		for each (var fr:FileReference in fileRefList.fileList) 
+        		{
+	        		var request:URLRequest = new URLRequest("upload?userId=" + userId + "&description=" + DocumentAttachment.OTHER_TYPE);
+        			boxUploadList.addUploadProcess(fr, request);
+        		}
+        	}
+
+		    private function onFileUploadComplete(event:DataEvent):void 
+		    {
+		    	var up:UploadProcessRenderer = event.target as UploadProcessRenderer; 
+		    	var file:File = new File();
+		    	file.id = int(Number(event.data));
+		    	file.origFilename = up.fileRef.name;
+		    	file.user = LocalCash.getInstance().getCurrentUser();
+		    	
+		    	var attach:DocumentAttachment = new DocumentAttachment();
+		    	attach.type = DocumentAttachment.OTHER_TYPE;
+		    	attach.file = file;
+		    	
+		    	lease.document.attachments.addItem(attach);
+		    }
+		    
+		    private function fileNumber(item:Object, col:int):String 
+		    {
+		    	var idx:int = lease.document.attachments.getItemIndex(item);
+		    	return (idx + 1).toString();
+		    } 
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#B9B9B9" verticalAlign="middle">
+		<mx:Label text="Furnished Files"/>
+		
+		<mx:Spacer width="100%"/>
+
+        <mx:Button toolTip="Add Record"
+        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+        	icon="@Embed('assets/icon_plus.png')"
+        	click="onAdd()"/>
+	</mx:HBox>
+	
+	<mx:DataGrid id="dgFurnishedFiles" 
+		width="100%" borderThickness="0" dataProvider="{lease.document.attachments}"
+		doubleClickEnabled="true" itemDoubleClick="onOpen()" editable="true">
+		<mx:columns>
+			<mx:DataGridColumn headerText="No" width="30" labelFunction="fileNumber" editable="false"/>
+			<mx:DataGridColumn headerText="Name" dataField="name" editable="true" itemEditor="com.llsvc.component.SelectableInput"/>
+			<mx:DataGridColumn headerText="Date" dataField="date" width="80" editable="false"/>
+			<mx:DataGridColumn width="46" itemRenderer="com.llsvc.client.lms.view.document.FurnishedFileActionsIR" editable="false"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:HRule width="100%" height="1"/>
+
+	<lease:UploadProcessesList id="boxUploadList" 
+		uploadCompleteData="onFileUploadComplete(event)" width="100%"/>
+</mx:VBox>

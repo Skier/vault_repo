@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" height="720" width="1007" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="endEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.view.section.corePhoto.CorePhotoEditPopup;
+			import com.ebs.eroof.view.section.layer.LayerEditPopup;
+			import mx.events.CloseEvent;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import mx.controls.Alert;
+			import mx.events.DynamicEvent;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import com.ebs.eroof.model.wrapper.CorePhoto;
+			import com.ebs.eroof.dto.CorePhotos_DTO;
+			import com.adobe.cairngorm.model.ModelLocator;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+	        [Embed(source="/assets/icons16/plus.png")]
+	        [Bindable]
+	        private var iconPlus:Class;
+        
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				
+				return result;
+			}
+			
+			private function populateSection():void 
+			{
+				section.sectionDTO.OverallCoreCondition = txtOverallCoreCondition.text;
+			}
+			
+			private function updateSection():void 
+			{
+				Application.application.enabled = false;
+				
+				populateSection();
+				
+				isBusy = true;
+				
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreSection, section.sectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(section.sectionDTO, callBackEvent);
+            	ev.dispatch();
+			}
+			
+            private function onStoreSection(storedObject:Sections_DTO):void 
+            {
+            	section.sectionDTO = storedObject;
+				Application.application.enabled = true;
+
+				isBusy = false;
+
+				dispatchEvent(new Event("endEdit"));
+            }
+			
+			private function onCreate():void 
+			{
+	            dgLayers.addEventListener("deleteLayer", deleteLayerHandler);
+	            dgCorePhotos.addEventListener("deleteCorePhoto", deleteCorePhotoHandler);
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			private function openLayer(layer:Layer):void 
+			{
+				LayerEditPopup.open(this, layer).addEventListener("closeRequest", 
+					function (event:Event):void 
+					{
+						if (!section.layersCollection.contains(layer))
+							section.layersCollection.addItem(layer);
+						
+						dgLayers.selectedIndex = section.layersCollection.getItemIndex(layer);
+						dgLayers.scrollToIndex(section.layersCollection.getItemIndex(layer));
+					}); 
+			}
+			
+			private function deleteLayer(layer:Layer):void 
+			{
+				if (section.layersCollection.contains(layer))
+					section.layersCollection.removeItemAt(section.layersCollection.getItemIndex(layer));
+			}
+			
+			private function openCorePhoto(corePhoto:CorePhoto):void 
+			{
+				CorePhotoEditPopup.open(this, corePhoto).addEventListener("closeRequest", 
+					function (event:Event):void 
+					{
+						if (!section.corePhotosCollection.contains(corePhoto))
+							section.corePhotosCollection.addItem(corePhoto);
+						
+						dgCorePhotos.selectedIndex = section.corePhotosCollection.getItemIndex(corePhoto);
+						dgCorePhotos.scrollToIndex(section.corePhotosCollection.getItemIndex(corePhoto));
+					}); 
+			}
+			
+			private function deleteCorePhoto(corePhoto:CorePhoto):void 
+			{
+				if (section.corePhotosCollection.contains(corePhoto))
+					section.corePhotosCollection.removeItemAt(section.corePhotosCollection.getItemIndex(corePhoto));
+			}
+			
+			private function deleteLayerHandler(event:DynamicEvent):void 
+			{
+        		var layer:Layer = event.layer as Layer;
+        		
+        		if (layer == null)
+        			return;
+        			
+				event.stopPropagation();
+				event.preventDefault();
+				
+        		Alert.show("Do you really want to delete selected Layer?", "Delete Layer", 
+        			Alert.YES | Alert.NO, null,
+        			function (event:CloseEvent):void 
+        			{
+        				if (event.detail == Alert.YES)
+        					deleteLayer(layer);
+        			});
+			}
+			
+			private function onAddLayerClick():void 
+			{
+				var layer:Layer = new Layer(new Layers_DTO());
+				layer.layerDTO.RelatedSection = Number(section.sectionDTO.rid);
+
+				openLayer(layer);
+			}
+			
+			private function onLayerGridDoubleClick():void 
+			{
+				var layer:Layer = dgLayers.selectedItem as Layer;
+				openLayer(layer);
+			}
+			
+			private function deleteCorePhotoHandler(event:DynamicEvent):void 
+			{
+        		var corePhoto:CorePhoto = event.corePhoto as CorePhoto;
+        		
+        		if (corePhoto == null)
+        			return;
+        			
+				event.stopPropagation();
+				event.preventDefault();
+				
+        		Alert.show("Do you really want to delete selected Core Photo?", "Delete Core Photo", 
+        			Alert.YES | Alert.NO, null,
+        			function (event:CloseEvent):void 
+        			{
+        				if (event.detail == Alert.YES)
+        					deleteCorePhoto(corePhoto);
+        			});
+			}
+			
+			private function onAddCorePhotoClick():void 
+			{
+				var corePhoto:CorePhoto = new CorePhoto(new CorePhotos_DTO());
+				corePhoto.corePhotoDTO.RelatedSection = Number(section.sectionDTO.rid);
+
+				openCorePhoto(corePhoto);
+			}
+			
+			private function onCorePhotoGridDoubleClick():void 
+			{
+				var corePhoto:CorePhoto = dgCorePhotos.selectedItem as CorePhoto;
+				openCorePhoto(corePhoto);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Label id="lblRoofSystem" y="10" fontSize="14" text="{section.sectionDTO.RoofSystem}" left="10" width="635"/>
+<!--
+	<mx:LinkButton label="Save" width="100" click="onClickSave()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="681"/>
+	<mx:LinkButton label="Cancel" click="onClickCancel()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="789" width="100"/>
+-->
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:VBox width="100%" verticalGap="5">
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+			borderColor="#cccccc" borderStyle="solid" cornerRadius="2">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Core composition" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+				<mx:Button height="100%" width="30" cornerRadius="0" label="" icon="{iconPlus}" click="onAddLayerClick()"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgLayers" width="100%" height="100%"
+				dataProvider="{section.layersCollection}" doubleClickEnabled="true" itemDoubleClick="onLayerGridDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="layerNo" headerText="#" width="30" minWidth="30" textAlign="right"/>
+					<mx:DataGridColumn dataField="layerType" headerText="Layer Type"/>
+					<mx:DataGridColumn dataField="description" headerText="Description"/>
+					<mx:DataGridColumn dataField="attachment" headerText="Method of Attachment"/>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.ebs.eroof.view.section.LayerActionIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:HBox width="100%" height="100%" horizontalGap="5">
+			<mx:VBox width="200" height="100%" verticalGap="0"
+				borderColor="#cccccc" borderStyle="solid" cornerRadius="2">
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="Overal core assessment(s)" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+				</mx:HBox>
+				<mx:TextArea id="txtOverallCoreCondition" width="100%" height="100%" text="{section.sectionDTO.OverallCoreCondition}"/>
+			</mx:VBox>
+
+			<mx:HBox width="100%" height="100%" horizontalGap="5"
+				borderColor="#cccccc" borderStyle="solid" cornerRadius="2">
+				<mx:VBox width="100%" height="100%" verticalGap="0">
+					<mx:HBox width="100%" backgroundColor="#eeeeee">
+						<mx:Label text="Core photos" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+						<mx:Button height="100%" width="30" cornerRadius="0" label="" icon="{iconPlus}" click="onAddCorePhotoClick()"/>
+					</mx:HBox>
+		
+					<mx:DataGrid id="dgCorePhotos" width="100%" height="100%"
+						dataProvider="{section.corePhotosCollection}" doubleClickEnabled="true" itemDoubleClick="onCorePhotoGridDoubleClick()">
+						<mx:columns>
+							<mx:DataGridColumn dataField="dateTaken" headerText="Date Taken"/>
+							<mx:DataGridColumn dataField="description" headerText="Description"/>
+							<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.ebs.eroof.view.section.LayerActionIR"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+	
+				<mx:VBox width="250" verticalGap="0">
+					<mx:VBox width="100%" height="100%">
+						<mx:Image source="{CorePhoto(dgCorePhotos.selectedItem).corePhotoDTO.Photo.url}"/>
+					</mx:VBox>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

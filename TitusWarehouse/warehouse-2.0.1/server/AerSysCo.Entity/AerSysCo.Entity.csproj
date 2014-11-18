@@ -1,0 +1,78 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8D07FF89-908F-4A6F-B2AA-AB58797857CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AerSysCo.Entity</RootNamespace>
+    <AssemblyName>AerSysCo.Entity</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ASCUser.cs" />
+    <Compile Include="Brand.cs" />
+    <Compile Include="CatalogItem.cs" />
+    <Compile Include="Category.cs" />
+    <Compile Include="CustomerPrice.cs" />
+    <Compile Include="Inventory.cs" />
+    <Compile Include="InventoryChangeLog.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="MACPACUpdate.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="ModelItem.cs" />
+    <Compile Include="Order.cs" />
+    <Compile Include="OrderDetail.cs" />
+    <Compile Include="OrderFilter.cs" />
+    <Compile Include="OrderStatus.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShippingAddress.cs" />
+    <Compile Include="ShippingOption.cs" />
+    <Compile Include="ShippingPrice.cs" />
+    <Compile Include="ShippingType.cs" />
+    <Compile Include="ShippingZone.cs" />
+    <Compile Include="ShopingCart.cs" />
+    <Compile Include="ShopingCartDetail.cs" />
+    <Compile Include="ShopingCartShipment.cs" />
+    <Compile Include="Traceable.cs" />
+    <Compile Include="UserType.cs" />
+    <Compile Include="Warehouse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AerSysCo.CustomerCenter\AerSysCo.CustomerCenter.csproj">
+      <Project>{BEFACC46-96E6-4F44-A938-7D0950E790F9}</Project>
+      <Name>AerSysCo.CustomerCenter</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

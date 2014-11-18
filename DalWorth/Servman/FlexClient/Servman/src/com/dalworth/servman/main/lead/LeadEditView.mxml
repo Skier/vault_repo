@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	initialize="onInit()" xmlns:lead="com.dalworth.servman.main.lead.*" xmlns:voice="com.affilia.voice.*" xmlns:controls="com.affilia.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.events.LeadEvent;
+			import mx.events.CloseEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.main.lead.convert.ConvertLeadToJobPopup;
+			import com.dalworth.servman.domain.LeadType;
+			import com.dalworth.servman.domain.SalesRep;
+			import com.dalworth.servman.domain.User;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.service.LeadService;
+			import com.dalworth.servman.domain.Lead;
+			
+			public function setLead(lead:Lead):void 
+			{ 
+				controller.initModel(lead); 
+			}
+			
+			[Bindable]
+			private var model:LeadEditModel;
+			private var controller:LeadEditController;
+			
+			private function fillLeadFromForm(lead:Lead):void 
+			{
+				if (lead.Id == 0)
+				{
+					lead.DateCreated = new Date();
+					lead.CreatedByUserId = MainAppModel.getInstance().currentUser.Id;
+					lead.LeadStatusId = LeadStatus.STATUS_NEW_ID;
+				}
+
+				if (comboBusinessPartner.selectedItem != null)
+					lead.BusinessPartnerId = BusinessPartner(comboBusinessPartner.selectedItem).Id;
+					
+				if (comboAssignedUser.selectedItem != null)
+					lead.AssignedToUser = User(comboAssignedUser.selectedItem).Id;
+					
+				if (comboSalesRep.selectedItem != null)
+					lead.SalesRepId = SalesRep(comboSalesRep.selectedItem).Id;
+
+				lead.LeadTypeId = LeadType(comboLeadType.selectedItem).Id;
+				lead.FirstName = txtFirstName.text;
+				lead.LastName = txtLastName.text;
+				lead.Phone = txtPhone.text;
+				lead.CustomerNotes = txtCustomerNotes.text;
+				
+				lead.Address = txtAddress.text;
+			}
+
+			private function onInit():void 
+			{
+				model = LeadEditModel.getInstance();
+				controller = new LeadEditController(this);
+			}
+			
+			private function onConvertToJobClick():void 
+			{
+				voicePlayer.stopPlaying();            	
+
+				var newLead:Lead = model.lead.prepareToSend();
+				fillLeadFromForm(newLead);
+				controller.saveLead(newLead, false);
+				
+				addEventListener(LeadEvent.LEAD_SAVE, onSaveBeforeConvert);
+			}
+			
+			private function onSaveBeforeConvert(event:LeadEvent):void 
+			{
+				removeEventListener(LeadEvent.LEAD_SAVE, onSaveBeforeConvert);
+
+				var popup:ConvertLeadToJobPopup = ConvertLeadToJobPopup.open(Application.application as DisplayObject, event.lead);
+				popup.addEventListener("jobMatchComplete", 
+					function (event:*):void 
+					{
+						popup.close();
+						close();
+					});
+			}
+			
+			private function onAddNewProject():void 
+			{
+				
+			}
+			
+			private function close():void 
+			{
+				dispatchEvent(new Event("closeLeadEditor"));
+			}
+			
+			private function onCloseClick():void 
+			{
+				voicePlayer.stopPlaying();
+				close();            	
+			}
+			
+			private function onSaveClick():void 
+			{
+				voicePlayer.stopPlaying();            	
+
+				var newLead:Lead = model.lead.prepareToSend();
+				fillLeadFromForm(newLead);
+				controller.saveLead(newLead, true);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%" backgroundColor="#FFFFFF">
+		<mx:VBox width="100%" height="100%" enabled="{!model.isBusy}">
+			<mx:VBox width="100%" visible="{model.lead.Id != 0}" includeInLayout="{model.lead.Id != 0}">
+				<lead:LeadStatusLine lead="{model.lead}" leadChangeHistory="{leadChangeHistory.leadChangeHistory}" 
+					width="100%" borderColor="#CCCCCC" borderStyle="solid" horizontalGap="0"
+					visible="{model.lead.Id != 0}" includeInLayout="{model.lead.Id != 0}"/>
+				<lead:LeadChangeHistoryView id="leadChangeHistory" width="100%" label="Lead Change History" lead="{model.lead}"/>
+			</mx:VBox>
+			
+			<mx:VBox width="100%" height="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+				borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+				<mx:LinkBar dataProvider="{vsLead}" fontSize="12"/>
+	
+				<mx:ViewStack id="vsLead" width="100%" height="100%">
+					<mx:VBox width="100%" height="100%" label="Lead Detail">
+						<mx:VBox width="100%" backgroundColor="#FFFFCC"
+							paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+							<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+									<mx:Label text="Type of Lead" fontSize="12" width="120" textAlign="right"/>
+									<controls:ComboBox id="comboLeadType" width="100%" dataProvider="{model.leadTypes}" labelField="Name"
+										value="{model.lead.LeadTypeId}" valueField="Id"/>
+								</mx:HBox>
+							
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+									visible="{model.canSelectAssignedUser}" includeInLayout="{model.canSelectAssignedUser}">
+									<mx:Label text="Assigned To:" fontSize="12" width="120" textAlign="right"/>
+									<controls:ComboBox id="comboAssignedUser" width="100%" dataProvider="{model.users}" labelField="Name"
+										value="{model.lead.AssignedToUser}" valueField="Id"/>
+								</mx:HBox>
+							</mx:HBox>
+							
+							<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+								visible="{model.canSelectBusinessPartner || model.canSelectSalesRep}" 
+								includeInLayout="{model.canSelectBusinessPartner || model.canSelectSalesRep}">
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+									visible="{model.canSelectSalesRep}" includeInLayout="{model.canSelectSalesRep}">
+									<mx:Label text="Sales Rep." fontSize="12" width="120" textAlign="right"/>
+									<controls:ComboBox id="comboSalesRep" width="100%" dataProvider="{model.salesReps}" labelField="ShowAs"
+										value="{model.lead.SalesRepId}" valueField="Id"/>
+								</mx:HBox>
+					
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5"
+									visible="{model.canSelectBusinessPartner}" 
+									includeInLayout="{model.canSelectBusinessPartner}">
+									<mx:Label text="Business Partner" fontSize="12" width="120" textAlign="right"/>
+									<controls:ComboBox id="comboBusinessPartner" width="100%" dataProvider="{model.businessPartners}" labelField="ShowAs"
+										value="{model.lead.BusinessPartnerId}" valueField="Id"/>
+								</mx:HBox>
+							</mx:HBox>
+						</mx:VBox>
+						
+						<mx:HBox width="100%" backgroundColor="#eeeeee" borderColor="#ffffdd" borderStyle="solid" cornerRadius="2" horizontalGap="5"
+							paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+							<mx:VBox width="100%" verticalGap="5">
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+									<mx:Label text="First Name" fontSize="12" width="115" textAlign="right"/>
+									<mx:TextInput id="txtFirstName" text="{model.lead.FirstName}" width="100%"/>
+								</mx:HBox>
+				
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+									<mx:Label text="Last Name" fontSize="12" width="115" textAlign="right"/>
+									<mx:TextInput id="txtLastName" text="{model.lead.LastName}" width="100%"/>
+								</mx:HBox>
+				
+								<mx:HBox width="100%" verticalAlign="middle" horizontalGap="5">
+									<mx:Label text="Phone" fontSize="12" width="115" textAlign="right"/>
+									<mx:TextInput id="txtPhone" text="{model.lead.Phone}" width="100%"/>
+								</mx:HBox>
+							</mx:VBox>
+				
+							<mx:VBox width="250" height="100%" verticalGap="0">
+								<mx:Label text="Address:" fontSize="12"/>
+								<mx:TextArea id="txtAddress" text="{model.lead.Address}" width="100%" height="100%"/>
+							</mx:VBox>
+						</mx:HBox>
+						
+						<mx:HBox width="100%" height="100%">
+							<mx:VBox width="100%" height="100%" verticalGap="0">
+								<mx:Label text="Customer Notes:"/>
+								<mx:TextArea id="txtCustomerNotes" text="{model.lead.CustomerNotes}" width="100%" height="100%" minHeight="50"
+									editable="{model.canEditCustomerNotes}"/>
+							</mx:VBox>
+			
+							<mx:VBox width="150" height="100%" verticalAlign="bottom"
+								visible="{model.lead.RelatedPhoneCall != null &amp;&amp; model.lead.RelatedPhoneCall.RecordingUrl != null}" 
+								includeInLayout="{model.lead.RelatedPhoneCall != null &amp;&amp; model.lead.RelatedPhoneCall.RecordingUrl != null}">
+<!--
+								<mx:DataGrid width="100%" height="100%">
+									<mx:columns>
+										<mx:DataGridColumn headerText="Calls"/>
+									</mx:columns>
+								</mx:DataGrid>
+-->								
+								<voice:VoicePlayer id="voicePlayer" width="100%" 
+									voiceFileUrl="{model.lead.RelatedPhoneCall.RecordingUrl != null ? (model.lead.RelatedPhoneCall.RecordingUrl + '.mp3') : null}"/>
+							</mx:VBox>
+						</mx:HBox>	
+					</mx:VBox>
+	
+					<mx:VBox label="Related Jobs" width="100%" height="100%"  enabled="{model.lead.Id != 0}" horizontalAlign="right">
+						<mx:List id="lstJobs" width="100%" height="100%" labelField="ShowAs" dataProvider="{model.jobs}" fontSize="12"
+							itemRenderer="com.dalworth.servman.main.lead.CustomerJobRenderer"/>
+					</mx:VBox>
+				</mx:ViewStack>
+			</mx:VBox>
+		</mx:VBox>
+		
+		<mx:VBox height="100%" width="150" horizontalAlign="center">
+			<mx:Button label="Save" 
+				click="onSaveClick()" enabled="{model.canUpdate}" fontSize="12"
+				width="100%" height="35"/>
+			<mx:Button label="Convert To Job" click="onConvertToJobClick()" fontSize="12" 
+				visible="{model.canConvertToProject}" includeInLayout="{model.canConvertToProject}"
+				enabled="{model.lead.Id != 0}"
+				width="100%" height="35"/>
+			<mx:Spacer height="10"/>
+	        <mx:LinkButton label="Cancel" click="onCloseClick()" fontSize="12"
+	        	horizontalCenter="0" verticalCenter="0" textAlign="center"
+	        	width="100%" height="35"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Canvas>

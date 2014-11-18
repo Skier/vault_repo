@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{24191447-3BE5-426B-BADE-6EB9FF25B34C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartSchedule.Domain</RootNamespace>
+    <AssemblyName>SmartSchedule.Domain</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\SmartSchedule.Domain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\SmartSchedule.Domain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\SmartSchedule.Domain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\SmartSchedule.Domain.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationSetting.cs" />
+    <Compile Include="Area.cs" />
+    <Compile Include="BindingListVisit.cs" />
+    <Compile Include="BookingEngine.cs" />
+    <Compile Include="BucketConstraint.cs" />
+    <Compile Include="ChangeRecord.cs" />
+    <Compile Include="codegen\ApplicationSetting.Generator.cs" />
+    <Compile Include="codegen\Area.Generator.cs" />
+    <Compile Include="codegen\BucketConstraint.Generator.cs" />
+    <Compile Include="codegen\ChangeRecord.Generator.cs" />
+    <Compile Include="codegen\Company.Generator.cs" />
+    <Compile Include="codegen\OrderHistory.Generator.cs" />
+    <Compile Include="codegen\PredictionIgnore.Generator.cs" />
+    <Compile Include="codegen\Service.Generator.cs" />
+    <Compile Include="codegen\Technician.Generator.cs" />
+    <Compile Include="codegen\TechnicianDefault.Generator.cs" />
+    <Compile Include="codegen\TechnicianServiceDeny.Generator.cs" />
+    <Compile Include="codegen\TechnicianServiceDenyDefault.Generator.cs" />
+    <Compile Include="codegen\TechnicianWorkTime.Generator.cs" />
+    <Compile Include="codegen\TechnicianWorkTimeDefault.Generator.cs" />
+    <Compile Include="codegen\TechnicianWorkTimeDefaultPreset.Generator.cs" />
+    <Compile Include="codegen\TechnicianZip.Generator.cs" />
+    <Compile Include="codegen\TechnicianZipDefault.Generator.cs" />
+    <Compile Include="codegen\TimeFrame.Generator.cs" />
+    <Compile Include="codegen\User.Generator.cs" />
+    <Compile Include="codegen\UserAction.Generator.cs" />
+    <Compile Include="codegen\UserActionType.Generator.cs" />
+    <Compile Include="codegen\UserRole.Generator.cs" />
+    <Compile Include="codegen\Visit.Generator.cs" />
+    <Compile Include="codegen\VisitDetail.Generator.cs" />
+    <Compile Include="codegen\ZipCode.Generator.cs" />
+    <Compile Include="Combinatorics\Combinations.cs" />
+    <Compile Include="Combinatorics\GenerateOption.cs" />
+    <Compile Include="Combinatorics\IMetaCollection.cs" />
+    <Compile Include="Combinatorics\Permutations.cs" />
+    <Compile Include="Combinatorics\SmallPrimeUtility.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="DomainObject.cs" />
+    <Compile Include="EmailSender.cs" />
+    <Compile Include="GoogleGeocoder.cs" />
+    <Compile Include="Optimizer.cs" />
+    <Compile Include="OrderHistory.cs" />
+    <Compile Include="PathAnalyzer.cs" />
+    <Compile Include="PredictionIgnore.cs" />
+    <Compile Include="ReinsertionHelper.cs" />
+    <Compile Include="Schedule.cs" />
+    <Compile Include="Service.cs" />
+    <Compile Include="Sync\Order.cs" />
+    <Compile Include="Sync\OrderDetail.cs" />
+    <Compile Include="Sync\RecommendationRequest.cs" />
+    <Compile Include="Sync\RecommendationResponseItem.cs" />
+    <Compile Include="Sync\Sync.cs" />
+    <Compile Include="TechnicianDefault.cs" />
+    <Compile Include="TechnicianServiceDeny.cs" />
+    <Compile Include="TechnicianServiceDenyDefault.cs" />
+    <Compile Include="TechnicianWorkTime.cs" />
+    <Compile Include="TechnicianWorkTimeDefault.cs" />
+    <Compile Include="TechnicianWorkTimeDefaultPreset.cs" />
+    <Compile Include="TechnicianZip.cs" />
+    <Compile Include="TechnicianZipDefault.cs" />
+    <Compile Include="TimeInterval.cs" />
+    <Compile Include="UndoRedoList.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserAction.cs" />
+    <Compile Include="UserActionType.cs" />
+    <Compile Include="UserRole.cs" />
+    <Compile Include="Visit.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Technician.cs" />
+    <Compile Include="TimeFrame.cs" />
+    <Compile Include="VisitAddResult.cs" />
+    <Compile Include="VisitDetail.cs" />
+    <Compile Include="VisitOutOfAllowedIntervalException.cs" />
+    <Compile Include="WCF\BucketProcessingOptions.cs" />
+    <Compile Include="WCF\DelayedVisitSaveInfo.cs" />
+    <Compile Include="WCF\IWcfCallback.cs" />
+    <Compile Include="WCF\DriveOptimizeOption.cs" />
+    <Compile Include="WCF\VisitChangeItem.cs" />
+    <Compile Include="WCF\IWcfService.cs" />
+    <Compile Include="WCF\TechnicianDetail.cs" />
+    <Compile Include="WCF\WcfService.cs" />
+    <Compile Include="WCF\WcfServiceBusinessException.cs" />
+    <Compile Include="ZipCode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartSchedule.Domain.Servman\SmartSchedule.Domain.Servman.csproj">
+      <Project>{5A8F6794-86B2-4E02-A4C9-0CC1A3B10A50}</Project>
+      <Name>SmartSchedule.Domain.Servman</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartSchedule\SmartSchedule.csproj">
+      <Project>{D46D8F20-6C11-4625-84C2-FB28F2346504}</Project>
+      <Name>SmartSchedule</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.service.registry.TrackingPhoneRegistry;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import com.dalworth.leadCentral.domain.TrackingPhoneRotation;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_TIME:String = "Time";
+			private static const COLUMN_PAGE:String = "Page";
+			private static const COLUMN_REFERRAL:String = "Referral";
+			private static const COLUMN_PHONE:String = "Phone";
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is TrackingPhoneRotation) 
+				{
+					var rotation:TrackingPhoneRotation = item as TrackingPhoneRotation;
+					switch (column.headerText) 
+					{
+						case COLUMN_PHONE :
+							var phone:TrackingPhone = TrackingPhoneRegistry.getInstance().getLocal(rotation.TrackingPhoneId) as TrackingPhone;
+							if (phone != null)
+								return phone.ScreenNumber;
+							else 
+								return "";
+
+						case COLUMN_PAGE :
+							return rotation.ReferralUri;
+						
+						case COLUMN_REFERRAL :
+							return rotation.ParentReferralUri;
+						
+						case COLUMN_TIME :
+							return DateUtil.getDateTimeStr(rotation.TimeDisplay);
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:ArrayCollection id="rotations"/>	
+	
+	<mx:VBox width="100%" height="100%" label="Web History" backgroundColor="#FFFFFF"
+		 paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+		<mx:DataGrid width="100%" height="100%" dataProvider="{rotations}">
+			<mx:columns>
+				<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.leadCentral.transport.TransportIR"/>
+				<mx:DataGridColumn headerText="{COLUMN_TIME}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+				<mx:DataGridColumn headerText="{COLUMN_PAGE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+				<mx:DataGridColumn headerText="{COLUMN_REFERRAL}" itemRenderer="mx.controls.Label" labelFunction="getLabel"/>
+				<mx:DataGridColumn headerText="{COLUMN_PHONE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:Canvas>

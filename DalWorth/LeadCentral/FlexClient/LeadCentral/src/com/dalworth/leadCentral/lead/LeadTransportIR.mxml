@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.PhoneCall;
+			import com.dalworth.leadCentral.domain.PhoneSms;
+			import com.dalworth.leadCentral.domain.LeadForm;
+			import com.dalworth.leadCentral.domain.Lead;
+			import mx.binding.utils.ChangeWatcher;
+			
+            [Embed(source="/assets/icons16/telephone.png")]
+            [Bindable]
+            private var imgTelephone:Class;
+
+            [Embed(source="/assets/icons16/telephone_error.png")]
+            [Bindable]
+            private var imgTelephoneAlert:Class;
+
+            [Embed(source="/assets/icons16/pencil.png")]
+            [Bindable]
+            private var imgPencil:Class;
+
+            [Embed(source="/assets/icons16/balloon.png")]
+            [Bindable]
+            private var imgBalloon:Class;
+
+            [Embed(source="/assets/icons16/globe.png")]
+            [Bindable]
+            private var imgGlobe:Class;
+
+            [Embed(source="/assets/icons16/table--arrow.png")]
+            [Bindable]
+            private var imgTable:Class;
+
+			[Bindable]
+			private var lead:Lead;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+
+				if (value is Lead)
+					lead = value as Lead;
+			} 
+			
+			private function getImageSource(transport:Object):Class 
+			{
+				if (transport is LeadForm)
+					return imgGlobe;
+				else if (transport is PhoneSms)
+					return imgBalloon;
+				else if (transport is PhoneCall)
+				{
+					if (lead.RelatedPhoneCall.CallStatus.toUpperCase() == "COMPLETED")
+						return imgTelephone;
+					else 
+						return imgTelephoneAlert;
+				}
+					else 
+					return null;
+			}
+			
+			[Bindable]
+			private var currentImage:Class;
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Image id="imgCall" horizontalAlign="center" verticalAlign="middle" source="{getImageSource(lead.transportDetail)}"/>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:viewClient="com.llsvc.admin.client.view.*" 
+	xmlns:viewUser="com.llsvc.admin.user.view.*"
+	creationComplete="creationCompleteHandler()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.llsvc.domain.User;
+			import com.llsvc.domain.Client;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.framework.storage.Storage;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+		
+			[Bindable]
+			private var clientList:ArrayCollection = new ArrayCollection();
+			private var clientHash:Object;
+
+			[Bindable]
+			private var userList:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var allUsers:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			private var freeUsers:ArrayCollection = new ArrayCollection(); 
+		
+			public function init():void 
+			{
+				clientList.removeAll();
+				userList.removeAll();
+				freeUsers.removeAll();
+				
+				getClients();
+			}
+			
+			private function getClients():void 
+			{
+				clientList.removeAll();
+				clientHash = new Object();
+
+				startRemoting("Getting Clients...");
+
+				Storage.instance.getClients( new mx.rpc.Responder(getClientsResultHandler, faultHandler) );
+			}
+			
+			private function getUsers():void 
+			{
+				userList.removeAll();
+				freeUsers.removeAll();
+				allUsers.removeAll();
+				
+				startRemoting("Getting Users...");
+				
+				Storage.instance.getUsers( new mx.rpc.Responder(getUsersResultHandler, faultHandler) );
+			}
+			
+			private function getClientsResultHandler(event:ResultEvent):void 
+			{
+				stopRemoting();
+				
+				var result:ArrayCollection = event.result as ArrayCollection;
+				
+				for each (var client:Client in result) 
+				{
+					client.users.removeAll();
+					clientList.addItem(client);
+					clientHash[client.id] = client;
+				}
+				
+				LocalCash.getInstance().storeClients(clientList);
+				
+				getUsers();
+			}
+			
+			private function getUsersResultHandler(event:ResultEvent):void 
+			{
+				stopRemoting();
+				
+				var result:ArrayCollection = event.result as ArrayCollection;
+				
+				for each (var user:User in result) 
+				{
+					if (user.client != null) 
+					{
+						userList.addItem(user);
+					} else 
+					{
+						freeUsers.addItem(user);
+					}
+					
+					allUsers.addItem(user);
+				}
+				
+				parseUsers();
+			}
+			
+			private function parseUsers():void 
+			{
+				var client:Client;
+				for each (var user:User in userList) 
+				{
+					client = clientHash[user.client.id] as Client;
+					if (client != null) 
+					{
+						user.client = client;
+						client.users.addItem(user);
+					} else 
+					{
+						trace("can not parse user[" + user.id + "]/client[" + client.id + "]");
+					}
+				}
+			}
+			
+			private function faultHandler(event:FaultEvent):void 
+			{
+				stopRemoting();
+				Alert.show(event.fault.message, "Remote error");
+			}
+			
+			private function creationCompleteHandler():void 
+			{
+				init();
+			}
+			
+            private function startRemoting(name:String):void 
+            {
+                boxContent.enabled = false;
+                progressBar.visible = true;
+                pbRemote.label = name;
+            }
+            
+            private function stopRemoting():void
+            {
+                boxContent.enabled = true;
+                progressBar.visible = false;
+                pbRemote.label = "";
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:Box id="boxContent" width="100%" height="100%">
+	    <mx:TabNavigator id="tnMain" width="100%" height="100%" tabWidth="140">
+	    	<viewClient:ClientManagerPanel 
+	    		dataProvider="{clientList}" 
+	    		freeUsers="{freeUsers}"
+	    		label="Client manager" width="100%" height="100%"/>
+	    	<viewUser:UserManagerPanel
+	    		dataProvider="{allUsers}" 
+	    		label="User manager" width="100%" height="100%"/>
+	    </mx:TabNavigator>
+	</mx:Box>
+    
+    <mx:VBox id="progressBar" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" visible="false" includeInLayout="false">
+        <mx:Panel title="Remote process">
+            <mx:ProgressBar id="pbRemote" labelPlacement="bottom" indeterminate="true"/>
+        </mx:Panel>
+    </mx:VBox>
+</mx:Canvas>

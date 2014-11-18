@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:project="tractIncClientApp.project.*" 
+    xmlns:search="tractIncClientApp.search.*" 
+    xmlns:document="tractIncClientApp.document.*" 
+    xmlns:domain="truetract.domain.*" 
+    xmlns:components="truetract.plotter.components.*"
+    creationComplete="creationCompleteHandler()" 
+    xmlns:Print2Flash="Print2Flash.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import tractIncClientApp.document.DocumentEvent;
+            import mx.events.ResizeEvent;
+            import mx.controls.Alert;
+            import tractIncClientApp.tract.TractEvent;
+            import mx.binding.utils.ChangeWatcher;
+            import tractIncClientApp.document.DocumentReferenceEvent;
+            import truetract.domain.DocumentReference;
+            import mx.events.DynamicEvent;
+            import truetract.domain.DocumentAttachment;
+            import truetract.domain.DictionaryRegistry;
+            import truetract.domain.Tract;
+            
+            [Bindable]
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            private var selectedTract:Tract = null;
+            private var selectedFile:DocumentAttachment = null;
+            private var selectedReference:DocumentReference = null;
+            
+            [Bindable]
+            public var historyList:ArrayCollection;
+            
+            private function creationCompleteHandler():void 
+            {
+                ChangeWatcher.watch(tractList, "selectedItem", tractListSelectWatcher);
+                ChangeWatcher.watch(fileList, "selectedItem", fileListSelectWatcher);
+                ChangeWatcher.watch(dgReferences, "selectedItem", dgReferencesSelectWatcher);
+            }
+            
+            private function tractListSelectWatcher(e:*):void 
+            {
+                if (tractList.selectedItem != null && tractList.selectedItem is Tract) 
+                {
+                    selectedTract = tractList.selectedItem as Tract;
+                    fileList.selectedIndex = -1;
+                    dgReferences.selectedIndex = -1;
+                } else 
+                {
+                    selectedTract = null;
+                }
+                
+                switchPreview();
+            }
+
+            private function fileListSelectWatcher(e:*):void 
+            {
+                if (fileList.selectedItem != null && fileList.selectedItem is DocumentAttachment) 
+                {
+                    selectedFile = fileList.selectedItem as DocumentAttachment;
+                    tractList.selectedIndex = -1;
+                    dgReferences.selectedIndex = -1;
+                } else 
+                {
+                    selectedFile = null;
+                }
+                
+                switchPreview();
+            }
+
+            private function dgReferencesSelectWatcher(e:*):void 
+            {
+                if (dgReferences.selectedItem != null && dgReferences.selectedItem is DocumentReference) 
+                {
+                    selectedReference = dgReferences.selectedItem as DocumentReference;
+                    tractList.selectedIndex = -1;
+                    fileList.selectedIndex = -1;
+                } else 
+                {
+                    selectedReference = null;
+                }
+                
+                switchPreview();
+            }
+            
+            private function switchPreview():void 
+            {
+                vsPreview.visible = true;
+                vsPreview.includeInLayout = true;
+
+                if (selectedTract != null) 
+                {
+                    vsPreview.selectedChild = viewTract;
+                    viewTract.tract = selectedTract;
+                } else if (selectedFile != null) 
+                {
+                    vsPreview.selectedChild = viewFile;
+                    fpFile.attachFile = selectedFile.FileRef;
+//                  swfFile.source = "";
+//                  swfFile.source = "http://localhost/DocumentStorage/attachments/documents/614/001.swf";
+//                  swfFile.source = selectedFile.FileRef.FileUrl + ".swf";
+//                  swfFile.load();
+
+                } else if (selectedReference != null) 
+                {
+                    vsPreview.selectedChild = viewReference;
+                    viewReference.docum = selectedReference.ReferencedDoc;
+                } else 
+                {
+                    vsPreview.visible = false;
+                    vsPreview.includeInLayout = false;
+                }
+                
+            }
+            
+            private function fileNameFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.FileName : "";
+            }
+
+            private function fileDescriptionFunction(item:Object, column:DataGridColumn):String
+            {
+                var attachment:DocumentAttachment = DocumentAttachment(item);
+                return attachment.FileRef ? attachment.FileRef.Description : "";
+            }
+            
+            private function fileListDoubleClickHandler():void
+            {
+                var attach:DocumentAttachment = DocumentAttachment(fileList.selectedItem);
+                var urlRequest:URLRequest = new URLRequest(attach.FileRef.FileUrl);
+
+                navigateToURL(urlRequest, "_blank");
+            }
+
+            private function tractListDoubleClickHandler(e:*):void
+            {
+                var tract:Tract = tractList.selectedItem as Tract;
+                
+                if (tract != null) 
+                {
+                    dispatchEvent(new TractEvent(TractEvent.OPEN_TRACT, tract));
+                }
+            }
+
+            private function dgReferenceDoubleClickHandler():void 
+            {
+                var reference:DocumentReference = dgReferences.selectedItem as DocumentReference;
+
+                if (reference != null && reference.ReferencedDoc != null) 
+                {
+                    dispatchEvent(new DocumentEvent("openReference", reference.ReferencedDoc));
+                }
+            }
+            
+            private function openHistoryDoc(event:DocumentEvent):void 
+            {
+                dispatchEvent(new DocumentEvent("openHistoryDoc", event.document));
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="tractIncClientApp.document.DocumentEvent")]
+        [Event(name="openProject", type="tractIncClientApp.project.ProjectEvent")]
+        [Event(name="openReference", type="tractIncClientApp.document.DocumentEvent")]
+        [Event(name="openHistoryDoc", type="tractIncClientApp.document.DocumentEvent")]
+    </mx:Metadata>
+    
+    <domain:Document id="docum"/>
+    
+    <domain:Project id="project"/>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+<!--
+    <mx:VBox width="200" height="100%">
+        <search:QuickSearchPanel width="100%"/>
+        <project:ReferencedProjectsPanel 
+            width="100%" height="100%" 
+            docum="{docum}" 
+            openProject="dispatchEvent(event)"/>
+        <document:DocumentHistoryPanel 
+            width="100%" height="100%" 
+            historyList="{historyList}"
+            openDocument="openHistoryDoc(event)"/>
+    </mx:VBox>
+ -->
+    <mx:VBox backgroundColor="#ffffdd" width="100%" height="100%" 
+        paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+        borderColor="#cccccc" borderStyle="solid">
+        <document:DocumentHistoryPanel 
+            width="100%"
+            visible="{project != null}" includeInLayout="{project != null}"
+            historyList="{historyList}" project="{project}"
+            openDocument="openHistoryDoc(event)"
+            openProject="dispatchEvent(event)"/>
+        <mx:HBox width="100%">
+            <mx:VBox id="boxDocInfo"
+                width="100%" 
+                backgroundColor="#f0f0f0" borderColor="#dddddd" borderStyle="solid"
+                fontWeight="bold">
+                <mx:HBox width="100%">
+                    <mx:Form 
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                        verticalGap="3" indicatorGap="3" labelWidth="90">
+                        <mx:FormItem label="State:">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+                            </mx:Box>
+                        </mx:FormItem>
+        
+                        <mx:FormItem label="Doc Type:">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}" />
+                            </mx:Box>
+                        </mx:FormItem>
+                        
+                        <mx:FormItem label="Volume:">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{docum.Volume}"/>
+                            </mx:Box>
+                        </mx:FormItem>
+        
+                        <mx:FormItem label="Date Signed:">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{df.format(docum.DateSigned)}"/>
+                            </mx:Box>
+                        </mx:FormItem>
+                    </mx:Form>
+        
+                    <mx:Form 
+                        paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" 
+                        verticalGap="3" indicatorGap="3" width="100%">
+                        <mx:FormItem label="County:" width="100%">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}" width="100%"/>
+                            </mx:Box>
+                        </mx:FormItem>
+            
+                        <mx:FormItem label="Doc Number:" width="100%">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    width="100%" text="{docum.DocumentNo}" />
+                            </mx:Box>
+                        </mx:FormItem>
+            
+                        <mx:FormItem label="Page:" width="100%">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    width="100%" text="{docum.Page}" />
+                            </mx:Box>
+                        </mx:FormItem>
+        
+                        <mx:FormItem label="Date Filled:" width="100%">
+                            <mx:Box width="100%">
+                                <mx:Label 
+                                    fontWeight="normal"
+                                    text="{df.format(docum.DateFiled)}"/>
+                            </mx:Box>
+                        </mx:FormItem>
+                    </mx:Form>
+                </mx:HBox>
+    
+                <mx:Form 
+                    paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" verticalGap="3" 
+                    width="100%" indicatorGap="3" labelWidth="90">
+                    <mx:FormItem label="{docum == null ? 'Seller' : dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName != ''
+                        ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName : 'Seller'}:" width="100%">
+                        <mx:Box width="100%">
+                            <mx:Label 
+                                fontWeight="normal"
+                                width="100%" text="{docum.Seller.AsNamed}"/>
+                        </mx:Box>
+                    </mx:FormItem>
+    
+                    <mx:FormItem label="{docum == null ? 'Buyer' : dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName != ''
+                        ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName : 'Buyer'}:" width="100%">
+                        <mx:Box width="100%">
+                            <mx:Label 
+                                fontWeight="normal"
+                                width="100%" text="{docum.Buyer.AsNamed}"/>
+                        </mx:Box>
+                    </mx:FormItem>
+                </mx:Form>
+            </mx:VBox>
+            
+            <project:ReferencedProjectsPanel id="boxReferencedProjects" 
+                docum="{docum}" 
+                width="250" height="{boxDocInfo.height}"
+                openProject="dispatchEvent(event)"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%" height="100%">
+            <mx:VDividedBox width="100%" height="100%" verticalGap="5">
+                <mx:VBox verticalGap="1" width="100%" height="100%"
+                    borderColor="#cccccc" borderStyle="solid"
+                    dropShadowEnabled="true" shadowDistance="0"
+                    backgroundColor="#ddddff">
+                    <mx:Label text="Tracts:" fontWeight="bold"/>
+                    <mx:DataGrid id="tractList"
+                        borderThickness="0"
+                        dataProvider="{docum.TractsList}" 
+                        doubleClickEnabled="true"
+                        itemDoubleClick="tractListDoubleClickHandler(event)"
+                        width="100%" height="100%" backgroundAlpha="1">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText=" " width="20" minWidth="20" resizable="false" dataField="status"
+                                itemRenderer="tractIncClientApp.document.TractStatusIR" sortable="false"/>
+                            <mx:DataGridColumn headerText="Ref.Name" dataField="RefName"/>
+                            <mx:DataGridColumn headerText="Called" dataField="calledString" width="150"/>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:VBox>
+        
+                <mx:VBox verticalGap="1" width="100%" height="100%"
+                    borderColor="#cccccc" borderStyle="solid"
+                    dropShadowEnabled="true" shadowDistance="0"
+                    backgroundColor="#ddffdd">
+                    <mx:Label text="Files:" fontWeight="bold"/>
+                    <mx:DataGrid id="fileList"
+                        borderThickness="0"
+                        dataProvider="{docum.AttachmentsList}" 
+                        doubleClickEnabled="true"
+                        itemDoubleClick="fileListDoubleClickHandler()"
+                        width="100%" height="100%" backgroundAlpha="1">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText="File Name" labelFunction="fileNameFunction"/>
+                            <mx:DataGridColumn headerText="Type" dataField="TypeName"/>
+                            <mx:DataGridColumn headerText="Description" labelFunction="fileDescriptionFunction"/>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:VBox>
+        
+                <mx:VBox verticalGap="1" width="100%" height="100%"
+                    borderColor="#cccccc" borderStyle="solid"
+                    dropShadowEnabled="true" shadowDistance="0"
+                    backgroundColor="#ffdddd">
+                    <mx:Label text="References:" fontWeight="bold"/>
+                    <mx:DataGrid id="dgReferences"
+                        borderThickness="0"
+                        dataProvider="{docum.ReferencesList}" 
+                        doubleClickEnabled="true"
+                        itemDoubleClick="dgReferenceDoubleClickHandler()"
+                        width="100%" height="100%" minWidth="300" backgroundAlpha="1">
+                        <mx:columns>
+                            <mx:DataGridColumn headerText=" " width="20" minWidth="20" resizable="false" dataField="status"
+                                itemRenderer="tractIncClientApp.document.ReferencedDocStatusIR" sortable="false"/>
+                            <mx:DataGridColumn headerText="Instrument" width="100" minWidth="100" dataField="DocumentTypeName"/>
+                            <mx:DataGridColumn headerText="Date Signed" width="70" minWidth="70" dataField="DateSigned"/>
+                            <mx:DataGridColumn headerText="Date Filed" width="70" minWidth="70" dataField="DateFiledDisplayValue"/>
+                            <mx:DataGridColumn headerText="Grantor" dataField="SellerName"/>
+                            <mx:DataGridColumn headerText="Grantee" dataField="BuyerName"/>
+                            <mx:DataGridColumn headerText="Description" dataField="Description"/>
+                            <mx:DataGridColumn headerText="status" width="74" minWidth="74" resizable="false" dataField="status"
+                                itemRenderer="tractIncClientApp.document.ReferencedDocStateIR" sortable="false"/>
+                            <mx:DataGridColumn headerText=" " width="20" minWidth="20" resizable="false" dataField="status"
+                                itemRenderer="tractIncClientApp.document.ReferencedDocActionsIR" sortable="false"/>
+                        </mx:columns>
+                    </mx:DataGrid>
+                </mx:VBox>
+            </mx:VDividedBox>
+
+            <mx:ViewStack id="vsPreview" creationPolicy="all"
+                width="100%" height="100%" visible="false" includeInLayout="false">
+                <components:TractQuickView id="viewTract" 
+                    width="100%" height="100%"/>
+
+                <document:DocumentQuickDetail id="viewReference"
+                    width="100%" height="100%"
+                    docum="{selectedReference.ReferencedDoc}"/>
+
+                <mx:Box id="viewFile" backgroundColor="#ffffff" borderColor="#999999" borderStyle="solid"
+                    direction="vertical"
+                    width="100%" height="100%">
+                    <document:FlashPaperPreview id="fpFile"
+                        width="100%" height="100%"/>
+                </mx:Box>
+            </mx:ViewStack>
+        </mx:HBox>
+    </mx:VBox>
+</mx:Box>

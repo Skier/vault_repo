@@ -1,0 +1,839 @@
+
+        <html>
+        
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>BusinessPartner</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                VendorId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                EmployeeId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Name
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Address
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Email
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Phone
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>Customer</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                BusinessPartnerId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QbCustomerId
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>Lead</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                LeadStatusId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                BusinessPartnerId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ProjectTypeId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                EmployeeId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                FirstName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                LastName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Phone
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                CustomerNotes
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                EmployeeNotes
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>LeadToPartner</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                LeadStatusId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                BusinessPartnerId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                FirstName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                LastName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Phone
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                CustomerNotes
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                EmployeeNotes
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                PartnerProjectTypeId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ClosedAmount
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                CommissionAmount
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>PartnerProjectType</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                BusinessPartnerId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Name
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>Project</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                LeadId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                CustomerId
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QbJobId
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>ProjectType</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Id
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Name
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>ProjectTypeQbItem</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ProjectTypeId
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:int
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QbItemLiistId
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>QbCustomer</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                RecordId
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>QbItem</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ListId
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                IsActive
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                AssetAccountName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                AvgCost
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Description
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ParentItemName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Name
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ManPartNum
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                PrefVendorName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                PurchaseCost
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                PurchaseDesc
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnHand
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnHandSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnPurchaseOrder
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnPurchaseOrderSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnSales
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                QtyOnSalesSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ReorderPoint
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                ReorderPointSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Taxable
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                TaxableSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                Type
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                TypeSpecified
+            </td>
+          <td width="100">
+          xs:boolean
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                UnitPrice
+            </td>
+          <td width="100">
+          xs:decimal
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                UOMAbbr
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                UOMName
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+          <table width="600" border="1" style="border-collapse:collapse;" >
+            <tr>
+          <td colspan="3" bgcolor="#CFCFCF" >
+          <b>QbJob</b>
+          </td>
+          </tr>
+          
+            <tr>
+            <td width="300">
+                RecordId
+                  (PK)
+                
+            </td>
+          <td width="100">
+          xs:string
+          </td>
+          <td align="center" > - </td>
+          </tr>
+          
+          </table>
+          <br />
+          
+        </html>
+      

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import Intuit.Sb.Cdm.vo.PhysicalAddress;
+			
+			[Bindable]
+			public var editable:Boolean;
+			
+			public function applyFields():void 
+			{
+				address.Line1 = (txtAddress1.text.length > 0) ? txtAddress1.text : null;
+				address.Line2 = (txtAddress2.text.length > 0) ? txtAddress2.text : null;
+//				address.Line3 = (txtAddress3.text.length > 0) ? txtAddress3.text : null;
+				address.City = (txtCity.text.length > 0) ? txtCity.text : null;
+				address.CountrySubDivisionCode = (txtState.text.length > 0) ? txtState.text : null;
+				address.PostalCode = (txtZip.text.length > 0) ? txtZip.text : null;
+				address.Country = "USA";
+				address.Tag = ["Billing"];
+			}
+			
+			private var _address:PhysicalAddress;
+			[Bindable]
+			public function get address():PhysicalAddress { return _address; }
+			public function set address(value:PhysicalAddress):void 
+			{
+				_address = value;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%"
+		paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		backgroundColor="#FFFFCC">
+		<mx:Grid width="100%" verticalGap="4">
+			<mx:GridRow width="100%" height="25">
+				<mx:GridItem rowSpan="2">
+					<mx:Label text="Address:" fontSize="12" textAlign="right" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" verticalAlign="middle">
+					<mx:TextInput id="txtAddress1" width="100%" text="{address.Line1}" visible="{editable}" includeInLayout="{editable}" tabIndex="0"/>
+					<mx:Label text="{address.Line1}" fontSize="12" visible="{!editable}" includeInLayout="{!editable}" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Label text="City:" fontSize="12" textAlign="right" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" verticalAlign="middle">
+					<mx:TextInput id="txtCity" width="100%" text="{address.City}" visible="{editable}" includeInLayout="{editable}" tabIndex="2"/>
+					<mx:Label text="{address.City}" fontSize="12" visible="{!editable}" includeInLayout="{!editable}" width="100%"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="25">
+				<mx:GridItem width="100%" verticalAlign="middle">
+					<mx:TextInput id="txtAddress2" width="100%" text="{address.Line2}" visible="{editable}" includeInLayout="{editable}" tabIndex="1"/>
+					<mx:Label text="{address.Line2}" fontSize="12" visible="{!editable}" includeInLayout="{!editable}" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:Label text="State:" fontSize="12" textAlign="right" width="100%"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" verticalAlign="middle">
+					<mx:TextInput id="txtState" width="100%" text="{address.CountrySubDivisionCode}" visible="{editable}" includeInLayout="{editable}" tabIndex="3"/>
+					<mx:Label text="{address.CountrySubDivisionCode}" fontSize="12" visible="{!editable}" includeInLayout="{!editable}" width="100%"/>
+					<mx:Label text="Zip:" fontSize="12" textAlign="right"/>
+					<mx:TextInput id="txtZip" width="100%" text="{address.PostalCode}" visible="{editable}" includeInLayout="{editable}" tabIndex="4"/>
+					<mx:Label text="{address.PostalCode}" fontSize="12" visible="{!editable}" includeInLayout="{!editable}" width="100%"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+	</mx:VBox>
+	
+</mx:Canvas>

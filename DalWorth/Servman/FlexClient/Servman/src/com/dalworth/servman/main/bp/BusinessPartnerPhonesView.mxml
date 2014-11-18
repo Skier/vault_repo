@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.events.PhoneEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.domain.Phone;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var ownPhones:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var companyPhones:ArrayCollection = new ArrayCollection();
+			
+			private var _businessPartner:BusinessPartner;
+			[Bindable]
+			public function get businessPartner():BusinessPartner { return _businessPartner; }
+			public function set businessPartner(value:BusinessPartner):void 
+			{
+				_businessPartner = value;
+				initPhones();
+			}
+			
+			public function getOwnPhones():Array
+			{
+				return ownPhones.source;
+			}
+			
+			public function getCompanyPhones():Array
+			{
+				return companyPhones.source;
+			}
+			
+			private function initPhones():void 
+			{
+				ownPhones.removeAll();
+				companyPhones.removeAll();
+				
+				if (businessPartner == null)
+					return;
+					
+				PhoneService.getInstance().getPhonesByBusinessPartner(businessPartner).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							var result:Array = event.result as Array;
+							var len:int = result.length;
+							var phone:Phone;
+							for (var i:int = 0; i < len; i++)
+							{
+								phone = result[i] as Phone;
+								if (phone.isCompanyPhone)
+									companyPhones.addItem(phone);
+								else 
+									ownPhones.addItem(phone);
+							}
+						},
+						function (event:FaultEvent):void 
+						{
+							trace(event.fault.message);
+						}
+					));
+			}
+			
+			private function editPhone(phone:Phone):void 
+			{
+				var popup:PhoneEditPopup = PhoneEditPopup.open(Application.application as DisplayObject, phone);
+				popup.addEventListener(PhoneEvent.PHONE_COMMIT, 
+					function (event:PhoneEvent):void 
+					{
+						var phone:Phone = popup.phone;
+						if (!ownPhones.contains(phone))
+							ownPhones.addItem(phone);
+						var idx:int = ownPhones.getItemIndex(phone);
+						dgOwnPhones.selectedIndex = idx;
+						dgOwnPhones.scrollToIndex(idx); 
+					});
+			}
+			
+			private function onAddPhone():void 
+			{
+				var phone:Phone = new Phone();
+				editPhone(phone);
+			}
+			
+			private function onDoubleClickPhone():void 
+			{
+				var phone:Phone = dgOwnPhones.selectedItem as Phone;
+				editPhone(phone);
+			}
+			
+			private function onRemovePhone():void 
+			{
+				var phone:Phone = dgOwnPhones.selectedItem as Phone;
+				var idx:int = ownPhones.getItemIndex(phone);
+				ownPhones.removeItemAt(idx);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" backgroundColor="#FFFFFF" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+		<mx:HBox width="100%" verticalAlign="middle" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+			backgroundColor="#EEEEEE">
+			<mx:Label text="Phone Numbers" fontSize="14" color="#666666" fontWeight="bold"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="Business Partner can call from:"/>
+				<mx:DataGrid id="dgOwnPhones" width="100%" height="100%" dataProvider="{ownPhones}"
+					sortableColumns="false" draggableColumns="false" editable="false"
+					doubleClickEnabled="true" itemDoubleClick="onDoubleClickPhone()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Phone Number" dataField="Number"/>
+						<mx:DataGridColumn headerText="Description" dataField="Description"/>
+					</mx:columns>
+				</mx:DataGrid>
+				
+				<mx:HBox width="100%">
+					<mx:Button label="Remove Selected" click="onRemovePhone()" enabled="{dgOwnPhones.selectedItem != null}"/>
+					<mx:Spacer width="100%"/>
+					<mx:Button label="Add Phone" click="onAddPhone()"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VBox width="100%" height="100%">
+				<mx:Label text="Assotiated Company Phones:"/>
+				<mx:DataGrid id="dgCompanyPhones" width="100%" height="100%" dataProvider="{companyPhones}"
+					sortableColumns="false" draggableColumns="false" editable="false">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Phone Number" dataField="Number"/>
+						<mx:DataGridColumn headerText="Description" dataField="Description"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

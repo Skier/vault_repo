@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:tract="com.llsvc.client.lms.view.tract.*">
+
+    <mx:Script>
+    	<![CDATA[
+    		
+    		[Bindable] public var range:TractRange;
+    		
+    	]]>
+    </mx:Script>
+
+	<tract:SectionsContainer left="20" width="100%" verticalGap="2" 
+		sections="{range.sections}"/>
+
+</mx:Canvas>

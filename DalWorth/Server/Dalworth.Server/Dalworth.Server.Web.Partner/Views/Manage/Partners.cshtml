@@ -1,0 +1,60 @@
+﻿@model Dalworth.Server.Web.Partner.Models.Partners
+
+@{
+    ViewBag.Title = "Partner In Profit - Manage Partners";
+    ViewBag.Header = "Manage Partners";
+
+    ViewBag.ActiveTopMenu = "Manage";
+    ViewBag.ActiveSubMenu = "Partners";
+}
+
+@if (!Model.ShowInactive){
+<p>
+Showing active partners only. @Html.ActionLink("Click here", "Partners", new { @ShowInactive=true }, new { @class="link" }) to list all partners
+</p>
+<br/>
+}
+
+
+<table>
+<tr>    
+    <td valign="top">
+    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left" colspan="4">Partners</th>
+            </tr>
+
+        @if (Model.PartnerList.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+        @foreach (var item in Model.PartnerList) {
+            <tr>
+                <td>
+                    @Html.ActionLink(item.Name, "Partner", new { @PartnerId=item.Id })
+                </td>
+                <td>
+                    @item.UsersCountText        
+                </td>
+                <td>
+                    @item.TrackingPhonesCountText        
+                </td>
+                <td @(!item.IsActive ? "class=red-content" : "")> 
+                    @item.IsActiveText        
+                </td>
+            </tr>
+        }
+        </table>
+    </td>
+    <td width="100px"></td>
+    <td valign="top">
+    </td>
+</tr>
+</table>
+
+
+<p>
+@Html.ActionLink("Add Partner", "AddPartner", new { controller = "Manage" }, new { @class="back-link" })    
+</p>
+
+

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:sb="http://www.intuit.com/sb/cdm/v2" 
+           xmlns:tns="http://www.intuit.com/sb/cdm/qboReports" targetNamespace="http://www.intuit.com/sb/cdm/qboReports" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../customer/PartyCdmTypes.xsd"/>
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+
+  <xs:element name="ReportAccount" type="tns:ReportAccount"/>
+  <xs:element name="QboListReportRequest" type="tns:QboListReportRequest"/>
+  <xs:element name="QboListReportResponse" type="tns:QboListReportResponse"/>
+  <xs:element name="QboBalanceSheetReportResponse" type="tns:QboBalanceSheetReportResponse"/>
+
+  <!-- Type definitions -->
+  <xs:simpleType name="QboListReportsEnum">
+    <xs:annotation>
+      <xs:documentation>enumeration of possible reports to pull from QBO backend</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CustomerPhoneList"/>
+      <xs:enumeration value="CustomerContactList"/>
+      <xs:enumeration value="VendorPhoneList"/>
+      <xs:enumeration value="VendorContactList"/>
+      <xs:enumeration value="EmployeePhoneList"/>
+      <xs:enumeration value="EmployeeContactList"/>
+      <xs:enumeration value="AccountList"/>
+      <xs:enumeration value="RecurringTemplateList"/>
+      <xs:enumeration value="ItemPriceList"/>
+      <xs:enumeration value="PaymentMethodList"/>
+      <xs:enumeration value="TermsList"/>
+      <xs:enumeration value="CompensationList"/>
+      <xs:enumeration value="TaxList"/>
+      <xs:enumeration value="OtherPaymentsAndDeductionsList"/>
+      <xs:enumeration value="PayScheduleList"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+    <xs:complexType name="ReportAccount">
+        <xs:sequence>
+            <xs:element name="AccountName" type="xs:string"/>
+            <xs:element name="AccountBalance" type="xs:string"/>
+            <xs:element name="SubAccounts" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="QboListReportRequest">
+        <xs:annotation>
+			<xs:documentation>Used to request a list report (see enum for the types encompassed by that).
+                For now, no customization...but that will change.</xs:documentation>
+		</xs:annotation>
+        <xs:sequence>
+            <xs:element name="ListReport" type="tns:QboListReportsEnum"/>    
+        </xs:sequence>
+    </xs:complexType>
+
+	<xs:complexType name="QboListReportResponse">
+        <xs:annotation>
+			<xs:documentation>Used to output customer phone/contact, vendor phone/contact, employee phone/contact, account list,
+            recurring template list, item list, payment method list, terms list, compensation list, tax list,
+            other payments and deductions list, pay schedule list.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+            <xs:element name="ReportTitle" type="xs:string" minOccurs="1"/>
+            <xs:element name="ReportRow" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Column" type="xs:string"/>
+                        <xs:element name="Value" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+    <!-- To whomever tries to take this project over...apologies in advance. I'm still not entirely sure this was the
+         right way to go about encoding the balance sheet. I was really caught between wanthing to do something very
+         generic (as you see in the QboListReportResponse above) and the fact that Balance Sheets really do have a
+         predictable, standard structure. I will not be hurt or sad if you decide to abandon this method and go the
+         more generic route; I think after some reflection that it might be easier and more useful. -->
+    <xs:complexType name="QboBalanceSheetReportResponse">
+        <xs:annotation>
+			<xs:documentation>Used to output a balance sheet report. These default fields are set by QBO and filled in
+            by the reporting engine. </xs:documentation>
+		</xs:annotation>
+        <xs:sequence>
+            <xs:element name="Assets" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="CurrentAssets">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="BankAccounts" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="TotalBankAccounts" type="xs:string"/>
+                                    <xs:element name="AccountsReceivable" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="TotalAccountsReceivable" type="xs:string"/>
+                                    <xs:element name="OtherCurrentAssets" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="TotalOtherCurrentAssets" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="TotalCurrentAssets" type="xs:string"/>
+                        <xs:element name="FixedAssets" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="TotalFixedAssets" type="xs:string"/>
+                        <xs:element name="OtherAssets" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="TotalOtherAssets" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="TotalAssets" type="xs:string"/>
+            <xs:element name="LiabilitiesAndEquity" minOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Liabilities">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="CurrentLiabilities">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="AccountsPayable" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                                <xs:element name="TotalAccountsPayable" type="xs:string"/>
+                                                <xs:element name="CreditCards" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                                <xs:element name="TotalCreditCards" type="xs:string"/>
+                                                <xs:element name="OtherCurrentLiabilities" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                                <xs:element name="TotalOtherCurrentLiabilities" type="xs:string"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="TotalCurrentLiabilities" type="xs:string"/>
+                                    <xs:element name="LongTermLiabilities" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                                    <xs:element name="TotalLongTermLiabilities" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="TotalLiabilities" type="xs:string"/>
+                        <!-- Maybe need to add in "Retained Earnings" and "Net Income" to Equity-->
+                        <xs:element name="Equity" type="tns:ReportAccount" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="TotalEquity" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="TotalLiabilitiesAndEquity" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

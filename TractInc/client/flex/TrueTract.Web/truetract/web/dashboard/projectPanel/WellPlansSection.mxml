@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollapsiblePanel backgroundColor="#99ff99"
+    title="Well Plans"
+    xmlns="truetract.web.containers.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.controls.Alert;
+    	import mx.events.CloseEvent;
+        import truetract.domain.mementos.ProjectAttachmentMemento;
+        import truetract.web.dashboard.file.FileAttachmentEditor;
+        import mx.collections.ArrayCollection;
+        import mx.rpc.AsyncToken;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
+        import truetract.domain.*;
+        import truetract.web.util.TokenResponder;
+        import truetract.web.services.ProjectService;
+
+        private static const WELL_PLAN_ATTACHMENT_TYPE:String = "Well Plan";
+        private static const WELL_PLAN_PROJ_ATTACHMENT_TYPE:String = "Proj";
+        private static const WELL_PLAN_PLAN_OF_DEV_ATTACHMENT_TYPE:String = "Plan of development";
+        private static const WELL_PLAN_OTHER_ATTACHMENT_TYPE:String = "Other";
+
+        private var dictionaries:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+        [Bindable] private var wellPlansAttachments:ArrayCollection = new ArrayCollection();
+
+	    [Bindable] public var readOnly:Boolean = false;
+
+        private var _project:Project;
+        [Bindable] public function get project():Project { return _project; }
+        public function set project(value:Project):void
+        {
+            _project = value;
+            
+            parseProjectAttachments();
+        }
+
+        private function parseProjectAttachments():void
+        {
+            wellPlansAttachments.removeAll();
+
+            if (!project.Attachments) return;
+            
+            for each (var attachment:ProjectAttachment in project.Attachments)
+            {
+                if (attachment.TypeName == WELL_PLAN_ATTACHMENT_TYPE
+                	|| attachment.TypeName == WELL_PLAN_PROJ_ATTACHMENT_TYPE
+                	|| attachment.TypeName == WELL_PLAN_PLAN_OF_DEV_ATTACHMENT_TYPE
+                	|| attachment.TypeName == WELL_PLAN_OTHER_ATTACHMENT_TYPE)
+                {
+                    wellPlansAttachments.addItem(attachment);
+                }
+            }
+        }
+
+        private function creationCompleteHandler():void
+        {
+            addHeaderItem(removeChild(createButton));
+            addHeaderItem(removeChild(editButton));
+            addHeaderItem(removeChild(deleteButton));
+        }
+
+        private function createButton_clickHandler():void
+        {
+            var attachment:ProjectAttachment = new ProjectAttachment();
+            attachment.ProjectId = project.ProjectId;
+            attachment.ProjectAttachmentTypeId = 
+                dictionaries.projectAttachmentTypes.AttachmentType.
+                    (@Name == WELL_PLAN_ATTACHMENT_TYPE).@Id;
+
+            var popup:FileAttachmentEditor = FileAttachmentEditor.open(this, true);
+            popup.attachmentTypes = dictionaries.wellPlanProjectAttachmentTypes;
+            popup.attachment = attachment;
+//            popup.showAttachmentTypes = false;
+            popup.addEventListener("commit", 
+                function (event:Event):void
+                {
+                    var token:AsyncToken = ProjectService.getInstance().addAttachment(
+                        attachment, popup.uploadID);
+
+                    token.addResponder(new mx.rpc.Responder(
+                        function(event:ResultEvent):void
+                        {
+                            parseProjectAttachments();
+                            popup.close();
+		                    callLater(expandPanel);
+                        },
+                        function(event:FaultEvent):void {})
+                    );
+                }
+            )
+        }
+
+        private function editButton_clickHandler():void
+        {
+            var selectedAttachment:ProjectAttachment = ProjectAttachment(wellPlansList.selectedItem);
+            
+            var memento:ProjectAttachmentMemento = 
+                ProjectAttachmentMemento(selectedAttachment.getMemento());
+
+            var popup:FileAttachmentEditor = FileAttachmentEditor.open(this, true);
+            popup.attachmentTypes = dictionaries.wellPlanProjectAttachmentTypes;
+            popup.attachment = selectedAttachment;
+//            popup.showAttachmentTypes = false;
+            popup.addEventListener("commit", 
+                function (event:Event):void
+                {
+                    var token:AsyncToken = ProjectService.getInstance().updateAttachment(
+                        selectedAttachment, popup.uploadID);
+
+                    token.addResponder(new mx.rpc.Responder(
+                        function(event:ResultEvent):void
+                        {
+                            popup.close();
+                        },
+                        function(event:FaultEvent):void {})
+                    );
+                }
+            )
+            popup.addEventListener("cancel", 
+                function(event:Event):void
+                {
+                    selectedAttachment.setMemento(memento);
+                }
+            );
+        }
+
+        private function deleteButton_clickHandler():void
+        {
+            var selectedAttachment:ProjectAttachment = ProjectAttachment(wellPlansList.selectedItem);
+            
+            Alert.show(
+                "Are you sure you want to delete Project Map ?", 
+                "Remove Well Plan", Alert.YES | Alert.NO, null, 
+                function (event:CloseEvent):void
+                {
+                    if (event.detail == Alert.YES) 
+                    {
+			            var token:AsyncToken = 
+			                ProjectService.getInstance().deleteAttachment(selectedAttachment);
+			
+			            token.addResponder(new mx.rpc.Responder(
+			                function(event:ResultEvent):void 
+			                {
+			                    parseProjectAttachments();
+			                    callLater(expandPanel);
+			                }, 
+			                function(event:FaultEvent):void {}
+			            ));
+                    }
+                }
+            );
+
+        }
+
+    ]]>
+    </mx:Script>
+
+    <mx:Button id="createButton" 
+        icon="@Embed(source='/assets/page_white_add.png')" width="20" height="20" 
+        styleName="toolButton"
+        click="createButton_clickHandler()"
+        toolTip="Create"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:Button id="editButton" 
+        icon="@Embed(source='/assets/page_white_edit.png')" width="20" height="20" 
+        styleName="toolButton"
+        enabled="{wellPlansList.selectedItem != null}"
+        click="editButton_clickHandler()"
+        toolTip="Edit"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:Button id="deleteButton" 
+        icon="@Embed(source='/assets/page_white_delete.png')" width="20" height="20" 
+        styleName="toolButton" enabled="{wellPlansList.selectedItem != null}"
+        click="deleteButton_clickHandler()"
+        toolTip="Delete"
+        includeInLayout="{!readOnly}"
+        visible="{!readOnly}"
+        />
+
+    <mx:HBox 
+        width="100%" 
+        visible="{wellPlansAttachments.length == 0}" 
+        includeInLayout="{wellPlansAttachments.length == 0}">
+        <mx:Label text="Not specified"/>
+    </mx:HBox>
+
+    <mx:List id="wellPlansList" 
+        visible="{(wellPlansAttachments.length > 0) &amp;&amp; !collapsed}" 
+        includeInLayout="{wellPlansList.visible}"
+        dataProvider="{wellPlansAttachments}" width="100%" 
+        height="{(wellPlansAttachments.length > 5) ? 200 : (wellPlansAttachments.length * 39 + 2)}"
+   	 	selectionColor="#e0e0e0" rollOverColor="#eeeeee"
+        itemRenderer="truetract.web.dashboard.projectPanel.ProjectAttachmentIR"/>
+</CollapsiblePanel>

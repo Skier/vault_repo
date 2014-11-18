@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle" horizontalAlign="center"
+    horizontalGap="2"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.ProjectTabContact;
+			
+			private function setPrimaryButton_clickHandler():void 
+			{
+				checkIsActive.selected = ProjectTabContact(data).IsActive;
+				if (ProjectTabContactPanel(parentDocument).readOnly)
+				{
+					return;
+				}
+				
+				ProjectTabContactPanel(parentDocument).changePrimaryStatus(data as ProjectTabContact);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CheckBox id="checkIsActive" height="16" width="16" minHeight="16" minWidth="16" label="" 
+        toolTip="Set Contact as Primary"
+		selected="{ProjectTabContact(data).IsActive}" 
+		click="setPrimaryButton_clickHandler()"/>
+</mx:HBox>

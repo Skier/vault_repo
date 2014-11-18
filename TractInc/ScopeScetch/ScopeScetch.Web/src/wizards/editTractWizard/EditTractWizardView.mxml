@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:steps="src.wizards.steps.*"
+    xmlns:editTractWizard="src.wizards.editTractWizard.*"
+    title="Edit Tract Information"
+    layout="vertical">
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.Tract;
+            import src.deedplotter.domain.TractWO;
+            import src.AppController;
+
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.Responder;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            public static function open(parent:DisplayObject, modal:Boolean = false):EditTractWizardView
+            {
+                var dialog:EditTractWizardView = new EditTractWizardView();
+                
+                dialog.visible = false;
+
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+
+                dialog.callLater(function():void { dialog.visible = true });
+                return dialog;
+            }
+
+            [Bindable] public var tract:Tract;
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            private function okButton_clickHandler():void
+            {
+                if (!editTractStep.validateForm()) return;
+
+                editTractStep.applyTractChanges();
+
+                close();
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Box
+        width="100%" height="100%"
+        paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10"
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <editTractWizard:EditTractStep id="editTractStep" width="100%" height="100%" tract="{tract}"/>
+
+    </mx:Box>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Ok" click="okButton_clickHandler()"/>
+
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

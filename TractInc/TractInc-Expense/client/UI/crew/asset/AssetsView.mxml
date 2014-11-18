@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HDividedBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import App.Entity.AssetAssignmentDataObject;
+			import App.Entity.AssetDataObject;
+			import common.PermissionsRegistry;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import common.TypesRegistry;
+			import mx.controls.dataGridClasses.DataGridColumn;
+
+			[Bindable]
+			public var controller:AssetsController;
+			
+			public function set parentController(parent:InvoiceController):void 
+			{
+				controller = new AssetsController(this as AssetsView, parent);
+			}
+			
+			public function getAssetById(id:int):AssetDataObject
+			{
+				return controller.getAssetById(id);
+			}
+			
+			private function onAssetChange():void {
+				var assignments:ArrayCollection = new ArrayCollection(AssetDataObject(dgAssets.selectedItem).Assignments);
+				assignments.filterFunction = function(obj:Object):Boolean {
+					return !AssetAssignmentDataObject(obj).Deleted;
+				};
+				assignments.refresh();
+				dgAssetAssignments.dataProvider = assignments;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="45%" height="100%" backgroundColor="#eeeeee"
+		borderColor="#999999" borderStyle="solid"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		>
+		<mx:HBox width="100%">
+			<mx:Label text="Assets:" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<!-- mx:ComboBox
+				id="cbCrewFilter"
+				dataProvider="{controller.model..clients}"
+				labelField=""/ -->
+		</mx:HBox>
+		<mx:DataGrid
+			id="dgAssets" 
+			width="100%"
+			height="100%"
+			dataProvider="{controller.model.assets}"
+			change="onAssetChange()"
+			>
+			<mx:columns>
+				<mx:DataGridColumn headerText="Business Name" dataField="BusinessName" />
+				<mx:DataGridColumn headerText="First Name" dataField="FirstName" />
+				<mx:DataGridColumn headerText="Middle Name" dataField="MiddleName" />
+				<mx:DataGridColumn headerText="Last Name" dataField="LastName" />
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	<mx:VBox
+		width="55%"
+		height="100%"
+		backgroundColor="#eeeeee"
+		borderColor="#999999"
+		borderStyle="solid"
+		paddingLeft="5"
+		paddingRight="5"
+		paddingTop="5"
+		paddingBottom="5"
+		>
+		<mx:HBox width="100%">
+			<mx:Label text="Asset Assignments:" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+		</mx:HBox>
+		<mx:DataGrid
+			id="dgAssetAssignments" 
+			width="100%"
+			height="100%"
+			doubleClickEnabled="true"
+			itemDoubleClick="controller.onClickViewAssetAssignment(AssetAssignmentDataObject(dgAssetAssignments.selectedItem))"
+			>
+			<mx:columns>
+				<mx:DataGridColumn headerText="Client" dataField="ClientName"/>
+				<mx:DataGridColumn headerText="AFE" dataField="AFE"/>
+				<mx:DataGridColumn headerText="Project" dataField="SubAFE"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox
+			width="100%"
+			horizontalAlign="right">
+			<mx:Button
+				label="New"
+				click="controller.onClickNewAssetAssignment()"
+				enabled="{dgAssets.selectedItem != null}"/>
+			<mx:Button
+				label="Delete"
+				click="controller.onClickDeleteAssetAssignment()"
+				enabled="{(dgAssetAssignments.selectedItem != null) &amp;&amp; ('ISSUED' == AssetAssignmentDataObject(dgAssetAssignments.selectedItem).ProjectStatus)}"/>
+		</mx:HBox>
+	</mx:VBox>
+
+</mx:HDividedBox>

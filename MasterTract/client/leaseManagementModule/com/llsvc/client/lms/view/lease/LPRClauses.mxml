@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.llsvc.controls.*" xmlns:component="com.llsvc.component.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseClause;
+			import com.llsvc.domain.LeaseExtention;
+			import mx.controls.TextInput;
+			
+			private var _clause:LeaseClause;
+			[Bindable]
+			public function get clause():LeaseClause {return _clause;}
+			public function set clause(value:LeaseClause):void 
+			{
+				_clause = value;
+			}
+			
+			public var netAcres:Number = 0;
+			
+			public function getResult():Boolean 
+			{
+				if (!isValid())
+					return false;
+/*				
+				clause.depth = cbDepth.selected;
+				clause.damage = cbDamage.selected;
+				clause.pugh = cbPugh.selected;
+				clause.shutInGasWell = cbShutInGasWell.selected;
+				clause.takeGasRoyInKind = cbTakeGasRoyInKind.selected;
+				clause.other = cbOther.selected;
+				clause.surfaceUse = cbSurface.selected;
+				clause.contDrilling = cbContDrilling.selected;
+				clause.favoredNations = cbFavoredNations.selected;
+				clause.optionToExtent = cbExtend.selected;
+				clause.assignment = cbAssignment.selected;
+				clause.prodPayment = cbProdPayment.selected;
+				clause.poolingProvision = cbPoolingProvisions.selected;
+				clause.minRoyaltyPayment = cbMinRoyaltyPayment.selected;
+				clause.renewalOption = cbRenewalOption.selected;
+				clause.hbp = cbHBP.selected;
+				clause.spacingProvision = cbSpacingProvision.selected;
+				clause.lesserInterest = cbLesserInterest.selected;
+				clause.reworkDays = cbReworkDays.selected;
+				
+				if (cbOther.selected) {
+					clause.otherDescription = txtOtherDescription.text;
+				} else {
+					clause.otherDescription = "";
+				}
+				
+				if (cbExtend.selected) {
+					if (comboYears.selectedIndex == 0) {
+						clause.extent.term = int(txtTerm.text);
+					} else {
+						clause.extent.term = int(Number(txtTerm.text) * 12);
+						comboYears.selectedIndex = 0;
+					}
+					
+//					lease.clause.extent.royalty = Number(txtRoyalty.text);
+					clause.extent.royalty = 0;
+					clause.extent.bonusRate = Number(txtRate.currency);
+					clause.extent.bonusAmount = Number(txtAmount.currency);
+					clause.extent.note = txtNote.text;
+				}
+*/				
+				return true;
+			}
+			
+			private function isValid():Boolean 
+			{
+				if (cbExtend.selected) 
+				{
+					if (isNaN(Number(txtTerm.text)))
+						return false;
+/* 
+					if (isNaN(Number(txtRoyalty.text)))
+						return false;
+ */
+					if (isNaN(Number(txtRate.currency)))
+						return false;
+
+					if (isNaN(Number(txtAmount.currency)))
+						return false;
+				}
+				
+				return true;
+			}
+			
+			private function currencyFieldFocusOutHandler(event:Event):void 
+			{
+				var field:mx.controls.TextInput = event.target as mx.controls.TextInput;
+				field.text = fCurr.format(field.text);
+			} 
+			
+			private function txtRateChangeHandler():void 
+			{
+				if ( txtAmount.text.length == 0 ) {
+					txtAmount.currency = (netAcres * Number(txtRate.currency)).toString();
+				} else if ( !isNaN(Number(txtAmount.currency)) ) { //&& 0 == new Number(txtAmount.currency) ) {
+					txtAmount.currency = (netAcres * Number(txtRate.currency)).toString();
+				}
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="fCurr" currencySymbol="$" useThousandsSeparator="true"/>
+	
+    <mx:HBox backgroundColor="#FFFFFF" width="100%"
+    	paddingLeft="5" paddingRight="5">
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:CheckBox id="cbDepth" selected="{clause.depth}" label="Depth Clause"/>
+            <mx:CheckBox id="cbDamage" selected="{clause.damage}" label="Damage"/>
+            <mx:CheckBox id="cbPugh" selected="{clause.pugh}" label="Horizontal Pugh Clause"/>
+            <mx:CheckBox id="cbShutInGasWell" selected="{clause.shutInGasWell}" label="Vertical Pugh Clause"/>
+            <mx:CheckBox id="cbTakeGasRoyInKind" selected="{clause.takeGasRoyInKind}" label="Royalty in Kind"/>
+        </mx:VBox>
+        
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:CheckBox id="cbOther" selected="{clause.other}" label="Other"/>
+            <mx:CheckBox id="cbSurface" selected="{clause.surfaceUse}" label="Surface Use"/>
+            <mx:CheckBox id="cbContDrilling" selected="{clause.contDrilling}" label="Cont Drilling"/>
+            <mx:CheckBox id="cbFavoredNations" selected="{clause.favoredNations}" label="Favored Nations"/>
+            <mx:CheckBox id="cbExtend" selected="{clause.optionToExtent}" label="Option to Extend"/>
+        </mx:VBox>
+        
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:CheckBox id="cbAssignment" selected="{clause.assignment}" label="Assignment"/>
+            <mx:CheckBox id="cbProdPayment" selected="{clause.prodPayment}" label="Prod Payment"/>
+            <mx:CheckBox id="cbPoolingProvisions" selected="{clause.poolingProvision}" label="Pooling Provision"/>
+            <mx:CheckBox id="cbMinRoyaltyPayment" selected="{clause.minRoyaltyPayment}" label="Min Royalty Payment"/>
+            <mx:CheckBox id="cbRenewalOption" selected="{clause.renewalOption}" label="Renewal Option"/>
+        </mx:VBox>
+        
+        <mx:VBox verticalGap="0" width="100%">
+            <mx:CheckBox id="cbHBP" selected="{clause.hbp}" label="HBP"/>
+            <mx:CheckBox id="cbSpacingProvision" selected="{clause.spacingProvision}" label="Spacing Provision"/>
+            <mx:CheckBox id="cbLesserInterest" selected="{clause.lesserInterest}" label="Lesser Interest"/>
+            <mx:CheckBox id="cbReworkDays" selected="{clause.reworkDays}" label="Rework Days"/>
+            <mx:CheckBox label="Counterparts"/>
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:HBox width="100%" horizontalGap="2" verticalAlign="middle"
+    	backgroundColor="#f8f8f8" borderColor="#dddddd" borderStyle="solid" borderThickness="1" 
+    	paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+    	visible="{cbExtend.selected}"
+    	includeInLayout="{cbExtend.selected}">
+        <mx:Label text="Option to Extend. Term:"/>
+        <mx:TextInput id="txtTerm" width="30" 
+        	text="{clause.extent.term}"
+        	textAlign="right"/>
+        <mx:ComboBox id="comboYears" dataProvider="[Months, Years]" horizontalCenter="0"/>
+<!--
+        <mx:Label text=" Royalty:"/>
+        <mx:TextInput id="txtRoyalty" width="50" text="{lease.clause.extent.royalty}" textAlign="right"/>
+-->
+        <mx:Label text="for Amt Per Acre:"/>
+        <component:CurrencyInput id="txtRate" width="75" currency="{clause.extent.bonusRate}" textAlign="right"
+        	change="txtRateChangeHandler()"/>
+        <mx:Label text=" Total:"/>
+        <component:CurrencyInput id="txtAmount" width="75" 
+        	currency="{clause.extent.bonusAmount}" 
+        	textAlign="right"/>
+        <mx:Label text=" Note:"/>
+        <component:SelectableInput id="txtNote" text="{clause.extent.note}" width="100%"/>
+    </mx:HBox>
+
+    <mx:HBox width="100%" horizontalGap="2" verticalAlign="middle"
+    	backgroundColor="#f8f8f8" borderColor="#dddddd" borderStyle="solid" borderThickness="1" 
+    	paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+    	visible="{cbOther.selected}"
+    	includeInLayout="{cbOther.selected}">
+        <mx:Label text="Other Option Description:"/>
+        <component:SelectableInput id="txtOtherDescription" width="100%" text="{clause.otherDescription}"/>
+    </mx:HBox>
+</mx:VBox>

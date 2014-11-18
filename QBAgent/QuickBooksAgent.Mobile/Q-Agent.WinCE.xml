@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application License="" Trace="true">
+	
+<settings InitDB="false" 
+            VC="false"
+            Language="en" 
+            Sync="false"/>
+<database DBLocalFile ="QAgent"
+            ConnectionString ="Data Source={0}"
+			      MasterConnectionString = ""/>
+
+  <QuickBooks AppCode="96140499" AppLogin="qb@q-agent.com">
+    <ConnectionTicket></ConnectionTicket>
+    <DefaultLogin></DefaultLogin>
+  </QuickBooks>
+  <UserIdentification SmtpPort="25"/>
+</application>

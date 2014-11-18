@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Asset" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    xmlns:smAssetRate="tractIncStaffManager.asset.rate.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.Asset;
+            import TractInc.Domain.AssetType;
+            import TractInc.Domain.Company;
+            import TractInc.Domain.Person;
+            import tractIncStaffManager.StaffManagerController;
+            
+            [Bindable]
+            private var controller:AssetController = null;
+            private var currentAsset:Asset = null;
+                
+            public static function open(ctrl:AssetController, account:Asset, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, account);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:AssetController, cp:Asset):void
+            {
+                controller = ctrl;
+                currentAsset = cp;
+            }
+            
+            public function init():void
+            {
+                this.assetRateView.controller.init(currentAsset, controller);
+                
+                this.cbAssetType.dataProvider =
+                        controller.parentController.model.staffManagerPackage.AssetTypeList;
+                this.cbAssetType.labelField = "TypeName";
+                
+                var persons:Array = [null];
+                for each (var a:Person in controller.parentController.model.staffManagerPackage.PersonList) {
+                    persons.push(a);
+                }
+                this.cbPerson.dataProvider = persons;
+                this.cbPerson.labelField = "LastName";
+                
+                if ( null != currentAsset ) {
+                    this.txtAssetName.text = currentAsset.AssetName;
+                    this.cbAssetType.selectedItem = 
+                            getAssetTypeById(currentAsset.AssetTypeId);
+                    this.cbPerson.selectedItem = 
+                            getPersonById(currentAsset.PersonId);
+                } else {
+                    currentAsset = new Asset();
+                }
+                
+                if ( 0 != currentAsset.PersonId ) {
+                    this.personRadio.selected = true;
+                    this.txtAssetName.enabled = false;
+                } else {
+                    this.nameRadio.selected = true;
+                    this.cbPerson.enabled = false;
+                }
+            }
+            
+            private function getAssetTypeById(id:int):AssetType
+            {
+                for each (var status:AssetType in controller.parentController.model.staffManagerPackage.AssetTypeList) {
+                    if ( id == status.AssetTypeId ) {
+                        return status;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getPersonById(id:int):Person
+            {
+                for each (var item:Person in controller.parentController.model.staffManagerPackage.PersonList) {
+                    if ( id == item.PersonId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getAsset():Asset
+            {
+                currentAsset.AssetName = this.txtAssetName.text;
+                currentAsset.AssetTypeId = 
+                        (this.cbAssetType.selectedItem as AssetType).AssetTypeId;
+                currentAsset.CompanyId = StaffManagerController.getInstance().model.staffManagerPackage.StaffCompany.CompanyId;
+                        
+                if ( null != this.cbPerson.selectedItem ) {
+                    currentAsset.PersonId = 
+                        (this.cbPerson.selectedItem as Person).PersonId;
+                } else {
+                    currentAsset.PersonId = 0;
+                }  
+                
+                return currentAsset;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveAsset(getAsset());
+            }
+            
+            private function nameRadioOnClickHandler(event:Event):void
+            {
+                this.cbPerson.selectedIndex = 0;
+                this.cbPerson.enabled = false;
+                this.txtAssetName.enabled = true;
+            }
+            
+            private function personRadioOnClickHandler(event:Event):void
+            {
+                this.cbPerson.enabled = true;
+                this.txtAssetName.enabled = false;
+            }
+            
+            private function cbPersonOnChangeHandler(event:Event):void
+            {
+                var person:Person = this.cbPerson.selectedItem as Person;
+                if ( null != person ) {
+                    this.txtAssetName.text = person.LastName + " " + person.FirstName;
+                } else {
+                    this.txtAssetName.text = "";
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtAssetName}" property="text" required="true"/>
+        <mx:StringValidator source="{cbAssetType}" property="selectedItem" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:VBox>
+        <mx:Form id="mainForm" 
+            backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+            paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+            width="100%">
+    
+            <mx:VBox>
+                <mx:HBox>
+                    <mx:RadioButton id="nameRadio" groupName="asset" click="nameRadioOnClickHandler(event)"/>
+                    <mx:FormItem label="Name" width="100%" required="true">
+                        <mx:TextInput id="txtAssetName" width="100%"/>
+                    </mx:FormItem>
+                </mx:HBox>
+                <mx:HBox>
+                    <mx:RadioButton id="personRadio" groupName="asset" click="personRadioOnClickHandler(event)"/>
+                    <mx:FormItem label="Person" width="100%" required="true">
+                        <mx:ComboBox id="cbPerson" width="100%" change="cbPersonOnChangeHandler(event)"/>
+                    </mx:FormItem>
+                </mx:HBox>
+            </mx:VBox>
+            <mx:FormItem label="Type" width="100%" required="true">
+                <mx:ComboBox id="cbAssetType" width="100%"/>
+            </mx:FormItem>
+            <mx:FormItem label="Rates" width="100%" required="true">
+                <smAssetRate:AssetRateView id="assetRateView" width="100%"/>
+            </mx:FormItem>
+        </mx:Form>
+                
+    </mx:VBox>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

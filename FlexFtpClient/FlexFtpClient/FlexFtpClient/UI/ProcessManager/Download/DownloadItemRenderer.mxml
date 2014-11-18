@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    styleName="listItem" verticalAlign="middle"
+    borderStyle="solid" borderColor="#cccccc"
+    height="22" width="100%"
+    horizontalScrollPolicy="off"
+    verticalScrollPolicy="off"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+
+			private function downloadFile():void{
+	            try {
+	                data.StartLoad();
+	            } catch (error:Error) {
+	                Alert.show("Unable to download file: " + error.message);
+	            }                   
+			}
+
+			private function removeItem():void{
+				var downloadView:DownloadView = DownloadView(this.parentDocument);
+				downloadView.Controller.CloseDownload(DownloadItemInfo(data));
+			}
+			
+		]]>
+	</mx:Script>
+
+    <mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="true"/>  
+
+    <mx:Button id="btnClose" height="16" label="Close" 
+        toolTip="Remove download process" click="removeItem()"/>
+
+    <mx:Button id="btnLoad" height="16" label="Load" enabled="{data.FileUrl != null}"
+        toolTip="Begin downloading" click="downloadFile()" />
+
+    <mx:Label id="fn" 
+        text="{data.File.Name + ' (' + nf.format(data.Status.TotalBytes/1024) + ' Kb) from ' + data.ConnectionInfo.Host + data.ConnectionInfo.CurrentDir}" 
+        minWidth="200" width="100%" fontWeight="bold"/>
+
+    <mx:Label text="{nf.format(data.Status.TotalBytes/1024)} Kb" 
+        textAlign="right" fontWeight="bold" 
+        width="100" paddingRight="5"/>
+
+	<mx:HBox
+		visible="{data.ErrorMessage == null}" includeInLayout="{data.ErrorMessage == null}"
+	    verticalAlign="middle"
+	    height="22"
+	    horizontalScrollPolicy="off"
+	    verticalScrollPolicy="off"
+		>
+	    <mx:ProgressBar id="pb" width="275" mode="polled" source="{data}"
+	    	labelPlacement="center" label="{data.Status.Description}"/>
+	    <mx:Label id="pctComplete" text="{int((data.Status.ProcessedBytes/data.Status.TotalBytes)*100).toString() + '%'}"
+	        textAlign="right" fontWeight="bold" fontSize="10" 
+	        width="50" paddingRight="5"/>
+	</mx:HBox>
+
+	<mx:HBox
+		visible="{data.ErrorMessage != null}" includeInLayout="{data.ErrorMessage != null}"
+	    verticalAlign="middle"
+	    height="22" width="100%"
+	    horizontalScrollPolicy="off"
+	    verticalScrollPolicy="off"
+		>
+	    <mx:Label id="error" 
+	        text="{data.ErrorMessage}" 
+	        minWidth="300" width="100%" fontWeight="bold" color="red"/>
+	</mx:HBox>
+
+</mx:HBox>

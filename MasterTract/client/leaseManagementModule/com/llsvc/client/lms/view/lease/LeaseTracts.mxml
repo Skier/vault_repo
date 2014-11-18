@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:tract="com.llsvc.client.lms.view.tract.*"
+	paddingLeft="5" paddingRight="5">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.domain.LeaseBreakdown;
+			import com.llsvc.client.lms.view.tract.TractSection;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import com.llsvc.client.lms.view.tract.TractsRangeRenderer;
+			import mx.core.Application;
+			import com.llsvc.client.lms.view.tract.TractTownshipEditView;
+			import com.llsvc.client.lms.view.tract.TractRange;
+			import com.llsvc.domain.Lease;
+			import com.llsvc.client.lms.view.tract.TractLease;
+			
+			[Bindable] private var tractLease:TractLease = new TractLease();
+			
+			[Bindable] public var editable:Boolean = true;
+
+			[Bindable]
+			public function get lease():Lease {return tractLease.lease;}
+			public function set lease(value:Lease):void 
+			{
+				tractLease.lease = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				lease.tracts.removeAll();
+				
+				for each (var range:TractRange in tractLease.ranges) 
+				{
+					for each (var section:TractSection in range.sections) 
+					{
+						section.commitBreakdowns();
+						
+						var tract:LeaseTract = section.leaseTract;
+						
+						tract.township = range.township;
+						tract.range = range.range;
+						tract.section = section.section;
+						tract.tract = section.tract;
+						tract.grossAcres = section.grossAC;
+						tract.netAcres = section.netAC;
+						
+						tract.lease = lease;
+						
+						lease.tracts.addItem(tract);
+					}
+				}
+				
+				return true;
+			}
+			
+			private function addTownshipRange():void 
+			{
+				var range:TractRange = new TractRange(lease);
+				openTractRange(range);
+			}
+			
+			private function editTownshipRange(event:Event):void 
+			{
+				event.stopPropagation();
+				var range:TractRange = TractsRangeRenderer(event.target).range;
+				openTractRange(range);
+			}
+			
+			private function deleteTownshipRange(event:Event):void 
+			{
+				event.stopPropagation();
+				var range:TractRange = TractsRangeRenderer(event.target).range;
+				
+                Alert.show("Do you really want to delete Township ?", 
+                   "Delete Township", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                        	var i:int = tractLease.ranges.getItemIndex(range);
+                        	if (i != -1)
+                        		tractLease.ranges.removeItemAt(i);
+                        }
+                    });
+			}
+			
+			private function openTractRange(range:TractRange):void 
+			{
+				var popup:TractTownshipEditView = TractTownshipEditView.open(Application.application as DisplayObject, true);
+				popup.tractRange = range;
+				popup.addEventListener("commitRequest",
+					function (event:Event):void 
+					{
+						var r:TractRange = popup.tractRange;
+						if (!tractLease.ranges.contains(r))
+						{
+							r.needNewSection = true;
+							tractLease.ranges.addItem(r);
+						}
+						
+						popup.close();
+					}
+				);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox borderColor="#B9B9B9" borderStyle="solid" borderThickness="1" verticalGap="0" width="100%" height="100%">
+		<mx:HBox width="100%" backgroundColor="#B9B9B9" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2">
+			<mx:Label text="Tracts and Interest Breakdown"/>
+			<mx:Spacer width="100%"/>
+	        <mx:Button toolTip="Add new Township/Range"
+	        	visible="{editable}" includeInLayout="{editable}" 
+	        	width="24" height="24" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')" click="addTownshipRange()"/>
+		</mx:HBox>
+
+		<controls:PercentBoxFixed direction="vertical" width="100%" height="100%">
+			<tract:RangesContainer width="100%" height="100%"
+				ranges="{tractLease.ranges}"
+				paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2" verticalGap="2"
+				editRangeRequest="editTownshipRange(event)"
+				deleteRangeRequest="deleteTownshipRange(event)"/>
+<!--
+			<mx:VBox width="100%" paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2" verticalGap="2" height="100%">
+				<mx:Repeater id="rptGivers" dataProvider="{tractLease.ranges}" width="100%" height="100%">
+					<tract:TractsRangeRenderer
+						range="{TractRange(rptGivers.currentItem)}" width="100%" editable="{editable}"
+						editRangeRequest="editTownshipRange(event)"
+						deleteRangeRequest="deleteTownshipRange(event)"
+						/>
+				</mx:Repeater>
+			</mx:VBox>
+-->
+		</controls:PercentBoxFixed>
+	</mx:VBox>
+	
+</mx:VBox>

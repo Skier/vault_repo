@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application Trace="True">
+	<settings/>
+	
+	<database ConnectionString="server=localhost;user id=root; password=gfhjkm; database=servman_main_dbo; pooling=true"/>
+
+	<sync SyncInterval="300000"/>
+	
+	<smtp Host="localhost" Port="1010" Login="boris" Password="Password" FromAddress="courtney@dalworth.com"
+		  LateLeadsAddress = "courtney@dalworth.com" LateLeadsDisplayName="Late Lead Notification"
+		  DisplayName="Amber Hollman" OnCallAddress="oncall@dalworth.com" OnCallDisplayName="On Call Technician"
+		  FeedbackAddress ="feedback@dalworth.com"  FeedbackDisplayName ="Customer Feedback"/>
+
+	<log FlushEveryRecord="true"/>
+</application>
+

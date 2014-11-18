@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.Lease;
+        
+            [Embed(source="assets/icons16/bullet_disk.png")]
+            [Bindable]
+            private var imgDisk:Class;
+
+            [Embed(source="assets/icons16/bullet_go.png")]
+            [Bindable]
+            private var imgGo:Class;
+
+            [Embed(source="assets/icons16/bullet_green.png")]
+            [Bindable]
+            private var imgGreen:Class;
+
+            [Embed(source="assets/icons16/bullet_red.png")]
+            [Bindable]
+            private var imgRed:Class;
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{Lease(data).isProcessing ? 
+    					imgGo : 
+    					Lease(data).isProcessed ? 
+    						imgGreen : 
+    						imgRed}" 
+    	width="16" height="16"/>
+    
+</mx:HBox>

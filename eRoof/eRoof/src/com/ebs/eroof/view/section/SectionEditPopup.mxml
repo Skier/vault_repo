@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Section Editor">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			import com.ebs.eroof.model.wrapper.Segment;
+			
+			[Bindable]
+			public var section:Section;
+			
+            public static function open(parent:DisplayObject, section:Section, modal:Boolean = true):SectionEditPopup
+            {
+                var popup:SectionEditPopup = new SectionEditPopup();
+                
+                popup.section = section;
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                dispatchEvent(new Event("closeRequest"));
+
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function storeModel():void 
+            {
+            	sectionForm.populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreModel, section.sectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(section.sectionDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreModel(storedObject:Sections_DTO):void 
+            {
+            	section.sectionDTO = storedObject;
+            	section.addToFacility();
+            	
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	storeModel();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<widgets:IDNForm id="sectionForm" dto="{section.sectionDTO}">
+		<widgets:IDNField fieldName="Designation" fieldLabel="Designation" required="true"/>
+		<widgets:IDNField fieldName="RoofName" fieldLabel="Roof Name" required="true"/>
+	</widgets:IDNForm>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

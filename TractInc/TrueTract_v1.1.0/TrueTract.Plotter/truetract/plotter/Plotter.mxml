@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Plotter_code
+    xmlns="truetract.plotter.*"    
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:components="truetract.plotter.components.*"
+    xmlns:validators="truetract.plotter.validators.*"
+    xmlns:containers="truetract.plotter.containers.*"
+    xmlns:tools="truetract.plotter.tools.*"
+    xmlns:flex="com.modestmaps.flex.*" 
+    xmlns:microsoft="com.modestmaps.mapproviders.microsoft.*" 
+    xmlns:yahoo="com.modestmaps.mapproviders.yahoo.*" 
+    xmlns:utils="truetract.plotter.utils.*" 
+    xmlns:mapproviders="com.modestmaps.mapproviders.*" 
+    xmlns:google="com.modestmaps.mapproviders.google.*"
+    width="100%" height="100%" 
+    tabEnabled="true"
+    creationComplete="creationCompleteHandler(event)">
+
+    <mx:Metadata>
+        [Style(name="tractViewStyleName", type="String", inherit="no")]
+
+        [Event(name="editTractInfoRequest", type="flash.events.Event")]
+        [Event(name="pdfExportRequest", type="truetract.plotter.events.TractExportEvent")]
+        [Event(name="saveRequest", type="flash.events.Event")]
+        [Event(name="printRequest", type="flash.events.Event")]
+        [Event(name="closeRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.components.PanelToolTip;
+            import truetract.plotter.containers.DraggableCanvas;
+            import truetract.plotter.tools.AbstractTool;
+            import truetract.plotter.utils.UnitOfMeasure;
+            import truetract.plotter.utils.UOMUtil;
+
+            import flash.utils.getTimer;
+            import mx.events.ResizeEvent;
+            import mx.controls.Alert;
+            import mx.core.Application;
+            import mx.managers.PopUpManager;
+        	import mx.states.State;
+      
+            override protected function createChildren():void 
+            {
+                super.createChildren();
+                    
+                var tractViewStyleName:String = getStyle("tractViewStyleName");
+                if (tractView && tractViewStyleName) 
+                {
+                    tractView.styleName = tractViewStyleName;
+                }
+            }
+
+            private const BEARING_TOOLTIP:String = 
+                "<li>N,E,S, or W (Will draw a straight line in the direction specified.)</li>" + 
+                "<li>N<b>{angle}</b>E</li>" + 
+                "<li>N <b>{angle}</b> E</li>" + 
+                "<li>North <b>{angle}</b> East</li>" + 
+                "<li> <b>{angle}</b>, NE</li>" + 
+                "<li> <b>{angle}</b>-1 (Based on Quadrants 1:NE, 2:SE, 3:SW, 4:NW)</li>" + 
+                "<i>where</i> <b>{angle}</b><i> - angle in format:</i>" + 
+                "<li>12.45678 - degree and decimal degrees</li>" + 
+                "<li>12.45678\u00b0</li>" + 
+                "<li>12\u00b045.678' - degree, minutes</li>" + 
+                "<li>12\u00b045'56.789\" - degree, minutes, seconds</li>" + 
+                "<b>to enter degrese, minutes and seconds use the * key in the place of each symbol position.</b>";
+
+            private function resizeHandler(event:*):void 
+            {
+                callLater(checkForPopPupPanelsVisibility);
+            }
+            
+            private function checkForPopPupPanelsVisibility():void 
+            {
+                var inputToolbarBounds:Rectangle = traverseInputToolbar.getBounds(
+                    DisplayObject(Application.application));
+
+                var callListToolbarBounds:Rectangle = tractCallsToolbar.getBounds(
+                    DisplayObject(Application.application));
+
+                if (inputToolbarBounds.right - (inputToolbarBounds.width / 2) > Application.application.width ||
+                    inputToolbarBounds.bottom - (inputToolbarBounds.height / 2) > Application.application.height ||
+                    callListToolbarBounds.right - (callListToolbarBounds.width / 2) > Application.application.width ||
+                    callListToolbarBounds.bottom - (callListToolbarBounds.height / 2) > Application.application.height) 
+                {
+                    movePanelsToInitialPosition();
+                }
+            }
+            
+            private function creationCompleteHandler(event:*):void 
+            {
+                this.removeChild(tractCallsToolbar);
+                this.removeChild(traverseInputToolbar);
+
+                PopUpManager.addPopUp(tractCallsToolbar, this);
+                PopUpManager.addPopUp(traverseInputToolbar, this);
+
+                activeTool = tractTool;
+                drawingSurface.ResetStartPointPosition();
+                movePanelsToInitialPosition();
+
+                Application.application.addEventListener(ResizeEvent.RESIZE, resizeHandler);
+            }
+
+            private function movePanelsToInitialPosition():void 
+            {
+                var padding:Number = 5;
+                var dsGlobal:Point = drawingSurface.localToGlobal(new Point());
+
+                traverseInputToolbar.move(
+                    (dsGlobal.x + drawingSurface.width) - traverseInputToolbar.width - padding,
+                    dsGlobal.y + padding);
+
+                callsTlbAdjust.end();
+
+                tractCallsToolbar.move(
+                    (dsGlobal.x + drawingSurface.width) - tractCallsToolbar.width - padding,
+                    traverseInputToolbar.y + traverseInputToolbar.height + padding);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="traverseInputVG">
+        <mx:NumberValidator
+            source="{distanceTxt}" required="{bearingTxt.text.length > 0}" 
+            property="text" allowNegative="false"/>
+    
+        <validators:GeoBearingValidator id="bearingValidator"
+            required="{distanceTxt.text.length > 0}" source="{bearingTxt}" property="text"/>
+    </validators:ValidatorsGroup>
+
+    <mx:NumberFormatter id="nf" rounding="nearest" precision="2"/>
+
+    <mx:Parallel id="callsTlbAdjust" target="{tractCallsToolbar}">
+        <mx:Move id="callsTlbMove"/>
+        <mx:Resize id="callsTlbResize"/>
+    </mx:Parallel>
+
+    <tools:TractTool id="tractTool" plotter="{this}"/>
+    <tools:TextTool id="textTool" plotter="{this}"/>
+    <tools:EditTool id="editTool" plotter="{this}"/>
+    <tools:ZoomInTool id="zoomInTool" plotter="{this}"/>
+    <tools:PanTool id="panTool" plotter="{this}"/>
+    <tools:MeasuringTool id="measuringTool" plotter="{this}"/>
+
+<!--    <utils:MapUtil drawingSurface="{drawingSurface}" map="{map}"/>
+ --> 
+    <mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
+        
+        <mx:VBox id="tractDrawingView" width="100%" height="100%" verticalGap="3">
+
+            <mx:HBox id="horisontalToolBar"
+                horizontalGap="2" verticalAlign="middle" width="100%">
+
+                <mx:Button
+                    enabled="{Model.IsDirty}"
+                    icon="@Embed(source='/assets/disk.png')" width="25" height="25"
+                    toolTip="Save" styleName="toolButton"
+                    click="dispatchEvent(new Event('saveRequest'))"/>
+
+                <mx:Button
+                    icon="@Embed(source='/assets/printer.png')" width="25" height="25"
+                    toolTip="Print Tract" styleName="toolButton"
+                    click="dispatchEvent(new Event('printRequest'))"/>
+
+                <mx:Button
+                    styleName="toolButton" width="25" height="25"
+                    icon="@Embed(source='/assets/page_attach.png')"
+                    toolTip="Show Tract Information"
+                    click="dispatchEvent(new Event('editTractInfoRequest'))" />
+
+                <mx:Spacer width="5"/>
+
+                <mx:Button
+                    styleName="toolButton" width="25" height="25"
+                    icon="{zoomInTool.Icon}" toolTip="{zoomInTool.Description}" toggle="true" 
+                    selected="{activeTool == zoomInTool}"
+                    click="activeTool = zoomInTool"/>
+
+                <mx:Button
+                    icon="@Embed(source='/assets/zoom_out.png')" width="25" height="25"
+                    toolTip="Zoom Out" styleName="toolButton"
+                    click="ZoomOut()"/>
+
+                <mx:Button
+                    icon="@Embed(source='/assets/zoom.png')" width="25" height="25"
+                    toolTip="Zoom All" styleName="toolButton"
+                    click="ZoomAll()"/>
+
+                <mx:Button
+                    styleName="toolButton" width="25" height="25"
+                    icon="{panTool.Icon}" toolTip="{panTool.Description}" toggle="true" 
+                    selected="{activeTool == panTool}"
+                    click="activeTool = panTool"/>
+
+                <mx:Spacer width="5"/>
+
+                <mx:Button
+                    icon="@Embed(source='/assets/cog.png')" width="25" height="25"
+                    toolTip="Settings" styleName="toolButton"
+                    click="openSettings()"/>
+
+                <mx:Spacer width="5"/>
+
+                <mx:Button
+                    icon="@Embed(source='/assets/door_in.png')" width="25" height="25"
+                    toolTip="Close Plotter" styleName="toolButton"
+                    click="dispatchEvent(new Event('closeRequest'))"/>
+
+<!--                <mx:ComboBox id="providerList" 
+                    visible="{map.visible}" includeInLayout="{map.visible}">
+                    <mx:ArrayCollection>
+                        <microsoft:MicrosoftAerialMapProvider/>
+                        <microsoft:MicrosoftHybridMapProvider/>
+                        <microsoft:MicrosoftRoadMapProvider/>
+                        
+                        <yahoo:YahooAerialMapProvider/>
+                        <yahoo:YahooHybridMapProvider/>
+                        <yahoo:YahooOverlayMapProvider/>
+                        <yahoo:YahooRoadMapProvider/>
+
+                        <google:GoogleAerialMapProvider/>
+                        <google:GoogleHybridMapProvider/>
+                        <google:GoogleRoadMapProvider/>
+                        
+                        <mapproviders:BlueMarbleMapProvider />
+                        <mapproviders:OpenStreetMapProvider />
+                    </mx:ArrayCollection>
+                </mx:ComboBox>
+ -->
+                <mx:Label
+                    text="{Model.RefName}"
+                	maxWidth="200" paddingLeft="25" fontWeight="bold"/>
+
+                <mx:Label text="({Model.calledString})"/>
+                <mx:Spacer width="100%"/>
+
+                <mx:Label truncateToFit="true" text="Default UOM: {defaultUOM.Name}"/>
+
+            </mx:HBox>
+        
+            <mx:HBox width="100%" height="100%" horizontalGap="3">
+                <mx:VBox id="verticalToolBar" verticalGap="2">
+
+                    <mx:Button
+                        icon="@Embed(source='/assets/line_icon.png')" width="25" height="25"
+                        toolTip="Add Line" styleName="toolButton"
+                        enabled="{!Model.IsClosed}"
+                        click="showTraverseInputPanel = true; bearingTxt.setFocus();"/>
+
+                    <mx:Button
+                        icon="@Embed(source='/assets/curve_icon.png')" width="25" height="25"
+                        toolTip="Add Curve" styleName="toolButton"
+                        enabled="{!Model.IsClosed}"
+                        click="openCurveSelector()"/>
+
+                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="{tractTool.Icon}" toolTip="{tractTool.Description}" toggle="true" 
+                        selected="{activeTool == tractTool}"
+                        click="activeTool = tractTool"/>
+
+                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="{editTool.Icon}" toolTip="{editTool.Description}" toggle="true" 
+                        selected="{activeTool == editTool}"
+                        click="activeTool = editTool"/>
+
+                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="{textTool.Icon}" toolTip="{textTool.Description}" toggle="true" 
+                        selected="{activeTool == textTool}"
+                        click="activeTool = textTool"/>
+
+                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="{measuringTool.Icon}" toolTip="{measuringTool.Description}" toggle="true" 
+                        selected="{activeTool == measuringTool}"
+                        click="activeTool = measuringTool"/>
+
+                    <mx:Spacer height="5"/>
+
+                    <mx:Button
+                        icon="@Embed(source='/assets/traverse_input.png')" width="25" height="25"
+                        toolTip="Show Traverse Input Panel" toggle="true" styleName="toolButton"
+                        selected="{showTraverseInputPanel}" 
+                        click="showTraverseInputPanel = !showTraverseInputPanel"/>
+
+                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="@Embed(source='/assets/tract_calls_list.png')" toggle="true"
+                        toolTip="Show Tract Calls List"
+                        selected="{showTractCallsPanel}" 
+                        click="showTractCallsPanel = !showTractCallsPanel"/>
+
+                    <mx:Button
+                        icon="@Embed(source='/assets/tag_blue.png')" width="25" height="25"
+                        toolTip="Show Call Annotation" styleName="toolButton"
+                        selected="{showCallAnnotations}"
+                        click="showCallAnnotations = !showCallAnnotations"/>
+
+                    <mx:Button
+                        icon="@Embed(source='/assets/tag_orange.png')" width="25" height="25"
+                        toolTip="Show Tract Area" styleName="toolButton"
+                        selected="{showTractArea}"
+                        click="showTractArea = !showTractArea"/>
+
+<!--                    <mx:Button
+                        styleName="toolButton" width="25" height="25"
+                        icon="@Embed(source='/assets/world.png')" toggle="true"
+                        toolTip="Show Map"
+                        selected="{map.visible}" 
+                        click="map.visible = !map.visible; drawingSurface.setStyle('backgroundAlpha', map.visible ? 0 : 1 )" />
+ -->
+                </mx:VBox>
+    
+                <mx:VBox height="100%" width="100%" verticalGap="2">
+                
+                    <mx:Canvas width="100%" height="100%">
+
+<!--                     	<flex:Map id="map" visible ="false"
+                     	    width="100%" height="100%" 
+                     	    zoom="11" center="37.75, -122.46"
+                    		provider="{providerList.selectedItem}"/>
+ -->
+                        <containers:GeoCanvas id="drawingSurface"
+                            height="100%" width="100%" backgroundColor="#ffffff"
+                            mouseButton="{DraggableCanvas.PRIMARY_MOUSE_BUTTON}"
+                            ctrlKeyRequired="true" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+                            keyUp="drawingSurface_keyUpHandler(event)"
+                            mouseMove="drawingSurface_mouseMoveHandler(event)"
+                            mouseDown="drawingSurface_mouseDownHandler(event)"
+                            mouseUp="drawingSurface_mouseUpHandler(event)"
+                            mouseWheel="drawingSurface_mouseWheelHandler(event)">
+                            
+                            <components:TractView id="tractView" 
+                                tract="{Model}" surfaceScale="{drawingSurface.Scale}"
+                                showArea="{showTractArea}"
+                                showCallAnnotations="{showCallAnnotations}"
+                                callClick="tractCall_clickHandler(event)"
+                                callDoubleClick="tractCall_doubleClickHandler(event)"
+                                pointMouseDown="tractPoint_mouseDownHandler(event)"/>
+
+                        </containers:GeoCanvas>
+                    
+                    </mx:Canvas>
+
+                    <mx:HBox width="100%" horizontalAlign="left">
+                        <mx:Label id="statusLabel"/>
+
+                        <mx:Spacer width="100%"/>
+                        
+                        <components:ScaleInput id="scaleInput" 
+                            showIcon="true" scaleValue="{drawingSurface.Scale}" commitOnEnter="true"
+                            enableIcon="true" editOnClick="true"
+                            change="drawingSurface.Scale = scaleInput.scaleValue"/>
+                    </mx:HBox>
+                    
+                </mx:VBox>
+                    
+            </mx:HBox>
+    
+        </mx:VBox>
+
+        <components:TractPrintView id="tractPrintView"
+            userName="{userName}"
+            pdfExportRequest="dispatchEvent(event)"
+            close="viewStack.selectedIndex = 0"/>
+
+    </mx:ViewStack>
+
+    <containers:ExtendedTitleWindow id="traverseInputToolbar" 
+        title="Tract Calls Input Bar" cornerRadius="0" showCloseButton="true"
+        width="210" height="100" resizable="false"
+        visible="{showTraverseInputPanel &amp;&amp; viewStack.selectedChild == tractDrawingView &amp;&amp; VBox(this.parent).visible}" 
+        paddingRight="0" paddingTop="0" paddingBottom="0" paddingLeft="0"
+        close="showTraverseInputPanel = false">
+
+        <mx:VBox width="100%" verticalGap="2" enabled="{!Model.IsClosed}">
+            <mx:HBox width="100%" horizontalGap="2">
+                <mx:VBox verticalGap="0" width="100%">
+                	<mx:HBox width="100%" verticalAlign="middle">
+                    <mx:Label text="Bearing"  width="100%"/>
+						<mx:Image source="@Embed(source='/assets/help3.png')"
+                        toolTip=" "
+                        toolTipCreate="PanelToolTip.create('Possible formats', BEARING_TOOLTIP, event)"
+	                    	/>
+                	</mx:HBox>
+                	<mx:HBox width="100%" horizontalGap="0">
+	                    <mx:TextInput id="bearingTxt" 
+	                        width="100%" minWidth="50" change="bearingTxt_changeHandler(event)"
+                        enter="bearingTxt_enterHandler(event)"/>
+                	</mx:HBox>
+                </mx:VBox>
+
+                <mx:VBox verticalGap="0" width="100%">
+                    <mx:Label text="Distance" width="100%"/>
+                    <mx:TextInput id="distanceTxt" 
+                        width="100%" minWidth="50" keyDown="distanceTxt_keyDownHandler(event)"/>
+                </mx:VBox>
+            </mx:HBox>
+
+            <mx:HBox verticalAlign="middle" horizontalGap="2" minWidth="50" width="100%">
+    
+                <mx:Label text="UOM"/>
+
+                <components:ExtendedComboBox id="uomList"
+                    dataProvider="{UOMUtil.getInstance().unitList}"
+                    showDataTips="true" labelField="Name" width="100%" minWidth="50"
+                    keyDown="uomList_keyDownHandler(event)"/>
+    
+                <mx:Button width="20"
+                    icon="@Embed(source='/assets/flag_green.png')"
+                    toolTip="Set As Default"
+                    click="defaultUOM = UnitOfMeasure(uomList.selectedItem)"/>
+    
+            </mx:HBox>
+            
+        </mx:VBox>
+
+    </containers:ExtendedTitleWindow>
+    
+    <containers:ExtendedTitleWindow id="tractCallsToolbar"
+        title="Tract Calls" showCloseButton="true"
+        cornerRadius="0" minHeight="100" minWidth="180" width="210" height="170"
+        visible="{showTractCallsPanel &amp;&amp; viewStack.selectedChild == tractDrawingView &amp;&amp; VBox(this.parent).visible}" 
+        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="1"
+        close="showTractCallsPanel = false">
+
+        <mx:HBox width="100%">
+            <mx:LinkButton 
+                icon="@Embed(source='/assets/add.png')"
+                disabledIcon="@Embed(source='/assets/add_disabled.png')"
+                label="Insert" enabled="{tractCallsList.selectedItem != null}"
+                click="InsertCall()"/>
+                
+            <mx:LinkButton 
+                icon="@Embed(source='/assets/delete.png')"
+                disabledIcon="@Embed(source='/assets/delete_disabled.png')"
+                label="Delete" enabled="{tractCallsList.selectedItem != null}"
+                click="DeleteSelectedCall()"/>
+        </mx:HBox>
+
+        <components:ExtendedDataGrid id="tractCallsList"
+            doubleClickEnabled="true" width="100%" height="100%" 
+            backgroundAlpha="{tractCallsToolbar.transparencySliderValue / 3}"
+            dataProvider="{Model.CallsList}"
+            keyUp="drawingSurface_keyUpHandler(event)"
+            change="tractCallList_changeHandler(event)"
+            itemDoubleClick="tractCallList_doubleClickHandler(event)">
+            
+            <components:columns>
+                <mx:DataGridColumn headerText="Id" dataField="AnnotationId" width="25" sortCompareFunction="sortByCallOrder"/>
+                <mx:DataGridColumn headerText="Description" dataField="ParamsDisplayValue"/>
+                <mx:DataGridColumn headerText="Approximate" dataField="IsApproximate" width="85"/>
+            </components:columns>
+        </components:ExtendedDataGrid>
+
+    </containers:ExtendedTitleWindow>
+
+</Plotter_code>

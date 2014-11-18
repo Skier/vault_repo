@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:settingsViewClasses="truetract.plotter.components.settingsViewClasses.*"
+    width="100%" height="100%"
+    creationComplete="creationCompleteHandler()" >
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.settings.FontCssStyle;
+            import truetract.plotter.domain.settings.UserSettingsRegistry;
+
+            public function CommitChanges():void 
+            {
+                UserSettingsRegistry.getInstance().AnnotationFontStyle = getFontStyle(annotationFont);
+                UserSettingsRegistry.getInstance().TextObjectFontStyle = getFontStyle(textObjectsFont);
+                UserSettingsRegistry.getInstance().TractAreaFontStyle = getFontStyle(tractAreaFont);
+                UserSettingsRegistry.getInstance().refreshFontStyles();
+            }
+            
+            private function getFontStyle(fp:FontPicker):FontCssStyle
+            {
+                var fontStyle:FontCssStyle = new FontCssStyle();
+                
+                fontStyle.color = fp.textColorChooser.selectedColor;
+                fontStyle.fontFamily = fp.fontFamilyChooser.styleValue;
+                fontStyle.fontSize = Number(fp.fontSizeChooser.styleValue);
+                fontStyle.bold = fp.textFormatChooser.styleValue[0];
+                fontStyle.italic = fp.textFormatChooser.styleValue[1];
+                fontStyle.underline = fp.textFormatChooser.styleValue[2];
+                
+                return fontStyle;
+            }
+
+            private function loadFontStyle(fp:FontPicker, fontStyle:FontCssStyle):void 
+            {
+                fp.textColorChooser.selectedColor = fontStyle.color;
+                fp.fontFamilyChooser.styleValue = fontStyle.fontFamily;
+                fp.fontSizeChooser.styleValue = fontStyle.fontSize.toString();
+                fp.textFormatChooser.styleValue = [
+                    fontStyle.bold, fontStyle.italic, fontStyle.underline
+                ];
+            }
+
+            private function creationCompleteHandler():void 
+            {
+                loadFontStyle(annotationFont, UserSettingsRegistry.getInstance().AnnotationFontStyle);
+                loadFontStyle(textObjectsFont, UserSettingsRegistry.getInstance().TextObjectFontStyle);
+                loadFontStyle(tractAreaFont, UserSettingsRegistry.getInstance().TractAreaFontStyle);
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <components:GlassHeaders headerTitle="FONT SETTINGS"/>
+    
+    <mx:TabNavigator width="100%" height="100%" styleName="styleControlTabNavigator">
+    
+		<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" label="Annotations">
+            <settingsViewClasses:FontPicker id="annotationFont" />
+		</mx:Canvas>
+
+		<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" label="Text Objects">
+            <settingsViewClasses:FontPicker id="textObjectsFont" />
+		</mx:Canvas>
+
+		<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off" label="Area Text">
+            <settingsViewClasses:FontPicker id="tractAreaFont" />
+		</mx:Canvas>
+
+    </mx:TabNavigator>
+    
+</mx:VBox>

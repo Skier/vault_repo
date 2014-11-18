@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInit()">
+
+	<mx:Script>
+		<![CDATA[
+			import com.affilia.util.DateUtil;
+			import com.dalworth.leadCentral.service.registry.TrackingPhoneRegistry;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import com.dalworth.leadCentral.service.registry.LeadSourceRegistry;
+			import testLayouts.LeadSources;
+			import com.dalworth.leadCentral.domain.LeadSource;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.dalworth.leadCentral.domain.TrackingPhoneRotation;
+			import mx.charts.series.ColumnSet;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.Stroke;
+			import mx.graphics.SolidColor;
+			import com.affilia.util.ColorArray;
+			import mx.charts.series.ColumnSeries;
+			import mx.events.CollectionEvent;
+			
+			private static const COLUMN_VISIT_START:String = "Start";
+			private static const COLUMN_VISIT_END:String = "End";
+			private static const COLUMN_VISIT_USER_HOST:String = "User Host";
+			private static const COLUMN_VISIT_CAME_FROM:String = "Referral URI";
+			private static const COLUMN_VISIT_CALL_FROM:String = "Call From";
+			private static const COLUMN_VISIT_CALLS:String = "Calls";
+			
+			private static const COLUMN_LEAD_SOURCE:String = "Lead Source";
+			private static const COLUMN_TIME:String = "Time";
+			private static const COLUMN_PAGE:String = "Page URI";
+			private static const COLUMN_REFERRAL:String = "Referral URI";
+			private static const COLUMN_PHONE:String = "Phone Displayed";
+			private static const COLUMN_SESSION:String = "Session Id";
+			private static const COLUMN_HOST:String = "User Host";
+
+			private var controller:DashboardVisitsController;
+			
+			[Bindable] 
+			private var model:DashboardVisitsModel;
+			
+			public function set selectedLeadSources(value:ArrayCollection):void 
+			{
+				model.selectedLeadSources = value;
+				controller.refreshRotations();
+			}
+			
+			public function set startDate(value:Date):void 
+			{
+				model.startDate = value;
+				controller.refreshRotations();
+			}
+			
+			public function set endDate(value:Date):void 
+			{
+				model.endDate = value;
+				controller.refreshRotations();
+			}
+			
+			private function onInit():void 
+			{
+				controller = new DashboardVisitsController(this);
+				model = DashboardVisitsModel.getInstance();
+			}
+
+			private function getVisitLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is SiteVisit) 
+				{
+					var visit:SiteVisit = item as SiteVisit;
+					switch (column.headerText) 
+					{
+						case COLUMN_VISIT_START :
+							return visit.startTime != null ? DateUtil.getDateTimeStr(visit.startTime) : "";
+
+						case COLUMN_VISIT_END :
+							return visit.startTime != null ? DateUtil.getDateTimeStr(visit.startTime) : "";
+
+						case COLUMN_VISIT_USER_HOST :
+							return visit.userHostAddress;
+						
+						case COLUMN_VISIT_CAME_FROM :
+							return visit.cameFrom;
+						
+						case COLUMN_VISIT_CALL_FROM :
+							return visit.callFrom;
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is TrackingPhoneRotation) 
+				{
+					var rotation:TrackingPhoneRotation = item as TrackingPhoneRotation;
+					switch (column.headerText) 
+					{
+						case COLUMN_LEAD_SOURCE :
+							var leadSource:LeadSource = LeadSourceRegistry.getInstance().getLocal(rotation.LeadSourceId) as LeadSource;
+							if (leadSource != null)
+								return leadSource.Name;
+							else 
+								return "";
+
+						case COLUMN_PHONE :
+							var phone:TrackingPhone = TrackingPhoneRegistry.getInstance().getLocal(rotation.TrackingPhoneId) as TrackingPhone;
+							if (phone != null)
+								return phone.ScreenNumber;
+							else 
+								return "";
+
+						case COLUMN_PAGE :
+							return rotation.ReferralUri;
+						
+						case COLUMN_REFERRAL :
+							return rotation.ParentReferralUri;
+						
+						case COLUMN_TIME :
+							return DateUtil.getDateTimeStr(rotation.TimeDisplay);
+						
+						case COLUMN_SESSION :
+							return rotation.SessionIdUid;
+						
+						case COLUMN_HOST :
+							return rotation.UserHostAddress;
+						
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+		]]>
+	</mx:Script>
+	
+    <!-- Define custom colors for use as fills. -->
+    <mx:SolidColor id="sc1" color="yellow" alpha=".8"/>
+    <mx:SolidColor id="sc2" color="0xCCCCCC" alpha=".6"/>
+    <mx:SolidColor id="sc3" color="0xFFCC66" alpha=".6"/>
+
+    <!-- Define custom Strokes for the columns. -->
+    <mx:Stroke id="s1" color="yellow" weight="1"/>
+    <mx:Stroke id="s2" color="0xCCCCCC" weight="1"/>
+    <mx:Stroke id="s3" color="0xFFCC66" weight="1"/>
+
+	<mx:SeriesInterpolate duration="1000" id="seriesInterpolate"/>
+
+
+	<mx:VBox width="100%" height="100%">
+		<mx:ViewStack id="vsDaily" width="100%" height="100%" borderColor="#CCCCCC" borderStyle="solid"
+			paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2">
+
+			<mx:VBox label="Rotations Grid" width="100%" height="100%">
+				<mx:DataGrid id="dgVisits" dataProvider="{model.visits}" width="100%" height="100%" minWidth="300"
+					sortableColumns="false" draggableColumns="false" editable="false">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_START}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_END}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_USER_HOST}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_CAME_FROM}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_CALL_FROM}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_VISIT_CALLS}" itemRenderer="mx.controls.Label" labelFunction="getVisitLabel" width="100" minWidth="50"/>
+					</mx:columns>
+				</mx:DataGrid>
+
+				<mx:DataGrid id="dgRotations" dataProvider="{SiteVisit(dgVisits.selectedItem).relatedRotations}" width="100%" height="100%" minWidth="300"
+					sortableColumns="false" draggableColumns="false" editable="false"
+					visible="{dgVisits.selectedItem != null}" includeInLayout="{dgVisits.selectedItem != null}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.dalworth.leadCentral.transport.TransportIR"/>
+						<mx:DataGridColumn headerText="{COLUMN_LEAD_SOURCE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_TIME}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_PAGE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_REFERRAL}" itemRenderer="mx.controls.Label" labelFunction="getLabel"/>
+						<mx:DataGridColumn headerText="{COLUMN_PHONE}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_SESSION}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+						<mx:DataGridColumn headerText="{COLUMN_HOST}" itemRenderer="mx.controls.Label" labelFunction="getLabel" width="100" minWidth="50"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="100%" label="Rotations Chart">
+			    <mx:LineChart id="lineChart" 
+			    	showDataTips="true" width="100%" height="100%" dataProvider="{model.dailyCollection}">
+			        <mx:horizontalAxis>
+			            <mx:CategoryAxis id="dayAxis" title="Date" categoryField="dateStr"/>
+			        </mx:horizontalAxis>
+			        <mx:verticalAxis>
+			            <mx:LinearAxis id="countAxis" title="Rotations" autoAdjust="true" interval="1"/>
+			        </mx:verticalAxis>
+			        <mx:horizontalAxisRenderers>
+			            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" showLine="true" axisTitleStyleName="chartTitle" axis="{dayAxis}"/>
+			        </mx:horizontalAxisRenderers>
+			        <mx:verticalAxisRenderers>
+			            <mx:AxisRenderer axisStroke="{new Stroke(0x666666, 1, 1)}" verticalAxisTitleAlignment="vertical"
+			                             showLine="true" axisTitleStyleName="chartTitle" axis="{countAxis}"/>
+			        </mx:verticalAxisRenderers>
+		
+			        <mx:series>
+		                <mx:LineSeries yField="total" displayName="Total Rotations"
+		                    showDataEffect="{seriesInterpolate}" stroke="{s2}"/>
+		                <mx:LineSeries yField="contacted" displayName="Phone Calls" 
+		                	showDataEffect="{seriesInterpolate}" stroke="{s3}"/>
+			        </mx:series>
+		
+			        <mx:backgroundElements> 
+			        	<mx:Grid styleName="myLineChart" borderStyle="solid"/>
+			            <mx:GridLines horizontalShowOrigin="true" verticalShowOrigin="false" y="0" horizontalStroke="{new Stroke(0x666666,1,1)}"/>
+			        </mx:backgroundElements>
+			    </mx:LineChart>
+			</mx:VBox>
+		</mx:ViewStack>
+		
+		<mx:ToggleButtonBar dataProvider="{vsDaily}"/>
+	</mx:VBox>
+</mx:Canvas>

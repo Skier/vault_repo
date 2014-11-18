@@ -1,0 +1,28 @@
+<?
+    if (isset($_SESSION["location"])) {
+        echo(LocationInfo::getPath($_SESSION["location"], $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SELECT_AMENITIES) ?>:</b>
+
+<form action="OwnerSelectAmenities.php" method="get">
+    <table>
+        <?
+            for ($index = 0; $index < count($this->amenities); $index ++) {
+                $amenity = $this->amenities[$index]; ?>
+                <tr>
+                    <td><input type="checkbox" name="am<? echo($amenity->getAmenityId()) ?>" /></td>
+                    <td><b><? echo($amenity->getAmenityName()) ?></b></td>
+                </tr>
+                <?
+            }
+        ?>
+        <tr>
+            <td align="right" colspan="2">
+                <input type="submit" name="submit" value="<? echo(MSG_NEXT) ?>" />
+            </td>
+        </tr>
+    </table>
+</form>

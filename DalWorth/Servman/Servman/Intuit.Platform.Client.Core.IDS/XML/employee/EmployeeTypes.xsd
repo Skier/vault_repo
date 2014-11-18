@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	<xs:include schemaLocation="../common/IntuitCustomFieldCdmTypes.xsd"/>
+	<xs:include schemaLocation="../customer/PartyCdmTypes.xsd"/>
+	<xs:include schemaLocation="./PayrollItem.xsd"/>
+	<!--========================================================================-->
+	<!--KEY PAYROLL TYPES-->
+	<xs:complexType name="Employer">
+		<xs:annotation>
+			<xs:documentation>An singleton object representing this business (company) in the payroll domain. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:group ref="OrganizationGroupTemp" minOccurs="0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="EmployerComplianceItems">
+		<xs:annotation>
+			<xs:documentation>RefId and RefSyncToken identify Employer (a singleton), which is the Owner of the "payload" consisting of  the EmployerComplianceGroup.
+</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:sequence>
+				<xs:group ref="EmployerComplianceGroup" minOccurs="0"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Worker">
+		<xs:annotation>
+			<xs:documentation>This object respresents a Worker in the employment relationship. 
+There can be many Workers working for a single Employer.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence minOccurs="0">
+					<xs:group ref="PersonGroup" minOccurs="0"/>
+					<xs:group ref="WorkerInfoGroup" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="WorkerComplianceItems">
+		<xs:annotation>
+			<xs:documentation>RefId and RefSyncToken identify the Worker object, i.e., the Owner of the "payload" consisting of  the WorkerComplianceGroup.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:group ref="WorkerComplianceGroup"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkerPaySchedules">
+		<xs:annotation>
+			<xs:documentation>RefId and RefSyncToken identify the Worker object, i.e., the Owner of the "payload" consisting of a collection of PaySchedule references.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:element name="PayScheduleRef" type="PayScheduleReference" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkerWorkLocationRefs">
+		<xs:annotation>
+			<xs:documentation>RefId and RefSyncToken identify the Worker object, i.e., the Owner of the "payload" consisting of a collection of WorkLocation references.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:element name="WorkLocationRef" type="WorkLocationReference"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Agency">
+		<xs:annotation>
+			<xs:documentation>The Agency represents an organization which role is payroll compliance enforcement.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:group ref="AgencyGroup" minOccurs="0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BankAccts">
+		<xs:annotation>
+			<xs:documentation>The updatable object reference identifies the owner of the "payload" consisting of a collection of bank accounts.
+An example of the owner is Employer or Worker.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:element name="BankAcct" type="BankAcct" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactPersons">
+		<xs:annotation>
+			<xs:documentation>A collection of contact persons with references to related objects. 
+The set of ContactPerson elements MUST share the references that are "attached". 
+When the referecnces differ, contatc person info needs to be represented by another instance of this object.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ContactPerson" type="ContactPerson" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>A collection of contact persons sharing an identical relationship with an employer realm.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence>
+				<xs:element name="EmployerRef" type="referenceId" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>There is only one employer within a realm.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ServiceProviderRef" type="referenceId" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>A person can represent not more than one organization in our model.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="BankAcctRef" type="referenceId" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>We can have a single contact for a collection of bank accounts</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="WorkerRef" type="referenceId" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A single emergency contact person can be specified a group of workers.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="WorkLocationRef" type="referenceId" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>A single contact person can be specified for a group of work locations.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PayrollItemDtls">
+		<xs:annotation>
+			<xs:documentation>Worker is the Owner of this collection: the object Id and SyncToken identify the owning object.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:group ref="PayrollItemsGroup"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PaySchedule">
+		<xs:annotation>
+			<xs:documentation>Payroll schedule.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="PayrollScheduleGroup" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>A group describing payroll schedule.</xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:element name="WorkerReference" type="WorkerReference" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>List of references for Workers to which this payroll schedule applies.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RegulatoryIds">
+		<xs:annotation>
+			<xs:documentation>Employer (a singleton) is the Owner of this collection of identifiers: the object Id and SyncToken identify it as the owning object.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="UpdatableReferenceGroup"/>
+			<xs:element name="RegulatoryId" type="RegulatoryId" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkLocation">
+		<xs:annotation>
+			<xs:documentation>Work location</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="WorkLocationGroup" minOccurs="0"/>
+					<xs:group ref="ContactPersonRefGroup" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>A group representing contact person for the underlying object.</xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:element name="WorkerReference" type="WorkerReference" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Collection of references for Worker working at this location.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!--VIEW MY PAYCHECK========================================================-->
+	<xs:complexType name="Paychecks">
+		<xs:annotation>
+			<xs:documentation>A batch of paychecks (must be non-empty).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Paycheck" type="Paycheck" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Paycheck">
+		<xs:annotation>
+			<xs:documentation>Paycheck</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="EmployerReferenceGroup" minOccurs="0"/>
+					<xs:group ref="WorkerReferenceGroup" minOccurs="0"/>
+					<xs:group ref="PaycheckPreferencesGroup" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Group of attributes controlling how the paycheck info is to be rendered.</xs:documentation>
+						</xs:annotation>
+					</xs:group>
+					<xs:element name="Header" type="PaycheckHeader"/>
+					<xs:element name="Line" type="PaycheckLine" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>There must be at least one line item per paycheck: in the case of the "summary" paycheck it will hold the totals for the paycheck.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PaycheckHeader">
+		<xs:annotation>
+			<xs:documentation>Paycheck header</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DocNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Paycheck number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TxnDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pay date (payroll date). Also, the paycheck date. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PayPeriod" type="DateRange" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pay period this paycheck is for.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Currency" type="currencyCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Currency code for all paycheck amounts, default is USD.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Memo" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Memo values for the paycheck.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="PaycheckStatusEnum" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Paycheck status</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PaycheckLine" abstract="1">
+		<xs:annotation>
+			<xs:documentation>Abstract base type for the paycheck line</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>OPTIONAL Unique identifier for the paycheck line.
+If present, it might identify the underlying paycheck line item object. Typically, used when an update is involved. For VMP will most likely be not used.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="PayrollItemReferenceGroup" minOccurs="0"/>
+			<xs:element name="SortSeq" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sort sequence for lines, if sorting is needed. May be useful, when rendering the check image.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineItemCategory" type="LineItemCategoryEnum" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line item category that can be used for grouping of related items, subtotaling, etc., as needed for paycheck rendering.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="StdPaycheckLine">
+		<xs:annotation>
+			<xs:documentation>"Standard" paycheck line representing a monetary amount other than totals</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PaycheckLine">
+				<xs:sequence>
+					<xs:element name="PayRate" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Pay rate, if applicable. E.g. hourly, piecework.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Quantity" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Number of units applicable to the PayRate, e.g., nr of hours worked.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Amount" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The line item amount. (PayRate and Quantity may have been used for its computation. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="YTDAmount" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The Year-To_Date amount inclusive of the Amount.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PayPeriod" type="DateRange" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Past pay period when required for correcting entries.
+Needed when the item is for a past pay period and the associated hours are *not to be* included in overtime calcs.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PayerType" type="PayerTypeEnum" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Payer type, i.e., who is paying this item. May be useful for grouping items  when rendering the paycheck.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PayerName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The name of the Payer of this item, e.g., an insurance company providing (third party) sick insurance.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PayeeType" type="PayeeTypeEnum" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Payee type, who is being paid with this item. May be useful for grouping items  when rendering the paycheck.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PayeeName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The name of the payee, e.g,  Medical Insurance provider, garnishment agency.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PTOPaycheckLine">
+		<xs:annotation>
+			<xs:documentation>Paycheck line representing PTO Accrual</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PaycheckLine">
+				<xs:sequence>
+					<xs:element name="AccrualThisPeriod" type="PTOValue" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Accrual value for this pay period.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Available" type="PTOValue" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Total available time including value accrued for this pay period. Equal to YTDAccrued -YTDUsed.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="YTDAccrued" type="PTOValue" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Total time accrued this year including this pay period.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="YTDUsed" type="PTOValue" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Total time used this year including this pay period.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TotalsPaycheckLine">
+		<xs:annotation>
+			<xs:documentation>Represents totals data on a paycheck: either the NET amount or DD amount(s).</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PaycheckLine">
+				<xs:sequence>
+					<xs:element name="Totals" type="xs:decimal" minOccurs="0"/>
+					<xs:element name="YTDTotals" type="xs:decimal" minOccurs="0"/>
+					<xs:element name="BankAccountName" type="xs:string" minOccurs="0"/>
+					<xs:element name="RoutingNum" type="xs:string" minOccurs="0"/>
+					<xs:element name="AccountNum" type="xs:string" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="EmployerReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>Employer reference group. Consists of Employer reference and a group of attributes useful for VMP (View My Paycheck).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EmployerId" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference to the Employer object.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EmployerName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Employer Name (typically Legal name) to be printed on the paycheck</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EmployerTaxId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Employer federal tax identification number, typically EIN </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="EmployerContactInfoGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="EmployerContactInfoGroup">
+		<xs:annotation>
+			<xs:documentation>ContactInfoGroup for the Employer.
+Based on the ContactInforGroup, however, no more than a single instance of each element is expected to be passed (and printed on the paycheck). </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="ContactInfoGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkerReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>Worker reference group. Consists od Worker id and a group of attributes useful for VMP (View My Paycheck).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="WorkerId" type="IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference to the Worker object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Worker name to be printed on check</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerNum" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Worker Number (Employee Number), typically a number, issued by the Employer. May appear on a badge or be used to identify Worker's records.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerAddress" type="PhysicalAddress" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Worker's address printed on paycheck.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerTaxId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Workers's tax id, typically, SSN.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerTaxationStatus" type="WorkerTaxationStatus" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>For each applicable jurisdiction, taxation information from W-4 (or equivalent), e.g., exempt, withholding status, number of exemptions, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerHireDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Hire date if it is to be printed on the paycheck.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WorkerReleaseDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Worker termination date. (May be printed on the last paycheck.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PaycheckPreferencesGroup">
+		<xs:annotation>
+			<xs:documentation>Preferences determining what paycheck data to display and how</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ShowPTOData" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A flag which controls whether PTO (Paid Time Off) data is to be shown on the paycheck. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PTODisplayFormat" type="PTODisplayFormatEnum" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Determines format for PTO data display.
+Also, see PTOValue. If conversion from decimal to HHH:MM format truncation/rounding may be needed.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:simpleType name="PTODisplayFormatEnum">
+		<xs:annotation>
+			<xs:documentation>Determines the display format for PTO values</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DECIMAL"/>
+			<xs:enumeration value="HHMM"/>
+			<xs:enumeration value="ASASTRING"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LineItemCategoryEnum">
+		<xs:annotation>
+			<xs:documentation>Enumeration of lineitem categories useful for grouping items for display purposes</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EARNINGS"/>
+			<xs:enumeration value="PRETAXDEDUCT"/>
+			<xs:enumeration value="TAXFED"/>
+			<xs:enumeration value="TAXSTATE"/>
+			<xs:enumeration value="TAXLOCAL"/>
+			<xs:enumeration value="AFTERTAXADJ"/>
+			<xs:enumeration value="NETAMT"/>
+			<xs:enumeration value="DIRDEP"/>
+			<xs:enumeration value="NONTAXCONTRIB"/>
+			<xs:enumeration value="GARNISHMENT"/>
+			<xs:enumeration value="NONTAXREIMBURSEMENT"/>
+			<xs:enumeration value="TAXREIMBURSEMENT"/>
+			<xs:enumeration value="PTOVAC"/>
+			<xs:enumeration value="PTOSICK"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PaycheckStatusEnum">
+		<xs:annotation>
+			<xs:documentation>Defines paycheck statys, e.g., voided, paid, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VOIDED"/>
+			<xs:enumeration value="PAID"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PayeeTypeEnum">
+		<xs:annotation>
+			<xs:documentation>Defines Payee type</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EMPLOYEE"/>
+			<xs:enumeration value="EMPLOYER"/>
+			<xs:enumeration value="3RDPARTY"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PayerTypeEnum">
+		<xs:annotation>
+			<xs:documentation>Defines Payer type</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EMPLOYEE"/>
+			<xs:enumeration value="EMPLOYER"/>
+			<xs:enumeration value="3RDPARTY"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WithholdingStatusEnum">
+		<xs:annotation>
+			<xs:documentation>Enumeration of withholding status values for all jurisdictions</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FED_SINGLE"/>
+			<xs:enumeration value="FED_MARRIED"/>
+			<xs:enumeration value="FED_MARRIEDATSINGLERATE"/>
+			<xs:enumeration value="CA_SIBGLEORMARRIEDTWOPLUSINCOMES"/>
+			<xs:enumeration value="CA_MARRIEDONEINCOME"/>
+			<xs:enumeration value="CA_HEADOFHOUSEHOLD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="WorkerTaxationStatus">
+		<xs:annotation>
+			<xs:documentation>Data determining taxan status for a given jurisdiction</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Jurisdiction" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Name of the taxing jurisdiction for which this status is defined. E.g., federal, state, or local.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IsExempt" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>For W-2 employees this flag indicates whether they are exempt from income tax for the specific jurisdiction. 
+For contract employees the flag indicates whether the backup withholding is in effect. (For more info see federal forms W-4, W-9. )</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WithholdingStatus" type="WithholdingStatusEnum" minOccurs="0"/>
+			<xs:element name="NumOfExemptions" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="NumOfAllowances" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="AdditionalAmt" type="xs:decimal" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PTOValue">
+		<xs:annotation>
+			<xs:documentation>PTO value holder</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="PTOString" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>A string representing the value to be displayed. Will be used when we simply want to display the passed value and no conversion / formatting is to be involved.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="PTODecimal" type="xs:decimal" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>PTO time value in decimal format</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="PTOHours" type="xs:positiveInteger" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The Hours component of the PTO time value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PTOMinutes" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The Minute component of the PTO time value.</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:positiveInteger">
+								<xs:maxInclusive value="59"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DateRange">
+		<xs:annotation>
+			<xs:documentation>Date range</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="StartDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Start date for the period. (The date value is included in the period.)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EndDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>End date for the period.  (The date value is included in the period.) </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--END OF VMP==============================================================-->
+	<!--ROLE and PARTY -->
+	<xs:simpleType name="ethnicityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="ASIAN"/>
+			<xs:enumeration value="CAUCASIAN"/>
+			<xs:enumeration value="NATIVEAMERICAN"/>
+			<xs:enumeration value="BLACKAMERICAN"/>
+			<xs:enumeration value="UNDISCLOSED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="legalStructure">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="SOLEPROPRIETOR"/>
+			<xs:enumeration value="SCORP"/>
+			<xs:enumeration value="CCORP"/>
+			<xs:enumeration value="PARTNERCHIP"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partyType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="PERSON"/>
+			<xs:enumeration value="ORGANIZATION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="workerType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="EMPLOYEE"/>
+			<xs:enumeration value="NONEMPLOYEE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="AgencyGroup">
+		<xs:sequence>
+			<xs:group ref="OrganizationGroupTemp" minOccurs="0"/>
+			<xs:group ref="AgencyRoleGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="AgencyRoleGroup">
+		<xs:sequence/>
+	</xs:group>
+	<xs:group name="EmployerGroup">
+		<xs:sequence>
+			<xs:group ref="OrganizationGroupTemp" minOccurs="0"/>
+			<xs:group ref="EmployerRoleGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="EmployerRoleGroup">
+		<xs:sequence>
+			<xs:group ref="PayrollItemsGroup" minOccurs="0"/>
+			<xs:group ref="EmployerComplianceGroup" minOccurs="0"/>
+			<xs:element name="WorkLocation" type="WorkLocation" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Identifier" type="RegulatoryId" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Identifers used in contacts with agencies (e.g., tax), vendors, providers, e.g., external parties.
+Example: EIN, SSN, ITIN, state tax agency reporting numbers.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankAcct" type="BankAcct" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="PaySchedule" type="PaySchedule" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ContactPerson" type="ContactPerson" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Company contacts</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="OrganizationGroupTemp">
+		<xs:sequence>
+			<xs:group ref="OrganizationGroup" minOccurs="0"/>
+			<xs:group ref="ContactInfoGroup" minOccurs="0"/>
+			<xs:group ref="ContactPersonRefGroup" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference(s) to contact person(s) for the owning object, e.g., emergency contact.</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PersonGroupTemp">
+		<xs:sequence>
+			<xs:group ref="BasicPersonGroup" minOccurs="0"/>
+			<xs:group ref="ContactPersonRefGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkerGroup">
+		<xs:sequence>
+			<xs:group ref="PersonGroupTemp" minOccurs="0"/>
+			<xs:group ref="WorkerRoleGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkerRoleGroup">
+		<xs:sequence>
+			<xs:group ref="WorkerInfoGroup"/>
+			<xs:group ref="WorkerComplianceGroup" minOccurs="0"/>
+			<xs:group ref="PayrollItemsGroup" minOccurs="0"/>
+			<xs:element name="Identifier" type="RegulatoryId" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="WorkLocationRef" type="WorkLocationReference" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="BankAcct" type="BankAcct" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Direct Deposit bank accounts will be a part of this collection.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EmergencyContact" type="ContactPerson" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:group>
+	<!--========================================================================-->
+	<!--MISCELLANEOUS-->
+	<xs:complexType name="BankAcct">
+		<xs:sequence>
+			<xs:element name="Id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Intuit ecosystem id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="BankAccountGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactPerson">
+		<xs:annotation>
+			<xs:documentation>Contact person for employer, organization, worker, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:sequence>
+					<xs:group ref="BasicPersonGroup" minOccurs="0"/>
+					<xs:group ref="ItemDecoratorGroup" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ContactPersonReference">
+		<xs:sequence>
+			<xs:element name="ContactPersonRef" type="referenceId"/>
+			<xs:group ref="ItemDecoratorGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DisabilityInsItem">
+		<xs:sequence>
+			<xs:element name="Id" type="id">
+				<xs:annotation>
+					<xs:documentation>Intuit ecosystem id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="DisabilityInsItemGroup"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmploymentVerification">
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:group ref="EmploymentVerificationGroup"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RegulatoryId">
+		<xs:sequence>
+			<xs:element name="Id" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Intuit ecosystem id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TypeOf" type="identifierType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of this tax id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DefaultValue" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Value" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax id value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AgencyRef" type="referenceId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Agency issuing the identifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:date" minOccurs="0"/>
+			<xs:group ref="EffectiveGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Jurisdiction">
+		<xs:complexContent>
+			<xs:extension base="CdmBase">
+				<xs:group ref="JurisdictionGroup" minOccurs="0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PayrollDatum">
+		<xs:group ref="PayrollDatumGroup"/>
+	</xs:complexType>
+	<xs:complexType name="PayScheduleReference">
+		<xs:sequence>
+			<xs:element name="PayScheduleRef" type="referenceId"/>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payroll schedule name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UnemploymentInsItem">
+		<xs:sequence>
+			<xs:element name="Id" type="id">
+				<xs:annotation>
+					<xs:documentation>Intuit ecosystem id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="UnemploymentInsItemGroup"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Withholding">
+		<xs:group ref="WithholdingGroup"/>
+	</xs:complexType>
+	<xs:complexType name="WorkerReference">
+		<xs:sequence>
+			<xs:element name="WorkerRef" type="referenceId"/>
+			<xs:element name="WorkerName" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="WorkLocationReference">
+		<xs:sequence>
+			<xs:element name="WorkLocationRef" type="referenceId"/>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Work locatrion name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence>
+				<xs:element name="TimeAllocation" type="percent" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Percentage of work time spent at this location</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:group ref="EffectiveGroup" minOccurs="0"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="bankAcctType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="CHECKING"/>
+			<xs:enumeration value="SAVINGS"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="identifierType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="SSN"/>
+			<xs:enumeration value="EIN"/>
+			<xs:enumeration value="ITIN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="payrollDistributionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="relationshipToEmployer">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="OWNER"/>
+			<xs:enumeration value="SIBLING"/>
+			<xs:enumeration value="PARENT"/>
+			<xs:enumeration value="CHILD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="wIthholdingStatus">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="US-W4--EXEMPT"/>
+			<xs:enumeration value="US-W4-SINGLE"/>
+			<xs:enumeration value="US-W4-MARRIED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="withholdingType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="EMPLOYEE"/>
+			<xs:enumeration value="NONEMPLOYEE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="BankAccountGroup">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account name given by the user, a menmonic</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Type" type="bankAcctType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RoutingNo" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank routing number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountNo" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account number within the bank</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the bank maintaining the account</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NameOnAcct" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the account holder as known by the bank</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="ContactInfoGroup" minOccurs="0"/>
+			<xs:element name="ContactPersonRef" type="referenceId" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if this is the default value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateLastVerified" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date when correctness was last verified.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Allocation" type="percent" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>When used for Direct Deposit, percentage allocation of the total amount to be deposited.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates current account status</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="NOTSET"/>
+						<xs:enumeration value="ACTIVE"/>
+						<xs:enumeration value="SUSPENDED"/>
+						<xs:enumeration value="DOESNOTVERIFY"/>
+						<xs:enumeration value="NSF"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ContactPersonRefGroup">
+		<xs:sequence>
+			<xs:element name="ContactPersonRef" type="ContactPersonReference" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="DisabilityInsItemGroup">
+		<xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="RateAssigned" type="xs:boolean" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Acts as a NULL indicator for the rate. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Rate" type="percent" minOccurs="0"/>
+			</xs:sequence>
+			<xs:group ref="EffectiveGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="EmployerComplianceGroup">
+		<xs:sequence>
+			<xs:element name="UnemploymentInsItem" type="UnemploymentInsItem" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>In US a collection of items related to the federal unemployment insurance rates specific to this Employer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DisabilityInsItem" type="DisabilityInsItem" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>In US this item carries data aout disability insurance rate.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="EmploymentVerificationGroup">
+		<xs:sequence>
+			<xs:element name="DateVerified" type="xs:date" minOccurs="0"/>
+			<xs:element name="DocumentOnFIle" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="VerifiedBy" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the verifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Other info, e.g. restrictions, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Basis" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Documetn used to verify, e.g., I10</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="EffectiveGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ItemDecoratorGroup">
+		<xs:sequence>
+			<xs:element name="DateLastVerified" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date when the correctness of the value was last verified</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemTag" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Unique tag value, e.g., WORK, HOME, SHIPPING.
+Can also be used to identify Items carrying default values, e.g., HOMEDEF, WORKDEF.
+The value of the tag is its id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="JurisdictionGroup">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="MappingKey" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="PayrollScheduleGroup">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="Frequency" type="payrollFrequency" minOccurs="0"/>
+			<xs:element name="PayrollRunOffset" type="xs:integer" minOccurs="0"/>
+			<xs:element name="PaydayOffset" type="xs:integer" minOccurs="0"/>
+			<xs:element name="NextPayPeriodEnd" type="xs:date" minOccurs="0"/>
+			<xs:element name="PayPeriodEndDay1Offset" type="xs:integer" minOccurs="0"/>
+			<xs:element name="PayPeriodEndDay2Offset" type="xs:integer" minOccurs="0"/>
+			<xs:element name="DistributionType" type="payrollDistributionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="BasicPersonGroup">
+		<xs:sequence>
+			<xs:group ref="PersonGroup" minOccurs="0"/>
+			<xs:element name="Ethnicity" type="ethnicityType" minOccurs="0"/>
+			<xs:element name="Image" type="xs:hexBinary" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Person's photo</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="ContactInfoGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WithholdingGroup">
+		<xs:sequence>
+			<xs:element name="Id" type="xs:string" minOccurs="0"/>
+			<xs:element name="TypeOf" type="withholdingType"/>
+			<xs:element name="JurisdictionRef" type="referenceId" minOccurs="0"/>
+			<xs:element name="Derived" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Status" type="wIthholdingStatus" minOccurs="0"/>
+			<xs:element name="NumOfExemptions" type="xs:integer" minOccurs="0"/>
+			<xs:element name="NumOfDeductions" type="xs:integer" minOccurs="0"/>
+			<xs:element name="AdditionalAmount" type="Money" minOccurs="0"/>
+			<xs:element name="BackupWithholding" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="BackupWithholdingRate" type="percent" minOccurs="0"/>
+			<xs:group ref="EffectiveGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkerComplianceGroup">
+		<xs:sequence>
+			<xs:element name="Withholding" type="Withholding" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="EmploymentVerification" type="EmploymentVerification" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkerInfoGroup">
+		<xs:sequence>
+			<xs:element name="WorkerType" type="workerType">
+				<xs:annotation>
+					<xs:documentation>Worker status with respect to pyaroll laws, e.g., 1099, regular employee, statutory employee, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="HireDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="ReleaseDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="WorkerId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Employer assigned displayable worker identifier, e.g., worker number (employee number)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="JobPosition" type="xs:string" minOccurs="0"/>
+			<xs:element name="WorkersCompCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="LastRaiseDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="Active" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Useful for seasonal employers</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NameOnCheck" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name to be printed on checks.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="HomeOfficeUser" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If true, use HOME address to create new work location</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RelationshipToEmployer" type="relationshipToEmployer" minOccurs="0"/>
+			<xs:element name="OrgRef" type="referenceId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>In the case of NonEmployee, reference to the business s/he is working for.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReadyForPay" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates whether the setup process for this Worker has reached a point at which we have all necessary data needed to be able to issue a paycheck.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReadyForTax" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates whether the setup process for this Worker has reached a point at which we have all necessary data needed to assign payroll tax items.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="WorkLocationGroup">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="Default" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="HomeOffice" type="xs:boolean" minOccurs="0"/>
+			<xs:group ref="ContactInfoGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="UnemploymentInsItemGroup">
+		<xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="RateAssigned" type="xs:boolean" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Acts as a NULL indicator for the rate. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Rate" type="percent" minOccurs="0"/>
+			</xs:sequence>
+			<xs:group ref="EffectiveGroup" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<!--========================================================================-->
+	<!--BASE PAYROLL TYPES-->
+	<xs:simpleType name="datumValueType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NOTSET"/>
+			<xs:enumeration value="MONEY"/>
+			<xs:enumeration value="PERCENT"/>
+			<xs:enumeration value="QUANTITY"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="PayrollDatumGroup">
+		<xs:sequence>
+			<xs:element name="ValueType" type="datumValueType"/>
+			<xs:element name="MoneyAmount" type="Money" minOccurs="0"/>
+			<xs:element name="Percentage" type="percent" minOccurs="0"/>
+			<xs:element name="Quantity" type="xs:double" minOccurs="0"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="UpdatableReferenceGroup">
+		<xs:annotation>
+			<xs:documentation>Reference to an updatable object.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RefId" type="id">
+				<xs:annotation>
+					<xs:documentation>Id of the referenced object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RefSyncToken" type="syncToken" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>SyncToken for the referenced object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:simpleType name="referenceId">
+		<xs:annotation>
+			<xs:documentation>Reference is only used for read-only lookups</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="id"/>
+	</xs:simpleType>
+</xs:schema>

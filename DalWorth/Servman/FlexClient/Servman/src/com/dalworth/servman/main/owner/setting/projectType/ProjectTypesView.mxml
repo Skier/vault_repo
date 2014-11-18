@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.owner.setting.businessPartner.*" 
+	xmlns:customer="com.dalworth.servman.main.owner.setting.customer.*" 
+	xmlns:projectType="com.dalworth.servman.main.owner.setting.projectType.*"
+	creationComplete="onCreate()" xmlns:ptojectType="com.dalworth.servman.main.ptojectType.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.leadType.LeadTypeEditPopup;
+			import com.dalworth.servman.domain.LeadType;
+			import com.dalworth.servman.events.LeadTypeEvent;
+			import mx.events.CollectionEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.main.ptojectType.ProjectTypeCreatePopup;
+			import com.dalworth.servman.events.ProjectTypeEvent;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.domain.ProjectType;
+			import com.dalworth.servman.domain.Customer;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			[Bindable]
+			private var model:ProjectTypesModel = ProjectTypesModel.getInstance();
+			
+			public function init():void 
+			{
+				model.projectTypes = MainAppModel.getInstance().projectTypes;
+				if (vsProjectTypes)
+					vsProjectTypes.selectedIndex = 0;
+			}
+			
+			private function openLeadType(leadType:LeadType):void 
+			{
+				var popup:LeadTypeEditPopup = LeadTypeEditPopup.open(Application.application as DisplayObject, leadType);
+				popup.addEventListener(LeadTypeEvent.LEAD_TYPE_SAVED, 
+					function (event:LeadTypeEvent):void 
+					{
+						var type:LeadType = event.leadType;
+						if (!model.leadTypes.contains(type))
+							model.leadTypes.addItem(type);
+						var idx:int = model.leadTypes.getItemIndex(type);
+						dgLeadTypes.selectedIndex = idx;
+						dgLeadTypes.scrollToIndex(idx);
+					});
+			}
+			
+			private function onCreateNew():void 
+			{
+				var popup:ProjectTypeCreatePopup = ProjectTypeCreatePopup.open(Application.application as DisplayObject, new ProjectType());
+				popup.addEventListener(ProjectTypeEvent.PROJECT_TYPE_SAVED, 
+					function (event:LeadTypeEvent):void 
+					{
+						var projectType:ProjectType = event.leadType;
+						if (!model.projectTypes.contains(projectType))
+							model.projectTypes.addItem(projectType);
+						var idx:int = model.projectTypes.getItemIndex(projectType);
+						dgProjectTypes.selectedIndex = idx;
+						dgProjectTypes.scrollToIndex(idx);
+					});
+			}
+			
+			private function onProjectTypeSave(event:LeadTypeEvent):void 
+			{
+				var projectType:ProjectType = event.projectType;
+				if(!model.projectTypes.contains(projectType))
+				{
+					model.projectTypes.addItem(projectType);
+					var idx:int = model.projectTypes.getItemIndex(projectType);
+					dgProjectTypes.selectedIndex = idx;
+					dgProjectTypes.scrollToIndex(idx);
+				}
+			}
+			
+			private function onCreate():void 
+			{
+				viewProjectType.addEventListener(ProjectTypeEvent.PROJECT_TYPE_SAVED, onProjectTypeSave);
+				viewProjectType.addEventListener("projectTypeEditClose",
+					function(event:*):void 
+					{
+						vsProjectTypes.selectedChild = viewProjectTypesList;
+						viewProjectType.setProjectType(null);
+					});  
+			}
+			
+			private function onProjectTypeDoubleClick():void 
+			{
+				var projectType:ProjectType = dgProjectTypes.selectedItem as ProjectType;
+				openProjectType(projectType);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id="vsProjectTypes" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewProjectTypesList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:DataGrid id="dgProjectTypes" 
+					width="100%" height="100%" dataProvider="{model.projectTypes}"
+					doubleClickEnabled="true" itemDoubleClick="onProjectTypeDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Project Type" dataField="Name"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox width="150" height="100%">
+				<mx:Button  label="Create New" width="150" height="35" fontSize="12" click="onCreateNew()"/>
+			</mx:VBox>
+		</mx:HBox>
+<!--
+		<ptojectType:ProjectTypeEditView id="viewProjectType" width="100%" height="100%"/>
+-->
+	</mx:ViewStack>
+</mx:HBox>

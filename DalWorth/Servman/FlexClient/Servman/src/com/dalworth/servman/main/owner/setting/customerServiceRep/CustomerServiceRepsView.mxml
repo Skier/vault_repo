@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*"
+	creationComplete="onCreate()" xmlns:bp="com.dalworth.servman.main.bp.*" xmlns:customerServiceRep="com.dalworth.servman.main.customerServiceRep.setting.customerServiceRep.*" xmlns:customerServiceRep1="com.dalworth.servman.main.owner.setting.customerServiceRep.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import com.dalworth.servman.domain.CustomerServiceRep;
+			import com.dalworth.servman.events.CustomerServiceRepEvent;
+			import mx.core.Application;
+			import com.dalworth.servman.main.bp.BusinessPartnerCreatePopup;
+			import com.dalworth.servman.events.BusinessPartnerEvent;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "columnName";
+			private static const COLUMN_EMAIL:String = "columnEmail";
+			private static const COLUMN_PHONE:String = "columnPhone";
+			
+			[Bindable]
+			public var isEditMode:Boolean = false;
+			
+			[Bindable]
+			private var model:CustomerServiceRepsModel = CustomerServiceRepsModel.getInstance();
+			
+			[Bindable]
+			private var controller:CustomerServiceRepsController;
+			
+			public function init():void 
+			{
+				isEditMode = false;
+				
+				controller = new CustomerServiceRepsController(this);
+				controller.initModel();
+				if (vsCustomerServiceReps != null)
+					vsCustomerServiceReps.selectedIndex = 0;
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Customer Service Representatives ";
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is CustomerServiceRep) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return CustomerServiceRep(item).ShowAs;
+						
+						case COLUMN_EMAIL :
+							return CustomerServiceRep(item).RelatedUser != null ? CustomerServiceRep(item).RelatedUser.Email : "";
+						
+						case COLUMN_PHONE :
+							return CustomerServiceRep(item).RelatedUser != null ? CustomerServiceRep(item).RelatedUser.Phone : "";
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onCreate():void 
+			{
+				viewCustomerServiceRepEditor.addEventListener(CustomerServiceRepEvent.CUSTOMER_SERVICE_REP_SAVE, onCustomerServiceRepSave);
+				viewCustomerServiceRepEditor.addEventListener("closeCustomerServiceRepEditor",
+					function(event:*):void 
+					{
+						isEditMode = false;
+						
+						vsCustomerServiceReps.selectedChild = viewCustomerServiceRepsList;
+						viewCustomerServiceRepEditor.setCustomerServiceRep(null);
+						BreadCrumbModel.getInstance().breadCrumbString = "Settings > Customer Service Representatives ";
+					});  
+			}
+			
+			private function onCustomerServiceRepSave(event:CustomerServiceRepEvent):void 
+			{
+				var customerServiceRepUser:CustomerServiceRep = event.customerServiceRepUser;
+				if(!model.customerServiceReps.contains(customerServiceRepUser))
+					model.customerServiceReps.addItem(customerServiceRepUser);
+				var idx:int = model.customerServiceReps.getItemIndex(customerServiceRepUser);
+				dgCustomerServiceReps.selectedIndex = idx;
+				dgCustomerServiceReps.scrollToIndex(idx);
+			}
+			
+			private function onNewClick():void 
+			{
+				var customerServiceRep:CustomerServiceRep = new CustomerServiceRep();
+				customerServiceRep.IsActive = true;
+				var popup:CustomerServiceRepCreatePopup = CustomerServiceRepCreatePopup.open(Application.application as DisplayObject, customerServiceRep);
+				popup.addEventListener(CustomerServiceRepEvent.CUSTOMER_SERVICE_REP_SAVE, onCustomerServiceRepSave);
+			}
+			
+			private function onCustomerServiceRepDoubleClick():void 
+			{
+				var customerServiceRep:CustomerServiceRep = dgCustomerServiceReps.selectedItem as CustomerServiceRep;
+				vsCustomerServiceReps.selectedChild = viewCustomerServiceRepEditor;
+				viewCustomerServiceRepEditor.setCustomerServiceRep(customerServiceRep);
+
+				BreadCrumbModel.getInstance().breadCrumbString = "Settings > Customer Service Representatives > [" + customerServiceRep.ShowAs + "]";
+				
+				isEditMode = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsCustomerServiceReps" width="100%" height="100%" creationPolicy="all">
+		<mx:HBox id="viewCustomerServiceRepsList" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%"
+				paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid">
+				<mx:DataGrid id="dgCustomerServiceReps" dataProvider="{model.customerServiceReps}" width="100%" height="100%" minWidth="300"
+					doubleClickEnabled="true" itemDoubleClick="onCustomerServiceRepDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" labelFunction="getLabel" dataField="{COLUMN_NAME}" minWidth="100"/>
+						<mx:DataGridColumn headerText="Email" labelFunction="getLabel" dataField="{COLUMN_EMAIL}" width="150" minWidth="100"/>
+						<mx:DataGridColumn headerText="Phone" labelFunction="getLabel" dataField="{COLUMN_PHONE}" width="150" minWidth="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox height="100%" width="150">
+				<mx:Button width="100%" height="35" label="Create New" click="onNewClick()"/>
+			</mx:VBox>
+		</mx:HBox>
+
+		<customerServiceRep1:CustomerServiceRepEditView id="viewCustomerServiceRepEditor" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:HBox>

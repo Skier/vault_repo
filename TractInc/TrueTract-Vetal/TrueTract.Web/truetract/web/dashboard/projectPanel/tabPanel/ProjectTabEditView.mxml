@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="truetract.plotter.validators.*"
+    title="Edit Project Tab Info"
+    layout="vertical">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.events.DynamicEvent;
+            import mx.managers.PopUpManager;
+            import truetract.domain.ProjectTab;
+
+            [Bindable] public var projectTab:ProjectTab;
+
+            private function doSubmit():void
+            {
+                if (!isFormValid()) return;
+                
+                projectTab.Name = tabNameTxt.text;
+                projectTab.Description = tractDescriptionTxt.text;
+
+            	var e:DynamicEvent = new DynamicEvent("submit");
+            	e.projectTab = projectTab;
+            	dispatchEvent(e);
+
+                close();
+            }
+            
+            private function doCancel():void
+            {
+                close();
+            }
+
+            private function isFormValid():Boolean
+            {
+                return formValidator.validate(true);
+            }
+
+            private function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+
+            public static function open(parent:DisplayObject, modal:Boolean):ProjectTabEditView
+            {
+                var popup:ProjectTabEditView = new ProjectTabEditView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{tabNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{tractDescriptionTxt}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form styleName="popupPanel">
+        <mx:FormItem label="Tab Name">
+            <mx:TextInput id="tabNameTxt" text="{projectTab.Name}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Tract Description">
+            <mx:TextInput id="tractDescriptionTxt" text="{projectTab.Description}"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Submit" click="doSubmit()"/>
+        <mx:Button label="Cancel" click="doCancel()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

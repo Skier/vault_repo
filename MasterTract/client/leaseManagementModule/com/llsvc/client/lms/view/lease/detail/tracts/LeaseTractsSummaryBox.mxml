@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalGap="-1"
+	backgroundColor="#eeeeee">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Lease;
+			
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+            
+            private static const CELL_GAP:int = -5;
+            
+		]]>
+	</mx:Script>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Gross AC" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsGrossAcresStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Net AC" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsNetAcresStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Interest" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsInterestStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Burden" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsBurdenStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Lease NRI" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsNriStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="FCR WI" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsCwiStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="Add.Burden" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsAddBurdensStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="FCR NRI" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsCnriStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+
+	<mx:VBox height="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1" horizontalScrollPolicy="off"
+		verticalGap="{CELL_GAP}"
+		>
+		<mx:Box width="100%" backgroundColor="#e5e5e5">
+			<mx:Label text="FCR Net AC" textAlign="right"/>
+		</mx:Box>
+		<mx:Box width="100%" backgroundColor="#eeeeee" horizontalAlign="right">
+			<mx:Label text="{lease.tractsCNetAcresStr}" fontWeight="bold" textAlign="right"/>
+		</mx:Box>
+	</mx:VBox>
+</mx:HBox>

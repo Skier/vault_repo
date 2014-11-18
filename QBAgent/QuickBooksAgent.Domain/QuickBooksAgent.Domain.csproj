@@ -1,0 +1,150 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9E79227D-559C-4098-A37F-B43F87A756E2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QuickBooksAgent.Domain</RootNamespace>
+    <AssemblyName>qagent.domain</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.01</OSVersion>
+    <DeployDirSuffix>QuickBooksAgent.Domain</DeployDirSuffix>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Bin\WinCE\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WINCE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SpDebug|AnyCPU' ">
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Bin\SP\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINCE;LOG;SMARTPHONE</DefineConstants>
+    <FileAlignment>512</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account.cs" />
+    <Compile Include="AccountType.cs" />
+    <Compile Include="Address.cs" />
+    <Compile Include="Check.cs" />
+    <Compile Include="Codegen\Account.Generator.cs" />
+    <Compile Include="Codegen\AccountType.Generator.cs" />
+    <Compile Include="Codegen\Check.Generator.cs" />
+    <Compile Include="Codegen\CheckExpenceLine.Generator.cs" />
+    <Compile Include="Codegen\Company.Generator.cs" />
+    <Compile Include="Codegen\Counter.Generator.cs" />
+    <Compile Include="Codegen\CreditCard.Generator.cs" />
+    <Compile Include="Codegen\CreditCardExpenceLine.Generator.cs" />
+    <Compile Include="Codegen\CreditCardType.Generator.cs" />
+    <Compile Include="Codegen\Customer.Generator.cs" />
+    <Compile Include="Codegen\DetailAccountType.Generator.cs" />
+    <Compile Include="Codegen\Employee.Generator.cs" />
+    <Compile Include="Codegen\EntityState.Generator.cs" />
+    <Compile Include="Codegen\EventLog.Generator.cs" />
+    <Compile Include="Codegen\Invoice.Generator.cs" />
+    <Compile Include="Codegen\InvoiceLine.Generator.cs" />
+    <Compile Include="Codegen\InvoiceTransaction.Generator.cs" />
+    <Compile Include="Codegen\InvoiceTransactionLineDetail.Generator.cs" />
+    <Compile Include="Codegen\Item.Generator.cs" />
+    <Compile Include="Codegen\QBEntity.Generator.cs" />
+    <Compile Include="Codegen\QBEntityType.Generator.cs" />
+    <Compile Include="Codegen\Terms.Generator.cs" />
+    <Compile Include="Codegen\TimeTracking.Generator.cs" />
+    <Compile Include="Codegen\TransactionType.Generator.cs" />
+    <Compile Include="Codegen\Vendor.Generator.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="CreditCard.cs" />
+    <Compile Include="CreditCardExpenceLine.cs" />
+    <Compile Include="CreditCardType.cs" />
+    <Compile Include="DetailAccountType.cs" />
+    <Compile Include="CheckExpenceLine.cs" />
+    <Compile Include="InvoiceTransaction.cs" />
+    <Compile Include="InvoiceTransactionLineDetail.cs" />
+    <Compile Include="QBEntity.cs" />
+    <Compile Include="QBEntityType.cs" />
+    <Compile Include="Suffix.cs" />
+    <Compile Include="Salutation.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="EntityState.cs" />
+    <Compile Include="Invoice.cs" />
+    <Compile Include="InvoiceLine.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="Counter.cs" />
+    <Compile Include="Customer.cs" />
+    <Compile Include="EventLog.cs" />
+    <Compile Include="EventService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Terms.cs" />
+    <Compile Include="TimeTracking.cs" />
+    <Compile Include="TransactionType.cs" />
+    <Compile Include="Vendor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickBooksAgent\QuickBooksAgent.csproj">
+      <Project>{951A1DEB-1305-4D9A-B280-99C667F48248}</Project>
+      <Name>QuickBooksAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v1.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.v1.targets" />
+  <Import Condition="'$(TargetFrameworkVersion)' == 'v2.0'" Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

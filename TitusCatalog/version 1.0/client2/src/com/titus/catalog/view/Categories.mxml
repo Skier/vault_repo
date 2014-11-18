@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:titus="com.titus.components.*"
+	initialize="initHandler()">
+	
+    <mx:Metadata>
+        [Event(name="catalogItemChanged", type="com.titus.catalog.events.CatalogItemEvent")]
+    </mx:Metadata>
+    
+    <mx:Script>
+    	<![CDATA[
+    		import com.titus.catalog.model.CatalogItem;
+    		import mx.controls.Alert;
+    		import com.titus.catalog.controller.CategoryTreeDataDescriptor;
+    		import com.titus.catalog.events.CatalogItemEvent;
+    		
+    		[Bindable] public var rootCatalog:CatalogItem;
+    		
+    		private function initHandler():void 
+    		{
+    			rootCatalog = main.getStorage().getCatalog();
+				main.getStorage().addEventListener(Event.COMPLETE, onCompleteLoad);
+    		}
+    		
+    		private function onCompleteLoad(evt:Event):void {
+    			treeCategories.expandItem(rootCatalog, true, true);
+    		}
+    		
+    		private function treeCategoriesChangeHandler():void 
+    		{
+    			var catalogItem:CatalogItem = treeCategories.selectedItem as CatalogItem;
+    			var itemEvent:CatalogItemEvent = new CatalogItemEvent("catalogItemChanged", catalogItem);
+	    		
+	    		dispatchEvent(itemEvent);
+    		}
+    		
+            private function selectCategoryColor(item:Object, color:uint):uint {
+            	if (item is CatalogItem) {
+            		return parseInt("0x" + (item as CatalogItem).Color1.replace(" ", ""));
+            	} else {
+            		return 0;
+            	}
+            }
+            
+    	]]>
+    </mx:Script>
+    
+    <titus:ColoredTree
+        width="100%" 
+        height="100%" 
+        id="treeCategories"
+        dataProvider="{rootCatalog}"
+        dataDescriptor="{new CategoryTreeDataDescriptor}" 
+        labelField="name" 
+        liveScrolling="true"
+        showRoot="false"
+        backgroundColor="#ffffff"
+        backgroundAlpha="0.5"
+        change="treeCategoriesChangeHandler()"
+        rowColorFunction="selectCategoryColor"
+        fontSize="12"/>
+
+</mx:VBox>

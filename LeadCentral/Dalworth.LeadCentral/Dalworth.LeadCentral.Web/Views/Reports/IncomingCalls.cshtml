@@ -1,0 +1,162 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Reports
+@model IncomingCallsModel
+
+@{
+    ViewBag.Title = "Business Partner Signup By Sales Rep";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+<h2>Business Partner Signup By Sales Rep</h2>
+
+@using (Html.BeginForm())
+{
+
+<div class="details">
+    <table class="form">
+    <tr>
+        <td>
+          &nbsp;&nbsp;From: 
+          @Html.TextBoxFor(model => model.DateFrom, new { @class = "date-input", @id = "date-from" })
+          &nbsp;&nbsp;To:
+          @Html.TextBoxFor(model => model.DateTo, new { @class = "date-input", @id = "date-to" })
+          &nbsp;&nbsp;<button type="submit" class="primary"> Create Report </button>
+        </td>
+    </tr>
+    </table>
+</div>
+<br/>
+  <div class="content">
+@if (Model.Leads != null && Model.Leads.Count > 0)
+{
+    var currentSalesRepStr = string.Empty;
+    var currentCalls = 0;
+    var currentLeadCalls = 0;
+    var totalCalls = 0;
+    var totalLeadCalls = 0;
+
+    <table class="list">
+      <thead>
+        <tr>
+          <td class="left">Sales Rep</td>
+          <td class="left">Partner</td>
+          <td class="left">Campaign</td>
+          <td class="left">Call Date</td>
+          <td class="left">Customer</td>
+          <td class="left">Call Status</td>
+          <td class="left">Calls</td>
+          <td class="left">Leads</td>
+        </tr>
+      </thead>
+      <tbody>
+
+        @foreach (var lead in Model.Leads)
+        {
+            var salesRepStr = (lead.RelatedCampaign != null &&
+                                lead.RelatedCampaign.RelatedBusinessPartner != null &&
+                                lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep != null)
+                                ? lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep.Name : string.Empty;
+                
+            if (salesRepStr != currentSalesRepStr && currentCalls > 0)
+            {
+                <tr style="background:#FFE;">
+                    @if (string.IsNullOrEmpty(currentSalesRepStr))
+                    {
+                        <td class="right" colspan="6">Total undefined :</td>
+                    }
+                    else
+                    {
+                        <td class="right" colspan="6">Total for <b>@currentSalesRepStr :</b></td>
+                    }
+                    <td class="right">@currentCalls</td>
+                    <td class="right">@currentLeadCalls</td>
+                </tr>
+            
+                totalCalls += currentCalls;
+                totalLeadCalls += currentLeadCalls;
+                
+                currentCalls = currentLeadCalls = 0;
+            }
+
+            <tr>
+                @if (currentCalls == 0)
+                {
+                    currentSalesRepStr = salesRepStr;
+                    if (lead.RelatedCampaign != null && lead.RelatedCampaign.RelatedBusinessPartner != null && lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep != null)
+                    {
+                    <td class="left">@Html.ActionLink(lead.RelatedCampaign.RelatedBusinessPartner.RelatedSalesRep.Name, "Details", new { controller = "Users", id = lead.RelatedCampaign.RelatedBusinessPartner.SalesRepId })</td>
+                    }
+                    else
+                    {
+                    <td class="left"><i>undefined</i></td>
+                    }
+                }
+                else
+                {
+                    <td class="left">&nbsp;</td>
+                }
+                    @if (lead.RelatedCampaign != null && lead.RelatedCampaign.RelatedBusinessPartner != null)
+                    {
+                    <td class="left">@Html.ActionLink(lead.RelatedCampaign.RelatedBusinessPartner.PartnerName, "Details", new { controller = "Partners", id = lead.RelatedCampaign.BusinessPartnerId })</td>
+                    }
+                    else
+                    {
+                    <td class="left"><i>undefined</i></td>
+                    }
+                    @if (lead.RelatedCampaign != null)
+                    {
+                    <td class="left">@Html.ActionLink(lead.RelatedCampaign.CampaignName, "Details", new { controller = "Campaigns", id = lead.CampaignId })</td>
+                    }
+                    else
+                    {
+                    <td class="left"><i>undefined</i></td>
+                    }
+                    <td class="left">@Html.ActionLink(lead.DateCreatedStr, "LeadDetails", new { controller = "Leads", id = lead.Id })</td>
+                    <td class="left">@lead.Name</td>
+                    <td class="left">@(lead.IsRealLead ? "Lead" : "Cancel")</td>
+                    <td class="left">&nbsp;</td>
+                    <td class="left">&nbsp;</td>
+            </tr>
+
+            currentCalls++;
+            if (lead.IsRealLead){
+                currentLeadCalls++;
+            }
+        }
+        <tr style="background:#FFE;">
+            @if (string.IsNullOrEmpty(currentSalesRepStr))
+            {
+                <td class="right" colspan="6">Total undefined :</td>
+            }
+            else
+            {
+                <td class="right" colspan="6">Total for <b>@currentSalesRepStr :</b></td>
+            }
+            <td class="right">@currentCalls</td>
+            <td class="right">@currentLeadCalls</td>
+        </tr>
+        @{
+            totalCalls += currentCalls;
+            totalLeadCalls += currentLeadCalls;
+        }    
+        <tr style="background:#FFD;">
+            <td class="right" colspan="6"><b>Total :</b></td>
+            <td class="right"><b>@totalCalls</b></td>
+            <td class="right"><b>@totalLeadCalls</b></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div style="float:right;"><a href="/Reports/IncomingCallsExportToCsv/">Export to CSV</a></div>
+}
+else
+{
+    <div>No Phone Calls found</div>
+}
+  </div>
+}

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" 
+	width="400" xmlns:component="com.llsvc.component.*"
+	title="User Detail Information Edit">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.User;
+			import com.llsvc.domain.events.UserEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var user:User;
+			
+            public static function open(parent:DisplayObject, user:User, modal:Boolean):UserEditView
+            {
+                var popup:UserEditView = new UserEditView();
+                popup.user = user;
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+				user.setMemento();
+
+            	user.login = txtLogin.text;
+            	user.password = txtPassword.text;
+            	user.isActive = cbIsActive.selected;
+            	user.isAdmin = cbIsAdmin.selected;
+            	user.isProjectManager = cbIsProjectManager.selected;
+            	user.firstName = txtFirstName.text;
+            	user.middleName = txtMiddleName.text;
+            	user.lastName = txtLastName.text;
+            	user.primaryPhoneNumber = txtPrimaryPhoneNumber.text;
+            	user.secondaryPhoneNumber = txtSecondaryPhoneNumber.text;
+            	user.email = txtEmail.text;
+            	user.ssn = txtSSN.text;
+            	user.birthDay = dateBirthday.selectedDate;
+            	
+            	dispatchEvent(new UserEvent(UserEvent.USER_CHANGED, user));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form width="100%">
+		<mx:FormHeading label="Login information"/>
+			<mx:FormItem label="Login:" width="100%" required="true">
+				<mx:TextInput id="txtLogin" text="{user.login}" width="100%" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Password:" width="100%" required="true">
+				<mx:TextInput id="txtPassword" text="{user.password}" width="100%" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Is Active:">
+				<mx:CheckBox id="cbIsActive" selected="{user.isActive}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Is Admin:">
+				<mx:CheckBox id="cbIsAdmin" selected="{user.isAdmin}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Is Project Manager:">
+				<mx:CheckBox id="cbIsProjectManager" selected="{user.isProjectManager}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+
+		<mx:FormHeading label="Personal information"/>
+			<mx:FormItem label="First Name:" width="100%" required="true">
+				<mx:TextInput id="txtFirstName" text="{user.firstName}" width="100%" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Middle Name:">
+				<mx:TextInput id="txtMiddleName" text="{user.middleName}" width="100%" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Last Name:" width="100%" required="true">
+				<mx:TextInput id="txtLastName" text="{user.lastName}" width="100%" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Phone Number:" required="true">
+				<mx:TextInput id="txtPrimaryPhoneNumber" text="{user.primaryPhoneNumber}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Additional Phone:">
+				<mx:TextInput id="txtSecondaryPhoneNumber" text="{user.secondaryPhoneNumber}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="E-mail:" required="true">
+				<mx:TextInput id="txtEmail" text="{user.email}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="SSN:">
+				<mx:TextInput id="txtSSN" text="{user.ssn}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	
+			<mx:FormItem label="Birthday:" required="true">
+				<mx:DateField id="dateBirthday" selectedDate="{user.birthDay}" enabled="{!user.isLoading}"/>
+			</mx:FormItem>
+	</mx:Form>
+	
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button height="28" width="100" label="Ok" click="btnSubmitClickHandler()" 
+			enabled="{txtLogin.text.length > 1 
+				&amp;&amp; txtLogin.text.length > 1 
+				&amp;&amp; txtPassword.text.length > 1 
+				&amp;&amp; txtFirstName.text.length > 1 
+				&amp;&amp; txtLastName.text.length > 1 
+				&amp;&amp; txtPrimaryPhoneNumber.text.length > 1 
+				&amp;&amp; txtEmail.text.length > 1 
+				&amp;&amp; dateBirthday.selectedDate != null 
+				&amp;&amp; !user.isLoading}"/>
+		<mx:Button height="28" width="100" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

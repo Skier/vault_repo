@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	initialize="OnInit()"
+	verticalAlign="middle"
+	>
+	
+	<mx:Metadata>
+	
+		[Event(name="imageChange", type="flash.events.Event")]
+	
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			import UI.AppModel;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import Domain.Document;
+			import mx.utils.UIDUtil;
+			
+			[Bindable]
+			public var doc:Document;
+			
+			private var service:RemoteObject;
+			private var fileRef:FileReference;
+			private var fileName:String;
+			private var requestURL:URLRequest;
+			
+			[Bindable]
+			private var uploaderUrl:String;
+			[Bindable]
+			private var storageBaseUrl:String;
+//			[Bindable]
+//			private var docUID:String;
+			
+			[Bindable]
+			private var loadingInProgress:Boolean = false;
+			[Bindable]
+			private var loadingDone:Boolean = false;
+			
+			private function OnInit():void {
+
+				service = new RemoteObject(AppModel.WEBORB_SERVICE_NAME);
+				service.GetStorageUrl.addEventListener(ResultEvent.RESULT, OnGetStorageUrl);
+				service.GetUploaderUrl.addEventListener(ResultEvent.RESULT, OnGetUploaderUrl);
+				service.GetGUID.addEventListener(ResultEvent.RESULT, OnGetGUID);
+				service.addEventListener(FaultEvent.FAULT, OnFault);
+
+				service.GetStorageUrl();
+				service.GetUploaderUrl();
+//				service.GetGUID();
+
+				fileRef = new FileReference();
+				
+				fileRef.addEventListener(Event.SELECT, OnSelectLoad);
+				fileRef.addEventListener(Event.OPEN, OnOpenLoad);
+				fileRef.addEventListener(Event.COMPLETE, OnCompleteLoad);
+            	fileRef.addEventListener(IOErrorEvent.IO_ERROR, OnErrorLoad);
+            	fileRef.addEventListener(ProgressEvent.PROGRESS, OnProgressLoad);
+			}
+
+			private function OnGetStorageUrl(event:ResultEvent):void {
+				storageBaseUrl = event.result as String;
+			}
+	
+			private function OnGetUploaderUrl(event:ResultEvent):void {
+				uploaderUrl = event.result as String;
+			}
+			
+			private function OnGetGUID(event:ResultEvent):void {
+//				docUID = event.result as String;
+			}
+
+			private function OnFault(event:FaultEvent):void {
+				Alert.show(event.fault.message as String, "Init Error");
+			}
+			
+			private function OnClickUpload():void {
+	            requestURL = new URLRequest;
+	            requestURL.url = uploaderUrl;
+	            requestURL.method = "POST";
+	
+	            var variables:URLVariables = new URLVariables();
+	            variables.UploadDirUid = doc.DocID;
+//	            variables.UploadDirUid = docUID;
+	            requestURL.data = variables;
+	            
+				fileRef.browse();
+			}
+			
+			private function OnSelectLoad(event:Event):void {
+				var fileRef:FileReference = FileReference(event.target);
+				fileName = fileRef.name;
+				fileRef.upload(requestURL);
+			}
+
+			private function OnClickCancel():void {
+				fileRef.cancel();
+				loadingInProgress = false;
+				loadingDone = false;
+			}
+			
+			private function OnClickShow():void {
+				var url:URLRequest = new URLRequest(storageBaseUrl + doc.ImageLink);
+				navigateToURL(url, "_blank");
+			}
+			
+			private function OnOpenLoad(event:Event):void {
+				loadingInProgress = true;
+			}
+			
+			private function OnCompleteLoad(event:Event):void {
+				loadingInProgress = false;
+				loadingDone = true;
+				doc.ImageLink = doc.DocID + "/" + fileName;
+//				doc.ImageLink = docUID + "/" + fileName;
+				dispatchEvent(new Event("imageChange"));
+			}
+			
+			private function OnErrorLoad(event:IOErrorEvent):void {
+				loadingInProgress = false;
+				loadingDone = false;
+				Alert.show(event.text, "Uploading Error");
+			}
+			
+			private function OnProgressLoad(event:ProgressEvent):void {
+				pbUpload.setProgress(event.bytesLoaded, event.bytesTotal);
+				pctComplete.text = int(event.bytesLoaded/event.bytesTotal).toString() + "%";
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:LinkButton id="linkShowDocument" click="OnClickShow()" 
+		label="{doc.ImageLink.substr(doc.ImageLink.indexOf('/') + 1)}"
+		includeInLayout="{(doc.ImageLink != null) &amp;&amp; (doc.ImageLink != '') &amp;&amp; !loadingInProgress}"
+		visible="{(doc.ImageLink != null) &amp;&amp; (doc.ImageLink != '') &amp;&amp; !loadingInProgress}"
+		/>
+
+	<mx:Button id="btnUpload" label="Upload" click="OnClickUpload()"
+		includeInLayout="{!(loadingInProgress)}"
+		visible="{!(loadingInProgress)}"
+		/>
+	<mx:Button id="btnCancel" label="Cancel" click="OnClickCancel()" 
+		includeInLayout="{loadingInProgress}"
+		visible="{loadingInProgress}"
+		/>
+	<mx:ProgressBar id="pbUpload" mode="manual" width="100" 
+		labelPlacement="right" label="%3%%"
+		includeInLayout="{loadingInProgress}"
+		visible="{loadingInProgress}"
+		/>
+	<mx:Label id="pctComplete" fontWeight="bold"
+		includeInLayout="{loadingInProgress}"
+		visible="{loadingInProgress}"
+		/>
+<!--	<mx:Label text="storageBaseUrl: {storageBaseUrl}   "/>
+	<mx:Label text="uploaderUrl: {uploaderUrl}   "/>
+	<mx:Label text="docUID: {doc.DocID}   "/>
+ -->
+</mx:HBox>

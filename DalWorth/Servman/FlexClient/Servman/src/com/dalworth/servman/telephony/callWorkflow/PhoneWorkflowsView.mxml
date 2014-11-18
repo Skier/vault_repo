@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.breadCrumb.BreadCrumbModel;
+			import mx.controls.Alert;
+			import com.dalworth.servman.domain.CallWorkflow;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.PhoneService;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var workflows:ArrayCollection = new ArrayCollection(); 
+			
+			public function init():void 
+			{
+				BreadCrumbModel.getInstance().breadCrumbString = "Phone settings > Call Workflows Edit";
+
+				PhoneService.getInstance().retrieveWorkflows().addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							workflows.source = event.result as Array;
+							initUI();
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			private function initUI():void 
+			{
+				boxWorkflows.removeAllChildren();
+				
+				for each (var workflow:CallWorkflow in workflows)
+				{
+					boxWorkflows.addChild(getWorkflowTab(workflow));
+				}
+			}
+			
+			private function getWorkflowTab(workflow:CallWorkflow):WorkflowEditView 
+			{
+				var view:WorkflowEditView = new WorkflowEditView();
+				view.setWorkflow(workflow);
+				view.percentWidth = 100;
+				view.label = workflow.Description;
+
+				return view;
+			}
+			
+			private function onCommit():void 
+			{
+				var newWorkflows:Array = new Array();
+				
+				for each (var workflow:CallWorkflow in workflows)
+				{
+					var idx:int = workflows.getItemIndex(workflow);
+
+					var newWorkflow:CallWorkflow = workflow.prepareToSend();
+					newWorkflow.RelatedDetails = WorkflowEditView(boxWorkflows.getChildAt(idx)).getDetails();
+					
+					newWorkflows.push(newWorkflow);
+				}
+
+				PhoneService.getInstance().commitWorkflows(newWorkflows).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							init();
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" verticalGap="5" paddingLeft="5">
+		<mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#EEEEEE">
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Commit workflows changes" click="onCommit()"/>
+		</mx:HBox>
+
+		<mx:VBox id="boxWorkflows" width="100%" height="100%" 
+			verticalAlign="top" verticalGap="5"/>
+
+		<mx:HBox width="100%" paddingLeft="4" paddingRight="4" paddingTop="4" paddingBottom="4"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2" backgroundColor="#EEEEEE">
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Commit workflows changes" click="onCommit()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

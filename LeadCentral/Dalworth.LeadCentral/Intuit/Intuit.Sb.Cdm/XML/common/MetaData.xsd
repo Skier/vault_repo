@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdb="http://xmlns.oracle.com/xdb"
+           xmlns="http://www.intuit.com/sb/cdm/v2" targetNamespace="http://www.intuit.com/sb/cdm/v2"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:include schemaLocation="./IntuitCdmBaseTypes.xsd"/>
+    <xs:complexType name="RecordCount">
+        <xs:sequence>
+            <xs:element name="ObjectName" type="xs:string" minOccurs="0"/>
+            <xs:element name="Count" type="xs:integer" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RecordCounts">
+        <xs:annotation>
+            <xs:documentation>Provides the definition that allows bulk data transfer of RecordCounts</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="CdmCollections">
+                <xs:sequence>
+                    <xs:element name="RecordCount" type="RecordCount" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

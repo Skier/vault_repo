@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			import UI.Document.Participant.ParticipantModel;
+			
+			private function OnClickAddReservations():void {
+				var popupWin:ReservationsView = ReservationsView(PopUpManager.createPopUp(parentDocument as UIComponent, ReservationsView, true)); 
+				popupWin.reservations = data.reservations;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:PhoneFormatter id="phoneFormatter" formatString="(###) ###-####"/>
+
+	<mx:HBox minWidth="100" width="100%"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		toolTip="{
+		(data.participant.EntityName != '' ? 'Company: ' + data.participant.EntityName + '\n': '') 
+		+ ((data.participant.FirstName != '' || data.participant.LastName != '') ? 'Name: ' + data.participant.FirstName + ' ' + data.participant.LastName + '\n': '') 
+		+ (data.participant.PhoneHome != '' ? 'Home phone: ' + phoneFormatter.format(data.participant.PhoneHome) + '\n': '') 
+		+ (data.participant.PhoneOffice != '' ? 'Office phone: ' + phoneFormatter.format(data.participant.PhoneOffice) : '')
+		}">
+		<mx:Label includeInLayout="{data.participant.EntityName != ''}"
+			text="{data.participant.EntityName != '' ? data.participant.EntityName : ''}" fontWeight="bold"/>
+		<mx:Label includeInLayout="{data.participant.FirstName != ''}"
+			text="{data.participant.FirstName != '' ? data.participant.FirstName : ''}" fontWeight="bold"/>
+		<mx:Label includeInLayout="{data.participant.LastName != ''}"
+			text="{data.participant.LastName != '' ? data.participant.LastName : ''}" fontWeight="bold"/>
+		<mx:Label includeInLayout="{data.participant.PhoneHome != ''}"
+			text="{phoneFormatter.format(data.participant.PhoneHome)}"/>
+		<mx:Label includeInLayout="{data.participant.PhoneOffice != ''}"
+			text="{phoneFormatter.format(data.participant.PhoneOffice)}"/>
+	</mx:HBox>
+
+	<mx:Spacer width="10"/>
+
+	<mx:LinkButton label="{
+				data.reservations.length == 0 ? 'Add reservations' : 
+				data.reservations.length == 1 ? 'Has 1 reservation' :
+				'Has ' + data.reservations.length.toString() + ' reservations'
+		}" 
+		click="OnClickAddReservations()"
+		textDecoration="underline" color="#000099"
+		visible="{data.participant.isSeller}"
+		includeInLayout="{data.participant.isSeller}"
+		/>
+
+</mx:HBox>

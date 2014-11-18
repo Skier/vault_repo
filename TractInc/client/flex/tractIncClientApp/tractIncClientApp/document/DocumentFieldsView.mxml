@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:components="truetract.plotter.components.*"
+    >
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.binding.utils.ChangeWatcher;
+            import mx.utils.ObjectUtil;
+            import truetract.domain.*;
+            
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] public var docum:Document;
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+
+    <mx:VBox width="100%">
+    	<mx:HBox width="100%">
+    		<mx:Label width="90" textAlign="right" text="Instrument:" fontWeight="bold"/>
+
+    		<mx:HBox width="100%" horizontalGap="0">
+	            <mx:Label text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}"/>
+	            <mx:Label text=" - {(docum.DocumentNo.length > 0) ? docum.DocumentNo : (docum.Volume + '-' + docum.Page)}"/>
+    		</mx:HBox>
+    	</mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:Form fontWeight="bold"
+                paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                verticalGap="1" labelWidth="90">
+
+                <mx:FormItem label="State:">
+                    <mx:Label fontWeight="normal"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Date Signed:">
+                    <mx:Label fontWeight="normal" 
+                        text="{df.format(docum.DateSigned)}"/>
+                </mx:FormItem>
+            </mx:Form>
+
+            <mx:Form labelWidth="90" fontWeight="bold"
+                paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" 
+                verticalGap="3" indicatorGap="3" width="100%">
+                <mx:FormItem label="County:">
+                    <mx:Label fontWeight="normal"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}" width="100%"/>
+                </mx:FormItem>
+    
+                <mx:FormItem label="Date Filled:">
+                    <mx:Label fontWeight="normal" 
+                        text="{df.format(docum.DateFiled)}"/>
+                </mx:FormItem>
+            </mx:Form>
+        </mx:HBox>
+    </mx:VBox>
+</mx:VBox>

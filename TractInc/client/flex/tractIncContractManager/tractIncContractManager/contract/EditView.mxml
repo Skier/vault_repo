@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Contract" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+	xmlns:cmContractRate="tractIncContractManager.contract.rate.*"
+	xmlns:cmClientContact="tractIncContractManager.contract.clientContact.*"
+	xmlns:cmCompanyContact="tractIncContractManager.contract.companyContact.*"
+    creationComplete="init();"
+    visible="false"
+    minWidth="700"
+    minHeight="500">
+
+    <mx:Script>
+        <![CDATA[
+            import TractInc.Domain.ContractRate;
+        	import mx.collections.ArrayCollection;
+        	
+//        	import mx.rpc.Responder;
+//          import mx.rpc.events.FaultEvent;
+//          import mx.rpc.events.ResultEvent;
+            
+        	import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Contract;
+        	import TractInc.Domain.ContractStatus;
+        	import TractInc.Domain.Company;
+        	import TractInc.Domain.Client;
+            import tractInc.domain.packages.ContractPackage;
+        	import tractIncContractManager.ContractManagerController;
+            
+            [Bindable]
+            public var tabData:Array = [
+                {label:"Main", data:"Main"},
+                {label:"Contract Rates", data:"Contract Rates"},
+                {label:"Client Contacts", data:"Client Contacts"},
+                {label:"Company Contacts", data:"Company Contacts"},
+            ];
+        
+            [Bindable]
+            private var canEdit:Boolean = false;
+            [Bindable]
+            private var controller:ContractController = null;
+            private var currentContract:Contract = null;
+            private var contractPackage:ContractPackage = null;
+                
+            public static function open(ctrl:ContractController, contractPackage:ContractPackage, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, contractPackage);
+                
+                PopUpManager.addPopUp(popup, ctrl.view, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:ContractController, cp:ContractPackage):void
+            {
+                controller = ctrl;
+                contractPackage = cp;
+                if ( null != cp ) {
+                    currentContract = cp.Main;
+                }
+            }
+            
+            public function init():void
+            {
+                this.contractRateTabView.controller.init(contractPackage, controller);
+                this.clientContactTabView.controller.init(contractPackage, controller);
+                this.companyContactTabView.controller.init(contractPackage, controller);
+                
+                canEdit = true; //controller.model.userManagerPackage.canManageUsers;
+                
+                this.cbContractStatus.dataProvider =
+                        controller.parentController.model.contractManagerPackage.ContractStatusList;
+                this.cbContractStatus.labelField = "StatusName";
+                
+                this.cbCompany.dataProvider =
+                        controller.parentController.model.contractManagerPackage.CompanyList;
+                this.cbCompany.labelField = "CompanyName";
+                
+                this.cbClient.dataProvider =
+                        controller.parentController.model.contractManagerPackage.ClientList;
+                this.cbClient.labelField = "ClientName";
+                
+                if ( null != currentContract ) {
+                    this.txtContractName.text = currentContract.ContractName;
+                    this.dtStartDate.value = currentContract.StartDate;
+                    this.dtEndDate.value = currentContract.EndDate;
+                    this.cbContractStatus.selectedItem = 
+                            getContractStatusById(currentContract.ContractStatusId);
+                    this.cbCompany.selectedItem = 
+                            getCompanyById(currentContract.CompanyId);
+                    this.cbClient.selectedItem = 
+                            getClientById(currentContract.ClientId);
+                } else {
+                    currentContract = new Contract();
+                }
+                this.visible = true;        
+            }
+            
+            public function tabChanged(event:ItemClickEvent):void 
+            {
+                tabStack.selectedIndex = event.index;
+            }
+
+            private function getContractStatusById(id:int):ContractStatus
+            {
+                for each (var status:ContractStatus in controller.parentController.model.contractManagerPackage.ContractStatusList) {
+                    if ( id == status.ContractStatusId ) {
+                        return status;
+                    }
+                }
+                return null;    
+            }
+            
+            
+            private function getCompanyById(id:int):Company
+            {
+                for each (var item:Company in ContractManagerController.getInstance().model.contractManagerPackage.CompanyList) {
+                    if ( id == item.CompanyId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            private function getClientById(id:int):Client
+            {
+                for each (var item:Client in ContractManagerController.getInstance().model.contractManagerPackage.ClientList) {
+                    if ( id == item.ClientId ) {
+                        return item;
+                    }
+                }
+                return null;    
+            }
+            
+            public function getContract():Contract
+            {
+                currentContract.ContractName = this.txtContractName.text;
+                currentContract.StartDate = this.dtStartDate.value;
+                currentContract.EndDate = this.dtEndDate.value;
+                currentContract.ContractStatusId = 
+                        (this.cbContractStatus.selectedItem as ContractStatus).ContractStatusId;
+                currentContract.CompanyId = 
+                        (this.cbCompany.selectedItem as Company).CompanyId;
+                currentContract.ClientId = 
+                        (this.cbClient.selectedItem as Client).ClientId;
+                    
+                var rates:Array = new Array();        
+                for each(var cr1:ContractRate in contractRateTabView.controller.view.countableDataGrid.dataProvider) {
+                    rates.push(cr1);
+                }        
+                for each(var cr2:ContractRate in contractRateTabView.controller.view.uncountableDataGrid.dataProvider) {
+                    rates.push(cr2);
+                }        
+                currentContract.ContractRateList = rates;
+                   
+                return currentContract;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveContract(getContract());
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtContractName}" property="text" required="true"/>
+        <mx:StringValidator source="{dtStartDate}" property="value" required="true"/>
+        <mx:StringValidator source="{dtEndDate}" property="value" required="true"/>
+        <mx:StringValidator source="{cbContractStatus}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{cbCompany}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{cbClient}" property="selectedItem" required="true"/>
+    </validators:ValidatorsGroup>
+
+	<mx:TabBar id="tabBar" 
+	    dataProvider="{tabData}"
+	    itemClick="{tabChanged(event);}"/>
+		
+	<mx:ViewStack id="tabStack" creationPolicy="all" minHeight="200" minWidth="400" width="100%" height="100%">
+    	<mx:VBox>
+            <mx:Form id="mainForm" enabled="{canEdit}" 
+                backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+                paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+                width="100%">
+        
+                <mx:FormItem label="Name" width="100%" required="true">
+                    <mx:TextInput id="txtContractName" width="100%"/>
+                </mx:FormItem>
+                <mx:FormItem label="Status" width="100%" required="true">
+                    <mx:ComboBox id="cbContractStatus" width="100%"/>
+                </mx:FormItem>
+                <mx:FormItem label="Company" width="100%" required="true">
+                    <mx:ComboBox id="cbCompany" width="100%"/>
+                </mx:FormItem>
+                <mx:FormItem label="Client" width="100%" required="true">
+                    <mx:ComboBox id="cbClient" width="100%"/>
+                </mx:FormItem>
+                <mx:FormItem label="Start Date" width="100%" required="true">
+                    <components:CombinedDateField id="dtStartDate" width="100%"/>
+                </mx:FormItem>
+                <mx:FormItem label="End Date" width="100%" required="true">
+                    <components:CombinedDateField id="dtEndDate" width="100%"/>
+                </mx:FormItem>
+            </mx:Form>
+                    
+    	</mx:VBox>
+	    <cmContractRate:RateView id="contractRateTabView"/>
+	    <cmClientContact:ClientContactView id="clientContactTabView"/>
+	    <cmCompanyContact:CompanyContactView id="companyContactTabView"/>
+	</mx:ViewStack>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

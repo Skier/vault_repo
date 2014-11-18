@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="creationCompleteHandler()">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.llsvc.domain.DocumentCorrespondence;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.domain.DocumentAssignment;
+			import mx.containers.TitleWindow;
+			import com.llsvc.domain.DocumentAgreement;
+			import com.llsvc.client.lm.DocumentActorsView;
+			import com.llsvc.domain.DocumentType;
+			import mx.core.Application;
+			import com.llsvc.domain.Document;
+			import com.llsvc.domain.DocumentReference;
+			import com.llsvc.client.lms.events.ReferenceEvent;
+			import com.llsvc.domain.Lease;
+			
+            private var _lease:Lease;
+            [Bindable]
+            public function get lease():Lease {return _lease;}
+            public function set lease(value:Lease):void 
+            {
+                _lease = value;
+            }
+            
+            private function addDocument(type:DocumentType):void 
+            {
+            	var doc:Object;
+            	
+            	switch (type.name) 
+            	{
+            		case DocumentType.DOC_TYPE_AGREEMENT:
+            			doc = new DocumentAgreement();
+            			DocumentAgreement(doc).document.documentType = type;
+						break;
+						
+            		case DocumentType.DOC_TYPE_ASSIGNMENT:
+            			doc = new DocumentAssignment();
+            			DocumentAssignment(doc).document.documentType = type;
+						break;
+						
+            		case DocumentType.DOC_TYPE_CORRESPONDENCE:
+            			doc = new DocumentCorrespondence();
+            			DocumentCorrespondence(doc).document.documentType = type;
+						break;
+						
+            		case DocumentType.DOC_TYPE_LEASE:
+            			doc = new Lease();
+            			Lease(doc).document.documentType = type;
+						break;
+						
+            		case DocumentType.DOC_TYPE_RECORD:
+            			doc = new DocumentRecord();
+            			DocumentRecord(doc).document.documentType = type;
+						break;
+            	}
+            	
+            	openDocument(doc);
+            }
+            
+            private function openDocument(doc:Object):void 
+            {
+            	switch (Document(doc.document).documentType.name) 
+            	{
+            		case DocumentType.DOC_TYPE_AGREEMENT:
+            			openAgreement(doc as DocumentAgreement);
+						break;
+						
+            		case DocumentType.DOC_TYPE_ASSIGNMENT:
+            			openAssignment(doc as DocumentAssignment);
+						break;
+						
+            		case DocumentType.DOC_TYPE_CORRESPONDENCE:
+            			openCorrespondence(doc as DocumentCorrespondence);
+						break;
+						
+            		case DocumentType.DOC_TYPE_LEASE:
+            			openLease(doc as Lease);
+						break;
+						
+            		case DocumentType.DOC_TYPE_RECORD:
+            			openRecord(doc as DocumentRecord);
+						break;
+            	}
+            }
+            
+            private function openAgreement(doc:DocumentAgreement):void 
+            {
+            	if (doc == null) return;
+            	var popup:AgreementDocumentEditView = AgreementDocumentEditView.open(Application.application as DisplayObject, doc, true);
+            	
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			if (!docExists(popup.docum)) 
+            			{
+            				var ref:DocumentReference = new DocumentReference();
+            				ref.referrer = lease.document;
+            				ref.refereeDoc = popup.docum;
+            				ref.refereeId = popup.docum.document.id
+            				lease.document.references.addItem(ref);
+            			}
+            			
+            			popup.close();
+            		});
+            
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+            }
+            
+            
+            private function openAssignment(doc:DocumentAssignment):void 
+            {
+            	if (doc == null) return;
+            	var popup:AssignmentDocumentEditView = AssignmentDocumentEditView.open(Application.application as DisplayObject, doc, lease.tracts, true);
+            	
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			if (!docExists(popup.docum)) 
+            			{
+            				var ref:DocumentReference = new DocumentReference();
+            				ref.referrer = lease.document;
+            				ref.refereeDoc = popup.docum;
+            				ref.refereeId = popup.docum.document.id
+            				lease.document.references.addItem(ref);
+            			}
+            			
+            			popup.close();
+            		});
+            
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+            }
+            
+            
+            private function openCorrespondence(doc:DocumentCorrespondence):void 
+            {
+            	if (doc == null) return;
+            	var popup:CorrespondenceDocumentEditView = CorrespondenceDocumentEditView.open(Application.application as DisplayObject, doc, true);
+            	
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			if (!docExists(popup.docum)) 
+            			{
+            				var ref:DocumentReference = new DocumentReference();
+            				ref.referrer = lease.document;
+            				ref.refereeDoc = popup.docum;
+            				ref.refereeId = popup.docum.document.id
+            				lease.document.references.addItem(ref);
+            			}
+            			
+            			popup.close();
+            		});
+            
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+            }
+            
+            private function openLease(doc:Lease):void 
+            {
+            	Alert.show("do not realized yet !");
+            }
+            
+            private function openRecord(doc:DocumentRecord):void 
+            {
+            	if (doc == null) return;
+            	var popup:RecordDocumentEditView = RecordDocumentEditView.open(Application.application as DisplayObject, doc, true);
+            	
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			if (!docExists(popup.docum)) 
+            			{
+            				var ref:DocumentReference = new DocumentReference();
+            				ref.referrer = lease.document;
+            				ref.refereeDoc = popup.docum;
+            				ref.refereeId = popup.docum.document.id
+            				lease.document.references.addItem(ref);
+            			}
+            			
+            			popup.close();
+            		});
+            
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+            }
+            
+            private function docExists(doc:Object):Boolean 
+            {
+            	for each (var ref:DocumentReference in lease.document.references) 
+            	{
+	            	if (ref.refereeDoc == doc) 
+	            	{
+	            		return true;
+	            	}
+            	}
+            	
+            	return false;
+            } 
+            
+            private function removeReference(reference:DocumentReference):void 
+            {
+            	
+            }
+            
+            private function creationCompleteHandler():void 
+            {
+            	dgReferences.addEventListener(ReferenceEvent.OPEN_PDF_REFERENCE, openPdfHandler);
+            	dgReferences.addEventListener(ReferenceEvent.OPEN_REFERENCE, openReferenceHandler);
+            	dgReferences.addEventListener(ReferenceEvent.REMOVE_REFERENCE, removeReferenceHandler);
+            }
+            
+            private function openPdfHandler(event:ReferenceEvent):void 
+            {
+            	// need to change this method !
+//            	var refDoc:Document = Document(event.reference.refereeDoc.document);
+//            	if (refDoc.originalAttachment != null) 
+//            	{
+//			        var request:URLRequest = new URLRequest("download?id=" + refDoc.originalAttachment.file.id.toString());
+//	        		navigateToURL(request);
+//            	}
+            }
+
+            private function openReferenceHandler(event:ReferenceEvent):void 
+            {
+            	var refDoc:Document = Document(event.reference.refereeDoc.document);
+            	openDocument(refDoc);
+            }
+            
+            private function removeReferenceHandler(event:ReferenceEvent):void 
+            {
+            	var ref:DocumentReference = event.reference;
+            	removeReference(ref);
+            }
+            
+            private function onAdd():void 
+            {
+            	var popup:SelectDocTypeView = SelectDocTypeView.open(Application.application as DisplayObject, true);
+            	popup.addEventListener("submitRequest", 
+            		function (event:Event):void 
+            		{
+            			var type:DocumentType = popup.currentType;
+            			popup.close();
+            			addDocument(type);
+            		});
+            	popup.addEventListener("cancelRequest", 
+            		function (event:Event):void 
+            		{
+            			popup.close();
+            		});
+            }
+            
+            private function onOpen():void 
+            {
+            	var ref:DocumentReference = dgReferences.selectedItem as DocumentReference;
+            	openDocument(ref.refereeDoc);
+            }
+
+		    private function fileNumber(item:Object, col:int):String 
+		    {
+		    	var idx:int = lease.document.references.getItemIndex(item);
+		    	return (idx + 1).toString();
+		    } 
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" verticalGap="0"		
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1">
+		<mx:HBox width="100%" backgroundColor="#dddddd" verticalAlign="middle">
+			<mx:Label text="Referenced Documents"/>
+			
+			<mx:Spacer width="100%"/>
+	
+	        <mx:Button toolTip="Add Reference"
+	        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+	        	icon="@Embed('assets/icon_plus.png')"
+	        	click="onAdd()"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgReferences" 
+			width="100%" height="100%" borderThickness="0" dataProvider="{lease.document.references}"
+			draggableColumns="false" resizableColumns="false"
+			doubleClickEnabled="true" itemDoubleClick="onOpen()">
+			<mx:columns>
+				<mx:DataGridColumn headerText="No" width="30" labelFunction="fileNumber"/>
+				<mx:DataGridColumn headerText="Name" dataField="name"/>
+				<mx:DataGridColumn headerText="Date" dataField="date" width="80"/>
+				<mx:DataGridColumn width="54" itemRenderer="com.llsvc.client.lms.view.lease.detail.references.ReferenceActionsIR"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:lease="com.llsvc.client.lms.view.lease.*"
+	paddingLeft="5" paddingRight="5" xmlns:document="com.llsvc.client.lms.view.document.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			public function getResult():Boolean 
+			{
+				var result:Boolean = true;
+/* 				
+				if (viewClauses && !viewClauses.getResult())
+					result = false;
+ */				
+				if (viewGeneralInfo && !viewGeneralInfo.getResult())
+					result = false;
+				
+				if (viewAttachments && !viewAttachments.getResult())
+					result = false;
+				
+				if (viewNotes && !viewNotes.getResult())
+					result = false;
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+<!--	
+	<lease:LPRClauses id="viewClauses" 
+		width="100%" clause="{lease.clause}"/>
+-->	
+    <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+
+	<mx:HBox width="100%" height="100%" horizontalGap="5">
+		<lease:LPRGeneralInfo id="viewGeneralInfo" 
+			height="100%" lease="{lease}"/>
+		
+		<mx:VBox width="100%" height="100%" verticalGap="5">
+			<lease:LPRAttachments id="viewAttachments" 
+				width="100%" lease="{lease}"/>
+				
+			<document:DocNotes id="viewNotes" 
+				width="100%" height="100%" docum="{lease.document}"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+</mx:VBox>

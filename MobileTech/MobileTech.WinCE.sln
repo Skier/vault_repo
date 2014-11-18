@@ -1,0 +1,457 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.ServiceLayer", "MobileTech.ServiceLayer\MobileTech.ServiceLayer.csproj", "{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Windows", "MobileTech.Windows\MobileTech.Windows.csproj", "{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{30B0146B-25B7-4658-9436-183CE7E27388} = {30B0146B-25B7-4658-9436-183CE7E27388}
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91} = {88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.MainMenu", "MobileTech.MainMenu\MobileTech.MainMenu.csproj", "{BD068280-4C56-4389-96FB-CEFF4CEA89AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7} = {A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0} = {58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech", "MobileTech\MobileTech.csproj", "{30B0146B-25B7-4658-9436-183CE7E27388}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Windows.UI.Controls", "MobileTech.Windows.UI.Controls\MobileTech.Windows.UI.Controls.csproj", "{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.StartDay", "MobileTech.StartDay\MobileTech.StartDay.csproj", "{15FC3AFE-A996-469C-8E30-9BE217E634E1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7} = {A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91} = {88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0} = {58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.EndDay", "MobileTech.EndDay\MobileTech.EndDay.csproj", "{8E99A683-3CA6-4E77-935D-8475E98302E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RoutePeriod", "RoutePeriod", "{466B8C89-9C30-4B41-A08E-EF2B99CBD804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.TComm", "MobileTech.TComm\MobileTech.TComm.csproj", "{FE8021C5-CC71-465C-9415-20A9604EFAB8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TCom", "TCom", "{B5CBC4EA-2CF3-49B3-A97E-9132CEDD698F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.DatabaseManager", "MobileTech.DatabaseManager\MobileTech.DatabaseManager.csproj", "{C5459901-BF3D-4BF0-AAF6-E17D1B53702E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{F871E89F-E68A-4927-B29F-A61AB660BABF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load", "MobileTech.Inventory.Load\MobileTech.Inventory.Load.csproj", "{75621ECA-2489-4D71-B97A-F3D8656932B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Inventory", "Inventory", "{4DC3253C-70FC-4A87-9460-70B617898097}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Menu", "MobileTech.Inventory.Menu\MobileTech.Inventory.Menu.csproj", "{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{0638C05A-1896-4CE9-9750-D12089365110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Common", "MobileTech.Common\MobileTech.Common.csproj", "{E695636C-153B-453E-9691-4F98D92F505B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomerOperations", "CustomerOperations", "{C7D2A652-DB54-4590-BBD1-659A5FDC5D03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.CustomerOperations", "MobileTech.CustomerOperations\MobileTech.CustomerOperations.csproj", "{D6C95A70-0B44-4125-8273-35093929A083}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.RouteNet", "MobileTech.RouteNet\MobileTech.RouteNet.csproj", "{75693336-9E98-48BD-AC9E-2E4B91AB5E46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{DCACFDC0-2CBB-42B7-9342-946BA19EB307}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MainMenu", "MainMenu", "{D95E13FB-CE83-495A-93C5-42841C0D81E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{ACB34AA0-96C2-4054-BAF5-5971BC24888C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Setup.RouteSetup", "MobileTech.Setup\MobileTech.Setup.RouteSetup.csproj", "{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Domain", "MobileTech.Domain\MobileTech.Domain.csproj", "{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{C8D6F864-1892-4DD1-91D5-2804243E5387}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Setup.Menu", "MobileTech.Setup.Menu\MobileTech.Setup.Menu.csproj", "{8352B62F-6E7D-44F9-9B7A-5F26B430C00F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Windows.UI.FlagEditor", "MobileTech.Windows.UI.FlagEditor\MobileTech.Windows.UI.FlagEditor.csproj", "{CFC1636E-0A1F-4698-B10E-B32DB1436645}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload.Menu", "MobileTech.Inventory.Unload.Menu\MobileTech.Inventory.Unload.Menu.csproj", "{F4396EAA-F27C-49A0-B8E2-87616201025E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload.Good", "MobileTech.Inventory.Unload.Good\MobileTech.Inventory.Unload.Good.csproj", "{79E34789-7397-4A2C-A2BB-C2A8A59DAC59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload.Commit", "MobileTech.Inventory.Unload.Commit\MobileTech.Inventory.Unload.Commit.csproj", "{74DE5A28-08E4-473C-A46D-73A9C5FCABF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload", "MobileTech.Inventory.Unload\MobileTech.Inventory.Unload.csproj", "{32EE898F-0CDC-41FA-B06A-802B7310520D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload.Equipment", "MobileTech.Inventory.Unload.Equipment\MobileTech.Inventory.Unload.Equipment.csproj", "{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Unload.Damage", "MobileTech.Inventory.Unload.Damage\MobileTech.Inventory.Unload.Damage.csproj", "{61FD54D8-7230-449D-A984-52B775C2DFEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.CustomerOperations.CustomerSelection", "MobileTech.CustomerOperations.CustomerSelection\MobileTech.CustomerOperations.CustomerSelection.csproj", "{AAC02588-34F0-49CB-8A34-8D517BBC6ABF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.CustomerOperations.Commit", "MobileTech.CustomerOperations.Commit\MobileTech.CustomerOperations.Commit.csproj", "{733ABAFC-DC4A-4925-8167-E2A76868CCC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.CustomerOperations.Invoice", "MobileTech.CustomerOperations.Invoice\MobileTech.CustomerOperations.Invoice.csproj", "{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.CustomerOperations.Menu", "MobileTech.CustomerOperations.Menu\MobileTech.CustomerOperations.Menu.csproj", "{C80A84A5-92B1-4529-8CC3-BF8999DD8D39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load.Good", "MobileTech.Inventory.Load.Good\MobileTech.Inventory.Load.Good.csproj", "{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load.Commit", "MobileTech.Inventory.Load.Commit\MobileTech.Inventory.Load.Commit.csproj", "{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load.Menu", "MobileTech.Inventory.Load.Menu\MobileTech.Inventory.Load.Menu.csproj", "{FE701B0C-75BB-4795-9D20-3CD6C9663475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load.Equipment", "MobileTech.Inventory.Load.Equipment\MobileTech.Inventory.Load.Equipment.csproj", "{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTech.Inventory.Load.Damage", "MobileTech.Inventory.Load.Damage\MobileTech.Inventory.Load.Damage.csproj", "{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC}"
+EndProject
+Global
+	GlobalSection(SourceCodeControl) = preSolution
+		SccNumberOfProjects = 34
+		SccLocalPath0 = .
+		CanCheckoutShared = false
+		SccProjectUniqueName1 = MobileTech.Common\\MobileTech.Common.csproj
+		SccProjectTopLevelParentUniqueName1 = MobileTech.WinCE.sln
+		SccLocalPath1 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection1 = MobileTech.Common\\
+		SccProjectUniqueName2 = MobileTech.CustomerOperations\\MobileTech.CustomerOperations.csproj
+		SccProjectTopLevelParentUniqueName2 = MobileTech.WinCE.sln
+		SccLocalPath2 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection2 = MobileTech.CustomerOperations\\
+		SccProjectUniqueName3 = MobileTech.DatabaseManager\\MobileTech.DatabaseManager.csproj
+		SccProjectTopLevelParentUniqueName3 = MobileTech.WinCE.sln
+		SccLocalPath3 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection3 = MobileTech.DatabaseManager\\
+		SccProjectUniqueName4 = MobileTech.Domain\\MobileTech.Domain.csproj
+		SccProjectTopLevelParentUniqueName4 = MobileTech.WinCE.sln
+		SccLocalPath4 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection4 = MobileTech.Domain\\
+		SccProjectUniqueName5 = MobileTech.EndDay\\MobileTech.EndDay.csproj
+		SccProjectTopLevelParentUniqueName5 = MobileTech.WinCE.sln
+		SccLocalPath5 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection5 = MobileTech.EndDay\\
+		SccProjectUniqueName6 = MobileTech.Inventory.Load\\MobileTech.Inventory.Load.csproj
+		SccProjectTopLevelParentUniqueName6 = MobileTech.WinCE.sln
+		SccLocalPath6 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection6 = MobileTech.Inventory.Load\\
+		SccProjectUniqueName7 = MobileTech.Inventory.Menu\\MobileTech.Inventory.Menu.csproj
+		SccProjectTopLevelParentUniqueName7 = MobileTech.WinCE.sln
+		SccLocalPath7 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection7 = MobileTech.Inventory.Menu\\
+		SccProjectUniqueName8 = MobileTech.MainMenu\\MobileTech.MainMenu.csproj
+		SccProjectTopLevelParentUniqueName8 = MobileTech.WinCE.sln
+		SccLocalPath8 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection8 = MobileTech.MainMenu\\
+		SccProjectUniqueName9 = MobileTech.RouteNet\\MobileTech.RouteNet.csproj
+		SccLocalPath9 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection9 = MobileTech.RouteNet\\
+		SccProjectUniqueName10 = MobileTech.ServiceLayer\\MobileTech.ServiceLayer.csproj
+		SccProjectTopLevelParentUniqueName10 = MobileTech.WinCE.sln
+		SccLocalPath10 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection10 = MobileTech.ServiceLayer\\
+		SccProjectUniqueName11 = MobileTech.Setup.Menu\\MobileTech.Setup.Menu.csproj
+		SccProjectTopLevelParentUniqueName11 = MobileTech.WinCE.sln
+		SccLocalPath11 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection11 = MobileTech.Setup.Menu\\
+		SccProjectUniqueName12 = MobileTech.Setup\\MobileTech.Setup.RouteSetup.csproj
+		SccProjectTopLevelParentUniqueName12 = MobileTech.WinCE.sln
+		SccLocalPath12 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection12 = MobileTech.Setup\\
+		SccProjectUniqueName13 = MobileTech.StartDay\\MobileTech.StartDay.csproj
+		SccProjectTopLevelParentUniqueName13 = MobileTech.WinCE.sln
+		SccLocalPath13 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection13 = MobileTech.StartDay\\
+		SccProjectUniqueName14 = MobileTech.TComm\\MobileTech.TComm.csproj
+		SccProjectTopLevelParentUniqueName14 = MobileTech.WinCE.sln
+		SccLocalPath14 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection14 = MobileTech.TComm\\
+		SccProjectUniqueName15 = MobileTech.Windows.UI.Controls\\MobileTech.Windows.UI.Controls.csproj
+		SccProjectTopLevelParentUniqueName15 = MobileTech.WinCE.sln
+		SccLocalPath15 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection15 = MobileTech.Windows.UI.Controls\\
+		SccProjectUniqueName16 = MobileTech.Windows\\MobileTech.Windows.csproj
+		SccProjectTopLevelParentUniqueName16 = MobileTech.WinCE.sln
+		SccLocalPath16 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection16 = MobileTech.Windows\\
+		SccProjectUniqueName17 = MobileTech\\MobileTech.csproj
+		SccProjectTopLevelParentUniqueName17 = MobileTech.WinCE.sln
+		SccLocalPath17 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection17 = MobileTech\\
+		SccProjectUniqueName18 = MobileTech.Windows.UI.FlagEditor\\MobileTech.Windows.UI.FlagEditor.csproj
+		SccProjectTopLevelParentUniqueName18 = MobileTech.WinCE.sln
+		SccLocalPath18 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection18 = MobileTech.Windows.UI.FlagEditor\\
+		SccProjectUniqueName19 = MobileTech.Inventory.Unload\\MobileTech.Inventory.Unload.csproj
+		SccProjectTopLevelParentUniqueName19 = MobileTech.WinCE.sln
+		SccLocalPath19 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection19 = MobileTech.Inventory.Unload\\
+		SccProjectUniqueName20 = MobileTech.Inventory.Unload.Menu\\MobileTech.Inventory.Unload.Menu.csproj
+		SccProjectTopLevelParentUniqueName20 = MobileTech.WinCE.sln
+		SccLocalPath20 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection20 = MobileTech.Inventory.Unload.Menu\\
+		SccProjectUniqueName21 = MobileTech.Inventory.Unload.Good\\MobileTech.Inventory.Unload.Good.csproj
+		SccProjectTopLevelParentUniqueName21 = MobileTech.WinCE.sln
+		SccLocalPath21 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection21 = MobileTech.Inventory.Unload.Good\\
+		SccProjectUniqueName22 = MobileTech.Inventory.Unload.Commit\\MobileTech.Inventory.Unload.Commit.csproj
+		SccProjectTopLevelParentUniqueName22 = MobileTech.WinCE.sln
+		SccLocalPath22 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection22 = MobileTech.Inventory.Unload.Commit\\
+		SccProjectUniqueName23 = MobileTech.Inventory.Unload.Equipment\\MobileTech.Inventory.Unload.Equipment.csproj
+		SccProjectTopLevelParentUniqueName23 = MobileTech.WinCE.sln
+		SccLocalPath23 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection23 = MobileTech.Inventory.Unload.Equipment\\
+		SccProjectUniqueName24 = MobileTech.Inventory.Unload.Damage\\MobileTech.Inventory.Unload.Damage.csproj
+		SccProjectTopLevelParentUniqueName24 = MobileTech.WinCE.sln
+		SccLocalPath24 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection24 = MobileTech.Inventory.Unload.Damage\\
+		SccProjectUniqueName25 = MobileTech.CustomerOperations.CustomerSelection\\MobileTech.CustomerOperations.CustomerSelection.csproj
+		SccProjectTopLevelParentUniqueName25 = MobileTech.WinCE.sln
+		SccLocalPath25 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection25 = MobileTech.CustomerOperations.CustomerSelection\\
+		SccProjectUniqueName26 = MobileTech.CustomerOperations.Commit\\MobileTech.CustomerOperations.Commit.csproj
+		SccProjectTopLevelParentUniqueName26 = MobileTech.WinCE.sln
+		SccLocalPath26 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection26 = MobileTech.CustomerOperations.Commit\\
+		SccProjectUniqueName27 = MobileTech.CustomerOperations.Menu\\MobileTech.CustomerOperations.Menu.csproj
+		SccProjectTopLevelParentUniqueName27 = MobileTech.WinCE.sln
+		SccLocalPath27 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection27 = MobileTech.CustomerOperations.Menu\\
+		SccProjectUniqueName28 = MobileTech.CustomerOperations.Invoice\\MobileTech.CustomerOperations.Invoice.csproj
+		SccProjectTopLevelParentUniqueName28 = MobileTech.WinCE.sln
+		SccLocalPath28 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection28 = MobileTech.CustomerOperations.Invoice\\
+		SccProjectUniqueName29 = MobileTech.Inventory.Load.Good\\MobileTech.Inventory.Load.Good.csproj
+		SccProjectTopLevelParentUniqueName29 = MobileTech.WinCE.sln
+		SccLocalPath29 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection29 = MobileTech.Inventory.Load.Good\\
+		SccProjectUniqueName30 = MobileTech.Inventory.Load.Menu\\MobileTech.Inventory.Load.Menu.csproj
+		SccProjectTopLevelParentUniqueName30 = MobileTech.WinCE.sln
+		SccLocalPath30 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection30 = MobileTech.Inventory.Load.Menu\\
+		SccProjectUniqueName31 = MobileTech.Inventory.Load.Commit\\MobileTech.Inventory.Load.Commit.csproj
+		SccProjectTopLevelParentUniqueName31 = MobileTech.WinCE.sln
+		SccLocalPath31 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection31 = MobileTech.Inventory.Load.Commit\\
+		SccProjectUniqueName32 = MobileTech.Inventory.Load.Equipment\\MobileTech.Inventory.Load.Equipment.csproj
+		SccProjectTopLevelParentUniqueName32 = MobileTech.WinCE.sln
+		SccLocalPath32 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection32 = MobileTech.Inventory.Load.Equipment\\
+		SccProjectUniqueName33 = MobileTech.Inventory.Load.Damage\\MobileTech.Inventory.Load.Damage.csproj
+		SccProjectTopLevelParentUniqueName33 = MobileTech.WinCE.sln
+		SccLocalPath33 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection33 = MobileTech.Inventory.Load.Damage\\
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD068280-4C56-4389-96FB-CEFF4CEA89AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD068280-4C56-4389-96FB-CEFF4CEA89AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD068280-4C56-4389-96FB-CEFF4CEA89AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD068280-4C56-4389-96FB-CEFF4CEA89AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30B0146B-25B7-4658-9436-183CE7E27388}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30B0146B-25B7-4658-9436-183CE7E27388}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30B0146B-25B7-4658-9436-183CE7E27388}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30B0146B-25B7-4658-9436-183CE7E27388}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15FC3AFE-A996-469C-8E30-9BE217E634E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15FC3AFE-A996-469C-8E30-9BE217E634E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15FC3AFE-A996-469C-8E30-9BE217E634E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15FC3AFE-A996-469C-8E30-9BE217E634E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E99A683-3CA6-4E77-935D-8475E98302E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E99A683-3CA6-4E77-935D-8475E98302E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E99A683-3CA6-4E77-935D-8475E98302E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E99A683-3CA6-4E77-935D-8475E98302E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE8021C5-CC71-465C-9415-20A9604EFAB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE8021C5-CC71-465C-9415-20A9604EFAB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE8021C5-CC71-465C-9415-20A9604EFAB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE8021C5-CC71-465C-9415-20A9604EFAB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5459901-BF3D-4BF0-AAF6-E17D1B53702E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5459901-BF3D-4BF0-AAF6-E17D1B53702E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5459901-BF3D-4BF0-AAF6-E17D1B53702E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5459901-BF3D-4BF0-AAF6-E17D1B53702E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75621ECA-2489-4D71-B97A-F3D8656932B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75621ECA-2489-4D71-B97A-F3D8656932B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75621ECA-2489-4D71-B97A-F3D8656932B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75621ECA-2489-4D71-B97A-F3D8656932B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E695636C-153B-453E-9691-4F98D92F505B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E695636C-153B-453E-9691-4F98D92F505B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E695636C-153B-453E-9691-4F98D92F505B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E695636C-153B-453E-9691-4F98D92F505B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6C95A70-0B44-4125-8273-35093929A083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6C95A70-0B44-4125-8273-35093929A083}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6C95A70-0B44-4125-8273-35093929A083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6C95A70-0B44-4125-8273-35093929A083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75693336-9E98-48BD-AC9E-2E4B91AB5E46}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8352B62F-6E7D-44F9-9B7A-5F26B430C00F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8352B62F-6E7D-44F9-9B7A-5F26B430C00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8352B62F-6E7D-44F9-9B7A-5F26B430C00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8352B62F-6E7D-44F9-9B7A-5F26B430C00F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFC1636E-0A1F-4698-B10E-B32DB1436645}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFC1636E-0A1F-4698-B10E-B32DB1436645}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFC1636E-0A1F-4698-B10E-B32DB1436645}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFC1636E-0A1F-4698-B10E-B32DB1436645}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4396EAA-F27C-49A0-B8E2-87616201025E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4396EAA-F27C-49A0-B8E2-87616201025E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4396EAA-F27C-49A0-B8E2-87616201025E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4396EAA-F27C-49A0-B8E2-87616201025E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79E34789-7397-4A2C-A2BB-C2A8A59DAC59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79E34789-7397-4A2C-A2BB-C2A8A59DAC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79E34789-7397-4A2C-A2BB-C2A8A59DAC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79E34789-7397-4A2C-A2BB-C2A8A59DAC59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74DE5A28-08E4-473C-A46D-73A9C5FCABF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DE5A28-08E4-473C-A46D-73A9C5FCABF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DE5A28-08E4-473C-A46D-73A9C5FCABF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74DE5A28-08E4-473C-A46D-73A9C5FCABF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32EE898F-0CDC-41FA-B06A-802B7310520D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32EE898F-0CDC-41FA-B06A-802B7310520D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32EE898F-0CDC-41FA-B06A-802B7310520D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32EE898F-0CDC-41FA-B06A-802B7310520D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61FD54D8-7230-449D-A984-52B775C2DFEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61FD54D8-7230-449D-A984-52B775C2DFEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61FD54D8-7230-449D-A984-52B775C2DFEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61FD54D8-7230-449D-A984-52B775C2DFEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAC02588-34F0-49CB-8A34-8D517BBC6ABF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAC02588-34F0-49CB-8A34-8D517BBC6ABF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAC02588-34F0-49CB-8A34-8D517BBC6ABF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAC02588-34F0-49CB-8A34-8D517BBC6ABF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{733ABAFC-DC4A-4925-8167-E2A76868CCC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{733ABAFC-DC4A-4925-8167-E2A76868CCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{733ABAFC-DC4A-4925-8167-E2A76868CCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{733ABAFC-DC4A-4925-8167-E2A76868CCC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C80A84A5-92B1-4529-8CC3-BF8999DD8D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C80A84A5-92B1-4529-8CC3-BF8999DD8D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C80A84A5-92B1-4529-8CC3-BF8999DD8D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C80A84A5-92B1-4529-8CC3-BF8999DD8D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE701B0C-75BB-4795-9D20-3CD6C9663475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE701B0C-75BB-4795-9D20-3CD6C9663475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE701B0C-75BB-4795-9D20-3CD6C9663475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE701B0C-75BB-4795-9D20-3CD6C9663475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1E8D055-A447-4FAE-BEC9-3BE3BCFBA5F7} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{30B0146B-25B7-4658-9436-183CE7E27388} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{88E9B6B3-9ABA-4D23-84A6-F3E7221EAB91} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{58EDADD5-DE88-45BD-8ED5-0C7C3126F7C0} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{5C64CC6A-A4BB-4FDD-81F4-6A78499AAEE3} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{CFC1636E-0A1F-4698-B10E-B32DB1436645} = {0638C05A-1896-4CE9-9750-D12089365110}
+		{466B8C89-9C30-4B41-A08E-EF2B99CBD804} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{B5CBC4EA-2CF3-49B3-A97E-9132CEDD698F} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{F871E89F-E68A-4927-B29F-A61AB660BABF} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{4DC3253C-70FC-4A87-9460-70B617898097} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{C8D6F864-1892-4DD1-91D5-2804243E5387} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{C7D2A652-DB54-4590-BBD1-659A5FDC5D03} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{D95E13FB-CE83-495A-93C5-42841C0D81E0} = {DCACFDC0-2CBB-42B7-9342-946BA19EB307}
+		{8E99A683-3CA6-4E77-935D-8475E98302E6} = {466B8C89-9C30-4B41-A08E-EF2B99CBD804}
+		{15FC3AFE-A996-469C-8E30-9BE217E634E1} = {466B8C89-9C30-4B41-A08E-EF2B99CBD804}
+		{FE8021C5-CC71-465C-9415-20A9604EFAB8} = {B5CBC4EA-2CF3-49B3-A97E-9132CEDD698F}
+		{C5459901-BF3D-4BF0-AAF6-E17D1B53702E} = {ACB34AA0-96C2-4054-BAF5-5971BC24888C}
+		{4F7075A1-3ED3-4D6D-8F1A-8E68BE9DDEB4} = {F871E89F-E68A-4927-B29F-A61AB660BABF}
+		{8352B62F-6E7D-44F9-9B7A-5F26B430C00F} = {F871E89F-E68A-4927-B29F-A61AB660BABF}
+		{75621ECA-2489-4D71-B97A-F3D8656932B7} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{3776DC2A-AD46-4E6E-9B05-DA6C73E5B54C} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{F4396EAA-F27C-49A0-B8E2-87616201025E} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{79E34789-7397-4A2C-A2BB-C2A8A59DAC59} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{74DE5A28-08E4-473C-A46D-73A9C5FCABF7} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{32EE898F-0CDC-41FA-B06A-802B7310520D} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{92B1A585-F8FD-4E96-BBFC-F9E0315BE0BA} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{61FD54D8-7230-449D-A984-52B775C2DFEF} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{F1A514ED-D0F5-451B-8BEE-E7E255A6C6A5} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{2D32E42C-435D-4FB7-AC3D-40ADCCAF09A6} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{FE701B0C-75BB-4795-9D20-3CD6C9663475} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{C12FCA41-ED21-46ED-8BA4-6E229C0E50AE} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{33064D9B-A46B-4E24-8A5E-5A6E0D9B8CAC} = {4DC3253C-70FC-4A87-9460-70B617898097}
+		{E695636C-153B-453E-9691-4F98D92F505B} = {C8D6F864-1892-4DD1-91D5-2804243E5387}
+		{D6C95A70-0B44-4125-8273-35093929A083} = {C7D2A652-DB54-4590-BBD1-659A5FDC5D03}
+		{AAC02588-34F0-49CB-8A34-8D517BBC6ABF} = {C7D2A652-DB54-4590-BBD1-659A5FDC5D03}
+		{733ABAFC-DC4A-4925-8167-E2A76868CCC7} = {C7D2A652-DB54-4590-BBD1-659A5FDC5D03}
+		{EA8C9A93-A3AD-4419-9A5D-64FCE0DE36C2} = {C7D2A652-DB54-4590-BBD1-659A5FDC5D03}
+		{C80A84A5-92B1-4529-8CC3-BF8999DD8D39} = {C7D2A652-DB54-4590-BBD1-659A5FDC5D03}
+		{BD068280-4C56-4389-96FB-CEFF4CEA89AD} = {D95E13FB-CE83-495A-93C5-42841C0D81E0}
+	EndGlobalSection
+EndGlobal

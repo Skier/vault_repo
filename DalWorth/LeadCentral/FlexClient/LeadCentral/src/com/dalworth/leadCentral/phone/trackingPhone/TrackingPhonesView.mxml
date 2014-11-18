@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:companyPhones="com.dalworth.servman.telephony.companyPhones.*"
+	initialize="onInit()" creationComplete="onCreate()" xmlns:trackingPhone="com.dalworth.leadCentral.phone.trackingPhone.*" xmlns:help="com.dalworth.leadCentral.help.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import com.dalworth.leadCentral.domain.TrackingPhone;
+			import mx.events.DynamicEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.rpc.Responder;
+			
+            [Embed(source="/assets/icons24/plus.png")]
+            [Bindable]
+            private var imgPlus:Class;
+
+			[Bindable]
+			private var phoneNumbers:ArrayCollection = new ArrayCollection(); 
+			
+			[Bindable]
+			public var isEditMode:Boolean = false; 
+			
+			public function init():void 
+			{
+				if (vsPhones != null)
+					vsPhones.selectedIndex = 0;
+
+				phoneNumbers.removeAll();
+				PhoneService.getInstance().getCompanyPhoneNumbers(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							phoneNumbers.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			private function onPurchase():void 
+			{
+				var popup:PurchasePhonePopup = PurchasePhonePopup.open(Application.application as DisplayObject);
+				popup.addEventListener("purchasePhoneComplete", 
+					function (event:Event):void 
+					{
+						phoneNumbers.addItem(popup.phone);
+						init();
+					});
+			}
+			
+			private function onInit():void
+			{
+				//init();
+			}
+			
+			private function onCreate():void 
+			{
+				viewPhoneEdit.addEventListener("phoneEditClose", 
+					function (event:DynamicEvent):void 
+					{
+						isEditMode = false;
+						var phone:TrackingPhone = event.phone as TrackingPhone;
+						vsPhones.selectedChild = viewPhoneList;
+
+						if (phone != null && phoneNumbers.contains(phone))
+							dgPhones.selectedIndex = phoneNumbers.getItemIndex(phone);
+						else 
+							init();
+
+						viewPhoneEdit.phone = null;
+					});
+			}
+			
+			private function onPhoneDoubleClick():void 
+			{
+				var phone:TrackingPhone = dgPhones.selectedItem as TrackingPhone;
+				if (phone == null)
+					return;
+				vsPhones.selectedChild = viewPhoneEdit;
+				viewPhoneEdit.phone = phone;
+				isEditMode = true;
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=158";
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsPhones" width="100%" height="100%" creationPolicy="all">
+		<mx:VBox id="viewPhoneList" width="100%" height="100%" backgroundColor="#FFFFFF" verticalGap="0">
+			<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+			
+			<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+				backgroundColor="#FFFFDD">
+				<mx:Label text="Manage Tracking Phones" fontSize="24" color="#666666"/>
+				<mx:Spacer width="100%"/>
+				<mx:Button label="Purchase New" click="onPurchase()" fontSize="14" height="35" icon="{imgPlus}"/>
+			</mx:HBox> 
+
+			<mx:Spacer width="100%" height="5"/>
+
+			<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+				borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+				<mx:Label text="Company Tracking Phones" color="#333333" fontSize="14"/>
+		
+				<mx:DataGrid id="dgPhones" borderColor="#DDDDDD" borderStyle="solid"
+					dataProvider="{phoneNumbers}" 
+					width="100%" height="100%" minWidth="300" sortableColumns="false" draggableColumns="false" resizableColumns="false"
+					doubleClickEnabled="true" itemDoubleClick="onPhoneDoubleClick()">
+					<mx:columns>
+						<mx:DataGridColumn dataField="Number" headerText="Phone Number" width="120" minWidth="120"/>
+						<mx:DataGridColumn dataField="ScreenNumber" headerText="Screen Number" width="150" minWidth="150"/>
+						<mx:DataGridColumn dataField="Description" headerText="Description" width="150" minWidth="150"/>
+<!--
+						<mx:DataGridColumn dataField="TwilioId" headerText="UID" width="120" minWidth="120"/>
+-->
+						<mx:DataGridColumn headerText="Assignments" 
+							itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.AssignmentsIR" textAlign="left"/>
+						<mx:DataGridColumn dataField="IsSuspended" itemRenderer="com.dalworth.leadCentral.phone.trackingPhone.PhoneStatusIR" 
+							textAlign="center" headerText="Status" width="100" minWidth="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:VBox>
+		
+		<trackingPhone:TrackingPhoneEditView id="viewPhoneEdit" width="100%" height="100%"/>
+	</mx:ViewStack>
+</mx:Canvas>

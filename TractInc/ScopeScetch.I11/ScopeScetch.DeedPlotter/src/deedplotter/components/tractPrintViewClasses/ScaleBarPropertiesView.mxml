@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtendedTitleWindow
+    xmlns="src.deedplotter.containers.*"     
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="src.deedplotter.components.*"
+    title="Scale Bar Properties"
+    layout="vertical">
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.containers.GeoCanvas;
+            import mx.controls.Alert;
+            import src.deedplotter.utils.UnitOfMeasure;
+            import mx.managers.PopUpManager;
+            import src.deedplotter.components.ScaleBar;
+            import src.deedplotter.utils.ScaleValue;
+            import src.deedplotter.utils.UOMUtil;
+
+            public static function Open(parent:DisplayObject, modal:Boolean = false):ScaleBarPropertiesView 
+            {
+                var dialog:ScaleBarPropertiesView = new ScaleBarPropertiesView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+
+                return dialog;
+            }
+           
+            //TODO: It's absurd and need to be kicked out of there !
+            public var printDataFrame:GeoCanvas;
+            
+            private var _scaleBar:ScaleBar;
+            public function get scaleBar():ScaleBar { return _scaleBar; }
+            public function set scaleBar(value:ScaleBar):void
+            {
+                _scaleBar = value;
+
+                previewScaleBar.scaleValue = _scaleBar.scaleValue.clone();
+                uomDropDown.selectedItem = previewScaleBar.scaleValue.uom;
+                divisionCountSlider.value = _scaleBar.divisionsCount;
+                subDivisionsCountSlider.value = _scaleBar.subDivisionsCount;
+                barHeightSlider.value = _scaleBar.barHeight;
+                verticalGapSlider.value = _scaleBar.getStyle("verticalGap");
+            }
+
+            private function submit():void
+            {
+                if (scaleBar)
+                {
+                    scaleBar.barHeight = barHeightSlider.value;
+                    scaleBar.divisionsCount = divisionCountSlider.value;
+                    scaleBar.subDivisionsCount = subDivisionsCountSlider.value;
+//                    scaleBar.scaleValue.uom = previewScaleBar.scaleValue.uom;
+
+                    if (printDataFrame)
+                    {
+                        //TODO: !! must be refactored and kicked out of there!!
+                        printDataFrame.Scale = previewScaleBar.scaleValue;
+                    }
+                    
+                    scaleBar.invalidateProperties();
+                    scaleBar.invalidateDisplayList();
+
+                    scaleBar.setStyle("verticalGap", verticalGapSlider.value);
+                }
+
+                closePopup();
+            }
+            
+            private function closePopup():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function uomDropDown_changeHandler():void
+            {
+                var scale:ScaleValue = new ScaleValue();
+                scale.uom = UnitOfMeasure(uomDropDown.selectedItem);
+                scale.PointsInOneFeet = previewScaleBar.scaleValue.PointsInOneFeet;
+
+                previewScaleBar.scaleValue = scale;
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Form paddingBottom="0" paddingTop="0" paddingLeft="0" paddingRight="0">
+        <components:TextSliders id="divisionCountSlider"
+            sliderLabel="Divisions Count" max="10" min="1" value="4"/>
+
+        <components:TextSliders id="subDivisionsCountSlider"
+            sliderLabel="Sub Divisions Count" max="10" min="0" value="4"/>
+
+        <components:TextSliders id="verticalGapSlider"
+            sliderLabel="Vertical Gap" max="10" min="0" value="0"/>
+
+        <components:TextSliders id="barHeightSlider"
+            snapInt="2"
+            sliderLabel="Bar Height" max="11" min="3" value="5"/>
+
+        <mx:FormItem label="UOM">
+            <mx:ComboBox id="uomDropDown" 
+                selectedItem="{UOMUtil.Instance().DefaultUOM}"
+                dataProvider="{UOMUtil.Instance().UnitList}"
+                change="uomDropDown_changeHandler()"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <components:GlassHeaders headerTitle="PREVIEW"/>
+
+    <mx:Box 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="0"
+        horizontalAlign="center" verticalAlign="middle">
+    
+        <components:ScaleBar id="previewScaleBar"
+            divisionsCount="{divisionCountSlider.value}"
+            subDivisionsCount="{subDivisionsCountSlider.value}"
+            verticalGap="{verticalGapSlider.value}"
+            barHeight="{barHeightSlider.value}"
+            width="300" maxWidth="300" minWidth="200"/>
+            
+    </mx:Box>
+
+    <mx:ControlBar>
+        <mx:Button label="Submit" click="submit()"/>
+        <mx:Button label="Cancel" click="closePopup()"/>
+    </mx:ControlBar>
+</ExtendedTitleWindow>

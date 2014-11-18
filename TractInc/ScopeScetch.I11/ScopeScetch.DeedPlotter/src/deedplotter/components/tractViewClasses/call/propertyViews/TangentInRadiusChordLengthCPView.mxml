@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CallPropertiesView 
+    xmlns="src.deedplotter.components.tractViewClasses.call.propertyViews.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:Geo="src.deedplotter.utils.*" xmlns:validators="src.deedplotter.validators.*"
+    creationComplete="{onCreationComplete()}" xmlns:components="src.deedplotter.components.*">
+        
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.*;
+
+            import src.deedplotter.domain.callparams.*;
+            import src.deedplotter.utils.*;
+            import src.deedplotter.utils.*;
+            
+            import mx.events.ValidationResultEvent;
+
+            public var radiusUom:UnitOfMeasure;
+            public var chordLengthUom:UnitOfMeasure;
+
+            private function onCreationComplete():void
+            {
+                radiusUomList.selectedItem = radiusUom;
+                chordLengthUomList.selectedItem = chordLengthUom;
+                tInBearingTxt.setFocus();
+            }
+
+            override protected function getParameters():ParamCollection
+            {
+                if (!isFormValid())
+                    return null;
+                
+                var tInBearing:GeoBearing = GeoBearing.Parse(tInBearingTxt.text);
+                var radius:Number = Number(radiusTxt.text);
+                var chord:Number = Number(chordLengthTxt.text);
+
+                var params:ParamCollection = new ParamCollection();
+                
+                params.addItem( new TangentInBearingParam(tInBearing) );
+                params.addItem( new RadiusParam(radius, UnitOfMeasure(radiusUomList.selectedItem) ));
+                params.addItem( new ChordLengthParam(chord, UnitOfMeasure(chordLengthUomList.selectedItem) ));
+                
+                return params;
+            }
+             
+            override protected function getType():String
+            {
+                return TractCall.CALL_TYPE_CURVE;
+            }
+
+            private function isFormValid():Boolean
+            {
+                var result:Boolean = true;
+                
+                if (radiusV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (chordV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                    
+                if (bearingV.validate().type == ValidationResultEvent.INVALID)
+                    result = false;
+                
+                return result;
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:NumberValidator id="radiusV" 
+        source="{radiusTxt}" property="text" required="true" minValue="0.001" allowNegative="false"/>
+        
+    <mx:NumberValidator id="chordV" 
+        source="{chordLengthTxt}" property="text" required="true" minValue="0.001" 
+        allowNegative="false"/>
+        
+    <validators:GeoBearingValidator id="bearingV" 
+        source="{tInBearingTxt}" property="text" required="true"/>
+
+    <subComponents>
+    
+        <mx:Form verticalGap="3" paddingBottom="0" paddingLeft="0" 
+            paddingRight="0" paddingTop="0" indicatorGap="5"
+            >
+            <mx:FormItem label="Tan In" toolTip="Tangent In Bearing">
+                <mx:TextInput id="tInBearingTxt"
+                    toolTip="Tangent In Bearing"
+                    text="{TangentInBearing.toInputString()}" width="100" enter="commit()"/>
+            </mx:FormItem>
+            
+            <mx:FormItem label="Radius">
+                <mx:HBox horizontalGap="3">
+                    <mx:TextInput id="radiusTxt" 
+                        toolTip="Radius" width="100" enter="commit()"/>
+                    
+                    <components:ExtendedComboBox id="radiusUomList" 
+                        toolTip="Radius Units" showDataTips="true"
+                        labelField="Name" width="75"
+                        dataProvider="{UOMUtil.Instance().UnitList}" enter="commit()"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+            <mx:FormItem label="Ch ln" horizontalGap="3">
+                <mx:HBox horizontalGap="3">
+                    <mx:TextInput id="chordLengthTxt" 
+                        toolTip="Chord length" width="100" enter="commit()"/>
+                    
+                    <components:ExtendedComboBox id="chordLengthUomList" 
+                        toolTip="Chord length Units" showDataTips="true"
+                        labelField="Name" width="75"
+                        dataProvider="{UOMUtil.Instance().UnitList}" enter="commit()"/>
+                </mx:HBox>
+            </mx:FormItem>
+
+        </mx:Form>        
+    
+    </subComponents>
+    
+</CallPropertiesView>

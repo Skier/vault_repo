@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" height="720" width="1007" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="endEditSection", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+			[Bindable]
+			private var sectionDTO:Sections_DTO;
+			
+			[Bindable]
+			private var roofSystems:ArrayCollection;
+			
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+
+				initFields();
+			}
+			
+			private function initFields():void 
+			{
+				if (section != null)
+				{
+					sectionDTO = section.sectionDTO;
+					roofSystems = sectionDTO.RoofSystem_Info.choiceArray;
+					comboRoofSystem.selectedItem = sectionDTO.RoofSystem;
+				} else 
+				{
+					sectionDTO = null;
+					roofSystems = null;
+					comboRoofSystem.selectedItem = null;
+				}
+			}
+			
+			private function updateTotalCost():void 
+			{
+				lblCost.text = cf.format(numSqFt.value * Number(currEstCostPerSF.currency));
+			}
+			
+			private function onCostChange():void 
+			{
+				updateTotalCost();
+			}
+			
+			private function onSqFtChange():void 
+			{
+				updateTotalCost();
+			}
+			
+			private function isFormValid():Boolean 
+			{
+				var result:Boolean = true;
+				
+				if (vDesignation.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+			
+			private function populateSection():void 
+			{
+				sectionDTO.RoofName = txtRoofName.text;
+				sectionDTO.Designation = txtDesignation.text;
+				sectionDTO.SqFt = numSqFt.value;
+				sectionDTO.EstCostPerSqFt = Number(currEstCostPerSF.currency);
+				sectionDTO.RoofSystem = comboRoofSystem.selectedLabel;
+				sectionDTO.YearInstalled = nsYearInstalled.value;
+				sectionDTO.YearInstalledSource = radioYearInstalled.selectedValue as String;
+				sectionDTO.Height = Number(txtHeight.text);
+				sectionDTO.Slope = txtSlope.text;
+				sectionDTO.LeakDetails = rtfNotes.htmlText;
+				sectionDTO.InteriorSensitivity = txtInteriorSensitivity.text;
+				sectionDTO.ConditionIndex = txtConditionIndex.text;
+				sectionDTO.Restorable = radioRestorable.selectedValue as String;
+				sectionDTO.Drainage = radioDrainage.selectedValue as String;
+				sectionDTO.CurrentlyLeaking = radioCurrentlyLeaking.selectedValue as String;
+				sectionDTO.HistoryOfLeaking = radioHistoryLeaking.selectedValue as String;
+			}
+			
+			private function updateSection():void 
+			{
+				Application.application.enabled = false;
+				
+				populateSection();
+				
+				isBusy = true;
+				
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreSection, sectionDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(sectionDTO, callBackEvent);
+            	ev.dispatch();
+			}
+			
+            private function onStoreSection(storedObject:Sections_DTO):void 
+            {
+            	sectionDTO = storedObject;
+				Application.application.enabled = true;
+
+				isBusy = false;
+
+				dispatchEvent(new Event("endEditSection"));
+            }
+			
+			private function onCreate():void 
+			{
+				filePhoto.download.enabled = false;
+				filePhoto.displaySection.percentWidth = 100;
+				rtfNotes.toolbar.removeChild(rtfNotes.linkTextInput);
+			}
+			
+			private function onClickSave():void 
+			{
+				if (isFormValid()) 
+					updateSection();
+			}
+			
+			private function onClickCancel():void 
+			{
+				dispatchEvent(new Event("endEditSection"));
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:StringValidator id="vDesignation" source="{txtDesignation}" property="text" required="{sectionDTO.Designation_Info.required}"/>
+	
+	<mx:Label id="lblRoofName" y="10" fontSize="14" text="{sectionDTO.Designation + ' - ' + sectionDTO.RoofName}" left="10" width="635"/>
+
+	<mx:LinkButton label="Save" width="100" click="onClickSave()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="681"/>
+	<mx:LinkButton label="Cancel" click="onClickCancel()" enabled="{!isBusy}" top="11" height="22" textAlign="center" fontSize="12" left="789" width="100"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:Label x="10" y="55" text="Designation" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="53" id="txtDesignation" maxChars="10" width="161" text="{sectionDTO.Designation}"/>
+	<mx:Label x="275" y="56" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="85" text="Roof Name" textAlign="right" width="97"/>
+	<mx:TextInput x="115" y="83" id="txtRoofName" maxChars="10" width="360" text="{sectionDTO.RoofName}"/>
+	<mx:Label x="474" y="86" text="*" color="#FF0000" fontWeight="normal" fontSize="14" height="18" width="14"/>
+
+	<mx:Label x="10" y="115" text="Sq Ft" textAlign="right" width="97"/>
+	<mx:NumericStepper x="115" y="113" width="161" stepSize="1" minimum="1" maximum="1000000" textAlign="right" id="numSqFt" value="{sectionDTO.SqFt}"
+		change="onSqFtChange()"/>
+
+	<mx:Label x="7" y="145" text="Est.Cost per SqFt" textAlign="right"/>
+	<controls:CurrencyInput x="115" y="143" id="currEstCostPerSF" width="161" 
+		textAlign="right" text="" restrict="0-9,." currency="{sectionDTO.EstCostPerSqFt.toString()}"
+		change="onCostChange()"/>
+
+	<mx:Label x="10" y="176" text="Est.Cost" textAlign="right" width="97"/>
+	<mx:Label id="lblCost" x="115" y="174" text="{cf.format(sectionDTO.EstCost)}"
+		textAlign="right" fontWeight="bold" width="161" fontSize="12"/>
+
+	<mx:Label x="31" y="208" text="Roof System" textAlign="right"/>
+	<mx:ComboBox x="115" y="206" id="comboRoofSystem" width="360"
+		dataProvider="{roofSystems}"/>
+
+	<mx:HBox x="10" y="244" width="185" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioYearInstalled" selectedValue="{sectionDTO.YearInstalledSource}"/>
+		<mx:RadioButton label="Known" groupName="radioYearInstalled"/>
+		<mx:RadioButton label="Estimated" groupName="radioYearInstalled"/>
+	</mx:HBox>
+	<mx:HBox x="20" y="234" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Year Installed"/>
+		<mx:NumericStepper width="68" id="nsYearInstalled" value="{sectionDTO.YearInstalled}" minimum="1000" maximum="2500" stepSize="1"/>
+	</mx:HBox>
+
+	<mx:Label x="203" y="238" text="Height" textAlign="right" width="50"/>
+	<mx:TextInput x="261" y="236" id="txtHeight" maxChars="10" width="118" text="{sectionDTO.Height}" restrict="0-9,."/>
+
+	<mx:Label x="203" y="268" text="Slope" textAlign="right" width="50"/>
+	<mx:TextInput x="261" y="266" id="txtSlope" maxChars="500" width="214" text="{sectionDTO.Slope}"/>
+
+	<mx:RichTextEditor id="rtfNotes" title="Leak Details" top="294" left="10" htmlText="{sectionDTO.LeakDetails}" width="465" height="348"/>
+
+	<mx:Label x="493" y="54" text="Interior sensitivity" textAlign="right" width="113"/>
+	<mx:TextInput x="614" y="52" id="txtInteriorSensitivity" maxChars="10" width="275" text="{sectionDTO.InteriorSensitivity}"/>
+
+	<mx:Label x="493" y="84" text="Condition Index" textAlign="right" width="113"/>
+	<mx:TextInput x="614" y="82" id="txtConditionIndex" maxChars="10" width="275" text="{sectionDTO.ConditionIndex}"/>
+	
+	<mx:HBox x="483" y="122" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioRestorable" selectedValue="{sectionDTO.Restorable}"/>
+		<mx:RadioButton label="Yes" groupName="radioRestorable"/>
+		<mx:RadioButton label="No" groupName="radioRestorable"/>
+	</mx:HBox>
+	<mx:HBox x="493" y="112" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Restorable"/>
+	</mx:HBox>
+
+	<mx:HBox x="690" y="122" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioDrainage" selectedValue="{sectionDTO.Drainage}"/>
+		<mx:RadioButton label="Yes" groupName="radioDrainage"/>
+		<mx:RadioButton label="No" groupName="radioDrainage"/>
+	</mx:HBox>
+	<mx:HBox x="700" y="112" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Drainage Adequate"/>
+	</mx:HBox>
+
+	<mx:HBox x="483" y="184" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioCurrentlyLeaking" selectedValue="{sectionDTO.CurrentlyLeaking}"/>
+		<mx:RadioButton label="Yes" groupName="radioCurrentlyLeaking"/>
+		<mx:RadioButton label="No" groupName="radioCurrentlyLeaking"/>
+		<mx:RadioButton label="Unknown" groupName="radioCurrentlyLeaking"/>
+	</mx:HBox>
+	<mx:HBox x="493" y="174" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="Currently Leaking"/>
+	</mx:HBox>
+
+	<mx:HBox x="690" y="184" width="199" 
+		cornerRadius="4" borderStyle="solid" borderColor="#DDDDDD" backgroundColor="#FFFFFF" 
+		verticalAlign="bottom" horizontalAlign="left"
+		paddingLeft="10" paddingRight="10" paddingTop="15" paddingBottom="5">
+		<mx:RadioButtonGroup id="radioHistoryLeaking" selectedValue="{sectionDTO.HistoryOfLeaking}"/>
+		<mx:RadioButton label="Yes" groupName="radioHistoryLeaking"/>
+		<mx:RadioButton label="No" groupName="radioHistoryLeaking"/>
+		<mx:RadioButton label="Unknown" groupName="radioHistoryLeaking"/>
+	</mx:HBox>
+	<mx:HBox x="700" y="174" backgroundColor="#FFFFFF" verticalAlign="middle" 
+		paddingLeft="5" paddingRight="5">
+		<mx:Label text="History of Leaking"/>
+	</mx:HBox>
+
+	<mx:VBox top="236" left="483" height="406" width="406" verticalAlign="middle" horizontalAlign="center"
+		borderColor="#eeeeee" borderStyle="solid">
+		<mx:Image source="{sectionDTO.Photo.url}"/>
+	</mx:VBox>
+
+	<view:FileManagementField id="filePhoto" fileDTO="{sectionDTO.Photo}"
+		allowUpload="true" height="50" width="406" x="483" y="592"/>
+</mx:Canvas>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            private function onStateChange(event:Event):void {
+//                this.cbCounty.dataProvider = this.cbState.selectedItem.counties;
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox height="100%" width="100%">
+	    <mx:HBox height="100%" width="100%">
+	        <mx:VBox  height="100%">
+	            <mx:CheckBox id="chbContDevel" label="Continuous Development"/>
+	            <mx:CheckBox id="chbDepthLimit" label="Depth Limitation"/>
+	            <mx:CheckBox id="chbReqConsAssign" label="Assignment Clause"/>
+	            <mx:CheckBox id="chbSurfUse" label="Surface Use"/>
+	            <mx:CheckBox id="chbOptToRenew" label="Option to Renew"/>
+	            <mx:CheckBox id="chbLesserInt" label="Lesser Interest"/>
+	        </mx:VBox>
+	        <mx:VBox  height="100%">
+	            <mx:CheckBox id="chbReworkDays" label="ReworkDays"/>
+	            <mx:CheckBox id="chbOther" label="Other"/>
+	            <mx:TextArea id="taOtherDesc" height="100%"/>
+	        </mx:VBox>
+	        <mx:VBox  height="100%">
+	            <mx:CheckBox id="chbHBP" label="HBP"/>
+	            <mx:CheckBox id="chbSurfDamages" label="Surface Damages"/>
+	            <mx:CheckBox id="chbPugh" label="Pugh Clause"/>
+	            <mx:CheckBox id="chbPoolProvision" label="Pooling Provision"/>
+	            <mx:CheckBox id="chbRoyaltyLimitation" label="Shut-in Royalty Limitation"/>
+	            <mx:CheckBox id="chbWellInformation" label="Shut-in Gas Well"/>
+	        </mx:VBox>
+	        <mx:VBox  height="100%">
+	            <mx:CheckBox id="chbOptToExt" label="Option to extent"/>
+	            <mx:CheckBox id="chbProdPayment" label="Prod. Payment"/>
+	            <mx:CheckBox id="chbMinimumRoyalty" label="Minimum Royalty Payment"/>
+	            <mx:CheckBox id="chbFavNations" label="Favored Nations"/>
+	            <mx:CheckBox id="chbRoyaltyInKind" label="Royalty in Kind"/>
+	            <mx:CheckBox id="chbSpacingProvision" label="Spacing Provision"/>
+	        </mx:VBox>
+	    </mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

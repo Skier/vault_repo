@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{10D95A58-1957-401F-BC29-63D4F18A65B8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Servman.Domain</RootNamespace>
+    <AssemblyName>Servman.Domain</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationStatus.cs" />
+    <Compile Include="CallWorkflow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="codegen\ApplicationStatus.Generator.cs" />
+    <Compile Include="codegen\CallWorkflow.Generator.cs" />
+    <Compile Include="codegen\File.Generator.cs" />
+    <Compile Include="codegen\Lead.Generator.cs" />
+    <Compile Include="codegen\LeadForm.Generator.cs" />
+    <Compile Include="codegen\LeadSource.Generator.cs" />
+    <Compile Include="codegen\LeadSourcePhone.Generator.cs" />
+    <Compile Include="codegen\LeadSourceTrackingPhone.Generator.cs" />
+    <Compile Include="codegen\LeadStatus.Generator.cs" />
+    <Compile Include="codegen\OAuthConnection.Generator.cs" />
+    <Compile Include="codegen\PhoneCall.Generator.cs" />
+    <Compile Include="codegen\PhoneCallWorkflow.Generator.cs" />
+    <Compile Include="codegen\PhoneSms.Generator.cs" />
+    <Compile Include="codegen\QbInvoice.Generator.cs" />
+    <Compile Include="codegen\QbmsTransaction.Generator.cs" />
+    <Compile Include="codegen\ServmanCustomer.Generator.cs" />
+    <Compile Include="codegen\ServmanSession.Generator.cs" />
+    <Compile Include="codegen\Session.Generator.cs" />
+    <Compile Include="codegen\SessionLog.Generator.cs" />
+    <Compile Include="codegen\TrackingPhone.Generator.cs" />
+    <Compile Include="codegen\TrackingPhoneRotation.Generator.cs" />
+    <Compile Include="codegen\Transaction.Generator.cs" />
+    <Compile Include="codegen\TransactionType.Generator.cs" />
+    <Compile Include="codegen\User.Generator.cs" />
+    <Compile Include="codegen\WorkflowDetail.Generator.cs" />
+    <Compile Include="AmountSummary.cs" />
+    <Compile Include="LeadSearchOptions.cs" />
+    <Compile Include="LeadAmountSummary.cs" />
+    <Compile Include="CustomerFilter.cs" />
+    <Compile Include="File.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Lead.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LeadFilter.cs" />
+    <Compile Include="LeadForm.cs" />
+    <Compile Include="LeadSource.cs" />
+    <Compile Include="LeadSourcePhone.cs" />
+    <Compile Include="LeadSourceTrackingPhone.cs" />
+    <Compile Include="LeadStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OAuthConnection.cs" />
+    <Compile Include="PhoneCall.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhoneCallWorkflow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhoneSms.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QbInvoice.cs" />
+    <Compile Include="QbmsTransaction.cs" />
+    <Compile Include="ServmanCustomer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ServmanSession.cs" />
+    <Compile Include="Session.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SessionLog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TrackingPhone.cs" />
+    <Compile Include="TrackingPhoneRotation.cs" />
+    <Compile Include="Transaction.cs" />
+    <Compile Include="TransactionType.cs" />
+    <Compile Include="User.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WorkflowDetail.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Intuit.Sb.Cdm\Intuit.Sb.Cdm.csproj">
+      <Project>{1354CDE6-C21F-4514-8D56-9E85E2602405}</Project>
+      <Name>Intuit.Sb.Cdm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Servman.csproj">
+      <Project>{18BD1B3C-B288-494D-B764-FB2ADD033F9A}</Project>
+      <Name>Servman</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

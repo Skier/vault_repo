@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	width="450" title="Select Lead Source" 
+    xmlns:controls="com.affilia.controls.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.dalworth.leadCentral.events.LeadSourceEvent;
+        	import com.dalworth.leadCentral.service.LeadSourceService;
+        	import com.dalworth.leadCentral.domain.LeadSource;
+        	import mx.events.ValidationResultEvent;
+        	import mx.controls.Alert;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.core.UIComponent;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.rpc.Responder;
+            
+            [Bindable]
+            private var leadSources:ArrayCollection;
+            
+            private var excludes:ArrayCollection;
+            
+            public static function open(parent:DisplayObject, excludes:ArrayCollection, isReadOnly:Boolean = false, modal:Boolean = true):LeadSourceSelectorPopup
+            {
+                var popup:LeadSourceSelectorPopup = new LeadSourceSelectorPopup();
+                popup.excludes = excludes;
+                
+                popup.init();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	leadSources = new ArrayCollection();
+            	
+            	LeadSourceService.getInstance().getAll(
+            		new mx.rpc.Responder(
+            			function (event:ResultEvent):void 
+            			{
+            				var result:Array = event.result as Array;
+            				for each (var leadSource:LeadSource in result)
+            				{
+            					if (!existsInExcludes(leadSource))
+            						leadSources.addItem(leadSource);
+            				}
+            			}, 
+            			function (event:FaultEvent):void 
+            			{
+            				Alert.show(event.fault.message);
+            			}));
+            }
+            
+            private function existsInExcludes(leadSource:LeadSource):Boolean 
+            {
+            	for each (var source:LeadSource in excludes)
+            	{
+            		if (leadSource.Id == source.Id)
+            			return true;
+            	}
+            	return false;
+            } 
+            
+			private function onOkClick():void 
+			{
+				dispatchEvent(new LeadSourceEvent(LeadSourceEvent.LEAD_SOURCE_SELECT, comboLeadSources.selectedItem as LeadSource));
+				close();
+			}
+
+			private function onCancelClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:Form width="100%" minWidth="250" fontSize="12">
+		<mx:FormItem label="Select Lead Source:" width="100%" required="true">
+			<controls:ComboBox id="comboLeadSources" width="100%" dataProvider="{leadSources}" labelField="Name"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%" fontSize="12">
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Ok" width="80" click="onOkClick()"/>
+        <mx:LinkButton label="Cancel" click="onCancelClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

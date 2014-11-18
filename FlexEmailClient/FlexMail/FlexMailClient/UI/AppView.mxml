@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:messageBox="UI.MessageBox.*" 
+    xmlns:compose="UI.Compose.*" 
+    xmlns:login="UI.Login.*"
+    creationComplete="Controller.OnCreated()">
+
+    <mx:Script>
+        <![CDATA[
+        
+        [Bindable]
+        private var Controller:AppController = new AppController( AppView(this) );
+            
+        [Embed(source="/Images/indicator_arrows.swf")]
+        [Bindable]
+        public var busyIndicator:Class;
+            
+        ]]>
+    </mx:Script>
+        
+
+    <mx:ViewStack id="m_appViewStack" width="100%" height="100%" creationPolicy="all">
+        <login:LoginView id="loginView" appController="{Controller}"/>
+        
+        <mx:VBox id="mainView" width="100%" height="100%">
+
+            <mx:ApplicationControlBar width="100%">
+                <mx:Label text="Flex Mail" fontWeight="bold"/>
+                <mx:VRule height="15"/>
+                <mx:Label text="{Controller.Model.account.Email}"/>
+            
+                <mx:Button label="Compose" id="composeButton" 
+                    enabled="{Controller.Model.workflowState != AppModel.WORKFLOWSTATE_COMPOSING}"
+                    click="Controller.ComposeMessage()"/>
+                <mx:Button label="Check Mail" id="checkMailButton" enabled="{!Controller.IsPop3Busy}" click="Controller.OnCheckMail()"/>
+                <mx:Button label="Settings" id="settingsButton" click="Controller.OnShowSettings()"/>
+                    
+                <mx:Spacer  width="99%" />
+                
+                <mx:Button label="Logout" id="logOutButton" click="Controller.Logout()"/>
+            </mx:ApplicationControlBar>
+            
+            <mx:ViewStack id="m_mainViewStack" width="100%" height="100%" creationPolicy="all">
+                <messageBox:MessageBoxView id="inboxView" BoxName="inbox" ParentController="{Controller}" width="100%" height="100%"  styleName="colorPanel"/>
+                <compose:ComposeView id="composeView" ParentController="{Controller}" width="100%" height="100%"  styleName="colorPanel" />
+            </mx:ViewStack>
+
+            <mx:ControlBar id="cb" width="100%"  styleName="colorPanel">
+                <mx:Label text="Workflow History"/>
+                
+                <mx:Image id="serverBusyIndicator" source="{busyIndicator}" visible="{Controller.IsPop3Busy || Controller.IsSmtpBusy}"/>
+                
+                <mx:ComboBox width="840" selectedItem="{Controller.Model.history.getItemAt(Controller.Model.history.length - 1)}" id="m_history" 
+                    dataProvider="{Controller.Model.history}"/>
+            </mx:ControlBar>
+            
+        </mx:VBox>
+    </mx:ViewStack>
+    
+</mx:Canvas>

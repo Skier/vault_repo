@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" xmlns:Licensing="UI.Licensing.*" creationCompleteEffect="{fadeIn}">
+	<mx:Fade id="fadeIn" alphaFrom="0.0" alphaTo="1.0" duration="1000" />
+	<mx:Panel y="50" width="376" height="200" layout="absolute" title="Licensing Information" x="51" alpha="0" creationCompleteEffect="{fadeIn}">
+		<mx:Text x="15" y="10" text="WebORB Installation is:"/>
+		<mx:Label x="157" y="10" text="LICENSED" id="installationStatus" fontWeight="bold"/>
+		<mx:Label x="157" y="29" text="STANDARD" id="installationStatus0" fontWeight="bold"/>
+		<mx:Label x="157" y="49" text="XXXX-XXXX-XXXX-XXXX" id="installationStatus1" fontWeight="bold"/>
+		<mx:Text x="75" y="29" text="License type:" textAlign="right"/>
+		<mx:Text x="79" y="49" text="License key:" textAlign="right"/>
+		<mx:Canvas x="10" y="84" width="336" height="68" cornerRadius="10" borderStyle="solid" borderThickness="1">
+			<mx:Text x="45" y="20" text="CPU:" textAlign="left"/>
+			<mx:Text x="45" y="37" text="Concurrent connections:" textAlign="left"/>
+		</mx:Canvas>
+		<mx:Text text="License key restrictions" width="135" textAlign="left" opaqueBackground="0xffffff" x="29" y="77"/>
+	</mx:Panel>
+</mx:Canvas> 

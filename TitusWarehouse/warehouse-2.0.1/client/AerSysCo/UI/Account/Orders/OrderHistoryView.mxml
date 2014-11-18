@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:Containers="AerSysCo.UI.Containers.*"
+	xmlns:Orders="AerSysCo.UI.Account.Orders.*"
+	styleName="orderHistoryPanel"
+	title="Order History">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import AerSysCo.UI.Models.OrderDetailUI;
+			import AerSysCo.UI.Models.OrderUI;
+			import AerSysCo.UI.Models.CustomerUI;
+			
+			[Bindable] private var controller:OrdersHistoryController;
+			
+			private const LABEL_WIDTH:int = 130;
+			
+			public function init(customer:CustomerUI):void 
+			{
+				controller = new OrdersHistoryController();
+				controller.init(customer, this);
+			}
+			
+			private function btnSearchClickHandler():void 
+			{
+				controller.search();
+			}
+			
+			private function dgOrdersDoubleClickHandler():void 
+			{
+				var order:OrderUI = dgOrders.selectedItem as OrderUI;
+				controller.openOrder(order);
+			}
+			
+			private function btnOpenOrderClickHandler():void 
+			{
+				var order:OrderUI = dgOrders.selectedItem as OrderUI;
+				controller.openOrder(order);
+			}
+			
+			private function btnPrintOrderClickHandler():void  {
+				var order:OrderUI = dgOrders.selectedItem as OrderUI;
+				controller.printOrder(order);
+			}
+			
+			
+			private function btnCloseOrderClickHandler():void 
+			{
+				controller.closeOrder();
+			}
+			
+			private function btnSpecOrderClickHandler():void 
+			{
+				Alert.show("don't realized yet");
+			}
+			
+			private function btnFinOrderClickHandler():void 
+			{
+				Alert.show("don't realized yet");
+			}
+			
+			private function btnRulesClickHandler():void 
+			{
+				Alert.show("don't realized yet");
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsOrders" width="100%" height="100%" selectedIndex="{controller.model.workFlowState}">
+		<mx:HBox id="boxOrderList" 
+			width="100%" height="100%" horizontalGap="0">
+			<mx:VBox width="300" height="100%" 
+				styleName="orderHistorySearchBox"
+				enabled="{!controller.model.isBusy}">
+				<mx:HBox width="100%" verticalGap="-3">
+					<mx:Label width="{LABEL_WIDTH}" text="PO Number:" textAlign="right"/>
+					<mx:TextInput id="txtPONumber" width="100%"
+						text="{controller.model.orderFilter.poNumber}"/>
+				</mx:HBox>
+				 
+				<mx:HBox width="100%" verticalGap="-3">
+					<mx:Label width="{LABEL_WIDTH}" text="Online Confirmation #:" textAlign="right"/>
+					<mx:TextInput id="txtConfirmNumber" width="100%"
+						text="{controller.model.orderFilter.confirmNumber}"/>
+				</mx:HBox>
+
+				<mx:VBox width="100%" verticalGap="0">
+					<mx:Label text="Select Date Range:"/>
+					
+					<mx:HBox width="100%">
+						<mx:VBox width="100%" verticalGap="-3" verticalAlign="middle">
+							<mx:Label text="Date From:"/>
+							<mx:DateField id="dateFrom" selectedDate="{controller.model.orderFilter.fromDate}" width="100%"/>
+						</mx:VBox>
+						<mx:VBox width="100%" verticalGap="-3" verticalAlign="middle">
+							<mx:Label text="Date To:"/>
+							<mx:DateField id="dateTo" selectedDate="{controller.model.orderFilter.toDate}" width="100%"/>
+						</mx:VBox>
+					</mx:HBox>
+				</mx:VBox>
+				
+				<mx:HBox width="100%" horizontalGap="0" verticalAlign="middle">
+					<mx:Label text="View my last"/>
+					
+				    <mx:ComboBox id="cbQuantity"> 
+				    	<mx:ArrayCollection>
+					        <mx:String>5</mx:String>
+					        <mx:String>10</mx:String>
+					        <mx:String>15</mx:String>
+					        <mx:String>20</mx:String>
+				      	</mx:ArrayCollection>
+				   	</mx:ComboBox>
+
+					<mx:Label text="orders"/>
+				</mx:HBox>
+				
+				<mx:Spacer height="100%"/>
+				
+				<mx:HBox width="100%" 
+					styleName="orderHistorySearchButtonBar">
+					<mx:Button id="btnSearch" 
+						width="70" height="22" label="Search"
+						styleName="orderHistorySearchButton"
+						click="btnSearchClickHandler()"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:VBox width="100%" height="100%"
+				styleName="orderHistoryResultList">
+				<mx:DataGrid id="dgOrders" 
+					width="100%" height="100%" dataProvider="{controller.model.orderList}"
+					doubleClickEnabled="true" itemDoubleClick="dgOrdersDoubleClickHandler()">
+					<mx:columns>
+						<mx:DataGridColumn dataField="PONumber" headerText="PO Number" width="100"/>
+						<mx:DataGridColumn dataField="orderDateString" headerText="Order Date" width="100"/>
+						<mx:DataGridColumn dataField="shipName" headerText="Ship To"/>
+						<mx:DataGridColumn dataField="grandTotalString" headerText="Order Total" width="80" textAlign="right"/>
+						<mx:DataGridColumn dataField="orderStatusStr" headerText="Order Status" width="100"/>
+						<mx:DataGridColumn dataField="orderId" headerText="Order Number" width="100"/>
+					</mx:columns>
+				</mx:DataGrid>
+				
+				<mx:HBox width="100%" 
+					styleName="orderHistoryResultButtonBar">
+					<mx:Spacer width="100%"/>
+
+					<mx:Button id="btnOpenOrder" 
+						width="60" height="22" label="Open" 
+						styleName="orderHistoryResultButton" 
+						enabled="{dgOrders.selectedItem != null}"
+						click="btnOpenOrderClickHandler()"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" height="100%" verticalGap="5"
+			styleName="orderHistoryResultList"
+			>
+			<mx:HBox width="100%" height="100%" horizontalGap="5">
+				<mx:VBox width="250" height="100%"
+					enabled="{!controller.model.isBusy}">
+					<mx:Label text="Search Result:" fontWeight="bold"/>
+					
+				 	<mx:List id="lstOrders" width="100%" height="100%" 
+					 	dataProvider="{controller.model.orderList}"
+					 	selectedIndex="{dgOrders.selectedIndex}"
+					 	labelField="PONumber"/>
+				</mx:VBox>
+				
+				<mx:VRule height="100%"/>
+				
+				<mx:Canvas width="100%" height="100%" verticalScrollPolicy="on">
+					<Orders:OrderDetailView id="boxOrderDetail" 
+						width="100%" height="100%"
+						order="{OrderUI(lstOrders.selectedItem)}"/>
+				</mx:Canvas>
+			</mx:HBox>
+
+			<mx:HBox width="100%" 
+				styleName="orderHistoryDetailButtonBar">
+				<mx:Spacer width="100%"/>
+
+				<mx:Button id="btnPrintOrder" 
+					width="60" height="22" label="Print" 
+					styleName="orderHistoryDetailButton"
+					click="btnPrintOrderClickHandler()"/>				
+				
+				<mx:Button id="btnCloseOrder" 
+					width="60" height="22" label="Close" 
+					styleName="orderHistoryDetailButton"
+					click="btnCloseOrderClickHandler()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:ViewStack>
+</mx:Panel>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+    styleName="listItem"
+    height="30"
+    horizontalScrollPolicy="off"
+    verticalScrollPolicy="off"
+    width="100%">
+    
+    <mx:Metadata>
+       [Event(name="addAttachment", type="com.tmnc.mail.business.AttachmentListEvent")]
+    </mx:Metadata>
+    
+    <mx:Script>
+    <![CDATA[
+    
+        import com.tmnc.mail.view.Attachment.event.AttachmentListEvent;
+        import mx.controls.Alert;
+        
+        public var uploadInProgress:Boolean;
+        
+        private var fr:FileReference;
+        
+        [Bindable]        
+        public var fileName:String;
+        [Bindable]
+        public var fileSize:Number;
+                
+        private function removeItem():void {
+            dispatchEvent(new AttachmentListEvent(AttachmentListEvent.REMOVE_ATTACHMENT));
+        }
+
+        public function uploadFile(fr:FileReference, requestURL:URLRequest):void{
+            this.fr = fr;
+            this.fileName = fr.name;
+            this.fileSize = fr.size;
+                        
+            fr.addEventListener(Event.COMPLETE, completeHandler);
+            fr.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+            fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+
+             try {
+                fr.upload(requestURL);
+                pb.label="Uploading..";
+                uploadInProgress = true;
+            } catch (error:Error) {
+                Alert.show("Unable to upload file: " + error.message);
+                removeItem();
+            }                    
+        }
+
+        private function completeHandler(event:Event):void {
+            uploadInProgress = false;
+            pb.label = "Ok."
+        }            
+
+        private function progressHandler(event:ProgressEvent):void {
+            pb.setProgress(event.bytesLoaded, event.bytesTotal);
+        }             
+
+        private function ioErrorHandler(event:IOErrorEvent):void {
+            Alert.show("Unable to upload file.");
+            removeItem();
+        }            
+         
+    ]]>
+    </mx:Script>
+
+  <mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="true"/>  
+    
+    <mx:Button id="removeButton" width="14" height="14" icon="@Embed('/assets/trashcan.png')"
+        toolTip="Remove attachment" click="removeItem()"/>
+
+    <mx:Label text="{fileName}" maxWidth="100" width="100"/>
+    <mx:ProgressBar id="pb" width="70" maxWidth="70" labelPlacement="bottom" mode="manual"/>
+    <mx:Spacer width="100%" />    
+    <mx:Label text="{nf.format(fileSize/1024)} Kb" textAlign="right"/>
+</mx:HBox>

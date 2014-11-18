@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TabNavigator 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pdf="com.titus.catalog.view.pdf.*" 
+	xmlns:submittal="com.titus.catalog.view.submittal.*" 
+	xmlns:video="com.titus.catalog.view.video.*"
+	styleName="contentTabNavigator">
+	<mx:Script>
+		<![CDATA[
+			import com.titus.catalog.model.CatalogItemPackage;
+		]]>
+	</mx:Script>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.rubenswieringa.book.Book;
+			import com.titus.catalog.model.PdfDocument;
+			
+			[Bindable]
+			private var _catalogItemPackage:CatalogItemPackage;
+			
+			public function set catalogItemPackage(value:CatalogItemPackage):void {
+				_catalogItemPackage = value;
+				
+				catalogPanel.pdfBook.pageNumber = value.catalogItem.PageNumber;
+			}
+			
+			public function expand():void {
+				catalogPanel.expand();
+			}
+			
+			public function collapse():void {
+				catalogPanel.collapse();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<pdf:CatalogPanel
+		id="catalogPanel"
+		label="Catalog"/>
+	
+	<submittal:SubmittalsPanel label="Submittalls" 
+		submittals="{_catalogItemPackage.submittals}" 
+		enabled="{_catalogItemPackage != null &amp;&amp; _catalogItemPackage.submittals.length &gt; 0}"/>
+		
+	<video:VideoPanel label="Video" 
+		videos="{_catalogItemPackage.videos}" 
+		enabled="{_catalogItemPackage != null &amp;&amp; _catalogItemPackage.videos.length &gt; 0}"/>
+</mx:TabNavigator>

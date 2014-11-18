@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	icon="@Embed('assets/icons16/report.png')" label="Assignment List">
+	
+    <mx:Metadata>
+        [Event(name="closeTabRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.llsvc.domain.LeaseAssignment;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lm.storage.Storage;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			private var _assignments:ArrayCollection;
+			[Bindable]
+			public function get assignments():ArrayCollection { return _assignments; }
+			public function set assignments(value:ArrayCollection):void 
+			{
+				_assignments = value;
+			}
+			
+			public function reset():void 
+			{
+				Storage.instance.getLeaseAssignments(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							assignments = event.result as ArrayCollection;
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					)
+				);  
+			}
+			
+		    private function onCloseClick():void 
+		    {
+				dispatchEvent(new Event("closeTabRequest"));
+		    }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%"
+		paddingLeft="4" paddingRight="4" paddingTop="2" paddingBottom="2"
+		backgroundColor="#f8f8f8">
+		<mx:Label text="Filter functionality will be here" fontWeight="bold"/>
+	</mx:HBox>
+	
+	<mx:Box width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingBottom="5">
+		<mx:DataGrid id="dgLeases" dataProvider="{assignments}" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Assignor"/>
+				<mx:DataGridColumn headerText="Assignee"/>
+				<mx:DataGridColumn headerText="Assign Date" width="80"/>
+				<mx:DataGridColumn headerText="Eff. Date" width="70"/>
+				<mx:DataGridColumn headerText="Royalty" width="50"/>
+				<mx:DataGridColumn headerText="Is Full" width="50"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:Box>
+
+	<mx:VBox width="100%" verticalGap="0">
+	    <mx:HRule bottom="0" width="100%" height="1" strokeColor="#B9B9B9"/>
+	
+		<mx:HBox width="100%" horizontalAlign="right" paddingLeft="8" paddingRight="8" paddingTop="4" paddingBottom="4">
+			<mx:Button width="100" label="Close Tab" icon="@Embed('assets/icon_close16.png')" toolTip="Close Tab" 
+				horizontalCenter="0" verticalCenter="0" click="onCloseClick()"/>
+				
+			<mx:Spacer width="100%"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

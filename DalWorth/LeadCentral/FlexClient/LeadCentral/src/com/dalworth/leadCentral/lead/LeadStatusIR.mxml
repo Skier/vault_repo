@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import com.dalworth.leadCentral.domain.Lead;
+			
+            [Embed(source="assets/icons16/status.png")]
+            [Bindable]
+            private var imgStatusGreen:Class;
+
+            [Embed(source="assets/icons16/status-away.png")]
+            [Bindable]
+            private var imgStatusYellow:Class;
+
+            [Embed(source="assets/icons16/status-busy.png")]
+            [Bindable]
+            private var imgStatusRed:Class;
+
+            [Embed(source="assets/icons16/status-offline.png")]
+            [Bindable]
+            private var imgStatusGray:Class;
+
+			[Bindable]
+			private var lead:Lead;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+
+				if (value is Lead)
+					lead = value as Lead;
+			} 
+			
+			private function getStatusName(statusId:int):String 
+			{
+				return LeadStatus.getStatusName(statusId);
+			}
+			
+			private function getImageSourceByStatus(statusId:int):Class 
+			{
+				if (lead.LeadStatusId == 1)
+					return imgStatusRed;
+				else if (lead.LeadStatusId == 2)
+					return imgStatusYellow;
+				else if (lead.LeadStatusId == 3)
+					return imgStatusGray;
+				else if (lead.LeadStatusId == 4)
+					return imgStatusYellow;
+				else if (lead.LeadStatusId == 5)
+					return imgStatusGreen;
+				else
+					return null;
+			}
+			
+			private function getColorByStatusId(id:int):Number 
+			{
+				if (id == LeadStatusEnum.NEW)
+					return 0xCC0000;
+				else if (id == LeadStatusEnum.PENDING)
+					return 0x999900;
+				else if (id == LeadStatusEnum.CANCELLED)
+					return 0x999999;
+				else if (id == LeadStatusEnum.CONVERTED)
+					return 0x00CC00;
+				else
+					return 0x000000;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+<!--
+		<mx:Image id="imgStatus" horizontalAlign="center" verticalAlign="middle" 
+			source="{getImageSourceByStatus(lead.LeadStatusId)}"
+			toolTip="{getTipByStatus(lead.LeadStatusId)}"/>
+-->
+		<mx:Label width="100%" textAlign="center" text="{getStatusName(lead.LeadStatusId)}" color="{getColorByStatusId(lead.LeadStatusId)}"/>
+	</mx:HBox>
+</mx:Canvas>

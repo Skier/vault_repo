@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="com.llsvc.controls.*" 
+	xmlns:document="com.llsvc.client.lms.view.document.*"
+	xmlns:component="com.llsvc.component.*"
+	backgroundColor="#ffffdd"
+	borderColor="#999999" borderStyle="solid" borderThickness="1"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="commitRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import com.llsvc.client.lms.controls.TextInputUpper;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.llsvc.domain.LeaseBreakdown;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import com.llsvc.domain.LeaseTractQQ;
+			import com.llsvc.domain.Tract;
+			import com.llsvc.util.TractDescriptionUtil;
+			import com.llsvc.client.lm.storage.Storage;
+			import com.llsvc.domain.LeaseTract;
+			import com.llsvc.domain.Address;
+			import mx.events.CloseEvent;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import com.llsvc.domain.DocumentActorPhone;
+			import com.llsvc.domain.DocumentActor;
+			import mx.controls.Alert;
+			import com.llsvc.domain.County;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentRecord;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.State;
+			import mx.managers.PopUpManager;
+			import mx.rpc.Responder;
+			
+			private static const DG_ROW_HEIGHT:int = 20;
+			
+			[Bindable] private var errorMessage:String;
+			
+			[Bindable] private var isProcessing:Boolean = false;
+			
+			[Bindable] private var breakdowns:ArrayCollection = new ArrayCollection();
+			[Bindable] private var useBreakdowns:Boolean = false;
+			
+			[Bindable] private var stateList:ArrayCollection = LocalCash.getInstance().getStates();
+
+			private var _tract:TractSearchCriteria;
+			[Bindable]
+			public function get tract():TractSearchCriteria { return _tract; }
+			public function set tract(value:TractSearchCriteria):void 
+			{
+				_tract = value;
+				
+				callLater(populateFields);
+			}
+			
+            public static function open(parent:DisplayObject, tract:TractSearchCriteria, modal:Boolean):TractSearchCriteriaEditPanel
+            {
+                var popup:TractSearchCriteriaEditPanel = new TractSearchCriteriaEditPanel();
+                popup.tract = tract;
+                
+                
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function initStateCombo():void 
+            {
+            	stateList = new ArrayCollection(LocalCash.getInstance().getStates().toArray());
+            	stateList.addItemAt({name:"ANY"}, 0);
+            }
+            
+            private function onCreate():void 
+            {
+            	focusManager.setFocus(txtTownship);
+            }
+            
+            private function populateFields():void 
+            {
+            	txtTownship.text = tract.twn;
+            	txtRange.text = tract.rng;
+            	comboPM.value = tract.pm;
+            	comboNorth.selectedIndex = (tract.twnDir == "") ? 0 : (tract.twnDir == "N") ? 1 : 2;
+            	comboEast.selectedIndex = (tract.rngDir == "") ? 0 : (tract.rngDir == "E") ? 1 : 2;
+            	txtSection.text = tract.sec;
+            	
+            	stateList = new ArrayCollection(LocalCash.getInstance().getStates().toArray());
+            	stateList.addItemAt({name:"ANY"}, 0);
+            	comboState.dataProvider = stateList;
+            	callLater(comboStateChangeHandler);
+            }
+            
+	        private function btnOkClickHandler():void 
+	        {
+        		tract.twn = txtTownship.text; 
+        		tract.twnDir = (comboNorth.selectedIndex == 0) ? "" : (comboNorth.selectedIndex == 1) ? "N" : "S";
+        		tract.rng = txtRange.text; 
+        		tract.rngDir = (comboEast.selectedIndex == 0) ? "" : (comboEast.selectedIndex == 1) ? "E" : "W"; 
+        		tract.pm = (String(comboPM.value) == "") ? "" : String(comboPM.value);
+        		tract.pmDescr = comboPM.selectedLabel;
+        		tract.sec = txtSection.text;
+        		
+        		var state:State = comboState.selectedItem as State;
+        		if (state != null)
+        		{
+        			tract.stateId = state.id.toString();
+        			tract.stateStr = state.abbr;
+        		} 
+        		else 
+        		{
+        			tract.stateId = null;
+        			tract.stateStr = "";
+        		} 
+
+        		var county:County = comboCounty.selectedItem as County;
+        		if (county != null) 
+        		{
+        			tract.countyId = county.id.toString();
+        			tract.countyStr = county.name;
+        		}
+        		else 
+        		{
+        			tract.countyId = null;
+        			tract.countyStr = "";
+        		} 
+        		
+        		dispatchEvent(new Event("commitRequest"));
+	        }
+	        
+			private function get primeMeridians():ArrayCollection 
+			{
+				var result:ArrayCollection = new ArrayCollection();
+				
+                result.addItem({value:"", label:"ANY", code:"ANY"});
+                result.addItem({value:"1", label:"01-FIRST PRINCIPAL MERIDIAN 1819", code:"1ST PRINCIPAL MRDN"});
+                result.addItem({value:"2", label:"02-SECOND PRINCIPAL MERIDIAN 1805", code:"2ND PRINCIPAL MRDN"});
+                result.addItem({value:"3", label:"03-THIRD PRINCIPAL MERIDIAN 1805", code:"3RD PRINCIPAL MRDN"});
+                result.addItem({value:"4", label:"04-FOURTH PRINCIPAL MERIDIAN 1815", code:"4TH PRINCIPAL MRDN"});
+                result.addItem({value:"5", label:"05-FIFTH PRINCIPAL MERIDIAN 1815", code:"5TH PRINCIPAL MRDN"});
+                result.addItem({value:"6", label:"06-SIXTH PRINCIPAL MERIDIAN 1855", code:"6TH PRINCIPAL MRDN"});
+                result.addItem({value:"7", label:"07-BLACK HILLS 1878", code:"BLACK HILLS"});
+                result.addItem({value:"8", label:"08-BOISE 1867", code:"BOISE"});
+                result.addItem({value:"9", label:"09-CHICKASAW 1833", code:"CHICKASAW"});
+                result.addItem({value:"10", label:"10-CHOCTAW 1821", code:"CHOCTAW"});
+                result.addItem({value:"11", label:"11-CIMARRON 1881", code:"CIMARRON"});
+                result.addItem({value:"12", label:"12-COPPER RIVER 1905", code:"COPPER RIVER"});
+                result.addItem({value:"13", label:"13-FAIRBANKS 1910", code:"FAIRBANKS"});
+                result.addItem({value:"14", label:"14-GILA AND SALT RIVER 1865", code:"GILA AND SALT RIVER"});
+                result.addItem({value:"15", label:"15-HUMBOLDT 1853", code:"HUMBOLDT"});
+                result.addItem({value:"16", label:"16-HUNTSVILLE 1807", code:"HUNTSVILLE"});
+                result.addItem({value:"17", label:"17-INDIAN 1870", code:"INDIAN"});
+                result.addItem({value:"18", label:"18-LOUISIANA 1807", code:"LOUISIANA"});
+                result.addItem({value:"19", label:"19-MICHIGAN 1815", code:"MICHIGAN"});
+                result.addItem({value:"20", label:"20-MONTANA 1867 (PRINCIPAL 1867)", code:"MONTANA"});
+                result.addItem({value:"21", label:"21-MOUNT DIABLO 1851", code:"MT DIABLO"});
+                result.addItem({value:"22", label:"22-NAVAJO 1869", code:"NAVAJO"});
+                result.addItem({value:"23", label:"23-NEW MEXICO 1855", code:"NEW MEXICO"});
+                result.addItem({value:"24", label:"24-ST HELENA 1819", code:"ST HELENA"});
+                result.addItem({value:"25", label:"25-ST STEPHENS 1805", code:"ST STEPHENS"});
+                result.addItem({value:"26", label:"26-SALT LAKE 1855", code:"SALT LAKE"});
+                result.addItem({value:"27", label:"27-SAN BERNARDINO 1852", code:"SAN BERNARDINO"});
+                result.addItem({value:"28", label:"28-SEWARD 1911", code:"SEWARD"});
+                result.addItem({value:"29", label:"29-TALLAHASSEE 1824", code:"TALLAHASSEE"});
+                result.addItem({value:"30", label:"30-UINTAH 1875", code:"UINTAH"});
+                result.addItem({value:"31", label:"31-UTE 1880", code:"UTE"});
+                result.addItem({value:"32", label:"32-WASHINGTON 1803", code:"WASHINGTON"});
+                result.addItem({value:"33", label:"33-WILLAMETTE 1851", code:"WILLAMETTE"});
+                result.addItem({value:"34", label:"34-WIND RIVER 1875", code:"WIND RIVER"});
+                result.addItem({value:"35", label:"35-OHIO RIVER SURVEY", code:"OHIO RIVER SURVEY"});
+                result.addItem({value:"36", label:"36-BETWEEN THE MIAMIS 1802", code:"BETWEEN THE MIAMIS"});
+                result.addItem({value:"37", label:"37-MUSKINGUM RIVER", code:"MUSKINGUM RIVER"});
+                result.addItem({value:"38", label:"38-OHIO RIVER BASE 1799", code:"OHIO RIVER BASE"});
+                result.addItem({value:"39", label:"39-SCIOTO RIVER 1799", code:"SCIOTO RIVER"});
+                result.addItem({value:"40", label:"40-SECOND SCIOTO RIVER 1799", code:"2ND SCIOTO RIVER"});
+                result.addItem({value:"41", label:"41-THIRD SCIOTO RIVER 1799", code:"3RD SCIOTO RIVER"});
+                result.addItem({value:"42", label:"42-ELLICOTTS LINE 1785", code:"ELLICOTTS LINE"});
+                result.addItem({value:"43", label:"43-TWELVE-MILE SQUARE 1805", code:"TWELVE-MILE SQUARE"});
+                result.addItem({value:"44", label:"44-KATEEL RIVER 1956", code:"KATEEL RIVER"});
+                result.addItem({value:"45", label:"45-UMIAT 1956", code:"UMIAT"});
+                result.addItem({value:"46", label:"46-FOURTH PRINCIPAL EXTENDED MERIDIAN 1831", code:"4TH PRINCIPAL EXT"});
+                result.addItem({value:"47", label:"47-WEST OF THE GREAT MIAMI 1798", code:"W OF THE GREAT MIAMI"});
+                result.addItem({value:"48", label:"48-US MILITARY SURVEY 1797 (OHIO)", code:"U S MILITARY SUR"});
+                result.addItem({value:"64", label:"64-COSTILLA ESTATE SURVEY", code:"COSTILLA EST SUR"});
+                result.addItem({value:"65", label:"65-FIRST PRINCIPAL MERIDIAN 1799", code:"1ST PRINCIPAL 1799"});
+                result.addItem({value:"66", label:"66-LAKE TRAVERSE LANDS LAKE", code:"TRAVERSE LANDS"});
+                result.addItem({value:"67", label:"67-MARTIN BORDEN SURVEY", code:"MARTIN BORDEN SUR"});
+                result.addItem({value:"68", label:"68-SYMMES PURCHASE/MIAMI 1802", code:"SYMMES/MIAMI"});
+                result.addItem({value:"69", label:"69-TERRITORY EAST OF RIVER 1802", code:"TERRITORY E OF RIVER"});
+                result.addItem({value:"70", label:"70-UTE LINE (COLORADO)", code:"UTE LINE (CO)"});
+                result.addItem({value:"71", label:"71-TENNESSEE", code:"TENNESSEE"});
+                result.addItem({value:"72", label:"72-KENTUCKY", code:"KENTUCKY"});
+                result.addItem({value:"74", label:"74-SISSETON INDIAN RESRV IN ND", code:"SISSETON INDIAN ND"});
+                result.addItem({value:"87", label:"87-SISSETON INDIAN RESRV IN SD", code:"SISSETON INDIAN SD"});
+                result.addItem({value:"91", label:"91-CONNECTICUT WESTERN RESERVE", code:"CONN WESTERN RESERVE"});
+                result.addItem({value:"92", label:"92-OHIO COMPANY PURCHASE", code:"OHIO CO PURCHASE"});
+                result.addItem({value:"93", label:"93-VIRGINIA MILITARY DISTRICT", code:"VA MILITARY DIST"});
+                result.addItem({value:"99", label:"99-NOT PUBLIC LAND SURVEY", code:"NOT PUBLIC LAND SUR"});
+				
+				return result;
+			}
+	        
+	        private function btnCancelClickHandler():void 
+	        {
+	        	close();
+	        }
+	        
+	        private function comboStateChangeHandler():void 
+	        {
+	        	var state:State = comboState.selectedItem as State;
+	        	if (state != null) 
+	        	{
+	        		var countyList:ArrayCollection = new ArrayCollection(state.counties.toArray());
+	        		countyList.addItemAt({name:"ANY"}, 0);
+	        		comboCounty.enabled = true;
+	        		comboCounty.dataProvider = countyList;
+	        	} else {
+	        		comboCounty.enabled = false;
+	        	}
+	        }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formMain" width="100%" 
+		borderColor="#cccccc" borderStyle="solid" borderThickness="1"
+		backgroundColor="#ffffee"
+		verticalGap="2">
+		<mx:FormHeading label="Tract Search Criteria Detail"/>
+        
+        <mx:FormItem label="TWN" horizontalGap="2">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+	            <mx:TextInput id="txtTownship" width="40" maxChars="3" restrict="0-9"/>
+	            <mx:Label text="Dir"/>
+	            <mx:ComboBox id="comboNorth" dataProvider="[ANY, N, S]"/>
+	            <mx:Label text="RNG"/>
+	            <mx:TextInput id="txtRange" width="40" maxChars="3" restrict="0-9"/>
+	            <mx:Label text="Dir"/>
+	            <mx:ComboBox id="comboEast" dataProvider="[ANY, E, W]"/>
+	        </mx:HBox>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Prime Meridian" width="100%" horizontalGap="2">
+            <controls:ComboBox id="comboPM" width="100%" dataProvider="{primeMeridians}" valueField="value"/>
+        </mx:FormItem>
+
+		<mx:FormItem label="Section" width="100%">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+	            <mx:TextInput id="txtSection" width="40" maxChars="3" restrict="0-9"/>
+	        </mx:HBox>
+		</mx:FormItem>        
+
+		<mx:FormItem label="State" width="100%">
+	        <mx:HBox width="100%" verticalAlign="middle" horizontalGap="2">
+				<controls:ComboBox id="comboState" 
+					valueField="id" value="{tract.stateId}" labelField="name"
+					change="comboStateChangeHandler()"/>
+				
+	            <mx:Label text="County"/>
+
+				<controls:ComboBox id="comboCounty" 
+					width="100%" enabled="false"
+					valueField="id" value="{tract.countyId}" labelField="name"/>
+	        </mx:HBox>
+		</mx:FormItem>        
+	</mx:Form>
+	
+	<mx:ControlBar width="100%" horizontalAlign="center" verticalAlign="middle">
+		<mx:Button label="Ok" height="24" click="btnOkClickHandler()"/>
+		<mx:Button label="Cancel" height="24" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:VBox>

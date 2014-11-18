@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:TractModule xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" backgroundColor="#c0c0c0" 
+    xmlns:modest="com.modestmaps.flex.*"
+	xmlns:modules="TractInc.modules.*"
+	percentWidth="100" percentHeight="100"
+	creationComplete="loadData();"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Image;
+			import com.modestmaps.mapproviders.MyMapProvider;
+			import truetract.domain.callparams.ParamCollection;
+			import truetract.domain.callparams.BearingParam;
+			import truetract.domain.callparams.DistanceParam;
+			import truetract.domain.TractCall;
+			import mx.rpc.Responder;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			
+            import mx.controls.Alert;
+            
+            import com.modestmaps.geo.Location;
+            
+			import TractInc.Domain.Module;
+			import TractInc.Domain.User;
+
+			import truetract.domain.Tract;
+			import truetract.domain.TractTextObject;
+			
+            import services.TractService;
+            
+            public const CLON:Number = -96.725457;
+            public const CLAT:Number = 33.072789;
+            
+            [Bindable]
+            public var DEFZOOM:Number = 15;
+            
+            private var my_zoom:int = DEFZOOM;
+            private var img:Image;
+            
+            [Bindable]
+            private var moduleInfo:Module = null;
+            
+			public override function init(user:User, module:Module):void 
+			{
+			    trace("TractIncDemoModule.init: id=" + this.id);
+			    trace("TractIncDemoModule.init: user=" + user.Login);
+			    trace("TractIncDemoModule.init: module=" + module.Description);
+			
+			    moduleInfo = module;
+			    
+			}
+			
+			private function loadData():void {
+				img = new Image();
+				//img.loaderContext = new LoaderContext(true);
+				img.addEventListener(Event.COMPLETE, imageLoaded);
+				img.load("map/3.png");
+			}
+			
+			private function imageLoaded(e:Event):void {
+//				renderSquare(new Location(this.CLAT+0.01, this.CLON+0.01), 0.01);	
+				renderSquare(new Location(this.CLAT, this.CLON), 0.01);	
+				renderSquare(new Location(this.CLAT+0.001, this.CLON+0.001), 0.001);	
+				renderSquare(new Location(this.CLAT+0.001, this.CLON-0.001), 0.001);	
+				renderPicture(new Location(this.CLAT, this.CLON-0.01), new Location(this.CLAT+0.01, this.CLON), "");	
+/*				
+	            this.map.map.graphics.beginFill(0xcccccc);
+	            this.map.map.graphics.lineStyle(3,0xFF00FF);
+            	this.map.map.graphics.moveTo(5,  5);
+                this.map.map.graphics.lineTo(600,600);
+            	this.map.map.graphics.endFill();
+*/            	
+				
+/*				
+            	var loadTractResponder:mx.rpc.Responder = new mx.rpc.Responder(
+	                function (event:ResultEvent):void
+	                {
+	                    var loadedTract:Tract = Tract(event.result);
+	                    renderTract(loadedTract);
+	                    tract.Calls = loadedTract.Calls;
+	                    tract.TextObjects = loadedTract.TextObjects;
+	                    tract.IsLoaded = true;
+	                    tract.IsDirty = false;
+	
+	                    view.plotter.initTract(tract); //TODO: plotter should bind model.tract
+	                },
+	                function (event:FaultEvent):void
+	                {
+	                	Alert.show("Unable to open Tract");
+	               	}
+            	);
+
+            	TractService.getInstance().loadTract(549).addResponder(loadTractResponder);
+*/            	
+			}
+
+			private function renderSquare(point:Location, size:Number):void
+			{
+                var poligon:Polygon = new Polygon(this.map.map);
+//                Alert.show("lat=" + (point.lat + size) + " lon=" + (point.lon +size)); 
+//                	new Location(point.lat + 0.001, point.lon + 0.001)/*,
+
+                poligon.poly.push(
+                	point,
+                	new Location(point.lat, point.lon - size),
+                	new Location(point.lat - size, point.lon - size),
+                	new Location(point.lat - size, point.lon));
+                	
+                this.map.map.addChild(poligon); 
+//				this.map.setActualSize(1000, 1000);
+//				this.map.map.putMarker(point.lat.toString(), point, poligon);
+			}
+			
+			private function renderPicture(point:Location, point2:Location, url:String):void
+			{
+//				this.addChild(img);			
+				Alert.show("img.width=" + img.content.width + ", img.height=" + img.content.height);
+				Alert.show("img.content=" + img.content);
+                var p:Picture = new Picture(this.map.map, point, point2, img);
+                this.map.map.addChild(p); 
+			}
+			
+/*			
+			private function renderTract(tract:Tract):void {
+				Alert.show("renderTract is called.");
+                var poligon:Polygon = new Polygon(this.map.map);
+               	poligon.poly.push(new Location(this.CLON, this.CLAT));
+*                
+				for each(var tc:TractCall in tract.Calls) {
+					var pc:ParamCollection = tc.Params();
+					var bp:BearingParam = null;
+					var dp:DistanceParam = null;
+					for each (var p:Para
+					
+                	poligon.poly.push(new Location(this.CLON + t.Easting, this.CLAT + t.Northing));
+				}
+*				
+                this.map.map.addChild(poligon); 
+			}
+*/			
+            public override function modeChanged(mode:String):void
+            {
+//                currentMode.text = mode;
+            }	
+            		
+			public override function logout():Boolean
+			{
+				return true;
+			}
+			
+            private function updateScaleValue():void
+            {
+            }
+            
+            private function map_mouseMoveHandler(event:MouseEvent):void
+            {
+            }
+            
+            private function map_mouseWheelHandler(event:MouseEvent):void
+            {
+				//Alert.show("Zoom=" + zoom.toString());
+                if (event.delta > 0 ) {
+                	if ( my_zoom < 18 ) {
+                    	map.map.zoomIn();
+                    	my_zoom++;
+                 	}
+                } else {
+                	if ( my_zoom > 5 ) {
+                    	map.map.zoomOut();
+                    	my_zoom--;
+                 	}
+                }
+            }
+
+            private function map_mouseDownHandler(event:MouseEvent):void
+            {
+            }
+            
+		]]>
+	</mx:Script>
+	
+    <mx:Canvas id="ds" width="800" height="500" clipContent="true" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+        <modest:Map id="map" 
+            stopZooming="updateScaleValue()"
+            stopPanning="updateScaleValue()"
+            mouseWheel="map_mouseWheelHandler(event)"
+            mouseMove="map_mouseMoveHandler(event)"
+            mouseDown="map_mouseDownHandler(event)"
+            center="{new Location(33.072789,  -96.725457)}" zoom="{ DEFZOOM }"
+            width="801" height="500"
+            provider="MICROSOFT_ROAD" extent="40.764941, 40.693655, -73.938675, -74.039612"/>
+<!--            
+        <modest:Map id="map" 
+            stopZooming="updateScaleValue()"
+            stopPanning="updateScaleValue()"
+            mouseWheel="map_mouseWheelHandler(event)"
+            mouseMove="map_mouseMoveHandler(event)"
+            mouseDown="map_mouseDownHandler(event)"
+            center="{new Location(33.072789,  -96.725457)}" zoom="17"
+            width="100%" height="100%"
+            provider="{ new MyMapProvider() }" extent="40.764941, 40.693655, -73.938675, -74.039612"/>
+         <mx:Label text="test ....." width="500" height="500"/>
+-->         
+    </mx:Canvas>
+
+<!--
+    <mx:VBox>
+	    <mx:Label text="ModuleId: {moduleInfo.ModuleId}" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	    <mx:Label text="ShortName: {moduleInfo.ShortName}" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	    <mx:Label text="Description: {moduleInfo.Description}" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	    <mx:Label text="Url: {moduleInfo.Url}" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	    <mx:HBox>
+	        <mx:Label text="Current Mode: " fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	        <mx:Label id="currentMode" fontFamily="Verdana" fontSize="24" color="#800000" fontWeight="bold"/>
+	    </mx:HBox>
+	    
+	</mx:VBox>
+-->	
+</modules:TractModule>

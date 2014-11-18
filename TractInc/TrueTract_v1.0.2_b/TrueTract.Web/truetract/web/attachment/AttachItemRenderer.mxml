@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	verticalAlign="middle"
+	horizontalAlign="center"
+	horizontalScrollPolicy="off" 
+	paddingLeft="5" paddingRight="5"
+    click="onClickAttach()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.plotter.domain.IAttach;
+			
+			private function onClickAttach():void 
+			{
+				AttachmentsView.Open(data as IAttach);
+			}
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Button width="20" height="20"
+        icon="@Embed(source='/assets/paperclip.gif')"
+        />
+	<mx:LinkButton label="Attached files"
+		/>
+    <mx:Label text="({data.Attachments.length})" fontWeight="bold"
+    	visible="{data.Attachments.length > 0}"
+    	includeInLayout="{data.Attachments.length > 0}"
+    	/>
+
+</mx:HBox>

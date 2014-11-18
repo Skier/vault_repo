@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"
+    close="{onClose()}"
+    title="Attachments Required"
+    showCloseButton="false"
+    minWidth="580" minHeight="350"
+    verticalAlign="middle"
+    horizontalAlign="center">
+
+    <mx:Script>
+        <![CDATA[
+        	import common.TypesRegistry;
+        	import App.Entity.AssetAssignmentDataObject;
+        	import App.Entity.BillItemTypeDataObject;
+        	import App.Entity.BillItemCompositionDataObject;
+        	import App.Entity.BillItemDataObject;
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import mx.collections.ArrayCollection;
+        	import mx.formatters.DateFormatter;
+            import mx.managers.PopUpManager;
+			import mx.rpc.Responder;
+
+            [Bindable]
+            public var Controller:AttachmentController;
+            
+            public var responder:Function;
+
+            public function set AttachmentController(controller:SubmitController): void {
+                this.Controller = new AttachmentController(this, controller);
+            }
+            
+            public static function Open(parent:DisplayObject, resp:Function):AttachmentView {
+                var popup:AttachmentView = new AttachmentView();
+                popup.Controller = new AttachmentController(popup, SubmitView(parent).Controller);
+
+                PopUpManager.addPopUp(popup, parent, true);
+                PopUpManager.centerPopUp(popup);
+                
+                popup.responder = resp;
+           
+                return popup;
+            }
+            
+            public function onClose():void {
+                PopUpManager.removePopUp(this);
+            }
+
+            private function setBillItemLabels(item:BillItemDataObject, column:DataGridColumn):String {
+            	if (column.dataField == "AFE") {
+            		return AssetAssignmentDataObject(Controller.Model.assignmentsByIdHash[item.AssetAssignmentId]).AFE;
+            	} else if (column.dataField == "SubAFE") {
+            		return AssetAssignmentDataObject(Controller.Model.assignmentsByIdHash[item.AssetAssignmentId]).SubAFE;
+            	} else if (column.dataField == "BillItemTypeName") {
+            		return BillItemTypeDataObject(TypesRegistry.instance.getAllBillItemTypes.getItemAt(item.BillItemTypeId - 1)).Name;
+            	} else if (column.dataField == "BillingDate") {
+            		return item.BillingDate;
+            	} else {
+            		return "";
+            	}
+            }
+            
+            private function setCompositeItemLabels(item:BillItemCompositionDataObject, column:DataGridColumn):String {
+            	if (column.dataField == "Description") {
+            		return item.Description;
+            	} else if (column.dataField == "Amount") {
+            		return (Math.round(item.Amount * 100) / 100).toFixed(2);
+            	} else if (column.dataField == "BillItemTypeName") {
+            		return BillItemTypeDataObject(TypesRegistry.instance.getAllBillItemTypes.getItemAt(item.BillItemTypeId - 1)).Name;
+            	} else {
+            		return "";
+            	}
+            }
+            
+        ]]>
+    </mx:Script>
+
+	<mx:VBox width="100%" height="100%">
+	    <mx:DataGrid
+	    	dataProvider="{Controller.Model.items}"
+	    	width="100%"
+	    	height="100%"
+	    	draggableColumns="false"
+	    	editable="false"
+	    	sortableColumns="false"
+	    	visible="{0 &lt; Controller.Model.items.length}"
+	    	includeInLayout="{0 &lt; Controller.Model.items.length}"
+	    	>
+    		<mx:columns>
+				<mx:DataGridColumn
+					headerText="AFE"
+					dataField="AFE"
+					labelFunction="setBillItemLabels"/>
+				<mx:DataGridColumn
+					headerText="Project"
+					dataField="SubAFE"
+					labelFunction="setBillItemLabels" />
+				<mx:DataGridColumn
+					headerText="Type"
+					dataField="BillItemTypeName"
+					labelFunction="setBillItemLabels"/>
+				<mx:DataGridColumn
+					headerText="Billing Date"
+					dataField="BillingDate"
+					labelFunction="setBillItemLabels"
+					textAlign="right"
+					width="80"/>
+				<mx:DataGridColumn
+					headerText="Attach"
+					textAlign="center"
+					itemRenderer="common.attachment.AttachItemRenderer"
+					editable="false"/>
+    		</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:DataGrid
+			dataProvider="{Controller.Model.compositeItems}"
+	    	width="100%"
+	    	height="100%"
+	    	draggableColumns="false"
+	    	editable="false"
+	    	sortableColumns="false"
+	    	visible="{0 &lt; Controller.Model.compositeItems.length}"
+	    	includeInLayout="{0 &lt; Controller.Model.compositeItems.length}">
+			<mx:columns>
+				<mx:DataGridColumn
+					headerText="Type"
+					dataField="BillItemTypeName"
+					labelFunction="setCompositeItemLabels"/>
+				<mx:DataGridColumn
+					headerText="Description"
+					dataField="Description"
+					labelFunction="setCompositeItemLabels"/>
+				<mx:DataGridColumn
+					headerText="Amount"
+					dataField="Amount"
+					labelFunction="setCompositeItemLabels"
+					textAlign="right"
+					width="80"/>
+				<mx:DataGridColumn
+					headerText="Attach"
+					textAlign="center"
+					itemRenderer="common.attachment.SubmitCompositeAttachItemRenderer"
+					editable="false"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button id="saveButton" label="Continue" click="Controller.onSubmitClick()"/>
+			<mx:Button label="Cancel" click="Controller.onCancelClick()"/>
+    	</mx:HBox>
+    </mx:VBox>
+
+</mx:TitleWindow>

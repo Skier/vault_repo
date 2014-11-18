@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" borderThickness="1"
+	verticalGap="0" xmlns:view="com.llsvc.client.lms.view.*" xmlns:controls="com.llsvc.controls.*" xmlns:document="com.llsvc.client.lms.view.document.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.llsvc.client.lms.view.document.DocRecordEditView;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import com.llsvc.domain.DocumentRecord;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.State;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.Lease;
+			
+			private var _lease:Lease;
+			[Bindable]
+			public function get lease():Lease {return _lease;}
+			public function set lease(value:Lease):void 
+			{
+				_lease = value;
+			}
+			
+			private function openRecord(docRecord:DocumentRecord):void 
+			{
+				var popup:DocRecordEditView = DocRecordEditView.open(Application.application as DisplayObject, true);
+				popup.docRecord = docRecord;
+				popup.addEventListener("commitRequest", 
+					function (event:Event):void
+					{
+						if (!lease.document.records.contains(popup.docRecord))
+							lease.document.records.addItem(popup.docRecord);
+
+						popup.close();
+						
+						lease.document.publicRecords.refresh();
+						lease.document.privateRecords.refresh();
+					}
+				);
+			}
+			
+			private function btnAddPublicClickHandler():void 
+			{
+				var docRecord:DocumentRecord = new DocumentRecord();
+				docRecord.isPublic = true;
+				openRecord(docRecord);
+			}
+			
+			private function btnAddPrivateClickHandler():void 
+			{
+				var docRecord:DocumentRecord = new DocumentRecord();
+				docRecord.isPublic = false;
+				openRecord(docRecord);
+			}
+			
+			private function deleteRecordRequestHandler(evt:Event):void 
+			{
+				var docRecord:DocumentRecord = DocRecordBox(evt.currentTarget).docRecord;
+				
+                Alert.show("Do you really want to delete Record ?", 
+                   "Delete Record", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                        	var i:int = lease.document.records.getItemIndex(docRecord);
+                        	if (i != -1)
+                        		lease.document.records.removeItemAt(i);
+                        }
+                    });
+			}
+			
+			private function editRecordRequestHandler(evt:Event):void 
+			{
+				var docRecord:DocumentRecord = DocRecordBox(evt.currentTarget).docRecord;
+				openRecord(docRecord);
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="Recording Info"/>
+	</mx:HBox>
+	
+	<controls:PercentBoxFixed direction="vertical" width="100%" height="100%" paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+		<mx:VBox width="100%" verticalGap="-1"
+			borderColor="#eeeeee" borderStyle="solid" borderThickness="1" cornerRadius="2">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Lease Memo Filed of Record"/>
+				
+				<mx:Spacer width="100%"/>
+				
+		        <mx:Button toolTip="Add Record"
+		        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+		        	icon="@Embed('assets/icon_plus.png')"
+		        	click="btnAddPublicClickHandler()"/>
+			</mx:HBox>
+			<mx:VBox width="100%" verticalGap="-1">
+				<mx:Repeater id="rptMemoRecords" dataProvider="{lease.document.publicRecords}">
+					<document:DocRecordBox width="100%"
+						docRecord="{rptMemoRecords.currentItem as DocumentRecord}" 
+						editRecordRequest="editRecordRequestHandler(event)" 
+						deleteRecordRequest="deleteRecordRequestHandler(event)"/>
+				</mx:Repeater>
+			</mx:VBox>
+		</mx:VBox>
+
+		<mx:VBox width="100%" verticalGap="-1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Original Lease Filed of Record"/>
+				
+				<mx:Spacer width="100%"/>
+				
+		        <mx:Button toolTip="Add Record"
+		        	width="20" height="20" verticalCenter="0" horizontalCenter="0" 
+		        	icon="@Embed('assets/icon_plus.png')"
+		        	click="btnAddPrivateClickHandler()"/>
+			</mx:HBox>
+			<mx:VBox width="100%" verticalGap="-1">
+				<mx:Repeater id="rptOrigRecords" dataProvider="{lease.document.privateRecords}">
+					<document:DocRecordBox width="100%"
+						docRecord="{rptOrigRecords.currentItem as DocumentRecord}" 
+						editRecordRequest="editRecordRequestHandler(event)" 
+						deleteRecordRequest="deleteRecordRequestHandler(event)"/>
+				</mx:Repeater>
+			</mx:VBox>
+		</mx:VBox>
+	</controls:PercentBoxFixed>
+</mx:VBox>

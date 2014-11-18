@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    label="Search" width="100%" height="100%" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:searchPanel="truetract.web.dashboard.searchPanel.*" 
+    xmlns:validators="truetract.plotter.validators.*"
+    xmlns:components="truetract.plotter.components.*" 
+    xmlns:documentList="truetract.web.dashboard.documentList.*" 
+    xmlns:drawingList="truetract.web.dashboard.drawingList.*" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+
+    <mx:Script>
+        <![CDATA[
+            import truetract.plotter.domain.dictionary.DictionaryRegistry;
+
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="documentSearchFormValidator">
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" required="false"/>
+
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" required="false"/>
+    </validators:ValidatorsGroup>
+
+    <searchPanel:SearchPanelControlller id="controller" view="{this}"/>
+
+    <mx:TabNavigator id="dashboardNav"
+        width="100%" height="100%" backgroundColor="#c2d8fe" 
+        paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+        borderStyle="solid" borderThickness="0">
+
+        <mx:VBox label="Documents">
+
+            <mx:VBox width="100%">
+            
+                <mx:HBox width="100%">
+                    <mx:Form 
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                        verticalGap="2" indicatorGap="3">
+        
+                        <mx:FormItem label="State :">
+                            <components:ExtendedComboBox id="stateCmb"
+                                labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+                                dataProvider="{dictionary.statesAndCounties.state}"/>
+                        </mx:FormItem>
+        
+                        <mx:FormItem label="Doc Type :">
+                            <components:ExtendedComboBox id="documentTypeCmb"
+                                labelField="@Name" keepOptimalDropDownWidth="true"
+                                dataProvider="{dictionary.documentTypes.DocumentType}" width="120"/>
+                        </mx:FormItem>
+        
+                        <mx:FormItem label="Vol :">
+                            <mx:TextInput id="volumeTxt" width="120"/>
+                        </mx:FormItem>
+        
+                    </mx:Form>
+        
+                    <mx:Form 
+                        paddingBottom="0" paddingLeft="0" paddingTop="0" paddingRight="0" 
+                        verticalGap="2" indicatorGap="3">
+            
+                        <mx:FormItem label="County :">
+                            <components:ExtendedComboBox id="countyCmb"
+                                labelField="@Name" width="120" keepOptimalDropDownWidth="true"
+                                dataProvider="{stateCmb.selectedItem.county}"/>
+                        </mx:FormItem>
+            
+                        <mx:FormItem label="Doc No :">
+                            <mx:TextInput id="documNoTxt" width="120" />
+                        </mx:FormItem>
+            
+                        <mx:FormItem label="Page :">
+                            <mx:HBox>
+                                <mx:TextInput id="pageTxt" width="120"/>
+                            </mx:HBox>
+                        </mx:FormItem>
+                    </mx:Form>
+                </mx:HBox>
+        
+                <mx:HBox width="100%">
+                    <mx:Button label="Apply Filter" click="controller.applyDocumentFilter_clickHandler()"/>
+                    <mx:Button label="Reset" click="controller.resetDocumentFilter_clickHandler()"/>
+                </mx:HBox>
+        
+                <mx:HRule width="100%"/>
+            </mx:VBox>
+
+            <documentList:DocumentListView id="documentListView"
+                documentList="{controller.model.documentList}"
+                width="100%" height="100%"/>
+            
+        </mx:VBox>
+
+        <mx:VBox label="Drawings">
+
+            <mx:VBox width="100%">
+
+                <mx:Form 
+                    paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" 
+                    verticalGap="2" indicatorGap="3">
+        
+                    <mx:FormItem label="Reference Name: ">
+                        <mx:TextInput id="refNameTxt" />
+                    </mx:FormItem>
+        
+                </mx:Form>
+
+                <mx:HBox width="100%">
+                    <mx:Button label="Apply Filter" click="controller.applyDrawingFilter_clickHandler()"/>
+                    <mx:Button label="Reset" click="controller.resetDrawingFilter_clickHandler()"/>
+                </mx:HBox>
+
+                <mx:HRule width="100%"/>
+            </mx:VBox>
+
+            <drawingList:DrawingListView id="drawingListView"
+                drawingsList="{controller.model.drawingList}"
+                width="100%" height="100%"/>
+            
+        </mx:VBox>
+
+    </mx:TabNavigator>
+
+</mx:VBox>

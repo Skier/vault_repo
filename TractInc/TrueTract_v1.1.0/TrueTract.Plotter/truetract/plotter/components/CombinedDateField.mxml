@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    verticalAlign="middle" horizontalGap="0" xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+    	<![CDATA[
+    		import mx.events.ValidationResultEvent;
+    		import mx.events.PropertyChangeEvent;
+    		
+			import mx.collections.ArrayCollection;
+
+			[Bindable] 
+			private var _monthes:ArrayCollection = 
+				new ArrayCollection(["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
+			
+			[Bindable]
+			private var _days:ArrayCollection = 
+				new ArrayCollection([" ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]);
+
+			private var _value:Date;
+			public function get value():Date
+			{
+		        var day:Number = Number(dayTxt.text);
+		        var month:Number = Number(monthTxt.text);
+		        var year:Number = Number(yearTxt.text);
+
+		        if (isNaN(day) || day == 0 || isNaN(month) || month == 0 || isNaN(year) || year == 0) 
+		            return null;
+		        else 
+		            return new Date(year, month - 1, day);
+			}
+
+			public function set value(val:Date):void
+			{
+			    if (null != val) {
+			        dayTxt.text = val.date < 10 ? "0" + val.date.toString() : val.date.toString();
+			        dayCB.selectedIndex = val.date;
+			        
+			        var index:int = val.month + 1;
+			        monthTxt.text = index < 10 ? "0" + index.toString() : index.toString();
+			        monthCB.selectedIndex = index;
+			        
+			        yearTxt.text = val.fullYear.toString();
+			    } else {
+			        dayTxt.text = monthTxt.text = yearTxt.text = "";
+			        dayCB.selectedIndex = monthCB.selectedIndex = 0;
+			    }
+			}
+			   
+			private function onMonthCBChanged():void 
+			{
+				if (monthCB.selectedIndex > 0) {
+					monthTxt.text = monthCB.selectedIndex < 10 ? "0" + monthCB.selectedIndex.toString() : monthCB.selectedIndex.toString();
+				}
+			}
+			
+			private function onMonthTxtChanged():void 
+			{
+				var value:String = monthTxt.text;
+				var numValue:int;
+				
+				if (!value || value.length == 0) {
+					return;
+				}
+				
+				if (!isNaN(int(value))) {
+					numValue = int(value);
+				} else {
+					monthCB.selectedIndex = -1;
+					monthTxt.text = "";
+					return;
+				}
+
+				if (value.length == 1) {
+					monthCB.selectedIndex = numValue;
+
+					if (numValue > 1) {
+
+						if (numValue < 10) {
+							monthTxt.text = "0" + numValue.toString();
+						} else {
+							monthTxt.text = numValue.toString();
+						}
+
+						focusManager.setFocus(yearTxt);
+					} else {
+						monthTxt.text = numValue.toString();
+					}
+					
+					return;
+				} else  if (value.length == 2) {
+					if (numValue < 13 && numValue > 0) {
+						monthCB.selectedIndex = numValue;
+
+						if (numValue < 10) {
+							monthTxt.text = "0" + numValue.toString();
+						} else {
+							monthTxt.text = numValue.toString();
+						}
+
+						focusManager.setFocus(yearTxt);
+
+						return;
+					} else {
+						monthCB.selectedIndex = -1;
+						monthTxt.text = "";
+						return;
+					}
+				} else {
+					monthCB.selectedIndex = -1;
+					monthTxt.text = "";
+					return;
+				}
+				
+			}
+			
+			private function onMonthTxtClick():void 
+			{
+//				focusManager.setFocus(monthCB);
+				monthCB.open();
+			}
+			
+			private function onDayCBChanged():void 
+			{
+				if (dayCB.selectedIndex > 0) {
+					dayTxt.text = dayCB.selectedIndex < 10 ? "0" + dayCB.selectedIndex.toString() : dayCB.selectedIndex.toString();
+				} else {
+					dayTxt.text == "";
+				}
+			}
+			
+			private function onDayTxtChanged():void 
+			{
+				var value:String = dayTxt.text;
+				var numValue:int;
+				
+				if (!value || value.length == 0) {
+					return;
+				}
+				
+				if (!isNaN(int(value))) {
+					numValue = int(value);
+				} else {
+					dayCB.selectedIndex = -1;
+					dayTxt.text = "";
+					return;
+				}
+
+				if (value.length == 1) {
+					dayCB.selectedIndex = numValue;
+					
+					if (numValue > 3) {
+						if (numValue < 10) {
+							dayTxt.text = "0" + numValue.toString();
+						} else {
+							dayTxt.text = numValue.toString();
+						}
+
+						focusManager.setFocus(monthTxt);
+					}
+					
+					return;
+				} else  if (value.length == 2) {
+					if (numValue < 32 && numValue > 0) {
+						dayCB.selectedIndex = numValue;
+
+						if (numValue < 10) {
+							dayTxt.text = "0" + numValue.toString();
+						} else {
+							dayTxt.text = numValue.toString();
+						}
+
+						focusManager.setFocus(monthTxt);
+
+						return;
+					} else {
+						dayCB.selectedIndex = -1;
+						dayTxt.text = "";
+						return;
+					}
+				} else {
+					monthCB.selectedIndex = -1;
+					dayTxt.text = "";
+					return;
+				}
+				
+			}
+
+    	]]>
+    </mx:Script>
+
+    <mx:Boolean id="isEmpty">
+        {dayTxt.text.length == 0 &amp;&amp; monthTxt.text.length == 0 &amp;&amp; yearTxt.text.length == 0}
+    </mx:Boolean>
+
+	<mx:Canvas>
+
+	 	<components:ExtendedComboBox id="monthCB"
+	 		dataProvider="{_monthes}" 
+	 		minWidth="30" width="80%" 
+	 		dropdownWidth="60"
+	 		tabEnabled="false"
+	 		editable="true" arrowButtonWidth="0"
+	 		change="onMonthCBChanged()"
+	 		/>
+
+	    <mx:TextInput id="monthTxt" 
+	    	maxChars="2" 
+	    	width="{monthCB.width}"
+	    	click="onMonthTxtClick()"
+	    	change="onMonthTxtChanged()"
+	    	focusOut="monthCB.close()"
+	    	backgroundAlpha="1"
+	    	alpha="1"
+	    	toolTip="Month"
+	    	/>
+
+	</mx:Canvas>
+
+    <mx:Label text="/" width="8"/>
+
+	<mx:Canvas>
+
+	 	<components:ExtendedComboBox id="dayCB"
+	 		dataProvider="{_days}" 
+	 		minWidth="30" width="80%" 
+	 		dropdownWidth="60"
+	 		tabEnabled="false"
+	 		editable="true" arrowButtonWidth="0"
+	 		change="onDayCBChanged()"
+	 		/>
+	 		
+	    <mx:TextInput id="dayTxt" 
+	    	maxChars="2" 
+	    	width="{dayCB.width}"
+	    	click="dayCB.open()"
+	    	change="onDayTxtChanged()"
+	    	focusOut="dayCB.close()"
+	    	backgroundAlpha="1"
+	    	alpha="1"
+	    	toolTip="Day"
+	    	/>
+	    
+	</mx:Canvas>
+
+    <mx:Label text="/" width="8"/>
+
+    <mx:TextInput id="yearTxt" maxChars="4" width="100%" minWidth="35" toolTip="Year"/>
+
+</mx:HBox>

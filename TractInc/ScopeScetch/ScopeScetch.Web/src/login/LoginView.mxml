@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:validators="src.deedplotter.validators.*"
+    title="{(loginMode) ? 'Login to the system' : 'Restore password'}">
+
+ 	<mx:Script>
+ 		<![CDATA[
+ 		    import src.AppController;
+
+ 			[Bindable] public var controller:LoginController;
+
+ 			[Bindable] public var loginMode:Boolean = true;
+
+ 			public function set appController(appController:AppController):void 
+ 			{
+ 			    controller = new LoginController(this, appController);
+ 			}
+
+ 		]]>
+ 	</mx:Script>
+
+    <validators:ValidatorsGroup id="restoreFormValidator">
+        <mx:StringValidator
+            source="{username}" property="text" required="true" minLength="4" maxLength="12"/>
+    </validators:ValidatorsGroup>
+
+    <validators:ValidatorsGroup id="loginFormValidator">
+        <mx:StringValidator
+            source="{username}" property="text" required="true" minLength="4" maxLength="12"/>
+            
+        <mx:StringValidator
+            source="{password}" property="text" required="false" maxLength="12"/>
+    </validators:ValidatorsGroup>
+
+	<mx:Form id="content"
+	    backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+	    paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+	    <mx:Label id="msgLabel" color="#990000" includeInLayout="{msgLabel.text.length > 0}"/>
+
+		<mx:FormItem label="Username">
+			<mx:TextInput id="username" enter="controller.doLogin()"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Password" visible="{loginMode}">
+			<mx:TextInput id="password" 
+			    displayAsPassword="true" enter="controller.doLogin()"/>
+		</mx:FormItem>
+
+	</mx:Form>
+    	
+	<mx:ControlBar id="buttonBar">
+	
+		<mx:LinkButton id="linkButton"
+			label="{(loginMode) ? 'Forgot password ?' : 'Login'}"
+			click="loginMode = !loginMode"/>
+
+		<mx:Spacer width="100%"/>
+
+		<mx:Button 
+			label="Login" click="controller.doLogin()" 
+			enabled="{!controller.serviceIsBusy}"
+			visible="{loginMode}" includeInLayout="{loginMode}"/>
+
+		<mx:Button 
+			label="Send Password" enabled="{username.text != 'guest'}"
+			visible="{!loginMode}" includeInLayout="{!loginMode}"
+			click="controller.restorePassword()"/>
+		
+		<mx:Button label="U" width="25" click="controller.autoLogin('user','user')"/>
+		
+		<mx:Button label="M" width="25" click="controller.autoLogin('manager','manager')"/>
+		
+	</mx:ControlBar>
+    	
+</mx:TitleWindow>
+

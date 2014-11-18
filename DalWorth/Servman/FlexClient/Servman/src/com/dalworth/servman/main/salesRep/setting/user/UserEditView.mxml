@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:user="com.dalworth.servman.main.owner.setting.user.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import com.dalworth.servman.domain.User;
+			
+			private var _user:User;
+			[Bindable]
+			public function get user():User { return _user; }
+			public function set user(value:User):void 
+			{
+				_user = value;
+			}
+			
+			public function isValid():Boolean
+			{
+				var result:Boolean = true;
+				
+				vEmail.enabled = true;
+				if (vEmail.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vFirstName.enabled = true;
+				if (vFirstName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				vLastName.enabled = true;
+				if (vLastName.validate().type == ValidationResultEvent.INVALID)
+					result = false;
+				
+				return result;
+			}
+			
+			public function getUser():User 
+			{
+				var result:User = new User();
+					result.applyFields(user);
+					result.FirstName = txtFirstName.text;
+					result.LastName = txtLastName.text;
+					result.Email = txtEmail.text;
+					result.Phone = txtPhone.text;
+					result.Address = txtAddress.text;
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:EmailValidator id="vEmail" source="{txtEmail}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:PhoneNumberValidator id="vPhone" source="{txtPhone}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vFirstName" source="{txtFirstName}" property="text" required="{user.Id == 0}" enabled="false"/>
+	<mx:StringValidator id="vLastName" source="{txtLastName}" property="text" required="{user.Id == 0}" enabled="false"/>
+
+	<mx:HBox width="100%" 
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#FFFFCC" 
+		borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+		
+		<user:ImageFileEditView imageFile="{user.RelatedImageFile}"/>
+
+		<mx:Form width="100%" minWidth="250" labelWidth="114"
+			paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0">
+			<mx:FormItem label="First Name" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtFirstName" width="100%" text="{user.FirstName}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Last Name" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtLastName" width="100%" text="{user.LastName}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Email" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtEmail" width="100%" text="{user.Email}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Phone" width="100%" required="{user.Id == 0}">
+				<mx:TextInput id="txtPhone" width="100%" text="{user.Phone}"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:VBox width="250" height="100%" minWidth="150">
+			<mx:Label text="Address:"/>
+			<mx:TextArea id="txtAddress" width="100%" height="100%" text="{user.Address}"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

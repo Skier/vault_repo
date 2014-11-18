@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+	title="{'Edit AFE info. Client: ' + afe.RelatedClient.ClientName}"
+	>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import weborb.data.DynamicLoadEvent;
+			import mx.events.CollectionEvent;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import App.Domain.AfeStatus;
+			import App.Domain.ActiveRecords;
+			import App.Domain.Afe;
+			
+			[Bindable]
+			private var statuses:ArrayCollection;
+
+			[Bindable]
+			public var afe:Afe;
+			
+            public static function Open(afe:Afe, parent:DisplayObject, modal:Boolean = true):AfeDetail {
+                var popup:AfeDetail = new AfeDetail();
+                popup.afe = afe;
+                popup.init();
+	
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+
+                return popup;
+            }
+            
+            private function init():void 
+            {
+            	this.enabled = false;
+            	statuses = ActiveRecords.AfeStatus.findAll();
+            	statuses.addEventListener("loaded", onStatusesLoaded);
+            	statuses.addEventListener(FaultEvent.FAULT, onFault);
+            }
+            
+            private function onStatusesLoaded(event:DynamicLoadEvent):void 
+            {
+            	this.enabled = true;
+            	statuses.removeEventListener("loaded", onStatusesLoaded);
+            	statuses = event.data as ArrayCollection;
+            	cbAfeStatus.selectedIndex = statuses.getItemIndex(afe.RelatedAfeStatus);
+            }
+            
+            private function onFault(event:FaultEvent):void 
+            {
+            	this.enabled = true;
+            	Alert.show(event.fault.message);
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%">
+		<mx:HBox>
+			<mx:Label text="Afe Code:" width="120" textAlign="right"/>
+			<mx:TextInput id="txtAfeCode" text="{afe.AFE}" width="200" maxChars="10"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Afe Name:" width="120" textAlign="right"/>
+			<mx:TextArea id="txtAfeName" text="{afe.AFEName}" width="200" height="100" maxChars="45"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Status:" width="120" textAlign="right"/>
+			<mx:ComboBox id="cbAfeStatus" width="120" labelField="AFEStatus"
+				dataProvider="{statuses}" 
+				selectedIndex="{statuses.getItemIndex(afe.RelatedAfeStatus)}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:HRule width="100%"/>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Ok"
+			enabled="{txtAfeCode.text.length > 0 &amp;&amp; txtAfeName.text.length > 0 &amp;&amp; cbAfeStatus.selectedItem != null}"/>
+		<mx:Button id="btnCancel" label="Cancel"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

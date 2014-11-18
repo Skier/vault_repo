@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="com.affilia.components.*" 
+    xmlns:ShoppingCart="AerSysCo.UI.Ordering.ShoppingCart.*"
+    title="Shopping Cart - {vsItems.selectedChild == viewDetail ? 'Warehouse Detail' : 'Summary'}"
+    styleName="shoppingCartPanel"
+    show="switchToDetail()">
+
+    <mx:Metadata>
+        [Event(name="continueShopping", type="flash.events.Event")]
+        [Event(name="checkoutRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import AerSysCo.UI.Models.ShoppingCartSummaryUI;
+            import AerSysCo.UI.Catalog.CatalogController;
+            import mx.events.DataGridEventReason;
+            import mx.events.DataGridEvent;
+            import AerSysCo.UI.Models.ShoppingCartShipmentUI;
+            import AerSysCo.UI.Models.ShoppingCartDetailUI;
+            import AerSysCo.UI.Models.ShoppingCartUI;
+            import AerSysCo.Server.ShoppingCartShipment;
+            import AerSysCo.Server.ShoppingCartDetail;
+            import AerSysCo.Server.Warehouse;
+            import AerSysCo.Server.ShippingAddress;
+            import mx.events.CloseEvent;
+            import AerSysCo.Server.Inventory;
+            import mx.controls.Alert;
+            import mx.binding.utils.ChangeWatcher;
+            import mx.utils.ObjectUtil;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.events.PropertyChangeEvent;
+            import mx.collections.ArrayCollection;
+            
+            [Bindable] public var shoppingCart:ShoppingCartUI;      
+            
+            public function removeItem(item:ShoppingCartDetailUI):void 
+            {
+                Alert.show("Are you sure you want to remove this Product from your Shopping Cart?", 
+                   "Remove Item", Alert.YES | Alert.NO, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                            shoppingCart.removeItems(new ArrayCollection([item]));
+                        }
+                    }
+                );
+            }
+            
+            public function removeSummaryItem(item:ShoppingCartSummaryUI):void 
+            {
+                Alert.show("Are you sure you want to remove this Product from your Shopping Cart?", 
+                   "Remove Summary Item", Alert.YES | Alert.NO, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+                            shoppingCart.removeSummaryItem(item);
+                        }
+                    }
+                );
+            }
+            
+            public function updateItem(item:ShoppingCartDetailUI):void 
+            {
+                shoppingCart.updateItem(item);
+            }
+            
+            private function switchToSummary():void 
+            {
+                vsItems.selectedChild = viewSummary;
+            }
+            
+            private function switchToDetail():void 
+            {
+                vsItems.selectedChild = viewDetail;
+            }
+            
+            private function btnRemoveWarehouseClickHandler(event:MouseEvent):void 
+            {
+                var index:int = tnWarehouse.selectedIndex;
+                var shipment:ShoppingCartShipmentUI = shoppingCart.shipments.getItemAt(index) as ShoppingCartShipmentUI;
+
+                Alert.show("Are you sure you want to remove all " + shipment.warehouse.warehouseName + " items from your Shopping Cart?", 
+                   "Remove Items", Alert.YES | Alert.NO, null, 
+                   function (evt:CloseEvent):void 
+                   {
+                        if (evt.detail == Alert.YES)
+                        {
+                            var items:ArrayCollection = new ArrayCollection();
+                            for each (var d:ShoppingCartDetailUI in shipment.details) 
+                            {
+                                items.addItem(d);
+                            }
+                            shoppingCart.removeItems(items);
+                        }
+                    }
+                );
+            }
+            
+            private function emptyShoppingCartHandler():void 
+            {
+                Alert.show("Are you sure you want to remove all items from your Shopping Cart?", 
+                   "Remove Items", Alert.YES | Alert.NO, null, 
+                   function (evt:CloseEvent):void 
+                   {
+                        if (evt.detail == Alert.YES)
+                        {
+                            shoppingCart.removeAll();
+                        }
+                    }
+                );
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:ViewStack id="vsItems" width="100%" height="100%" creationPolicy="all">
+
+        <mx:VBox id="viewSummary" width="100%" height="100%">
+            <mx:DataGrid id="dgSummary" width="100%" height="100%" minWidth="908"
+                dataProvider="{shoppingCart.summaryItems}" sortableColumns="false">
+                <mx:columns>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['SKU'])}"
+                        dataField="sku" 
+                        width="65" minWidth="65" textAlign="center"/>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['Model'])}"
+                        dataField="modelName" 
+                        width="75" minWidth="75" textAlign="center"/>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['Configuration'])}"
+                        dataField="configuration" 
+                        width="220" minWidth="220"/>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['Description'])}"
+                        dataField="description"/>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['Price'])}"
+                        dataField="price" textAlign="right"
+                        width="65" minWidth="65"/>
+                    <components:MultiLinesHeaderColumn 
+                        headerRenderer="com.affilia.components.MultiLinesHeaderRenderer"
+                        lines="{new ArrayCollection(['Order','QTY'])}"
+                        dataField="qtyNeeded" textAlign="right"
+                        width="65" minWidth="65"/>
+                    <mx:DataGridColumn headerText=" " width="75" minWidth="75"
+                        itemRenderer="AerSysCo.UI.Ordering.ShoppingCart.DeleteSummaryItemIR"
+                        sortable="false"/>
+                </mx:columns>
+            </mx:DataGrid>
+            
+            <mx:HBox width="100%">
+                <mx:Label text="Total:" width="100%" fontWeight="bold" textAlign="right"/>
+                <mx:Label text="${shoppingCart.total.toFixed(2)}" width="120" fontWeight="bold"/>
+            </mx:HBox>
+            
+            <mx:HBox width="100%"
+                styleName="panelTopHeader">
+                <mx:Button label="To Detail" height="24" 
+                    enabled="{shoppingCart.totalItems &gt; 0}"
+                    styleName="shoppingCartButton"
+                    click="switchToDetail()"/>
+                <mx:Spacer width="100%"/>
+                <mx:Button label="Continue Shopping" height="24" 
+                    styleName="shoppingCartButton"
+                    click="dispatchEvent(new Event('continueShopping'))"/>
+                <mx:Button label="Remove All Items" height="24" 
+                    enabled="{shoppingCart.totalItems &gt; 0}"
+                    styleName="shoppingCartButton"
+                    click="emptyShoppingCartHandler()"/>
+                <mx:Button label="Checkout" height="24" 
+                    enabled="{shoppingCart.totalItems &gt; 0}"
+                    styleName="shoppingCartButton"
+                    click="dispatchEvent(new Event('checkoutRequest'))"/>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:VBox id="viewDetail" width="100%" height="100%">
+            <mx:TabNavigator id="tnWarehouse"
+                width="100%" height="100%" paddingTop="0">
+                <mx:Repeater id="rptWarehouses" width="100%" height="100%"
+                    dataProvider="{shoppingCart.shipmentsFiltered}">
+
+                    <ShoppingCart:ShoppingCartWarehouseDetail shipment="{ShoppingCartShipmentUI(rptWarehouses.currentItem)}"
+                        width="100%" height="100%"/>
+                </mx:Repeater>
+            </mx:TabNavigator>
+
+            <mx:HBox width="100%">
+                <mx:Label text="Total:" width="100%" fontWeight="bold" textAlign="right"/>
+                <mx:Label text="${shoppingCart.total.toFixed(2)}" width="120" fontWeight="bold"/>
+            </mx:HBox>
+
+            <mx:HBox width="100%"
+                styleName="panelTopHeader">
+                <mx:Button label="To Summary" height="24" 
+                    styleName="shoppingCartButton"
+                    click="switchToSummary()"/>
+                <mx:Spacer width="100%"/>
+                <mx:Button label="Continue Shopping" height="24"
+                    styleName="shoppingCartButton"
+                    click="dispatchEvent(new Event('continueShopping'))"/>
+                <mx:Button label="Remove All Items" height="24"
+                    styleName="shoppingCartButton"
+                    click="btnRemoveWarehouseClickHandler(event)"/>
+                <mx:Button label="Checkout" height="24"
+                    enabled="{shoppingCart.totalItems &gt; 0}"
+                    styleName="shoppingCartButton"
+                    click="dispatchEvent(new Event('checkoutRequest'))"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:ViewStack>
+</mx:Panel>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	visible="{section != null}" xmlns:controls="com.ebs.controls.*" xmlns:ns1="com.quickbase.idn.widgets.*" xmlns:view="com.quickbase.idn.view.*"
+	creationComplete="onCreate()">
+	
+    <mx:Metadata>
+        [Event(name="endEdit", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.dto.Expenditures_DTO;
+			import com.ebs.eroof.model.wrapper.Expenditure;
+			import com.ebs.eroof.dto.Inspections_DTO;
+			import com.ebs.eroof.model.wrapper.Inspection;
+			import mx.events.CloseEvent;
+			import com.ebs.eroof.dto.Layers_DTO;
+			import mx.controls.Alert;
+			import mx.events.DynamicEvent;
+			import com.ebs.eroof.model.wrapper.Layer;
+			import com.ebs.eroof.model.wrapper.CorePhoto;
+			import com.ebs.eroof.dto.CorePhotos_DTO;
+			import com.adobe.cairngorm.model.ModelLocator;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import mx.core.Application;
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.model.wrapper.Section;
+			
+	        [Embed(source="/assets/icons16/plus.png")]
+	        [Bindable]
+	        private var iconPlus:Class;
+        
+			private var _section:Section;
+			[Bindable]
+			public function get section():Section { return _section; }
+			public function set section(value:Section):void 
+			{
+				_section = value;
+			}
+			
+			private function onCreate():void 
+			{
+	            dgExpenditures.addEventListener("deleteExpenditure", deleteExpenditureHandler);
+			}
+			
+			[Bindable]
+			private var isBusy:Boolean = false;
+			
+			private function openExpenditure(expenditure:Expenditure):void 
+			{
+				ExpenditureEditPopup.open(this, expenditure).addEventListener("closeRequest", 
+					function (event:Event):void 
+					{
+						if (!section.expendituresCollection.contains(expenditure))
+							section.expendituresCollection.addItem(expenditure);
+						
+						dgExpenditures.selectedIndex = section.expendituresCollection.getItemIndex(expenditure);
+						dgExpenditures.scrollToIndex(section.expendituresCollection.getItemIndex(expenditure));
+					}); 
+			}
+			
+			private function deleteExpenditure(expenditure:Expenditure):void 
+			{
+				if (section.expendituresCollection.contains(expenditure))
+					section.expendituresCollection.removeItemAt(section.expendituresCollection.getItemIndex(expenditure));
+			}
+			
+			private function deleteExpenditureHandler(event:DynamicEvent):void 
+			{
+        		var expenditure:Expenditure = event.expenditure as Expenditure;
+        		
+        		if (expenditure == null)
+        			return;
+        			
+				event.stopPropagation();
+				event.preventDefault();
+				
+        		Alert.show("Do you really want to delete selected Layer?", "Delete Layer", 
+        			Alert.YES | Alert.NO, null,
+        			function (event:CloseEvent):void 
+        			{
+        				if (event.detail == Alert.YES)
+        					deleteExpenditure(expenditure);
+        			});
+			}
+			
+			private function onAddExpenditureClick():void 
+			{
+				var expenditure:Expenditure = new Expenditure(new Expenditures_DTO());
+				expenditure.expenditureDTO.RelatedSection = Number(section.sectionDTO.rid);
+
+				openExpenditure(expenditure);
+			}
+			
+			private function onExpenditureGridDoubleClick():void 
+			{
+				var expenditure:Expenditure = dgExpenditures.selectedItem as Expenditure;
+				openExpenditure(expenditure);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Label id="lblRoofSystem" y="10" fontSize="14" text="{section.sectionDTO.RoofSystem}" left="10" width="635"/>
+
+	<mx:HRule left="10" width="879" top="43"/>
+
+	<mx:VBox width="100%" height="100%" verticalGap="5">
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+			borderColor="#cccccc" borderStyle="solid" cornerRadius="1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Expenditures" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+				<mx:Button height="100%" cornerRadius="1" label="Add New" icon="{iconPlus}" click="onAddExpenditureClick()"/>
+			</mx:HBox>
+
+			<mx:DataGrid id="dgExpenditures" width="100%" height="100%"
+				dataProvider="{section.expendituresCollection}" doubleClickEnabled="true" itemDoubleClick="onExpenditureGridDoubleClick()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="budgetYearStr" headerText="Budget Year" textAlign="center"/>
+					<mx:DataGridColumn dataField="typeOfWorkStr" headerText="Type Of Activity"/>
+					<mx:DataGridColumn dataField="actionItemStr" headerText="Action Item"/>
+					<mx:DataGridColumn dataField="allocationStr" headerText="Allocation"/>
+					<mx:DataGridColumn dataField="urgencyStr" headerText="Urgency"/>
+					<mx:DataGridColumn dataField="statusStr" headerText="Status"/>
+					<mx:DataGridColumn dataField="budgetCostStr" headerText="Budget Cost" textAlign="right"/>
+					<mx:DataGridColumn headerText="" width="20" minWidth="20" itemRenderer="com.ebs.eroof.view.section.expenditure.ExpenditureActionIR"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="100%" verticalGap="0"
+			borderColor="#cccccc" borderStyle="solid" cornerRadius="1">
+			<mx:HBox width="100%" backgroundColor="#eeeeee">
+				<mx:Label text="Details Of Activity" width="100%" fontSize="12" fontWeight="bold" color="#000099"/>
+			</mx:HBox>
+			<mx:TextArea id="txtDescription" width="100%" height="100%" text="{Expenditure(dgExpenditures.selectedItem).expenditureDTO.Description}"/>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

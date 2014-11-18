@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:titus="com.titus.components.*"
+	initialize="initHandler()">
+	
+    <mx:Metadata>
+        [Event(name="catalogItemChanged", type="com.titus.catalog.events.CatalogItemEvent")]
+    </mx:Metadata>
+    
+    <mx:Script>
+    	<![CDATA[
+    		import mx.managers.FocusManager;
+    		import mx.rpc.events.FaultEvent;
+    		import mx.rpc.events.ResultEvent;
+    		import mx.rpc.remoting.RemoteObject;
+    		import com.titus.catalog.model.PdfPage;
+    		import com.titus.catalog.storage.DBStorage;
+    		import com.titus.catalog.model.CatalogItem;
+    		import mx.controls.Alert;
+    		import com.titus.catalog.controller.CategoryTreeDataDescriptor;
+    		import com.titus.catalog.events.CatalogItemEvent;
+    		
+    		[Bindable] public var rootCatalog:CatalogItem;
+    		
+    		[Bindable] private var isEditing:Boolean = false;
+    		
+    		private function initHandler():void 
+    		{
+    			rootCatalog = main.getStorage().getCatalog();
+				main.getStorage().addEventListener(Event.COMPLETE, onCompleteLoad);
+    		}
+    		
+    		private function onCompleteLoad(evt:Event):void {
+    			treeCategories.expandItem(rootCatalog, true, true);
+    			treeCategories.showRoot = false;
+    		}
+    		
+    		public function selectItem(currentItem:CatalogItem):void {
+            	var arr:Array = new Array();
+            	var parent:CatalogItem = currentItem.parentItem;
+            	
+            	while(parent != null)
+            	{
+                	arr.push(parent);
+                	parent = parent.parentItem;
+            	}
+            	
+            	for each(var item:CatalogItem in arr) {
+                	treeCategories.expandItem(item, true, true);
+            	}
+
+                treeCategories.selectedItem = currentItem;
+                treeCategories.scrollToIndex(treeCategories.selectedIndex);
+            	
+   				var itemEvent:CatalogItemEvent = new CatalogItemEvent("catalogItemChanged", currentItem);
+	    		dispatchEvent(itemEvent);
+    		}
+    		
+    		private function treeCategoriesChangeHandler():void 
+    		{
+    			var catalogItem:CatalogItem = treeCategories.selectedItem as CatalogItem;
+    			txtPageCode.text = catalogItem.PageCode + PdfPage(DBStorage.getInstance().getCatalogPages().getItemAt(catalogItem.PageNumber)).number.toString();
+    			
+    			var itemEvent:CatalogItemEvent = new CatalogItemEvent("catalogItemChanged", catalogItem);
+	    		
+	    		dispatchEvent(itemEvent);
+    		}
+    		
+            private function selectCategoryColor(item:Object, color:uint):uint {
+            	/* if (item is CatalogItem) {
+            		return parseInt("0x" + (item as CatalogItem).Color1.replace(" ", ""));
+            	} else {
+            		return 0;
+            	} */
+            	return 0x00FF00;
+            }
+            
+            private function onSavePageCodeClick():void {
+            	if (1 >= txtPageCode.text.length) {
+            		return;
+            	}
+            	
+            	var catalogItem:CatalogItem = CatalogItem(treeCategories.selectedItem);
+            	
+        		var service:RemoteObject = new RemoteObject("GenericDestination");
+        		service.source = "Titus.ECatalog.Service.CatalogService";
+        		service.StoreModelItem.addEventListener(
+        			ResultEvent.RESULT,
+        			function(evt:ResultEvent):void {
+        				var section:String = txtPageCode.text.substr(0, 1);
+        				var page:int = parseInt(txtPageCode.text.substr(1));
+        				catalogItem.PageCode = section;
+        				catalogItem.PageNumber = DBStorage.getInstance().findPageByCode(txtPageCode.text).catalogPage;
+        				
+        				boxEditor.enabled = true;
+        				isEditing = false;
+        				treeCategories.setFocus();
+        			}
+        		);
+        		service.StoreModelItem.addEventListener(
+        			FaultEvent.FAULT,
+        			function(evt:FaultEvent):void {
+		       			boxEditor.enabled = true;
+		       			isEditing = false;
+        				Alert.show("Store item failed.", "Error");
+        			}
+        		);
+        		boxEditor.enabled = false;
+        		service.StoreModelItem(catalogItem.ModelId, catalogItem.CatalogLevel, txtPageCode.text);
+            }
+            
+            private function onCategoriesTreeDoubleClick():void {
+            	var item:CatalogItem = CatalogItem(treeCategories.selectedItem);
+            	if (0 != item.ModelId) {
+            		isEditing = true;
+            		txtPageCode.setFocus();
+            	}
+            }
+            
+            private function onCategoriesTreeClick():void {
+            	isEditing = false;
+            }
+            
+            private function getCodeByItem(item:CatalogItem):String {
+            	Alert.show('error');
+            	return item.PageCode + item.PageNumber;
+            }
+            
+    	]]>
+    </mx:Script>
+    
+    <titus:ColoredTree
+        width="100%" 
+        height="100%" 
+        id="treeCategories"
+        dataProvider="{rootCatalog}"
+        dataDescriptor="{new CategoryTreeDataDescriptor}" 
+        labelField="name" 
+        liveScrolling="true"
+        backgroundColor="#ffffff"
+        backgroundAlpha="0.5"
+        change="treeCategoriesChangeHandler()"
+        rowColorFunction="selectCategoryColor"
+        fontSize="12"
+        click="onCategoriesTreeClick()"
+        doubleClickEnabled="false"
+        doubleClick="onCategoriesTreeDoubleClick()"
+        />
+        
+	<mx:HBox
+		id="boxEditor"
+		width="100%"
+		paddingBottom="4"
+		paddingLeft="4"
+		visible="{isEditing}"
+		includeInLayout="{isEditing}"
+		>
+		<mx:TextInput
+			id="txtPageCode"
+			width="80"
+			enter="onSavePageCodeClick()"/>
+		<mx:Button
+			click="onSavePageCodeClick()"
+			label="save"
+			enabled="{1 &lt; txtPageCode.text.length}"/>
+	</mx:HBox>
+
+</mx:VBox>

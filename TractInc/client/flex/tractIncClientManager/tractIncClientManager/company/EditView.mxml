@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Company" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    creationComplete="init();"
+    minWidth="450">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.collections.ArrayCollection;
+        	import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Client;
+        	import TractInc.Domain.Company;
+            
+            [Bindable]
+            private var canEdit:Boolean = false;
+            private var controller:CompanyController = null;
+            private var currentCompany:Company = null;
+//            private var checkBoxes:Array = new Array();
+                
+            public static function open(ctrl:CompanyController, company:Company, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, company);
+                
+                PopUpManager.addPopUp(popup, ctrl.view, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:CompanyController, company:Company):void
+            {
+                controller = ctrl;
+                currentCompany = company;
+            }
+            
+            public function init():void
+            {
+                canEdit = true; //controller.model.userManagerPackage.canManageUsers;
+                
+                var la:ArrayCollection = new ArrayCollection();
+                var ra:ArrayCollection = new ArrayCollection();
+                this.leftDataGrid.dataProvider = la;
+                this.rightDataGrid.dataProvider = ra;
+                for each (var c:Client in controller.parentController.model.clientList) {
+/*                    
+                    var box:CheckBox = new CheckBox();
+                    box.label = c.ClientName;
+                    box.selected = isClientSelected(c);
+                    box.data = c;
+                    checkBoxes.push(box);
+                    checkList.addChild(box);
+*/                    
+                    if ( isClientSelected(c) ) {
+                        ra.addItem(c);
+                    } else {
+                        la.addItem(c);
+                    }
+                }
+                
+                if ( null != currentCompany ) {
+                    this.txtCompanyName.text = currentCompany.CompanyName;
+                } else {
+                    currentCompany = new Company();
+                }
+            }
+            
+            public function getCompany():Company
+            {
+                currentCompany.CompanyName = this.txtCompanyName.text;
+                
+                currentCompany.ClientList = new Array();
+/*                
+                for each (var box:CheckBox in checkBoxes) {
+                    if ( box.selected ) {
+                        currentCompany.ClientList.push(box.data);
+                    }
+                }
+*/                
+                for each (var c:Client in rightDataGrid.dataProvider) {
+                    currentCompany.ClientList.push(c);
+                }
+                
+                return currentCompany;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveCompany(getCompany());
+            }
+            
+            private function isClientSelected(client:Client):Boolean
+            {
+                if ( null != currentCompany ) {
+                    for each (var c:Client in currentCompany.ClientList) {
+                        if ( client.ClientId == c.ClientId ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }    
+/*            
+            private function checkAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = true;
+                }
+                checkAllBox.selected = false;
+            }
+            
+            private function uncheckAllBoxOnClickHandler(event:Event):void
+            {
+                for each (var box:CheckBox in checkBoxes) {
+                    box.selected = false;
+                }
+                uncheckAllBox.selected = false;
+            }
+*/            
+            private function addAllOnClickHandler(event:Event):void
+            {
+                for each(var c:Client in this.leftDataGrid.dataProvider) {
+                    (this.rightDataGrid.dataProvider as ArrayCollection).addItem(c);
+                }
+                (this.leftDataGrid.dataProvider as ArrayCollection).removeAll();
+            }
+            
+            private function addOneOnClickHandler(event:Event):void
+            {
+                if ( null != leftDataGrid.selectedItem ) {
+                    (rightDataGrid.dataProvider as ArrayCollection).addItem(
+                            leftDataGrid.selectedItem);
+                    (leftDataGrid.dataProvider as ArrayCollection).removeItemAt(
+                            leftDataGrid.selectedIndex);
+                }
+            }
+            
+            private function removeAllOnClickHandler(event:Event):void
+            {
+                for each(var c:Client in this.rightDataGrid.dataProvider) {
+                    (this.leftDataGrid.dataProvider as ArrayCollection).addItem(c);
+                }
+                (this.rightDataGrid.dataProvider as ArrayCollection).removeAll();
+            }
+            
+            private function removeOneOnClickHandler(event:Event):void
+            {
+                if ( null != rightDataGrid.selectedItem ) {
+                    (leftDataGrid.dataProvider as ArrayCollection).addItem(
+                            rightDataGrid.selectedItem);
+                    (rightDataGrid.dataProvider as ArrayCollection).removeItemAt(
+                            rightDataGrid.selectedIndex);
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{txtCompanyName}" property="text" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form id="mainForm" enabled="{canEdit}" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+        width="100%">
+
+        <mx:FormItem label="Name" width="100%" required="true">
+            <mx:TextInput id="txtCompanyName" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Clients" width="100%">
+            <mx:HBox width="100%" height="100%">
+                <mx:VBox>
+                <mx:Label text="Avail Clients"/>
+                <mx:DataGrid id="leftDataGrid" width="100%" height="100%">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="Id" width="20" dataField="ClientId"/>
+                        <mx:DataGridColumn headerText="Name" width="85" dataField="ClientName"/>
+                    </mx:columns>
+                </mx:DataGrid>
+                </mx:VBox>
+                <mx:VBox height="100%">
+		            <mx:Spacer height="40"/>
+                    <mx:Button label="&gt;&gt;" click="addAllOnClickHandler(event)"/>
+                    <mx:Button label="&gt;" click="addOneOnClickHandler(event)"/>
+		            <mx:Spacer height="100%"/>
+                    <mx:Button label="&lt;" click="removeOneOnClickHandler(event)"/>
+                    <mx:Button label="&lt;&lt;" click="removeAllOnClickHandler(event)"/>
+                </mx:VBox>
+                <mx:VBox>
+                <mx:Label text="Current Clients"/>
+                <mx:DataGrid id="rightDataGrid" width="100%" height="100%">
+                    <mx:columns>
+                        <mx:DataGridColumn headerText="Id" width="20" dataField="ClientId"/>
+                        <mx:DataGridColumn headerText="Name" width="85" dataField="ClientName"/>
+                    </mx:columns>
+                </mx:DataGrid>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:FormItem>
+<!--        
+		<mx:FormHeading label="Clients"/>
+        <mx:VBox width="100%">
+            <mx:HBox width="100%" horizontalAlign="center">
+                <mx:CheckBox id="checkAllBox" label="Check All" click="checkAllBoxOnClickHandler(event)"/>    
+                <mx:CheckBox id="uncheckAllBox" label="Uncheck All" click="uncheckAllBoxOnClickHandler(event)"/>    
+            </mx:HBox>
+            <mx:VBox id="checkList">
+            </mx:VBox>
+        </mx:VBox>
+-->        
+    </mx:Form>
+            
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()" enabled="{canEdit}"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

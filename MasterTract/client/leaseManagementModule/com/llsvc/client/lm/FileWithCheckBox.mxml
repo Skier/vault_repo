@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:component="com.llsvc.component.*"
+    height="100%" 
+    width="100%"
+    >
+
+    <mx:Script>
+        <![CDATA[
+            [Bindable]
+            public var text:String;
+
+            private function onEnabledChange(event:Event):void {
+                this.fileInput.enabled = this.chbEnabled.selected;
+            }
+        ]]>
+    </mx:Script>
+    
+    <component:FileInput id="fileInput" enabled="false"/>
+    <mx:CheckBox id="chbEnabled" label="{text}" change="onEnabledChange(event)"/>
+    
+</mx:HBox>

@@ -1,0 +1,71 @@
+﻿@using Dalworth.Common.SDK
+@using Dalworth.LeadCentral.Service
+@using Dalworth.LeadCentral.Web.Models.Phone
+@model PhoneList
+
+@{
+    ViewBag.Title = "Tracking Phone List";
+    var currentUser = ContextHelper.GetCurrentUser();
+}
+
+<div class="box">
+  <div class="left"></div>
+  <div class="right"></div>
+  <div class="heading">
+    <h1>Tracking Phone List</h1>
+    @if (!currentUser.IsBusinessPartner && !currentUser.IsAccounter())
+    {
+    <div style="float:right;padding: 8px 0px 8px 0px;">
+        @Html.ActionLink("Purchase New Phone", "StartPurchase",
+            new { controller = "Phones", returnController = "Phones", returnAction = "Index", returnId = 0 },
+            new { @class = "button primary" })
+    </div>
+    }
+  </div>
+  <div class="content">
+@if (Model.Phones != null && Model.Phones.Count > 0)
+{
+    <table class="list">
+    <thead>
+        <tr>
+        <td class="left" style="white-space: nowrap;">Phone</td>
+        <td class="left" style="white-space: nowrap;">Friendly No</td>
+        <td class="left" style="white-space: nowrap;">Redirect No</td>
+        <td class="left" style="white-space: nowrap;">Description</td>
+        <td class="left" style="white-space: nowrap;">Assigned Campaign</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var phone in Model.Phones)
+    {
+
+        <tr>
+        @if (!currentUser.IsBusinessPartner)
+        {
+        <td class="left" style="white-space: nowrap;">@Html.ActionLink(string.Format("{0:+### (###) ###-####}", Int64.Parse(StringUtil.ExtractDigits(phone.PhoneNumber))), "Details", new { phone.Id })</td>
+        }
+        else
+        {
+        <td class="left" style="white-space: nowrap;">@string.Format("{0:+### (###) ###-####}", Int64.Parse(StringUtil.ExtractDigits(phone.PhoneNumber)))</td>
+        }
+        <td class="left" style="white-space: nowrap;">@phone.FriendlyNumber</td>
+        <td class="left" style="white-space: nowrap;">@string.Format("{0:+### (###) ###-####}", Int64.Parse(StringUtil.ExtractDigits(phone.RedirectPhoneNumber)))</td>
+        <td class="left">@phone.Description</td>
+        @if(phone.AssignedCampaign != null)
+        {
+        <td class="left">@Html.ActionLink(phone.AssignedCampaign.CampaignName, "Details", new { controller = "Campaigns", id = phone.AssignedCampaign.Id })</td>
+        }else
+        {
+        <td class="left">&nbsp;</td>
+        }
+        </tr>
+    }
+    </tbody>
+    </table>
+}
+else
+{
+    <div>No Tracking Phone found</div>
+}
+  </div>
+</div>

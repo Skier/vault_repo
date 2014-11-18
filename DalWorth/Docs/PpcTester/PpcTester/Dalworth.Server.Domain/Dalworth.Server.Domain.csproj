@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FBA09BAB-6ADD-4B05-8168-78D7CC16AFF4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dalworth.Server.Domain</RootNamespace>
+    <AssemblyName>Dalworth.Server.Domain</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Action.cs" />
+    <Compile Include="Adgroup.cs" />
+    <Compile Include="Campaign.cs" />
+    <Compile Include="codegen\Action.Generator.cs" />
+    <Compile Include="codegen\Adgroup.Generator.cs" />
+    <Compile Include="AdgroupKeyword.cs" />
+    <Compile Include="codegen\AdgroupKeyword.Generator.cs" />
+    <Compile Include="codegen\Campaign.Generator.cs" />
+    <Compile Include="codegen\Company.Generator.cs" />
+    <Compile Include="codegen\Export.Codegen.cs" />
+    <Compile Include="codegen\Import.Codegen.cs" />
+    <Compile Include="codegen\Keyword.Generator.cs" />
+    <Compile Include="codegen\KeywordStats.Generator.cs" />
+    <Compile Include="codegen\SearchEngine.Generator.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="Keyword.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="codegen\TestBatch.Generator.cs" />
+    <Compile Include="codegen\TestResult.Generator.cs" />
+    <Compile Include="codegen\TestResultDetail.Generator.cs" />
+    <Compile Include="DomainObject.cs" />
+    <Compile Include="KeywordStats.cs" />
+    <Compile Include="package\AdgroupKeywordPackage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SearchEngine.cs" />
+    <Compile Include="TestBatch.cs" />
+    <Compile Include="TestResult.cs" />
+    <Compile Include="TestResultDetail.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WatiN-2.0.20.1089-net-2.0\Source\src\Core\Core.csproj">
+      <Project>{217E2D34-F6DF-431B-AC5A-B368F481A530}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dalworth.Server\Dalworth.Server.csproj">
+      <Project>{598FAA62-D8C2-43CA-8F15-4F30530BADC7}</Project>
+      <Name>Dalworth.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.ebs.eroof.model.wrapper.Section;
+        	import mx.events.DynamicEvent;
+            [Embed(source="/assets/icons16/cross.png")]
+            [Bindable]
+            private var imgCross:Class;
+            
+            private function onDeleteHandler():void 
+            {
+                var event:DynamicEvent = new DynamicEvent("deleteSection", true);
+                event.section = data as Section;
+                dispatchEvent(event);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Image source="{imgCross}" width="16" height="16" toolTip="Delete section" click="onDeleteHandler()"/>
+</mx:HBox>

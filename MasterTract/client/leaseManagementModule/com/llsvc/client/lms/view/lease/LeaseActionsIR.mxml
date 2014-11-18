@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalGap="2" paddingLeft="2" paddingRight="2"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import mx.events.DynamicEvent;
+        	import com.llsvc.domain.Lease;
+        
+            [Embed(source="assets/icons16/page_edit.png")]
+            [Bindable]
+            private var imgEdit:Class;
+            
+            [Embed(source="assets/icons16/page_go.png")]
+            [Bindable]
+            private var imgCopy:Class;
+            
+            private function onCopyHandler():void 
+            {
+            	var event:DynamicEvent = new DynamicEvent("openLeaseCopyRequest", true);
+            	event.lease = this.data as Lease;
+            	dispatchEvent(event);
+            }
+
+            private function onEditHandler():void 
+            {
+            	var event:DynamicEvent = new DynamicEvent("openLeaseRequest", true);
+            	event.lease = this.data as Lease;
+            	dispatchEvent(event);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Image source="{imgEdit}" width="16" height="16" toolTip="Open Lease" click="onEditHandler()"/>
+    
+    <mx:Image source="{imgCopy}" width="16" height="16" toolTip="Create Lease copy" click="onCopyHandler()"/>
+    
+</mx:HBox>

@@ -1,0 +1,1 @@
+update Customer set CustomerTypeId = 2, Modified = NOW() where CustomerTypeId is null;

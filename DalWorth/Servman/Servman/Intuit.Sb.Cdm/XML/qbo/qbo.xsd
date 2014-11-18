@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:sb="http://www.intuit.com/sb/cdm/v2" 
+           xmlns:qbo="http://www.intuit.com/sb/cdm/qbo" 
+           targetNamespace="http://www.intuit.com/sb/cdm/qbo" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../finance/Finance.xsd"/>
+	<xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../customer/PartyCdmTypes.xsd"/>
+	<xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+	
+  <xs:element name="QboUserCompanyMapping" type="qbo:QboUserCompanyMapping"/>
+	<xs:element name="QboUser" type="qbo:QboUser"/>
+	<xs:element name="QboCompanyReport" type="qbo:QboCompanyReport"/>
+	<xs:element name="QboBulkResult" type="qbo:QboBulkResult"/>
+  <xs:element name="SearchResults" type="qbo:SearchResults"/>
+  <xs:element name="QboCompany" type="qbo:QboCompany"/>
+  
+	<!-- Type definitions -->
+	<xs:complexType name="QboCompany">
+		<xs:complexContent>
+			<xs:extension base="sb:Organization">
+				<xs:sequence>
+					<xs:element name="UseDefaultChartOfAccounts" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Specifies whether to use the default Chart of Account for the company</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="BillingCode" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Billing code associated with the company</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="UserName" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">User Name associated with the company</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="UserAuthId" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Auth Id of the user (This is NOT the company auth id. Company Auth Id maps to the Id attribute of the base type Organization </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="QboCompanyReport">
+		<xs:sequence>
+			<xs:element name="CompanyInfo" type="qbo:QboCompany" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Company info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PersonInfo" type="sb:Person" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Person information that was used when creating the company</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Trial" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Is this usage a trial?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Subscription" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Is this usage a subscription?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">SKU (Stock Keeping Unit)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Z0NCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Is this usage a subscription?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NoOfLogins" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Number of logins</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NoOfCustomers" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Number of customers</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MaxCustomers" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Maximum limit for number of customers</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreationDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Company creation date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubscriptionDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Subscription date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PayrollTrial" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Payroll trial?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PayrollSubscription" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Payroll subscription?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MASUser" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Is MAS user (subscription or trial)?</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QboBulkResult">
+		<xs:annotation>
+			<xs:documentation>Provides the definition for bulk create entity</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="sb:IdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the Id type of the Object</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SyncToken" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies the version number of the object for optimistic locking purpose</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Success" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Specifies if the operation is success or failed, true indicates success, false indicate failure</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ErrorClass" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Exception class name associated with the failure, valid only if the success is false</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ErrorCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ErrorCode associated with the failure, valid only if the success is false</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ErrorCause" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">ErrorCause associated with the failue, valid only if the success is false</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Message" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Message Associated with the Bulk object creation, valid only if the success is false</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- XSD Types for Login and Switch Company operations -->
+	<xs:complexType name="QboUserCompanyMapping">
+		<xs:annotation>
+			<xs:documentation>Construct for user and company mapping</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CompanyId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Company Auth Id a.k.a. Parent Id a.k.a. Realm Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ClusterId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cluster number on which the company is available</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CompanyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Company Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BaseURI" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Base URI for this company</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QboUser">
+		<xs:annotation>
+			<xs:documentation>Represents a QboUser</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LoginName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Login name of the user</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Password" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Password</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Ticket" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Authentication ticket</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AgentId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Global Company Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CurrentCompany" type="qbo:QboUserCompanyMapping" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">QBO User and Company map</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UserCompanyMap" type="qbo:QboUserCompanyMapping" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">QBO User and Company map</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SearchResults">
+		<xs:annotation>
+			<xs:documentation>Wrapper for search results. It will include one of the plural objects and meta-data about the search results</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CdmCollections" type="sb:CdmCollections" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">One of the CDM collections (plural) objects</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalPages" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Total number of pages in the search results</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalResults" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Total number of pages in the search results</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Count" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Count of results in the current page</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CurrentPage" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Total number of pages in the search results</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+			
+</xs:schema>

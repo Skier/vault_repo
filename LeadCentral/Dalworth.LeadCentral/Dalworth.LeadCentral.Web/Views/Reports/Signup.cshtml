@@ -1,0 +1,121 @@
+﻿@using Dalworth.LeadCentral.Web.Models.Reports
+@model SignupModel
+
+@{
+    ViewBag.Title = "Business Partner Signup By Sales Rep";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#date-from").datepicker();
+        $("#date-to").datepicker();
+    });
+</script>
+
+<h2>Business Partner Signup By Sales Rep</h2>
+
+@using (Html.BeginForm())
+{
+
+<div class="details">
+    <table class="form">
+    <tr>
+        <td>
+          &nbsp;&nbsp;From: 
+          @Html.TextBoxFor(model => model.DateFrom, new { @class = "date-input", @id = "date-from" })
+          &nbsp;&nbsp;To:
+          @Html.TextBoxFor(model => model.DateTo, new { @class = "date-input", @id = "date-to" })
+          &nbsp;&nbsp;<button type="submit" class="primary"> Create Report </button>
+        </td>
+    </tr>
+    </table>
+</div>
+<br/>
+  <div class="content">
+@if (Model.Partners != null && Model.Partners.Count > 0)
+{
+    string currentSalesRepStr = string.Empty;
+    int currentSignups = 0;
+    int totalSignups = 0;
+    
+    <table class="list">
+        <thead>
+            <tr>
+                <td class="left">Sales Rep</td>
+                <td class="left">Signup Date</td>
+                <td class="left">Partner</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var partner in Model.Partners)
+            {
+                if (partner.SalesRepStr != currentSalesRepStr && currentSignups > 0)
+                {
+                    <tr style="background:#FFE;">
+                        @if (string.IsNullOrEmpty(currentSalesRepStr))
+                        {
+                            <td class="right" colspan="2">Total undefined signups :</td>
+                        }
+                        else
+                        {
+                            <td class="right" colspan="2">Total signups for <b>@currentSalesRepStr :</b></td>
+                        }
+                        <td class="right">@currentSignups</td>
+                    </tr>
+            
+                    totalSignups += currentSignups;
+                    currentSignups = 0;
+                }
+
+                <tr>
+                    @if (currentSignups == 0)
+                    {
+                        currentSalesRepStr = partner.SalesRepStr;
+                        if (partner.SalesRepId != null)
+                        {
+                            <td class="left">@Html.ActionLink(partner.SalesRepStr, "Details", new { controller = "Users", id = partner.SalesRepId })</td>
+                        }
+                        else
+                        {
+                            <td class="left"><i>undefined</i></td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="left">&nbsp;</td>
+                    }
+                    <td class="left">@string.Format("{0:d}", partner.DateCreated)</td>
+                    <td class="left">@Html.ActionLink(partner.PartnerName, "Details", new { controller = "Partners", id = partner.Id })</td>
+                </tr>
+
+                currentSignups++;
+            }
+            <tr style="background:#FFE;">
+                @if (string.IsNullOrEmpty(currentSalesRepStr))
+                {
+                    <td class="right" colspan="2">Total undefined signups :</td>
+                }
+                else
+                {
+                    <td class="right" colspan="2">Total signups for <b>@currentSalesRepStr :</b></td>
+                }
+                <td class="right">@currentSignups</td>
+            </tr>
+            @{
+                             totalSignups += currentSignups;
+            }    
+            <tr style="background:#FFD;">
+                <td class="right" colspan="2"><b>Total signups : </b></td>
+                <td class="right"><b>@totalSignups</b></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div style="float:right;"><a href="/Reports/SignupExportToCsv/">Export to CSV</a></div>
+}
+else
+{
+    <div>No Business Partners found</div>
+}
+  </div>
+}

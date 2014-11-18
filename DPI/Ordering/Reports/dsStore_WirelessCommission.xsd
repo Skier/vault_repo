@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsStore_WirelessCommission" targetNamespace="http://tempuri.org/dsStore_WirelessCommission.xsd"
+	elementFormDefault="qualified" attributeFormDefault="qualified" xmlns="http://tempuri.org/dsStore_WirelessCommission.xsd"
+	xmlns:mstns="http://tempuri.org/dsStore_WirelessCommission.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="dsStore_WirelessCommission" msdata:IsDataSet="true">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="spStores_GetWirelessCommission">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="StoreCode" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="DisplayName" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="ReportPeriod" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="ProdName" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />							
+							<xs:element name="CommissionRate" msdata:ReadOnly="true" type="xs:decimal" minOccurs="0" />
+							<xs:element name="TranAmount" msdata:ReadOnly="true" type="xs:decimal" />
+							<xs:element name="LastPayDate" msdata:ReadOnly="true" type="xs:dateTime" minOccurs="0" />							
+							<xs:element name="CommissionEared" msdata:ReadOnly="true" type="xs:decimal" minOccurs="0" />
+							<xs:element name="CommissionSum" msdata:ReadOnly="true" type="xs:decimal" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+		<xs:unique name="dsStore_WirelessCommissionKey1" msdata:PrimaryKey="true">
+			<xs:selector xpath=".//mstns:spStores_GetWirelessCommission" />
+			<xs:field xpath="mstns:ProdName" />
+		</xs:unique>
+	</xs:element>
+</xs:schema>
+
+

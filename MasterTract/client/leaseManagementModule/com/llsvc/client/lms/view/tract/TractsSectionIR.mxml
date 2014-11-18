@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderColor="#B9B9B9" borderStyle="solid" cornerRadius="2" verticalGap="0" dataChange="dataChangeHandler()">
+
+    <mx:Metadata>
+        [Event(name="editSectionRequest", type="flash.events.Event")]
+        [Event(name="deleteSectionRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentActorPhone;
+			import mx.events.ItemClickEvent;
+			import com.llsvc.domain.DocumentActor;
+			
+            [Embed(source="assets/icons16/arrow_down.png")]
+            [Bindable]
+            private var imgDown:Class;
+			
+            [Embed(source="assets/icons16/arrow_right.png")]
+            [Bindable]
+            private var imgRight:Class;
+			
+			[Bindable] public var editable:Boolean = true; 
+			
+			private var _section:TractSection;
+			[Bindable]
+			public function get section():TractSection {return _section;}
+			public function set section(value:TractSection):void 
+			{
+				_section = value;
+			}
+			
+			private function dataChangeHandler():void 
+			{
+				this.section = data as TractSection;
+			}
+			
+			private function arrowClickHandler():void 
+			{
+				toggleState();
+			}
+			
+			public function collapse():void 
+			{
+				section.expanded = false;
+			}
+			
+			public function expand():void 
+			{
+				section.expanded = true;
+			}
+			
+			public function toggleState():void 
+			{
+				section.expanded = !section.expanded;
+			}
+			
+	        private function buttonBarClick(event:ItemClickEvent):void
+	        {
+	            switch (event.index) 
+	            {
+	                case 0:
+	                	dispatchEvent(new Event("editSectionRequest", true));
+	                    break;
+	                case 1:
+	                	dispatchEvent(new Event("deleteSectionRequest", true));
+	                    break;
+	            }
+	        }
+	        
+	        private function grossACChanged():void 
+	        {
+	        	if (!isNaN(Number(txtGrossAC.text))) 
+	        	{
+	        		section.grossAC = Number(txtGrossAC.text);
+	        	} else {
+	        		section.grossAC = 0;
+	        	}
+	        }
+        
+	        private function netACChanged():void 
+	        {
+	        	if (!isNaN(Number(txtNetAC.text))) 
+	        	{
+	        		section.netAC = Number(txtNetAC.text);
+	        	} else {
+	        		section.netAC = 0;
+	        	}
+	        }
+        
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#f8f8f8">
+		<mx:Button width="20" height="20" icon="{section.expanded ? imgDown : imgRight}" click="arrowClickHandler()"/>
+
+		<mx:Label text="{section.key}" click="arrowClickHandler()" fontWeight="bold"/>
+
+		<mx:Spacer width="100%"/>
+		
+		<mx:CheckBox id="cbUseBreakdowns" 
+			label="use breakdowns"
+			selected="{section.useBreakdowns}" change="section.useBreakdowns = cbUseBreakdowns.selected"/>
+
+        <mx:ButtonBar id="bbUtil" right="10" 
+        	itemClick="buttonBarClick(event)" verticalCenter="0" buttonWidth="27" buttonHeight="24"
+        	visible="{editable}" includeInLayout="{editable}">
+            <mx:dataProvider>
+                <mx:Object icon="@Embed('assets/icons16/pencil.png')" toolTip="Edit section"/>
+                <mx:Object icon="@Embed('assets/icons16/delete.png')" toolTip="Delete section"/>
+            </mx:dataProvider>
+        </mx:ButtonBar>
+	</mx:HBox>
+
+	<mx:VBox
+		width="100%"
+		includeInLayout="{section.expanded}" visible="{section.expanded}">
+		<mx:VBox width="100%" verticalGap="0"
+			includeInLayout="{section.useBreakdowns}" visible="{section.useBreakdowns}">
+		
+			<mx:HRule width="100%" height="1"/>
+
+			<mx:DataGrid id="dgActors" 
+				width="100%" rowHeight="24" height="{(section.breakdowns.length + 1) * 24}"
+				dataProvider="{section.breakdowns}"
+				editable="true"
+				borderThickness="0">
+				<mx:columns>
+					<mx:DataGridColumn headerText="" dataField="actorName" editable="false"/>
+					<mx:DataGridColumn headerText="Product" dataField="product" editable="true" itemEditor="com.llsvc.client.lms.view.tract.TextInputUpper"/>
+					<mx:DataGridColumn headerText="To Depth" dataField="toDepth" editable="true" itemEditor="com.llsvc.client.lms.view.tract.TextInputUpper"/>
+					<mx:DataGridColumn headerText="From Depth" dataField="fromDepth" editable="true" itemEditor="com.llsvc.client.lms.view.tract.TextInputUpper"/>
+					<mx:DataGridColumn headerText="Formation" dataField="formation" editable="true" itemEditor="com.llsvc.client.lms.view.tract.TextInputUpper"/>
+					<mx:DataGridColumn headerText="Interest" dataField="interest" editable="true" itemEditor="com.llsvc.client.lms.view.tract.TextInputUpper"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			<mx:HRule width="100%" height="1"/>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" verticalGap="2">
+			<mx:HBox width="100%" visible="{section.useBreakdowns}" includeInLayout="{section.useBreakdowns}">
+				<mx:Label text="Total Interest:" width="100%" textAlign="right"/>
+				<mx:Label text="{section.totalInterest}%" width="100" textAlign="right" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%">
+				<mx:Label text="Gross AC:" width="100%" textAlign="right"/>
+				
+				<mx:TextInput id="txtGrossAC"
+					width="100" textAlign="right" 
+					text="{section.grossAC}" change="grossACChanged()"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%" visible="{section.useBreakdowns}" includeInLayout="{section.useBreakdowns}">
+				<mx:Label text="Net AC:" width="100%" textAlign="right"/>
+				<mx:Label text="{section.grossAC * (section.totalInterest / 100)}" width="100" textAlign="right" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%" visible="{!section.useBreakdowns}" includeInLayout="{!section.useBreakdowns}">
+				<mx:Label text="Net AC:" width="100%" textAlign="right"/>
+				
+				<mx:TextInput id="txtNetAC"
+					width="100" textAlign="right" 
+					text="{section.netAC}" change="netACChanged()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:VBox>

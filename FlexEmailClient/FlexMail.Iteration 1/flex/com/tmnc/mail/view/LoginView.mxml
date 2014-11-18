@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:view="com.tmnc.mail.view.*">
+
+    <mx:Script>
+        <![CDATA[
+            import com.tmnc.mail.control.events.DisplayDialogEvent;
+            import com.tmnc.mail.control.events.LoginEvent;
+            import com.tmnc.mail.model.MailBoxModel;
+            import mx.core.*;
+            import mx.controls.*;
+            import mx.events.ValidationResultEvent;
+            
+            [Bindable]
+            private var model:MailBoxModel = MailBoxModel.getInstance();
+
+            private var mySO:SharedObject;
+            
+            private function onInit():void {
+                 mySO = SharedObject.getLocal("FlexMailSO");
+                 if (mySO.data.lastEmail != null){
+                     emailTxt.text = String(mySO.data.lastEmail);
+                 }
+            }
+            
+            private function doLogin():void {
+                var vResult:ValidationResultEvent = fEmailV.validate();
+                if (vResult.type==ValidationResultEvent.INVALID) 
+                    return;
+                    
+                Application.application.dispatchEvent(new LoginEvent(emailTxt.text, pwdTxt.text));
+                storeLogin();
+            }
+
+            private function doRegister():void {
+                var event:DisplayDialogEvent = new DisplayDialogEvent(
+                        DisplayDialogEvent.EVENT_DISPLAY_REGISTRATION_DIALOG);
+                
+                Application.application.dispatchEvent(event);
+            }
+
+            private function storeLogin():void {
+                mySO.data.lastEmail = emailTxt.text;
+                mySO.flush();
+            }
+
+        ]]>
+    </mx:Script>  
+
+    <mx:StringValidator id="fEmailV" source="{emailTxt}" 
+        property="text" required="true"/>
+
+<mx:Panel title="Login"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    horizontalCenter="0" verticalCenter="0"
+    initialize="onInit()">
+
+    <mx:Form id="loginForm" x="0" y="0" width="100%" height="100%">
+        <mx:FormItem label="Email:" width="100%">
+            <mx:TextInput id="emailTxt" text=""/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Password:" width="100%">
+            <mx:TextInput id="pwdTxt" displayAsPassword="true" text="" enter="doLogin()"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:ControlBar x="0" y="142" width="100%">
+        <mx:LinkButton label="Register" click="doRegister()" color="#06385e"/>
+        <mx:Spacer width="100%" id="spacer1"/>
+        <mx:Button label="Login" id="loginButton" click="doLogin()"/>
+    </mx:ControlBar>
+    
+</mx:Panel>
+</mx:Canvas>

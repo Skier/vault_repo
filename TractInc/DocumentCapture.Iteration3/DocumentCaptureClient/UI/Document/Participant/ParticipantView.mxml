@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:participant="UI.Participant.*"
+	width="100%" height="100%" xmlns:Address="UI.Document.Participant.Address.*" xmlns:Participant="UI.Document.Participant.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import Domain.Participantaddress;
+			import mx.utils.ObjectUtil;
+			import mx.core.UIComponent;
+			import Domain.Participant;
+			import UI.Document.DocumentController;
+
+			[Bindable]			
+			public var Controller:ParticipantController;
+			
+			public function set parentCollection(parent:ArrayCollection):void {
+				Controller.Model.parentCollection = parent;
+			}
+			
+			public function set Parent(parent:DocumentController):void {
+				Controller = new ParticipantController(ParticipantView(this), parent);
+			}
+			
+			public function IsValid():Boolean {
+
+				var result:Boolean = true;
+				
+				if (Controller.Model.participant.TypeId == 0 && !companyForm.IsValid()) {
+					result = false;
+				}
+
+				if (Controller.Model.participant.TypeId == 1 && !individualForm.IsValid() ) {
+					result = false;
+				}
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		>
+
+        <mx:ViewStack id="viewStack" 
+        	selectedIndex="{Controller.Model.participant.TypeId}"
+        	width="100%" height="100%"
+        	>
+			
+			<Participant:CompanyForm id="companyForm" controller="{Controller}" width="100%"/>
+			
+			<Participant:IndividualForm id="individualForm" controller="{Controller}" width="100%"/>
+
+			<mx:Canvas id="empty" width="100%" height="100%"/>
+			
+        </mx:ViewStack>
+        
+		<mx:ControlBar width="100%">
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Complete" click="{Controller.OnClickComplete()}"/>
+			<mx:Button label="Cancel" click="{Controller.OnClickCancel()}"/>
+		</mx:ControlBar>
+
+	</mx:VBox>
+
+</mx:Canvas>

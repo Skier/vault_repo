@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtendedTitleWindow
+    xmlns="src.deedplotter.containers.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:components="src.deedplotter.components.*"
+    xmlns:validators="src.deedplotter.validators.*"
+    title="Tract Information" 
+    showCloseButton="true" close="close()">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.managers.PopUpManager;
+            import mx.events.PropertyChangeEvent;
+            import mx.events.CloseEvent;
+            import mx.utils.ObjectUtil;
+
+            import src.deedplotter.domain.Tract;
+            import src.deedplotter.domain.Participant;
+            import src.deedplotter.domain.Document;
+            import src.deedplotter.domain.dictionary.DictionaryRegistry;
+
+            [Bindable] 
+            private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+            [Bindable] 
+            private var docum:Document;
+
+            private var _tract:Tract;
+
+            [Bindable] public function get tract():Tract
+            { 
+                return _tract; 
+            }
+
+            public function set tract(value:Tract):void
+            {
+                _tract = value;
+                
+                if (value && value.ParentDocument)
+                {
+                    docum = _tract.ParentDocument;
+                    
+                    if (!docum.Buyer)
+                    {
+                        docum.Buyer = new Participant();
+                        docum.Buyer.DocID = value.ParentDocument.DocID;
+                    }
+                    
+                    if (!docum.Seller)
+                    {
+                        docum.Seller = new Participant();
+                        docum.Seller.IsSeler = true;
+                        docum.Seller.DocID = value.ParentDocument.DocID;
+                    }
+
+                    stateCmb.validateNow();
+
+                    var countyList:XMLList = dictionary.statesAndCounties.state.(@StateId == docum.State).county;
+                    countyCmb.dataProvider = countyList;
+                    countyCmb.selectedItem = countyList.(@CountyId == docum.County);
+                }
+            }
+
+            public static function open(parent:DisplayObject, modal:Boolean):TractInfoView
+            {
+                var popup:TractInfoView = new TractInfoView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+            
+            private function save():void
+            {
+                if (!validatorsGroup.validate(true)){
+                    return;
+                }
+
+                tract.CalledAC = Number(tractCalledACTxt.text);
+                tract.Description = tractRefTxt.text;
+                tract.UnitId = tractUnitsCmb.selectedItem.@UnitId;
+                tract.Easting = Number(longTxt.text);
+                tract.Northing = Number(latTxt.text);
+
+                if (tract.ParentDocument != null)
+                {
+                    tract.ParentDocument.State = stateCmb.selectedItem.@StateId;
+                    tract.ParentDocument.County = countyCmb.selectedItem.@CountyId;
+                    tract.ParentDocument.DocTypeId = documentTypeCmb.selectedItem.@DocTypeID;
+                    tract.ParentDocument.DocumentNo = documNoTxt.text;
+                    tract.ParentDocument.Volume = volumeTxt.text;
+                    tract.ParentDocument.Page = pageTxt.text;
+                    tract.ParentDocument.Buyer.AsNamed = buyerName.text;
+                    tract.ParentDocument.Seller.AsNamed = sellerName.text;
+                    tract.ParentDocument.DateFiled = filledDate.selectedDate;
+                    tract.ParentDocument.DateSigned = signedDate.selectedDate;
+                }
+
+                close();
+            }
+
+            private function clear():void
+            {
+                tract.CalledAC = 0;
+                tract.Description = "";
+                tract.UnitId = 0;
+                tract.Easting = 0;
+                tract.Northing = 0;
+                
+                if (tract.ParentDocument)
+                {
+                    tract.ParentDocument.County = 0;
+                    tract.ParentDocument.State = 0;
+                    tract.ParentDocument.DocTypeId = 0;
+                    tract.ParentDocument.DocumentNo = "";
+                    tract.ParentDocument.Volume = "";
+                    tract.ParentDocument.Page = "";
+                    tract.ParentDocument.DateFiled = new Date();
+                    tract.ParentDocument.DateSigned = new Date();
+                    tract.ParentDocument.Seller.AsNamed = "";
+                    tract.ParentDocument.Buyer.AsNamed = "";
+                }
+            }
+
+/*             private function stateChangeHandler():void
+            {
+                var stateId:Number = ;
+                countyCmb.dataProvider = ;
+            }
+ */            
+            private function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="validatorsGroup">
+        <mx:StringValidator source="{tractRefTxt}" property="text" required="true"/>
+        <mx:NumberValidator source="{tractCalledACTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{tractUnitsCmb}" property="selectedLabel" required="true"/>
+        <mx:NumberValidator source="{longTxt}" property="text" required="false"/>
+        <mx:NumberValidator source="{latTxt}" property="text" required="false"/>
+        <mx:NumberValidator 
+            source="{volumeTxt}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:NumberValidator 
+            source="{pageTxt}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:NumberValidator 
+            source="{documNoTxt}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:DateValidator
+            source="{filledDate}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:DateValidator
+            source="{signedDate}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{sellerName}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{buyerName}" property="text" required="false" enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{documentTypeCmb}" property="selectedLabel" required="true" 
+            enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{stateCmb}" property="selectedLabel" required="true" 
+            enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{countyCmb}" property="selectedLabel" required="true"
+            enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{sellerName}" property="text" required="true"
+            enabled="{docum != null}"/>
+        <mx:StringValidator
+            source="{buyerName}" property="text" required="true"
+            enabled="{docum != null}"/>
+    </validators:ValidatorsGroup>
+
+<!-- BEGIN TRACT INFORMATION -->
+    <mx:VBox verticalGap="-1" width="100%">
+        <components:GlassHeaders headerTitle="TRACT" paddingBottom="0"/>
+
+        <mx:HRule width="100%" height="4" strokeWidth="1" strokeColor="#ffffff"/>
+    </mx:VBox>
+
+	<mx:HBox horizontalGap="2" width="100%">
+		<mx:Label text="Reference Name:" textAlign="right" width="100"/>
+		
+		<mx:TextInput id="tractRefTxt"
+			text="{tract.Description}" width="100%"/>
+	</mx:HBox>
+
+	<mx:HBox horizontalGap="2" width="100%">
+		<mx:Label text="Called AC:" textAlign="right" width="100"/>
+		
+		<mx:TextInput id="tractCalledACTxt" 
+			text="{tract.CalledAC.toString()}" width="100%"/>
+
+		<mx:ComboBox id="tractUnitsCmb" 
+		    dataProvider="{dictionary.units.Unit}" labelField="@Name"
+		    selectedItem="{dictionary.units.Unit.(@UnitId == tract.UnitId)}"/>
+	</mx:HBox>
+
+	<mx:HBox horizontalGap="2">
+		<mx:Label text="Longitude:" textAlign="right" width="100"/>
+		
+		<mx:TextInput id="longTxt"
+			text="{tract.Easting}" width="100"/>
+
+		<mx:Label text="Latidude:" textAlign="right" width="100"/>
+		
+		<mx:TextInput id="latTxt" text="{tract.Northing}" width="100"/>
+	</mx:HBox>
+<!-- END TRACT INFORMATION -->
+
+<!-- BEGIN DOCUMENT INFORMATION -->
+	<mx:VBox visible="{null != docum}" includeInLayout="{null != docum}" verticalGap="2" >
+
+    <mx:VBox verticalGap="-1" width="100%">
+        <components:GlassHeaders headerTitle="DOCUMENT" paddingBottom="0"/>
+        
+        <mx:HRule width="100%" strokeColor="#ffffff" height="4" strokeWidth="1"/>
+    </mx:VBox>
+        
+        <mx:HBox horizontalGap="2" verticalAlign="middle">
+            <mx:Label text="Document Type:" textAlign="right" width="100"/>
+
+            <components:ExtendedComboBox id="documentTypeCmb"
+                labelField="@Name" width="100" keepOptimalDropDownWidth="true"
+                dataProvider="{dictionary.documentTypes.DocumentType}" 
+                selectedItem="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId)}"/>
+                
+            <mx:Label text="Doc.No:" textAlign="right"/>
+            
+            <mx:TextInput id="documNoTxt" text="{docum.DocumentNo}" width="40"/>
+
+            <mx:Label text="Vol:" textAlign="right"/>
+            
+            <mx:TextInput id="volumeTxt" text="{docum.Volume}" width="35"/>
+            
+            <mx:Label text="Pg:" textAlign="right"/>
+            
+            <mx:TextInput id="pageTxt" text="{docum.Page}" width="35"/>
+                
+        </mx:HBox>
+
+        <mx:HBox horizontalGap="2" verticalAlign="middle">
+            <mx:Label text="State:" width="100" textAlign="right"/>
+            
+            <mx:ComboBox id="stateCmb"
+                labelField="@Name" width="100"
+                dataProvider="{dictionary.statesAndCounties.state}"
+                selectedItem="{dictionary.statesAndCounties.state.(@StateId == docum.State)}"/>
+                
+            <mx:Label text="County:" width="100" textAlign="right"/>
+            
+            <mx:ComboBox id="countyCmb"
+                labelField="@Name" width="100"
+                dataProvider="{dictionary.statesAndCounties.state.(@StateId == stateCmb.selectedItem.@StateId).county}"/>
+        </mx:HBox>
+
+        <mx:HBox horizontalGap="2" verticalAlign="middle">
+            <mx:Label text="Date Signed:" textAlign="right" width="100"/>
+            
+            <mx:DateField id="signedDate" 
+                selectedDate="{docum.DateSigned}" enabled="{null != document}"/>
+                
+            <mx:Label text="Date Filled:" textAlign="right" width="100"/>
+            
+            <mx:DateField id="filledDate"
+                selectedDate="{docum.DateFiled}" enabled="{null != document}"/>
+        </mx:HBox>
+
+        <mx:HBox horizontalGap="2" verticalAlign="middle" width="100%">
+            <mx:VBox verticalGap="2">
+                <mx:Label 
+                    text="{documentTypeCmb.selectedItem.@DocTypeID > 0 
+                        ? documentTypeCmb.selectedItem.@SellerRoleName : 'Seller'}:"
+                    textAlign="right"/>
+
+                <mx:Label 
+                    text="{documentTypeCmb.selectedItem.@DocTypeID > 0 
+                        ? documentTypeCmb.selectedItem.@BuyerRoleName : 'Buyer'}:"
+                    textAlign="right"/>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="2" width="100%">
+                <mx:TextInput id="sellerName" text="{docum.Seller.AsNamed}" width="100%"/>
+
+                <mx:TextInput id="buyerName" text="{docum.Buyer.AsNamed}" width="100%"/>
+            </mx:VBox>
+        </mx:HBox>
+
+	</mx:VBox>
+
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="Clear" click="clear()"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="Save" click="save()"/>
+		<mx:Button id="cancelButton" label="Cancel" click="close()"/>
+	</mx:ControlBar>
+<!-- END DOCUMENT INFORMATION -->
+
+</ExtendedTitleWindow>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:help="com.dalworth.leadCentral.help.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import com.dalworth.leadCentral.MainModel;
+			import com.dalworth.leadCentral.service.PhoneService;
+			import com.dalworth.leadCentral.domain.CallWorkflow;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var workflows:ArrayCollection = new ArrayCollection();
+			
+			public function init():void 
+			{
+				PhoneService.getInstance().retrieveWorkflows(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							workflows.source = event.result as Array;
+							initUI();
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			private function initUI():void 
+			{
+				boxWorkflows.removeAllChildren();
+				
+				for each (var workflow:CallWorkflow in workflows)
+				{
+					boxWorkflows.addChild(getWorkflowTab(workflow));
+				}
+			}
+			
+			private function getWorkflowTab(workflow:CallWorkflow):WorkflowEditView 
+			{
+				var view:WorkflowEditView = new WorkflowEditView();
+				view.setWorkflow(workflow);
+				view.percentWidth = 100;
+				view.label = workflow.Description;
+
+				return view;
+			}
+			
+			private function onCommit():void 
+			{
+				var newWorkflows:Array = new Array();
+				
+				for each (var workflow:CallWorkflow in workflows)
+				{
+					var idx:int = workflows.getItemIndex(workflow);
+
+					var newWorkflow:CallWorkflow = workflow.prepareToSend();
+					newWorkflow.RelatedDetails = WorkflowEditView(boxWorkflows.getChildAt(idx)).getDetails();
+					
+					newWorkflows.push(newWorkflow);
+				}
+
+				PhoneService.getInstance().commitWorkflows(newWorkflows, 
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							Alert.show("Phone Workflows are updated.", "Update complete");
+							init();
+							Application.application.dispatchEvent(new Event("workflowsInited"));
+						},
+						function (event:FaultEvent):void 
+						{
+							Alert.show(event.fault.message);
+						}
+					));
+			}
+			
+			private static const contextHelpUrl:String = "http://www.theleadcentral.com/?page_id=161";
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%" verticalGap="0" backgroundColor="#FFFFFF">
+		<help:ContextHelpPanel width="100%" backgroundColor="#FFFFDD" contextHelpUrl="{contextHelpUrl}"/>
+		
+		<mx:HBox width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" verticalAlign="middle"
+			backgroundColor="#FFFFDD">
+			<mx:Label text="Edit phone workflows" fontSize="24" color="#666666"/>
+			<mx:Spacer width="100%"/>
+<!--
+			<mx:Button height="35" label="Edit" click="onEdit()" fontSize="14" width="100" visible="{!isEditable}" includeInLayout="{!isEditable}"/>
+-->
+			<mx:Button height="35" label="Update" click="onCommit()" fontSize="14" width="100"/>
+<!--			
+			<mx:LinkButton height="35" label="Cancel" click="onCancel()" fontSize="14" width="100" textAlign="center"
+				 visible="{isEditable}" includeInLayout="{isEditable}"/>
+-->
+		</mx:HBox> 
+
+		<mx:Spacer width="100%" height="5"/>
+
+		<mx:VBox id="boxWorkflows" width="100%" height="100%" 
+			verticalAlign="top" verticalGap="5"/>
+	</mx:VBox>
+</mx:Canvas>

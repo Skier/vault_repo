@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+    <mx:Metadata>
+        [Event(name="changeSelectedObject")]
+        [Event(name="companyTreeInited")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.ebs.eroof.model.wrapper.Company;
+			import com.ebs.eroof.dto.Sections_DTO;
+			import com.ebs.eroof.dto.Facilities_DTO;
+			import com.ebs.eroof.dto.Clients_DTO;
+			import com.ebs.eroof.dto.Segments_DTO;
+			import mx.core.Application;
+			import com.ebs.eroof.view.section.SectionEditPopup;
+			import com.ebs.eroof.view.facility.FacilityEditPopup;
+			import com.ebs.eroof.view.client.ClientEditPopup;
+			import com.ebs.eroof.view.segment.SegmentEditPopup;
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.ebs.eroof.model.wrapper.Segment;
+			import com.ebs.eroof.model.wrapper.Client;
+			import com.ebs.eroof.model.wrapper.Section;
+			import com.ebs.eroof.model.company.CompanyTreeDataDescriptor;
+			import mx.core.UIComponent;
+			import com.ebs.eroof.control.CompanyTreeController;
+			import com.ebs.eroof.model.company.CompanyTreeModel;
+			
+			private const ADD_SEGMENT_LABEL:String  = "Add Segment";
+			private const ADD_CLIENT_LABEL:String   = "Add Client";
+			private const ADD_FACILITY_LABEL:String = "Add Facility";
+			private const ADD_SECTION_LABEL:String  = "Add Section";
+			
+			[Bindable]
+			private var model:CompanyTreeModel = CompanyTreeModel.getInstance();
+			private var controller:CompanyTreeController = new CompanyTreeController(this as UIComponent);
+			
+            [Embed(source="/assets/icons16/book_brown.png")]
+            [Bindable]
+            private var iconCompany:Class;
+
+            [Embed(source="/assets/icons16/book.png")]
+            [Bindable]
+            private var iconSegment:Class;
+
+            [Embed(source="/assets/icons16/user_business.png")]
+            [Bindable]
+            private var iconClient:Class;
+
+            [Embed(source="/assets/icons16/home.png")]
+            [Bindable]
+            private var iconFacility:Class;
+
+            [Embed(source="/assets/icons16/layout_select_sidebar.png")]
+            [Bindable]
+            private var iconSection:Class;
+
+			public function init():void 
+			{
+				loadCompanyInfo();
+			}
+			
+			private function loadCompanyInfo():void 
+			{
+				dispatchEvent(new Event(CompanyTreeController.INIT_COMPANY_TREE));
+			}
+			
+			public function getSelectedObject():Object 
+			{
+				return treeCompany.selectedItem;
+			}
+			
+			public function selectObject(obj:Object):void 
+			{
+				if (obj is Section)
+					expandSection(obj as Section);
+				else if (obj is Facility)
+					expandFacility(obj as Facility);
+				else if (obj is Client)
+					expandClient(obj as Client);
+				else if (obj is Segment)
+					expandSegment(obj as Segment);
+				else if (obj is Company)
+					expandCompany(obj as Company);
+				
+				treeCompany.selectedItem = obj;
+				treeCompany.scrollToIndex(treeCompany.getItemIndex(obj));
+			}
+			
+			public function selectRoot():void 
+			{
+				selectObject(model.company);
+			}
+			
+			private function expandCompany(company:Company):void 
+			{
+				treeCompany.expandItem(company, true);
+			}
+			
+			private function expandSegment(segment:Segment):void 
+			{
+				expandCompany(segment.company);
+				treeCompany.expandItem(segment, true);
+			}
+			
+			private function expandClient(client:Client):void 
+			{
+				expandSegment(client.segment);
+				treeCompany.expandItem(client, true);
+			}
+			
+			private function expandFacility(facility:Facility):void 
+			{
+				expandClient(facility.client);
+				treeCompany.expandItem(facility, true);
+			}
+			
+			private function expandSection(section:Section):void 
+			{
+				expandFacility(section.facility);
+				treeCompany.expandItem(section, true);
+			}
+			
+			private function treeCompanyItemClickHandler():void 
+			{
+                var item:Object = treeCompany.selectedItem;
+                
+                if (item == null)
+                	return;
+                else 
+                	treeCompany.expandItem(item, true, true);
+			}
+			
+			private function treeCompanyChangeHandler():void 
+			{
+				updateButtonNew();
+				dispatchEvent(new Event("changeSelectedObject"));
+			}
+			
+			private function updateButtonNew():void 
+			{
+				var item:Object = treeCompany.selectedItem;
+
+                if (item is Company)
+                {
+                	btnNew.visible = true;
+                	btnNew.label = ADD_SEGMENT_LABEL;
+                } else if (item is Segment) 
+                {
+                	btnNew.visible = true;
+                	btnNew.label = ADD_CLIENT_LABEL;
+                } else if (item is Client) 
+                {
+                	btnNew.visible = true;
+                	btnNew.label = ADD_FACILITY_LABEL;
+                } else if (item is Facility) 
+                {
+                	btnNew.visible = true;
+                	btnNew.label = ADD_SECTION_LABEL;
+                } else  
+                {
+                	btnNew.visible = false;
+                	btnNew.label = "";
+                } 
+			}
+			
+            private function getIcon(item:Object):Class 
+            {
+                if (item is Company) 
+                	return iconCompany;
+                else if (item is Segment) 
+                	return iconSegment;
+                else if (item is Client) 
+                	return iconClient;
+                else if (item is Facility) 
+                	return iconFacility;
+                else if (item is Section) 
+                	return iconSection;
+                else  
+                	return null;
+            }
+            
+			private function addSegment(parent:Company):void 
+			{
+				var segment:Segment = new Segment(new Segments_DTO());
+				segment.company = parent;
+				SegmentEditPopup.open(Application.application as DisplayObject, segment);
+			}
+			
+			private function addClient(parent:Segment):void 
+			{
+				var client:Client = new Client(new Clients_DTO());
+				client.segment = parent;
+				client.clientDTO.RelatedSegment = Number(parent.segmentDTO.rid);
+				ClientEditPopup.open(this, client);
+			}
+
+			private function addFacility(parent:Client):void 
+			{
+				var facility:Facility = new Facility(new Facilities_DTO());
+				facility.client = parent;
+				facility.facilityDTO.RelatedClient = Number(parent.clientDTO.rid);
+				FacilityEditPopup.open(this, facility);
+			}
+			
+			private function addSection(parent:Facility):void 
+			{
+				var section:Section = new Section(new Sections_DTO());
+				section.facility = parent;
+				section.sectionDTO.RelatedFacility = Number(parent.facilityDTO.rid);
+				SectionEditPopup.open(this, section);
+			}
+			
+			private function btnNewClickHandler():void 
+			{
+				var item:Object = treeCompany.selectedItem;
+
+                if (item is Company)
+                	addSegment(item as Company);
+                else if (item is Segment) 
+                	addClient(item as Segment);
+                else if (item is Client) 
+                	addFacility(item as Client);
+                else if (item is Facility) 
+                	addSection(item as Facility);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" enabled="{model.isLoaded}"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		backgroundColor="#eeeeee"
+		borderColor="#999999" borderStyle="solid" cornerRadius="2">
+		<mx:HBox width="100%"
+			paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+			backgroundColor="#e8e8e8" borderColor="#999999" borderStyle="solid" cornerRadius="2">
+			<mx:Label text="{model.company.name}:" fontWeight="bold" fontSize="12" width="100%" minWidth="80"/>
+			<mx:Button id="btnNew" width="120" height="100%" 
+				click="btnNewClickHandler()" visible="false"
+				fillAlphas="[0.6, 0.4, 0.6, 0.6]" fillColors="[#C9FDC9, #0E990E]"/>
+		</mx:HBox>
+		
+		<mx:Tree id="treeCompany"
+			width="100%" height="100%" borderColor="#666666" borderStyle="solid"
+			labelField="name" 
+			dataDescriptor="{new CompanyTreeDataDescriptor()}" 
+			dataProvider="{model.company}"
+			itemClick="treeCompanyItemClickHandler()"
+			change="treeCompanyChangeHandler()"
+			iconFunction="getIcon"/>
+	</mx:VBox>
+	
+	<mx:VBox width="100%" height="100%" visible="{model.isLoading}"
+		verticalAlign="middle" horizontalAlign="center">
+		<mx:VBox
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			backgroundColor="#eeeeee"
+			shadowDistance="0" shadowDirection="center" dropShadowEnabled="true"
+			borderColor="#dddddd" borderStyle="solid" borderThickness="4">
+			<mx:ProgressBar indeterminate="true" label="Loading data..." labelPlacement="top"/>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

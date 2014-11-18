@@ -1,0 +1,157 @@
+﻿@model Dalworth.Server.Web.Partner.Models.CallLogComplete
+@using Dalworth.Server.Web.Partner.Paging
+@using Dalworth.Server.Web.Partner.Models
+
+@{    
+    ViewBag.Title = "Partner In Profit - Completed orders";
+    ViewBag.Header = Model.PartnerName + " - ";
+    if (!Model.ReportFilterId.HasValue){
+        ViewBag.Header += "Calls";
+    } else if (Model.ReportFilterId.Value == 1){
+        ViewBag.Header += "Cancel Orders";
+    }else if (Model.ReportFilterId.Value == 2){
+        ViewBag.Header += "In process Orders";
+    }else if (Model.ReportFilterId.Value == 3){
+        ViewBag.Header += "Completed Orders";
+    }            
+
+    ViewBag.ActiveTopMenu = "Home";
+    ViewBag.ActiveSubMenu = "Call Log";
+    bool isOwner = PartnerMembershipProvider.GetCurrentUser().IsOwner;
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/player/player.js")"></script>
+<script type="text/javascript">
+    var apiReadyHandler = function () {
+        YAHOO.MediaPlayer.onProgress.subscribe(onProgressHandler)
+    }
+
+    var playerFlag = false;
+
+    var onProgressHandler = function (param) {
+        if (param.elapsed < 1000 && playerFlag == true) {            
+            YAHOO.MediaPlayer.stop();
+            playerFlag = false;
+        }
+
+        if (param.duration > 0 && param.elapsed > param.duration - 2000) {            
+            YAHOO.MediaPlayer.play(YAHOO.MediaPlayer.controller.mediaengine.currentMedia, 0);
+            playerFlag = true;
+        }
+    }
+
+    YAHOO.MediaPlayer.onAPIReady.subscribe(apiReadyHandler);
+</script>
+
+
+
+@using (Html.BeginForm("CallLogComplete", "Home", FormMethod.Get, new { id = "CallLogCompleteForm" })) {
+    @Html.ValidationSummary(true)
+
+<table>
+    @if (Model.TrackingNumber != string.Empty){
+    <tr>
+        <td width="120px" height="25px"><h4>Tracking Number</h4></td>
+        <td>@Model.TrackingNumberText</td>
+    </tr>
+    }    
+    @if (Model.DateStart != string.Empty){
+    <tr>
+        <td width="120px" height="25px"><h4>Date Start</h4></td>
+        <td>@Model.DateStart</td>
+    </tr>
+    }
+    @if (Model.DateEnd != string.Empty){
+    <tr>
+        <td width="120px" height="25px"><h4>Date End</h4></td>
+        <td>@Model.DateEnd</td>
+    </tr>
+    }
+</table>
+<br></br>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+    <tr>
+        <th class="table-header-repeat line-left">
+            Date
+        </th>
+        <th class="table-header-repeat line-left">
+            Book Date
+        </th>
+        <th class="table-header-repeat line-left">
+            Caller Id
+        </th>
+        <th class="table-header-repeat line-left">
+            Action
+        </th>
+        <th class="table-header-repeat line-left">
+            Ticket
+        </th>
+        <th class="table-header-repeat line-left">
+            Status
+        </th>
+        <th class="table-header-repeat line-left">
+            Duration
+        </th>
+        <th class="table-header-repeat line-left">
+            @(Model.ReportFilterId.Value == 3 ? "Completed Amount" : "Book Amount")
+        </th>
+        <th class="table-header-repeat line-left">            
+        </th>
+    </tr>
+
+@if (Model.CallLogItems.Count == 0){
+<tr><td colspan="100">Empty</td></tr>
+}
+
+@foreach (var item in Model.CallLogItems) {
+    <tr>
+        @if (item.Id.HasValue){
+        <td>            
+            @Html.ActionLink(String.Format("{0:g}", item.CallDate), "CallDetail", new { @CallId=item.Id })
+        </td>        
+        } else if (item.CallDate.HasValue){
+        <td>@String.Format("{0:g}", item.CallDate)</td>        
+        } else {
+        <td></td>
+        }
+        @if(!item.IsSpanned){
+        <td rowspan="@item.RowSpan">
+            @(item.BookDate.HasValue ? item.BookDate.Value.ToShortDateString() : string.Empty) 
+        </td>
+        }
+        <td>
+            @item.CallerIdName
+        </td>
+        <td>
+            @item.Action
+        </td>
+        @if(!item.IsSpanned){
+        <td rowspan="@item.RowSpan">
+            @(string.IsNullOrEmpty(item.TicketNumber) ? MvcHtmlString.Empty :            
+               Html.ActionLink(item.TicketNumber, "TicketDetails", new { TicketNumber=item.TicketNumber }))            
+        </td>
+        <td rowspan="@item.RowSpan">
+            @item.TicketStatusText            
+        </td>
+        }
+        <td>
+            @item.CallDurationText        
+        </td>
+        @if(!item.IsSpanned){
+        <td rowspan="@item.RowSpan">
+            @item.AmountText
+        </td>
+        }
+        <td width="60px">
+        @(item.WavFileUrl == "" ? MvcHtmlString.Empty : MvcHtmlString.Create(string.Format("<a href='{0}'>Play</a>", @item.WavFileUrl)))
+        </td>
+    </tr>    
+}
+</table>
+}
+
+@MvcHtmlString.Create(Html.Pager(50, Model.PageNonZero, Model.TotalItemCount))

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.LeaseClause;
+        
+            [Embed(source="assets/icons16/tick.png")]
+            [Bindable]
+            private var imgComplete:Class;
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{imgComplete}" width="16" height="16" visible="{LeaseClause(data).isActive}"/>
+    
+</mx:HBox>

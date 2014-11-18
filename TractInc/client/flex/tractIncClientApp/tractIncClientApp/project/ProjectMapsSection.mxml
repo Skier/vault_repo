@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    label="Project Maps"
+    xmlns:mx="http://www.adobe.com/2006/mxml">
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.binding.utils.ChangeWatcher;
+    	import mx.controls.Alert;
+    	import mx.events.CloseEvent;
+        import truetract.domain.mementos.ProjectAttachmentMemento;
+        import mx.collections.ArrayCollection;
+        import mx.rpc.AsyncToken;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
+        import truetract.domain.*;
+        import truetract.web.util.TokenResponder;
+        import tractIncClientApp.services.ProjectService;
+
+        private static const PROJECT_MAP_ATTACHMENT_TYPE:String = "Project Map";
+
+        private var dictionaries:DictionaryRegistry = DictionaryRegistry.getInstance();
+
+        [Bindable] private var projectMapsAttachments:ArrayCollection = new ArrayCollection();
+
+	    [Bindable] public var readOnly:Boolean = false;
+
+        private var _project:Project;
+        [Bindable] public function get project():Project { return _project; }
+        public function set project(value:Project):void
+        {
+            _project = value;
+            
+            ChangeWatcher.watch(project, "Attachments", attachmentsChangeHandler);
+            
+            parseProjectAttachments();
+        }
+        
+        private function attachmentsChangeHandler(e:*):void 
+        {
+            parseProjectAttachments();
+        }
+
+        private function parseProjectAttachments():void
+        {
+            projectMapsAttachments.removeAll();
+
+            if (!project.Attachments) return;
+            
+            for each (var attachment:ProjectAttachment in project.Attachments)
+            {
+                if (attachment.TypeName == PROJECT_MAP_ATTACHMENT_TYPE)
+                {
+                    projectMapsAttachments.addItem(attachment);
+                }
+            }
+        }
+
+    ]]>
+    </mx:Script>
+
+    <mx:HBox 
+        width="100%" 
+        visible="{projectMapsAttachments.length == 0}" 
+        includeInLayout="{projectMapsAttachments.length == 0}">
+        <mx:Label text="Not specified"/>
+    </mx:HBox>
+
+    <mx:List id="mapsList"
+        visible="{(projectMapsAttachments.length > 0)}" 
+        includeInLayout="{mapsList.visible}"
+        dataProvider="{projectMapsAttachments}" 
+        width="100%" height="100%"
+   	 	selectionColor="#e0e0e0" rollOverColor="#eeeeee"
+        itemRenderer="truetract.web.dashboard.projectPanel.ProjectAttachmentIR"/>
+</mx:Box>

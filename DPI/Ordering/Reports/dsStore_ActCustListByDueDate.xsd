@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsStore_ActCustListByDueDate" targetNamespace="http://tempuri.org/dsStore_ActCustListByDueDate.xsd"
+	elementFormDefault="qualified" attributeFormDefault="qualified" xmlns="http://tempuri.org/dsStore_ActCustListByDueDate.xsd"
+	xmlns:mstns="http://tempuri.org/dsStore_ActCustListByDueDate.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="dsStore_ActCustListByDueDate" msdata:IsDataSet="true">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="spStores_GetActiveCustByDueDate">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="StoreCode" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="DisplayName" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="ReportPeriod" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="CustomerName" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="AccNumber" type="xs:int" />
+							<xs:element name="PhNumber" type="xs:string" minOccurs="0" />
+							<xs:element name="lifeMonths" type="xs:int" minOccurs="0" />
+							<xs:element name="AmtDue" type="xs:decimal" minOccurs="0" />
+							<xs:element name="PassDueDays" type="xs:int" minOccurs="0" />
+							<xs:element name="PayDate" type="xs:dateTime" />
+							<xs:element name="AccountStatus" msdata:ReadOnly="true" type="xs:string" minOccurs="0" />
+							<xs:element name="ActivDate" type="xs:dateTime" minOccurs="0" />
+							<xs:element name="Due_Date" type="xs:dateTime" minOccurs="0" />
+							<xs:element name="SDiscoDate" type="xs:dateTime" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

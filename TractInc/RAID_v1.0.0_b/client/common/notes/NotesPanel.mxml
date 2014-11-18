@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CollectionEvent;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.Application;
+		
+			[Bindable] public var item:*;
+			
+			[Bindable] public var showLabel:Boolean = true;
+			
+			public function onClickNotes():void {
+				r.dataProvider = item.relatedNotes;
+				NotesView.Open(item, Application.application as DisplayObject);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:LinkButton label="Notes:" color="#0000bb" textDecoration="underline" click="onClickNotes()"
+		visible="{showLabel}" includeInLayout="{showLabel}"/>
+<!--
+	<mx:List width="100%" height="100%" 
+		variableRowHeight="true" selectable="false"
+		dataProvider="{item.relatedNotes}" 
+		itemRenderer="common.notes.NotesItemRenderer"/>
+ -->
+
+	<mx:Canvas width="100%" height="100%" 
+		backgroundColor="#ffffff" horizontalScrollPolicy="off" 
+		borderColor="#999999" borderStyle="solid">
+		
+		<mx:VBox width="100%" height="100%"
+			paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+			
+			<mx:Repeater id="r" dataProvider="{item.relatedNotes}">
+				
+				<mx:HBox width="100%" backgroundColor="#eeeeee">
+					<mx:Label text="{r.currentItem.RelatedUser.Login} says:" fontWeight="bold"/>
+					<mx:Spacer width="100%"/>
+	<!--				<mx:Label text="{txtBody.height.toString()}" fontWeight="bold" color="#eeeeee"/>
+	 -->				<mx:Label text="{r.currentItem.Posted.toLocaleString()}" fontStyle="italic"/>
+				</mx:HBox>
+				<mx:Text id="txtBody" width="100%" text="{r.currentItem.NoteText}"/>
+	
+			</mx:Repeater>
+			
+		</mx:VBox>
+		
+	</mx:Canvas>
+
+</mx:HBox>

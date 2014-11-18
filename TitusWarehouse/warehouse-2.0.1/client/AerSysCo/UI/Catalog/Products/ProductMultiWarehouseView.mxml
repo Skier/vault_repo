@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	title="Additional Warehouse Stock"
+	creationComplete="onCreate()">
+
+    <mx:Metadata>
+        [Event(name="submitAddingProduct", type="flash.events.Event")]
+        [Event(name="cancelAddingProduct", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.WarehouseUI;
+			import AerSysCo.UI.Catalog.CatalogController;
+			import AerSysCo.Events.CatalogItemsEvent;
+			import AerSysCo.UI.MainController;
+			import AerSysCo.Events.CatalogItemEvent;
+			import AerSysCo.UI.Models.InventoryUI;
+			import AerSysCo.UI.Models.CatalogItemUI;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
+			import mx.controls.Alert;
+			import AerSysCo.Server.Warehouse;
+			import AerSysCo.Server.Inventory;
+			import AerSysCo.Server.CatalogItem;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			
+            public static function open(parent:DisplayObject, product:CatalogItemUI, modal:Boolean = true):ProductMultiWarehouseView
+            {
+                var popup:ProductMultiWarehouseView = new ProductMultiWarehouseView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.product = product;
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+
+			private var _product:CatalogItemUI;
+			[Bindable] 
+			public function get product():CatalogItemUI {return _product;}
+			public function set product(value:CatalogItemUI):void 
+			{
+				_product = value;
+			}
+			
+			[Bindable]
+			private var totalQty:int = 0;
+			
+			private function onCreate():void 
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			public function updateQty(warehouse:WarehouseUI):void 
+			{
+				if (warehouse != null) 
+				{
+					for (var i:int = 0; i < product.inventories.length; i++) 
+					{
+						if (InventoryUI(product.inventories[i]).warehouseId == warehouse.warehouseId) 
+						{
+							txtQty[i].text = product.qtyNeeded.toString();
+							updateTotal();
+							break;
+						}
+					}
+				}
+			}
+			
+			private function btnAddToCartClickHandler(event:*):void 
+			{
+				var totalQuantity:int = 0;
+				var addedItems:ArrayCollection = new ArrayCollection();
+				
+				for (var i:int = 0; i < product.inventories.length; i++)
+				{
+					if (!isNaN(Number(txtQty[i].text))) 
+					{
+						var quantity:int = int(Number(txtQty[i].text));
+
+						var qtyAvailable:int = product.getQtyAvailable(product.inventories[i], MainController.getInstance().model.currentCustomer);
+						if (quantity > qtyAvailable) 
+						{
+							Alert.show("You can not add into the shopping cart more quantity than we have in the warehouse.");
+							return;
+						}
+	
+						if (quantity > 0) 
+						{
+							totalQuantity += quantity;
+	
+							var newItem:CatalogItemUI = new CatalogItemUI();
+							newItem.populateFromCatalogItem(product.toCatalogItem(), true);
+							newItem.qtyNeeded = quantity;
+
+							var w:WarehouseUI = CatalogController.getInstance().getWarehouse(InventoryUI(product.inventories[i]).warehouseId);
+							newItem.currentWarehouse = w;
+							
+							addedItems.addItem(newItem);
+						}
+					} else 
+					{
+						txtQty[i].text = "0";
+					}
+
+				}
+				
+				if (totalQuantity == 0) 
+				{
+					Alert.show("Order QTY indicated is 0.\nPlease update the quantity for your purchase.");
+				} else 
+				{
+					product.qtyNeeded = 0;
+					dispatchEvent(new CatalogItemsEvent(CatalogItemsEvent.ADD_CATALOG_ITEMS, addedItems));
+				}
+			}
+			
+			private function onFocusOut(event:FocusEvent):void 
+			{
+				var textInput:mx.controls.TextInput = event.currentTarget as mx.controls.TextInput;
+
+				if (isNaN(Number(textInput.text))) 
+				{
+					product.qtyNeeded = 0;
+				} else 
+				{
+					var inputQty:int = int(Number(textInput.text));
+					var qtyPackets:int = int(inputQty / product.modelItem.item.qtyIncrement);
+					
+					if ((qtyPackets * product.modelItem.item.qtyIncrement) != inputQty) 
+					{
+						Alert.show("SKU [" + product.modelItem.item.sku + "] can only be sold in " + product.modelItem.item.qtyIncrement + " quantities. Please adjust the Quantity to be ordered.");
+						return;
+					}
+					
+					product.qtyNeeded = qtyPackets * product.modelItem.item.qtyIncrement;
+					textInput.text = product.qtyNeeded.toString();
+				}
+				
+				updateTotal();
+			}
+			
+			private function updateTotal():void 
+			{
+				totalQty = 0;
+				
+				for (var i:int = 0; i < product.inventories.length; i++)
+				{
+					totalQty += int(Number(txtQty[i].text));
+				}
+			}
+			
+			private function onFocusIn(event:FocusEvent):void 
+			{
+				var textInput:mx.controls.TextInput = event.currentTarget as mx.controls.TextInput;
+				textInput.setSelection(0, 256);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:NumberValidator id="nv" minValue="0"/>
+	
+    <mx:HBox width="100%" styleName="multiWarehouseModel">
+	    <mx:HBox width="100%">
+	        <mx:Label text="SKU:"/>
+	        <mx:Label text="{product.sku}" fontWeight="bold"/>
+	    </mx:HBox>
+
+	    <mx:HBox width="100%">
+	        <mx:Label text="Model:"/>
+	        <mx:Label text="{product.modelName}" fontWeight="bold"/>
+	    </mx:HBox>
+    </mx:HBox>
+    
+    <mx:VBox width="300" height="100%" 
+    	styleName="multiWarehouseContent">
+        <mx:HBox width="100%">
+            <mx:Label id="lblWarehouse" text="Warehouse" width="100%" fontWeight="bold"/>
+            <mx:Label id="lblInStock" text="Inventory Available" textAlign="right" fontWeight="bold"/>
+            <mx:Label id="lblNeeded" text="Order QTY" textAlign="right" fontWeight="bold"/>
+        </mx:HBox>
+
+        <mx:HRule width="100%"/>
+
+        <mx:Repeater id="rptWarehouses" dataProvider="{product.inventories}" width="100%">
+            <mx:HBox width="100%">
+                <mx:Label 
+                	text="{CatalogController.getInstance().getWarehouse(InventoryUI(rptWarehouses.currentItem).warehouseId).warehouseName}" 
+                    width="{lblWarehouse.width}"/>
+                <mx:Label text="{product.getQtyAvailable(InventoryUI(rptWarehouses.currentItem), MainController.getInstance().model.currentCustomer).toString()}" 
+                    width="{lblInStock.width}" textAlign="right"/>
+				<mx:TextInput id="txtQty" 
+					width="{lblNeeded.width}"
+					text="0" textAlign="right"
+					focusIn="onFocusIn(event)"
+					focusOut="onFocusOut(event)"/>
+            </mx:HBox>
+        </mx:Repeater>
+
+        <mx:HRule width="100%"/>
+        
+        <mx:HBox width="100%" fontWeight="bold">
+            <mx:Label text="Total Quantity:" width="100%"/>
+            <mx:Label text="{totalQty}" width="80" textAlign="right"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%" fontWeight="bold">
+            <mx:Label text="Price Per Item:" width="100%"/>
+            <mx:Label text="${product.price.toFixed(2)}" width="80" textAlign="right"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%" fontWeight="bold">
+            <mx:Label text="Total:" width="100%"/>
+            <mx:Label text="${(totalQty * product.price).toFixed(2)}" width="80" textAlign="right"/>
+        </mx:HBox>
+    </mx:VBox>
+
+	<mx:ControlBar width="100%" horizontalAlign="center">
+		<mx:Button label="Cancel" height="28"
+			click="close()"/>
+		<mx:Button label="Add to Cart" height="28"
+			click="btnAddToCartClickHandler(event)"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

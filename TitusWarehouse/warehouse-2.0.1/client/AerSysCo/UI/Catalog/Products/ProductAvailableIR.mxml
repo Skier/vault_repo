@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import AerSysCo.UI.Models.CatalogItemUI;
+		]]>
+	</mx:Script>
+	<mx:Label width="100%" height="100%" text="{CatalogItemUI(data).qtyAvailable}" textAlign="right"/>
+	<mx:Label text="[{CatalogItemUI(data).modelItem.item.qtyIncrement}]" color="#dd0000" fontSize="7"
+		visible="{CatalogItemUI(data).modelItem.item.qtyIncrement > 1}"/>
+</mx:Canvas>

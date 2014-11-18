@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Team Assignment" 
+    xmlns:validators="TractInc.SDK.validators.*"
+    xmlns:components="TractInc.SDK.components.*"
+    creationComplete="init();">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            
+            import mx.events.ItemClickEvent;
+            import mx.controls.CheckBox;
+            import mx.controls.Label;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            import TractInc.Domain.Client;
+            import TractInc.Domain.Contract;
+            import TractInc.Domain.Project;
+            import TractInc.Domain.Asset;
+            import TractInc.Domain.Team;
+            import TractInc.Domain.TeamAssignment;
+            import tractIncStaffManager.StaffManagerController;
+            
+            [Bindable]
+            private var controller:TeamAssignmentController = null;
+            private var currentTeamAssignment:TeamAssignment = null;
+                
+            public static function open(ctrl:TeamAssignmentController, assignment:TeamAssignment, modal:Boolean):EditView
+            {
+                var popup:EditView = new EditView();
+                popup.postCreate(ctrl, assignment);
+                
+                PopUpManager.addPopUp(popup, ctrl.view as DisplayObject, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function postCreate(ctrl:TeamAssignmentController, assignment:TeamAssignment):void
+            {
+                controller = ctrl;
+                currentTeamAssignment = assignment;
+            }
+            
+            public function init():void
+            {
+                var clients:Array = [null];
+                for each (var a:Client in StaffManagerController.getInstance().model.staffManagerPackage.ClientList) {
+                    clients.push(a);
+                }
+                this.cbClientList.dataProvider = clients;
+                this.cbClientList.labelField = "ClientName";
+                
+                this.cbContractList.labelField = "ContractName";
+                if ( null != this.currentTeamAssignment ) {
+                    this.cbProjectList.dataProvider =
+                        StaffManagerController.getInstance().model.staffManagerPackage.ProjectList;
+                }
+                this.cbProjectList.labelField = "ProjectName";
+                
+                this.cbAssetList.dataProvider =
+                    StaffManagerController.getInstance().model.staffManagerPackage.AssetList;
+                this.cbAssetList.labelField = "AssetName";
+                
+                if ( null != currentTeamAssignment ) {
+                    
+                    this.dtStartDate.value = currentTeamAssignment.StartDate;
+                    this.dtEndDate.value = currentTeamAssignment.EndDate;
+                    
+                    this.cbProjectList.selectedItem = 
+                            controller.getProjectById(currentTeamAssignment.ProjectId);
+                    this.cbAssetList.selectedItem = 
+                            controller.getAssetById(currentTeamAssignment.LeadAssetId);
+                } else {
+                    currentTeamAssignment = new TeamAssignment();
+                }
+            }
+            
+            public function getTeamAssignment():TeamAssignment
+            {
+                currentTeamAssignment.LeadAssetId = (cbAssetList.selectedItem as Asset).AssetId;
+                currentTeamAssignment.ProjectId = (cbProjectList.selectedItem as Project).ProjectId;
+                currentTeamAssignment.StartDate = this.dtStartDate.value;
+                currentTeamAssignment.EndDate = this.dtEndDate.value;
+                
+                return currentTeamAssignment;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function commit():void
+            {
+                if ( !formValidator.validate(true) ) {
+                    return;
+                }
+                controller.saveTeamAssignment(getTeamAssignment());
+            }
+
+            public function clientOnChangeHandler():void 
+            {
+                var client:Client = cbClientList.selectedItem as Client;
+                var contracts:Array = [null];
+                if ( null != client ) {
+                    for each(var c:Contract in StaffManagerController.getInstance().model.staffManagerPackage.ContractList) {
+                        if ( client.ClientId == c.ClientId ) {
+                            contracts.push(c);
+                        }
+                    }
+                }
+                this.cbContractList.dataProvider = contracts;
+            }
+            
+            public function contractOnChangeHandler():void 
+            {
+                var contract:Contract = cbContractList.selectedItem as Contract;
+                var projects:Array = [null];
+                if ( null != contract ) {
+                    for each(var c:Project in StaffManagerController.getInstance().model.staffManagerPackage.ProjectList) {
+                        if ( contract.ContractId == c.ContractId ) {
+                            projects.push(c);
+                        }
+                    }
+                }
+                this.cbProjectList.dataProvider = projects;
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{cbProjectList}" property="selectedItem" required="true"/>
+        <mx:StringValidator source="{cbAssetList}" property="selectedItem" required="true"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form id="mainForm" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+
+        <mx:FormItem label="Client" width="100%">
+            <mx:ComboBox id="cbClientList" width="100%"
+                    change="clientOnChangeHandler()"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Contract" width="100%">
+            <mx:ComboBox id="cbContractList" width="100%"
+                    change="contractOnChangeHandler()"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Project" width="100%" required="true">
+            <mx:ComboBox id="cbProjectList" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Lead Asset" width="100%" required="true">
+            <mx:ComboBox id="cbAssetList" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormHeading label="Dates"/>
+        <mx:FormItem label="Start Date" width="100%" required="true">
+            <components:CombinedDateField id="dtStartDate" width="100%"/>
+        </mx:FormItem>
+        <mx:FormItem label="End Date" width="100%" required="true">
+            <components:CombinedDateField id="dtEndDate" width="100%"/>
+        </mx:FormItem>
+    </mx:Form>
+            
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:attachments="com.llsvc.client.lms.view.lease.detail.attachments.*" xmlns:document="com.llsvc.client.lms.view.document.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import com.llsvc.domain.LeaseTract;
+			import mx.collections.ArrayCollection;
+			import com.llsvc.domain.DocumentAssignment;
+			import com.llsvc.domain.DocumentType;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var docum:DocumentAssignment;
+			[Bindable] public var tracts:ArrayCollection;
+			
+            public static function open(parent:DisplayObject, docum:DocumentAssignment, tracts:ArrayCollection, modal:Boolean):AssignmentDocumentEditView
+            {
+                var popup:AssignmentDocumentEditView = new AssignmentDocumentEditView();
+                
+                popup.docum = docum;
+                popup.tracts = tracts;
+                
+                popup.checkOutTracts();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function checkOutTracts():void 
+            {
+            	for each (var tract:LeaseTract in tracts) 
+            	{
+            		if (tractExists(tract)) 
+            		{
+            			tract.isSelected = true;
+            		} else 
+            		{
+            			tract.isSelected = false;
+            		}
+            	}
+            }
+            
+            private function tractExists(tract:LeaseTract):Boolean 
+            {
+            	for each (var t:LeaseTract in docum.tracts) 
+            	{
+            		if (t.id == tract.id) 
+            		{
+            			return true;
+            		}
+            	}
+            	
+            	return false;
+            }
+
+			private function getLabel(item:LeaseTract, column:DataGridColumn):String
+			{
+				if (column.dataField == "nri") {
+					return LeaseTract(item).nriStr; 
+				} else if (column.dataField == "cwi") {
+					return LeaseTract(item).cwiStr; 
+				} else if (column.dataField == "burden") {
+					return LeaseTract(item).burdenStr; 
+				} else if (column.dataField == "cnri") {
+					return LeaseTract(item).cnriStr; 
+				} else if (column.dataField == "leaseInterest") {
+					return LeaseTract(item).leaseInterestStr; 
+				} else if (column.dataField == "leaseBurden") {
+					return LeaseTract(item).leaseBurdenStr; 
+				} else {
+					return ""; 
+				}
+			} 
+			
+            private function btnOkClickHandler():void 
+            {
+            	dispatchEvent(new Event("submitRequest"));
+            }
+            
+            private function btnCancelClickHandler():void 
+            {
+            	dispatchEvent(new Event("cancelRequest"));
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#ffffdd" borderColor="#cccccc" borderStyle="solid" cornerRadius="2"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" horizontalGap="5">
+		<mx:Label text="{docum.document.documentType.name}" fontWeight="bold"/>
+	</mx:HBox>
+
+	<mx:VBox width="100%" height="100%" verticalGap="5">
+		<mx:HDividedBox width="100%" horizontalGap="5" height="200">
+			<attachments:DocAttachmentsPanel width="100%" height="100%" docum="{docum.document}"/>
+			<document:DocActorsPanel width="100%" height="100%" docum="{docum.document}"/>
+		</mx:HDividedBox>
+		
+		<mx:HBox width="100%">
+			<mx:VBox>
+				<mx:HBox>
+					<mx:Label text="Royalty:" width="70" textAlign="right"/>
+					<mx:TextInput text="{docum.royalty}" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Full Set:" width="70" textAlign="right"/>
+					<mx:CheckBox selected="{docum.isFullLeaseSet}"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:HBox>
+					<mx:Label text="Assignment Date:" width="100" textAlign="right"/>
+					<mx:DateField selectedDate="{docum.assignmentDate}" editable="true"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Effective Date:" width="100" textAlign="right"/>
+					<mx:DateField selectedDate="{docum.effectiveDate}" editable="true"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:HBox>
+					<mx:Label text="Depth:" width="70" textAlign="right"/>
+					<mx:TextInput text="{docum.depth}" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Burden:" width="70" textAlign="right"/>
+					<mx:TextInput text="{docum.burdens}" />
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgTracts" 
+			width="100%" height="100%" 
+			dataProvider="{tracts}" verticalScrollPolicy="on"
+			sortableColumns="false" draggableColumns="false" resizableColumns="false">
+			<mx:columns>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="40" headerText=" "  
+					itemRenderer="com.llsvc.client.lms.view.lease.detail.references.SelectTractIR"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					headerText="Tract" dataField="tract" editable="false" 
+					itemRenderer="com.llsvc.client.lms.view.lease.summary.LeaseTractDescriptionIR"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Gross Acres" headerWordWrap="true" dataField="grossAcres" textAlign="right"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Net Acres" headerWordWrap="true" dataField="netAcres" textAlign="right"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Interest" dataField="leaseInterest" textAlign="right"
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Lease Burden" headerWordWrap="true" dataField="leaseBurden" textAlign="right" editable="false"
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Lease NRI" headerWordWrap="true" dataField="nri" textAlign="right" editable="false"
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="FCR WI" headerWordWrap="true" dataField="cwi" textAlign="right" 
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="Add / Burden" headerWordWrap="true" dataField="burden" textAlign="right" 
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="FCR NRI" headerWordWrap="true" dataField="cnri" textAlign="right" editable="false"
+					labelFunction="getLabel"/>
+				<mx:DataGridColumn headerStyleName="headerTextCentered"
+					width="60" headerText="FCR Net Acres" headerWordWrap="true" dataField="cNetAcres" textAlign="right" editable="false"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button height="28" label="Ok" click="btnOkClickHandler()"/>
+		<mx:Button height="28" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

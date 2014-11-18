@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+    title="Create New Invoice Item">
+    
+    <mx:Script>
+        <![CDATA[
+        	import common.TypesRegistry;
+        	import App.Entity.InvoiceItemTypeDataObject;
+        	import App.Entity.ProjectDataObject;
+        	import App.Entity.AssetDataObject;
+        	import App.Entity.AFEDataObject;
+        	import App.Entity.AssetAssignmentDataObject;
+        	import App.Entity.InvoiceItemDataObject;
+            import mx.managers.PopUpManager;
+            import mx.events.CollectionEvent;
+            import mx.collections.ArrayCollection;
+            import util.DateUtil;
+            import common.StatusesRegistry;
+        	import App.Entity.InvoiceItemStatusDataObject;
+            
+            [Bindable] private var _invoice:InvoiceStructure;
+            [Bindable] private var _currentInvoiceItem:InvoiceItemDataObject;
+            
+            [Bindable] private var _afes:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _subAfes:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _assets:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _assetAssignments:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _types:ArrayCollection = new ArrayCollection();
+            
+            [Bindable] private var _filteredAfes:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _filteredSubAfes:ArrayCollection = new ArrayCollection();
+            [Bindable] private var _filteredAssets:ArrayCollection = new ArrayCollection();
+
+            [Bindable] private var _currentAssignment:AssetAssignmentDataObject;
+            [Bindable] private var _qty:Number = 0;
+            [Bindable] private var _rate:Number = 0;
+            [Bindable] private var _amount:Number = 0;
+            [Bindable] private var _date:Date = new Date();
+            [Bindable] private var _notes:String = "";
+
+            [Bindable] public var isLoaded:Boolean = false;
+            
+            public function init(invoice:InvoiceStructure, invoiceItem:InvoiceItemDataObject):void 
+            {
+                _invoice = invoice;
+                _currentInvoiceItem = invoiceItem;
+
+                _afes = _invoice.getAfes();
+                _subAfes = _invoice.getSubAfes();
+                _assets = _invoice.getAssets();
+                _assetAssignments = _invoice.getAssetAssignments();
+                _types = _invoice.getItemTypes();
+
+                _filteredAfes = getAfes(_invoice.invoice.ClientId);
+                
+                _filteredSubAfes = _filteredAfes.length > 0 ? getSubAfes(AFEDataObject(_filteredAfes[0]).AFE) : null;
+                
+                _filteredAssets = _filteredAfes.length > 0 ? getAssetsByAfe(AFEDataObject(_filteredAfes[0]).AFE) : null;
+                
+                _currentAssignment = _filteredAssets.length > 0 ? getAssetAssignment(AssetDataObject(_filteredAssets[0]).AssetId, ProjectDataObject(_filteredSubAfes[0]).SubAFE) : null;
+
+                if (!invoiceItem.isNew) {
+                    initProperties();
+                }
+            }
+            
+            private function initProperties():void 
+            {
+                cbAfe.selectedIndex = _filteredAfes.getItemIndex(_invoice.controller.parentController.appController.Model.afesHash[AssetAssignmentDataObject(_invoice.controller.model.assignmentsHash[_currentInvoiceItem.AssetAssignmentId]).AFE]);
+                onAfeChanged();
+                
+                cbSubAfe.selectedIndex = _filteredSubAfes.getItemIndex(_invoice.controller.parentController.appController.Model.projectsHash[AssetAssignmentDataObject(_invoice.controller.model.assignmentsHash[_currentInvoiceItem.AssetAssignmentId]).SubAFE]);
+                onSubAfeChanged();
+                
+                cbAsset.selectedIndex = _filteredAssets.getItemIndex(_invoice.assetsHash[AssetAssignmentDataObject(_invoice.controller.model.assignmentsHash[_currentInvoiceItem.AssetAssignmentId]).AssetId]);
+                onAssetChanged();
+                
+                cbItemType.selectedItem = TypesRegistry.instance.getInvoiceItemTypeById(_currentInvoiceItem.InvoiceItemTypeId);
+                
+                _rate = _currentInvoiceItem.InvoiceRate;
+                _qty = _currentInvoiceItem.Qty;
+                onQtyOrRateChanged();
+            }
+            
+        	private function getAfes(clientId:int):ArrayCollection 
+            {
+                var result:ArrayCollection = new ArrayCollection();
+                for each (var afe:AFEDataObject in _afes) {
+                    if (afe.ClientId == clientId) {
+                        result.addItem(afe);
+                    }
+                }
+                return result;
+            }
+
+            private function getSubAfes(afe:String):ArrayCollection 
+            {
+                var result:ArrayCollection = new ArrayCollection();
+                for each (var subAfe:ProjectDataObject in _subAfes) {
+                    if (subAfe.AFE == afe) {
+                        result.addItem(subAfe);
+                    }
+                }
+                return result;
+            }
+
+            private function getAssetAssignment(assetId:int, subAfe:String):AssetAssignmentDataObject
+            {
+                for each (var aa:AssetAssignmentDataObject in _assetAssignments) {
+                    if (aa.SubAFE == subAfe && aa.AssetId == assetId) {
+                        return aa;
+                    }
+                }
+                return null;
+            }
+            
+            private function getAssetsByAfe(afe:String):ArrayCollection 
+            {
+                var result:ArrayCollection = new ArrayCollection();
+                for each (var aa:AssetAssignmentDataObject in _assetAssignments) {
+                    if (aa.AFE == afe) {
+                        if (!result.contains(_invoice.assetsHash[aa.AssetId])) {
+                            result.addItem(_invoice.assetsHash[aa.AssetId]);
+                        }
+                    }
+                }
+                return result;
+            }
+            
+            private function getAssetsBySubAfe(subAfe:String):ArrayCollection 
+            {
+                var result:ArrayCollection = new ArrayCollection();
+                for each (var aa:AssetAssignmentDataObject in _assetAssignments) {
+                    if (aa.SubAFE == subAfe) {
+                        if (!result.contains(_invoice.assetsHash[aa.AssetId])) {
+                            result.addItem(_invoice.assetsHash[aa.AssetId]);
+                        }
+                    }
+                }
+                return result;
+            }
+            
+            private function onAfeChanged():void 
+            {
+                var afe:AFEDataObject = cbAfe.selectedItem as AFEDataObject;
+                _filteredAssets = null;
+                if (afe) {
+                    _filteredSubAfes = getSubAfes(afe.AFE);
+                } else {
+                    _filteredSubAfes = null;
+                }
+                onSubAfeChanged();
+                setCurrentAssignment();
+            }
+            
+            private function onSubAfeChanged():void 
+            {
+                var subAfe:ProjectDataObject = cbSubAfe.selectedItem as ProjectDataObject;
+                if (subAfe) {
+                    _filteredAssets = getAssetsBySubAfe(subAfe.SubAFE);
+                } else {
+                    _filteredAssets = null;
+                }
+                setCurrentAssignment();
+            }
+            
+            private function onAssetChanged():void 
+            {
+                setCurrentAssignment();
+            }
+            
+            private function setCurrentAssignment():void 
+            {
+                var subAfe:ProjectDataObject = cbSubAfe.selectedItem as ProjectDataObject;
+                var asset:AssetDataObject = cbAsset.selectedItem as AssetDataObject;
+                
+                if (subAfe != null && asset != null) {
+                    _currentAssignment = getAssetAssignment(asset.AssetId, subAfe.SubAFE);
+                } else {
+                    _currentAssignment = null;
+                }
+            }
+            
+            private function onQtyOrRateChanged():void {
+                if (isNaN(Number(txtQty.text))) {
+                    _qty = 0;
+                } else {
+                    _qty = int(txtQty.text);
+                }
+
+                if (isNaN(Number(txtRate.text))) {
+                    _rate = 0;
+                } else {
+                    _rate = Number(txtRate.text);
+                }
+                
+                _amount = isNaN(_rate * _qty) ? 0 : (_rate * _qty);
+            }
+
+            private function onClickOk():void 
+            {
+                _currentInvoiceItem.InvoiceDate = DateUtil.format(_date);
+                _currentInvoiceItem.InvoiceRate = _rate;
+                _currentInvoiceItem.Qty = _qty;
+                _currentInvoiceItem.IsSelected = true;
+                _currentInvoiceItem.BillItemId = 0;
+                _currentInvoiceItem.InvoiceId = _invoice.invoice.InvoiceId;
+                _currentInvoiceItem.InvoiceItemTypeId = (cbItemType.selectedItem as InvoiceItemTypeDataObject).InvoiceItemTypeId;
+                _currentInvoiceItem.AssetAssignmentId = _currentAssignment.AssetAssignmentId;
+                _currentInvoiceItem.Status = InvoiceItemStatusDataObject.INVOICE_ITEM_STATUS_NEW;
+
+                if (_currentInvoiceItem.isNew) {
+                    _currentInvoiceItem.isNew = false;
+                    _invoice.addItem(_currentInvoiceItem);
+                }
+                
+                closePopup();
+            }
+            
+            private function onClickCancel():void {
+                closePopup();
+            }
+            
+            private function closePopup():void {
+                PopUpManager.removePopUp(this);
+            }
+
+        
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%"
+        paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+
+        <mx:HBox width="100%">
+                
+            <mx:HBox>
+                <mx:Label text="InvoiceItem Creation Date:"/>
+                <mx:DateField id="dateInvoiceItemDate" 
+                    selectedDate="{_date}" change="_date=dateInvoiceItemDate.selectedDate"/>
+            </mx:HBox>
+    
+        </mx:HBox>
+        
+        <mx:HBox width="100%">
+                
+            <mx:VBox>
+                <mx:Label text="AFE:"/>
+                <mx:ComboBox id="cbAfe" change="onAfeChanged()" 
+                	dataProvider="{_filteredAfes}" 
+                	labelField="AFEName" width="130"/>
+            </mx:VBox>
+            
+            <mx:VBox>
+                <mx:Label text="Project:"/>
+                <mx:ComboBox
+                	id="cbSubAfe"
+                	change="onSubAfeChanged()" 
+                	dataProvider="{_filteredSubAfes}" 
+                	labelField="ShortName"
+                	width="130"/>
+            </mx:VBox>
+            
+            <mx:VBox>
+                <mx:Label text="Asset:"/>
+                <mx:ComboBox
+                	id="cbAsset"
+                	change="onAssetChanged()"
+                	dataProvider="{_filteredAssets}"
+                	labelField="BusinessName"
+                	width="130"/>
+            </mx:VBox>
+            
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+                
+            <mx:VBox>
+                <mx:Label text="Item type:"/>
+                <mx:ComboBox
+                	id="cbItemType"
+                	dataProvider="{TypesRegistry.instance.getAllInvoiceItemTypes}"
+                	labelField="Name"
+                	width="150"
+                	prompt=""/>
+            </mx:VBox>
+    
+            <mx:VBox>
+                <mx:Label text="Rate:"/>
+                <mx:TextInput id="txtRate" text="{_rate}" change="onQtyOrRateChanged()" width="80" textAlign="right" maxChars="10"/>
+            </mx:VBox>
+    
+            <mx:VBox>
+                <mx:Label text="Qty:"/>
+                <mx:TextInput id="txtQty" text="{_qty}" change="onQtyOrRateChanged()" width="80" textAlign="right" maxChars="10"/>
+            </mx:VBox>
+    
+            <mx:VBox>
+                <mx:Label text="Amount:"/>
+                <mx:TextInput id="txtAmount" text="{(Math.round(_amount * 100) / 100).toFixed(2)}" editable="false" fontWeight="bold" width="80" textAlign="right"/>
+            </mx:VBox>
+    
+        </mx:HBox>
+<!--
+        <notes:NotesPanel item="{_currentInvoiceItem}" width="100%"/>
+ -->
+<!--
+        <mx:HBox width="100%">
+
+            <mx:Label text="Notes:"/>
+            <mx:TextInput id="txtNotes" text="{_notes}" change="_notes = txtNotes.text" width="100%" maxChars="250"/>
+
+        </mx:HBox>
+ -->
+    </mx:VBox>
+
+    <mx:ControlBar width="100%" horizontalAlign="center">
+        <mx:Button label="Ok" click="onClickOk()" 
+            enabled="{_rate > 0 &amp;&amp; _qty > 0 &amp;&amp; _currentAssignment != null &amp;&amp; cbItemType.selectedItem != null}"/>
+        <mx:Button label="Cancel" click="onClickCancel()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

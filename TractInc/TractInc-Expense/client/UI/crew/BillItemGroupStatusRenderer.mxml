@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	paddingLeft="10"
+	paddingRight="10"
+	paddingBottom="2"
+	paddingTop="2"
+	height="24"
+	width="100%"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import common.notes.NotesView;
+			import App.Entity.BillItemDataObject;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import common.StatusesRegistry;
+			
+			private var notesInput:NotesView;
+			
+			private function Approve():void {
+				data.statusTemp = BillItemDataObject.BILL_ITEM_STATUS_APPROVED;
+			}
+			
+			private function Reject():void 
+			{
+				data.statusTemp = BillItemDataObject.BILL_ITEM_STATUS_REJECTED;
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:Button width="70" height="20" label="approve" click="Approve()" 
+		enabled="{data.statusTemp != BillItemDataObject.BILL_ITEM_STATUS_APPROVED}"/>
+
+	<mx:Button width="70" height="20" label="reject" click="Reject()" 
+		enabled="{data.statusTemp != BillItemDataObject.BILL_ITEM_STATUS_REJECTED}"/>
+	
+</mx:HBox>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+		layout="vertical" 
+		width="400"
+	 	title="Upload Layer Shapefile"
+    	initialize="initHandler()">
+    <mx:Script>
+        <![CDATA[
+            import mx.core.Application;
+            import mx.controls.Alert;
+            import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+            import mx.collections.ArrayCollection;
+            
+            import com.llsvc.domain.Layer;
+            import com.llsvc.domain.SRS;
+            import com.llsvc.maps.control.LayerManager;
+            import com.llsvc.maps.layers.BaseLayer;
+            import com.llsvc.maps.layers.DynLayer;
+            import com.llsvc.maps.storage.Storage;
+            import com.llsvc.framework.storage.Storage;
+            
+            private var fileRef:FileReference = null;
+            
+            public static function open(parent:DisplayObject, modal:Boolean):UploadLayerView
+            {
+                var popup:UploadLayerView = new UploadLayerView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            private function initHandler():void 
+            {
+                com.llsvc.maps.storage.Storage.instance.getSRSes(
+	                new mx.rpc.Responder(
+	                		onGetSRSesResultHandler, 
+	                		onGetSRSesFaultHandler));
+            }
+            
+            private function onGetSRSesResultHandler(event:ResultEvent):void {
+            	this.layerSrs.dataProvider = event.result;
+/*            	
+            	LayerManager.removeDynLayers();
+                for each (var dl:Layer in event.result) {
+					LayerManager.addLayer(new DynLayer(geoServerUrlPrefix, dl.name, dl.description + " (" + dl.name + ")"));
+                } 
+            	for each (var layer:BaseLayer in LayerManager.allLayers) 
+            	{
+            		if (!layer.isSelected) {
+            			availableLayers.addItem(layer);
+            		}
+            	}
+                PopUpManager.centerPopUp(this);
+                */
+            }
+            
+            private function onGetSRSesFaultHandler(event:FaultEvent):void {
+	            Alert.show("Load SRS list fault: " + event.fault.faultString, "Load fault");
+            }
+            
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function btnUploadClickHandler():void 
+            {
+                fileRef = new FileReference();
+                
+                fileRef.addEventListener(Event.SELECT, onLayerFileSelected); 
+
+                var docFilter:FileFilter = new FileFilter("Shapefiles", "*.zip");
+                fileRef.browse([docFilter]);
+            }
+            
+            private function onLayerFileSelected(e:Event):void 
+            {
+                var userId:int = 1;
+                var request:URLRequest = new URLRequest("geoconfig?userId=" + userId 
+                	+ "&srs=" + (this.layerSrs.selectedItem as SRS).srid
+/*                	+ "&name=" + this.layerName.text*/
+                	+ "&description=" + this.layerDescription.text);
+                try {
+                    fileRef.upload(request);
+                	close();
+                } catch (error:Error) {
+                    Alert.show("Unable to upload file with new layer.");
+                }
+            }
+
+            private function btnCancelClickHandler():void 
+            {
+                close();
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:VBox width="100%" verticalGap="5">
+    	<mx:HBox>
+    		<mx:VBox>
+	    		<mx:Label text="SRID:"/>
+	    		<mx:Label text="Description:"/>
+    		</mx:VBox>
+    		<mx:VBox>
+    		<!--
+	        	<mx:TextInput id="layerSrs"/>
+	        -->
+	        	<mx:ComboBox id="layerSrs" labelField="name"/>
+	        	<mx:TextArea id="layerDescription"/>
+    		</mx:VBox>
+        </mx:HBox>
+    </mx:VBox>
+    
+    <mx:ControlBar horizontalAlign="center">
+        <mx:Button id="btnUpload" width="100" label="Upload" click="btnUploadClickHandler()"/>
+        <mx:Button id="btnCancel" width="100" label="Cancel" click="btnCancelClickHandler()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

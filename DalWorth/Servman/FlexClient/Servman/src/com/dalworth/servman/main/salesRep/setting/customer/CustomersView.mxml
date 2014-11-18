@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:businessPartner="com.dalworth.servman.main.owner.setting.businessPartner.*" xmlns:customer="com.dalworth.servman.main.owner.setting.customer.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.main.owner.OwnerModel;
+			import com.dalworth.servman.domain.Customer;
+			import com.dalworth.servman.domain.BusinessPartner;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			private static const COLUMN_NAME:String = "ShowAs";
+			
+			[Bindable]
+			private var model:CustomersModel = CustomersModel.getInstance();
+			
+			public function init():void 
+			{
+				model.customers = OwnerModel.getInstance().customers;
+			}
+			
+			private function getLabel(item:Object, column:DataGridColumn):String 
+			{
+				if (item is Customer) 
+				{
+					switch (column.dataField) 
+					{
+						case COLUMN_NAME :
+							return "" ; //Customer(item).ShowAs; //todo: fix it
+
+						default :
+							return "";
+					}
+				} else 
+				{
+					return "bad object";
+				}
+			}
+			
+			private function onClickNew():void 
+			{
+				viewCustomer.customer = new Customer();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%">
+		<mx:DataGrid id="dgCustomers" dataProvider="{model.customers}" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Customer Name" labelFunction="getLabel" dataField="{COLUMN_NAME}"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<customer:CustomerView id="viewCustomer" customer="{dgCustomers.selectedItem as Customer}"
+			visible="{dgCustomers.selectedItem != null}" includeInLayout="{dgCustomers.selectedItem != null}" 
+			borderColor="#999999" backgroundColor="#ffffff" borderStyle="solid" width="100%"/>
+	</mx:VBox>
+	
+	<mx:VBox height="100%">
+		<mx:Button width="100" label="Create new" click="onClickNew()"/>
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,104 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections" #> 
+<#@ import namespace="System.Collections.Generic" #> 
+
+<#+
+///<summary>
+/// Generates resource enum and adds it to project file.
+///</summary>
+void GenerateIDSResourceClass(List<string> resourceNames)
+{
+#>
+
+/*
+ * Copyright (c) 2009-2010 Intuit, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * Contributors:
+ *    Intuit Partner Platform – initial contribution
+ */
+
+using System;
+using System.Collections.Generic;
+using Intuit.Sb.Cdm;
+using Intuit.Platform.Client.Core;
+using Intuit.Platform.Client.Core.IDS;
+
+namespace Intuit.Platform.Client.Core.IDS
+{
+    /// <summary>
+    /// A list of Domain entities supported by IDS.  Used by the REST infrastructure
+    /// to construct the relevant calls.
+    /// </summary>
+    public enum IDSResource
+    {
+<#+
+	foreach(string resource in resourceNames)
+	{
+#>
+		/// <summary>
+        /// <#=resource#> Resource
+        /// </summary>
+<#+		if(string.Compare(resource ,"class")==0)
+		{
+			
+#>
+		Class,//cannot write Class enum member in all lower case as class is keyword of .net
+<#+
+		}
+		else
+		{
+#>
+        <#=resource#>,
+<#+
+		}
+	}
+#>
+	}
+}
+<#+
+}
+ // Search predicate returns true if a string "user".
+/// <summary>
+/// check if user value present in emun class
+/// </summary>
+/// <param name="s">string to add</param>
+/// <returns></returns>
+    private static bool ContainsUserString(String s)
+    {
+        if ((s.Length == 4) && 
+            (s.CompareTo("user") == 0))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+  	// Search predicate returns true if a string "company".
+	/// <summary>
+	/// check if company value present in emun class
+	/// </summary>
+	/// <param name="s"></param>
+	/// <returns></returns>
+    private static bool ContainsCompanyString(String s)
+    {
+        if ((s.Length == 4) && 
+            (s.CompareTo("company") == 0))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+#>

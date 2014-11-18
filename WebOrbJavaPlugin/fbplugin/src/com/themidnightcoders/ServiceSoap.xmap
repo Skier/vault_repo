@@ -1,0 +1,438 @@
+<mapping>
+    <schema-mapping>
+        <xs:schema targetNamespace="http://themidnightcoders.com/"
+            xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+            xmlns:map="http://systinet.com/mapping/"
+            xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+            xmlns:s="http://www.w3.org/2001/XMLSchema"
+            xmlns:sns0="http://www.w3.org/2001/XMLSchema"
+            xmlns:sns1="http://themidnightcoders.com/"
+            xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+            xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+            xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+            xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+            xmlns:tns="http://themidnightcoders.com/"
+            xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:import namespace="http://www.w3.org/2001/XMLSchema"/>
+            <s:complexType name="ArrayOfAnyType">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[Ljava.lang.Object;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="anyType" nillable="true" type="s:anyType"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ArrayOfColumnInfo">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[Lcom.themidnightcoders.ColumnInfo;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="ColumnInfo" nillable="true" type="tns:ColumnInfo"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="DatabaseInfo">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.DatabaseInfo"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" map:java-field="type"
+                        maxOccurs="1" minOccurs="1" name="type" nillable="false" type="tns:DatabaseInfoType"/>
+                    <s:element form="qualified" map:java-field="hostname"
+                        maxOccurs="1" minOccurs="0" name="hostname"
+                        nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="port"
+                        maxOccurs="1" minOccurs="0" name="port" nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="username"
+                        maxOccurs="1" minOccurs="0" name="username"
+                        nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="id"
+                        maxOccurs="1" minOccurs="0" name="id" nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="password"
+                        maxOccurs="1" minOccurs="0" name="password"
+                        nillable="false" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="DatabaseInfoType">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.DatabaseInfoType"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:restriction base="s:string">
+                    <s:enumeration value="MYSQL"/>
+                    <s:enumeration value="POSTGRESQL"/>
+                    <s:enumeration value="MSSQL"/>
+                    <s:enumeration value="ORACLE"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:complexType name="ArrayOfDatabaseInfoType">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[Lcom.themidnightcoders.DatabaseInfoType;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="DatabaseInfoType" nillable="false" type="tns:DatabaseInfoType"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="ColumnKeyType">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.ColumnKeyType"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:restriction base="s:string">
+                    <s:enumeration value="FULLTEXT"/>
+                    <s:enumeration value="UNIQUE"/>
+                    <s:enumeration value="NONE"/>
+                    <s:enumeration value="PRIMARY"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:complexType name="ArrayOfDatabaseInfo">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[Lcom.themidnightcoders.DatabaseInfo;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="DatabaseInfo" nillable="true" type="tns:DatabaseInfo"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="QueryResult">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.QueryResult"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" map:java-field="columnTitles"
+                        maxOccurs="1" minOccurs="0" name="columnTitles"
+                        nillable="false" type="tns:ArrayOfString"/>
+                    <s:element form="qualified" map:java-field="data"
+                        maxOccurs="1" minOccurs="0" name="data" nillable="false" type="tns:ArrayOfArrayOfAnyType"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ColumnDataTypeInfo">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.ColumnDataTypeInfo"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" map:java-field="dataType"
+                        maxOccurs="1" minOccurs="0" name="dataType"
+                        nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="isEnumerable"
+                        maxOccurs="1" minOccurs="1" name="isEnumerable"
+                        nillable="false" type="s:boolean"/>
+                    <s:element form="qualified" map:java-field="size"
+                        maxOccurs="1" minOccurs="1" name="size" nillable="false" type="s:int"/>
+                    <s:element form="qualified" map:java-field="values"
+                        maxOccurs="1" minOccurs="0" name="values"
+                        nillable="false" type="tns:ArrayOfString"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ForeignKeyData">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.ForeignKeyData"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" map:java-field="database"
+                        maxOccurs="1" minOccurs="0" name="database"
+                        nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="table"
+                        maxOccurs="1" minOccurs="0" name="table"
+                        nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="column"
+                        maxOccurs="1" minOccurs="0" name="column"
+                        nillable="false" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ArrayOfString">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[Ljava.lang.String;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="string" nillable="true" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ColumnInfo">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="com.themidnightcoders.ColumnInfo"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" map:java-field="name"
+                        maxOccurs="1" minOccurs="0" name="name" nillable="false" type="s:string"/>
+                    <s:element form="qualified" map:java-field="isNullable"
+                        maxOccurs="1" minOccurs="1" name="isNullable"
+                        nillable="false" type="s:boolean"/>
+                    <s:element form="qualified" map:java-field="dataTypeInfo"
+                        maxOccurs="1" minOccurs="0" name="dataTypeInfo"
+                        nillable="false" type="tns:ColumnDataTypeInfo"/>
+                    <s:element form="qualified" map:java-field="keyType"
+                        maxOccurs="1" minOccurs="1" name="keyType"
+                        nillable="false" type="tns:ColumnKeyType"/>
+                    <s:element form="qualified" map:java-field="isAutoIncrement"
+                        maxOccurs="1" minOccurs="1" name="isAutoIncrement"
+                        nillable="false" type="s:boolean"/>
+                    <s:element form="qualified" map:java-field="foreignKey"
+                        maxOccurs="1" minOccurs="0" name="foreignKey"
+                        nillable="false" type="tns:ForeignKeyData"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="ArrayOfArrayOfAnyType">
+                <s:annotation>
+                    <s:appinfo>
+                        <map:java-type name="[[Ljava.lang.Object;"/>
+                    </s:appinfo>
+                </s:annotation>
+                <s:sequence>
+                    <s:element form="qualified" maxOccurs="unbounded"
+                        minOccurs="0" name="ArrayOfAnyType" nillable="true" type="tns:ArrayOfAnyType"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element form="qualified" name="GetTablesResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="GetTablesResult" nillable="false" type="tns:ArrayOfString"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="CheckDatabaseHost"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="1"
+                            name="type" nillable="false" type="tns:DatabaseInfoType"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostname" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="port" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="userid" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="password" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetDatabases" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostId" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetColumns" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostId" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="database" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="table" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetDatabasesResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="GetDatabasesResult" nillable="false" type="tns:ArrayOfString"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetSupportedDatabaseTypes"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence/>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetColumnsResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="GetColumnsResult" nillable="false" type="tns:ArrayOfColumnInfo"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetDatabaseHosts"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence/>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="TestQueryResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="TestQueryResult" nillable="false" type="tns:QueryResult"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GenerateSourceCodeResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence/>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="PingResponse" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence/>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetSupportedDatabaseTypesResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="GetSupportedDatabaseTypesResult"
+                            nillable="false" type="tns:ArrayOfDatabaseInfoType"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="CheckDatabaseHostResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="CheckDatabaseHostResult" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="AddDatabaseHostResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="AddDatabaseHostResult" nillable="false" type="tns:DatabaseInfo"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="TestQuery" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostId" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="database" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="query" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="AddDatabaseHost" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="1"
+                            name="type" nillable="false" type="tns:DatabaseInfoType"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostname" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="port" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="userid" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="password" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="Ping" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence/>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetDatabaseHostsResponse"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="GetDatabaseHostsResult" nillable="false" type="tns:ArrayOfDatabaseInfo"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GenerateSourceCode"
+                nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostId" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="database" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="table" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="query" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element form="qualified" name="GetTables" nillable="false">
+                <s:complexType>
+                    <s:annotation/>
+                    <s:sequence>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="hostId" nillable="false" type="s:string"/>
+                        <s:element form="qualified" maxOccurs="1" minOccurs="0"
+                            name="database" nillable="false" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </xs:schema>
+
+    </schema-mapping>
+    <operation-mapping>
+        <operation name='Ping' method='Ping' signature='KClW' unwrapped='true' />
+        <operation name='GetSupportedDatabaseTypes' method='GetSupportedDatabaseTypes' signature='KClbTGNvbS90aGVtaWRuaWdodGNvZGVycy9EYXRhYmFzZUluZm9UeXBlOw==' unwrapped='true' />
+        <operation name='CheckDatabaseHost' method='CheckDatabaseHost' signature='KExjb20vdGhlbWlkbmlnaHRjb2RlcnMvRGF0YWJhc2VJbmZvVHlwZTtMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmc7' unwrapped='true' />
+        <operation name='AddDatabaseHost' method='AddDatabaseHost' signature='KExjb20vdGhlbWlkbmlnaHRjb2RlcnMvRGF0YWJhc2VJbmZvVHlwZTtMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZzspTGNvbS90aGVtaWRuaWdodGNvZGVycy9EYXRhYmFzZUluZm87' unwrapped='true' />
+        <operation name='GetDatabaseHosts' method='GetDatabaseHosts' signature='KClbTGNvbS90aGVtaWRuaWdodGNvZGVycy9EYXRhYmFzZUluZm87' unwrapped='true' />
+        <operation name='GetDatabases' method='GetDatabases' signature='KExqYXZhL2xhbmcvU3RyaW5nOylbTGphdmEvbGFuZy9TdHJpbmc7' unwrapped='true' />
+        <operation name='TestQuery' method='TestQuery' signature='KExqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nOylMY29tL3RoZW1pZG5pZ2h0Y29kZXJzL1F1ZXJ5UmVzdWx0Ow==' unwrapped='true' />
+        <operation name='GetTables' method='GetTables' signature='KExqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nOylbTGphdmEvbGFuZy9TdHJpbmc7' unwrapped='true' />
+        <operation name='GetColumns' method='GetColumns' signature='KExqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nOylbTGNvbS90aGVtaWRuaWdodGNvZGVycy9Db2x1bW5JbmZvOw==' unwrapped='true' />
+        <operation name='GenerateSourceCode' method='GenerateSourceCode' signature='KExqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nO0xqYXZhL2xhbmcvU3RyaW5nOylW' unwrapped='true' />
+    </operation-mapping>
+</mapping>

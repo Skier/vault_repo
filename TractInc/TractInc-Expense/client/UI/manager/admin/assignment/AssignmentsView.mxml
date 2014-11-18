@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HDividedBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%"
+	height="100%"
+	backgroundColor="#eeeeee"
+	borderColor="#999999"
+	borderStyle="solid"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingTop="5"
+	paddingBottom="5"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ListCollectionView;
+			import App.Entity.AssetDataObject;
+			import App.Entity.AssetAssignmentDataObject;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import common.TypesRegistry;
+			import UI.manager.admin.AdminController;
+
+			[Bindable]
+			public var controller:AssignmentsController;
+			
+			public function set parentController(parent:AdminController):void 
+			{
+				controller = new AssignmentsController(this as AssignmentsView, parent);
+			}
+			
+			public function getAssignmentById(id:int):AssetAssignmentDataObject
+			{
+				return controller.getAssignmentById(id);
+			}
+			
+			public function onCrewChiefChange():void {
+				var asset:AssetDataObject = AssetDataObject(dgCrewChiefs.selectedItem);
+				
+				var assets:ListCollectionView = new ListCollectionView(controller.parentController.parentController.model.assets);
+				assets.filterFunction = function(obj:Object):Boolean {
+					return !AssetDataObject(obj).Deleted && (asset.AssetId == AssetDataObject(obj).ChiefAssetId);
+				};
+				assets.refresh();
+				dgCrewAssets.dataProvider = assets;
+				
+				var projects:ListCollectionView = new ListCollectionView(controller.parentController.model.assignments);
+				projects.filterFunction = function(obj:Object):Boolean {
+					return !AssetAssignmentDataObject(obj).Deleted && (asset.AssetId == AssetAssignmentDataObject(obj).AssetId);
+				}
+				projects.refresh();
+				dgCrewProjects.dataProvider = projects;
+			}
+			
+			private function onAssetChange():void {
+				var asset:AssetDataObject = AssetDataObject(dgCrewAssets.selectedItem);
+				
+				var projects:ListCollectionView = new ListCollectionView(controller.parentController.model.assignments);
+				projects.filterFunction = function(obj:Object):Boolean {
+					return !AssetAssignmentDataObject(obj).Deleted && (asset.AssetId == AssetAssignmentDataObject(obj).AssetId);
+				}
+				projects.refresh();
+				dgAssetProjects.dataProvider = projects;
+			}
+			
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox
+		height="100%"
+		width="330">
+		<mx:DataGrid
+			id="dgCrewChiefs"
+			width="100%"
+			change="onCrewChiefChange()">
+			<mx:columns>
+				<mx:DataGridColumn
+					headerText="Crew Chief"
+					dataField="BusinessName"
+					/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:VBox
+			width="100%"
+			height="100%">
+			<mx:HBox
+				width="100%">
+				<mx:Label
+					text="Crew Projects:"
+					fontWeight="bold"/>
+				<mx:Spacer
+					width="100%"/>
+			</mx:HBox>
+			<mx:DataGrid
+				id="dgCrewProjects"
+				width="100%"
+				height="100%"
+				>
+				<mx:columns>
+					<mx:DataGridColumn headerText="Client" dataField="ClientName" width="100"/>
+					<mx:DataGridColumn headerText="AFE" dataField="AFE" width="100"/>
+					<mx:DataGridColumn headerText="Project" dataField="SubAFE"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button
+					label="Add"
+					click="controller.onClickNewAssetAssignment()"
+					enabled="{dgCrewChiefs.selectedItem != null}"/>
+				<mx:Button
+					label="Remove"
+					click="controller.onClickDeleteAssetAssignment()"
+					enabled="{(dgCrewProjects.selectedItem != null) &amp;&amp; ('ISSUED' == AssetAssignmentDataObject(dgCrewProjects.selectedItem).ProjectStatus)}"/>
+			</mx:HBox>
+		</mx:VBox>
+	
+	</mx:VBox>
+	
+	<mx:Panel
+		title="Manage Crew Rates"
+		width="100%"
+		height="100%">
+		<mx:VDividedBox
+			width="100%"
+			height="100%">
+			<mx:VBox
+				width="100%"
+				height="100%">
+				<mx:HBox width="100%">
+					<mx:Label
+						text="Crew Assets:"
+						fontWeight="bold"/>
+					<mx:Spacer
+						width="100%"/>
+				</mx:HBox>
+				<mx:DataGrid
+					id="dgCrewAssets"
+					width="100%"
+					height="100%"
+					minWidth="600"
+					doubleClickEnabled="true"
+					itemDoubleClick="controller.onClickEditAssetAssignment()"
+					change="onAssetChange()"
+					>
+					<mx:columns>
+						<mx:DataGridColumn headerText="Asset" dataField="BusinessName" />
+						<mx:DataGridColumn headerText="First Name" dataField="FirstName" />
+						<mx:DataGridColumn headerText="Middle Name" dataField="MiddleName" />
+						<mx:DataGridColumn headerText="Last Name" dataField="LastName" />
+						<mx:DataGridColumn headerText="SSN" dataField="SSN" />
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox
+				width="100%"
+				height="100%">
+				<mx:HBox width="100%">
+					<mx:Label
+						text="Asset Projects:"
+						fontWeight="bold"/>
+					<mx:Spacer
+						width="100%"/>
+				</mx:HBox>
+				<mx:DataGrid
+					id="dgAssetProjects"
+					width="100%"
+					height="100%"
+					minWidth="600"
+					doubleClickEnabled="true"
+					itemDoubleClick="controller.onClickEditAssetAssignment()"
+					>
+					<mx:columns>
+						<mx:DataGridColumn headerText="Client" dataField="ClientName" width="100"/>
+						<mx:DataGridColumn headerText="AFE" dataField="AFE" />
+						<mx:DataGridColumn headerText="Project" dataField="SubAFE" />
+						<mx:DataGridColumn headerText="Status" dataField="ProjectStatus" />
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button
+						label="Edit Rates"
+						enabled="{null != dgAssetProjects.selectedItem}"
+						click="controller.onClickEditAssetAssignment()" />
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:Panel>
+	
+</mx:HDividedBox>

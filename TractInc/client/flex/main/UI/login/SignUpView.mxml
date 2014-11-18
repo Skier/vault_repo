@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="vertical" title="Sign Up" 
+    xmlns:validators="TractInc.SDK.validators.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+        	import mx.rpc.Responder;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.managers.PopUpManager;
+
+        	import TractInc.Domain.Person;
+        	import TractInc.Domain.User;
+
+            private var loginController:LoginController = null;
+                
+            public static function open(parent:DisplayObject, modal:Boolean):SignUpView
+            {
+                var popup:SignUpView = new SignUpView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            public function setController(lc:LoginController):void {
+                loginController = lc;
+            }
+            
+            private function commit():void
+            {
+                if (! formValidator.validate(true)) return;
+
+                if (passwdTxt.text != confPasswdTxt.text) {
+                    passwdTxt.errorString = confPasswdTxt.errorString = "Passwords are not equal";
+                    passwdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    confPasswdTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    return;
+                }
+                
+                if (emailTxt.text != confEmailTxt.text) {
+                    emailTxt.errorString = confEmailTxt.errorString = "Emails are not equal";
+                    emailTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    confEmailTxt.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+                    return;
+                }
+
+                var person:Person = new Person();        
+                person.Email = emailTxt.text;
+                person.FirstName = firstNameTxt.text;
+                person.LastName = lastNameTxt.text;
+                person.PhoneNumber = phoneNumberTxt.text;
+
+                loginController.doSignUp(person, loginTxt.text, passwdTxt.text);
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        <mx:StringValidator source="{firstNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{lastNameTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{phoneNumberTxt}" property="text" required="true"/>                        
+        <mx:EmailValidator  source="{emailTxt}" property="text" required="true"/>
+        <mx:EmailValidator  source="{confEmailTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{loginTxt}" property="text" required="true"/>
+        <mx:StringValidator source="{passwdTxt}" property="text" required="true" minLength="4"/>
+        <mx:StringValidator source="{confPasswdTxt}" property="text" required="true" minLength="4"/>
+    </validators:ValidatorsGroup>
+
+    <mx:Form 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000"
+        paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20"
+        >
+
+        <mx:FormItem label="First Name" width="100%" required="true">
+            <mx:TextInput id="firstNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Last Name" width="100%" required="true">
+            <mx:TextInput id="lastNameTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Phone Number" width="100%" required="true">
+            <mx:TextInput id="phoneNumberTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Email" width="100%" required="true">
+            <mx:TextInput id="emailTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Confirm Email" width="100%" required="true">
+            <mx:TextInput id="confEmailTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Login" width="100%" required="true">
+            <mx:TextInput id="loginTxt" width="100%"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Password" width="100%" required="true">
+            <mx:TextInput id="passwdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="Confirm Password" width="100%" required="true">
+            <mx:TextInput id="confPasswdTxt" width="100%" displayAsPassword="true"/>
+        </mx:FormItem>
+
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button label="Save" click="commit()"/>
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

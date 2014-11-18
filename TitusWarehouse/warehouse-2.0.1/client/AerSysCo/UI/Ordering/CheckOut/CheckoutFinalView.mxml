@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    styleName="finalCheckOutPanel"
+    title="Final Order Review">
+
+    <mx:Metadata>
+        [Event(name="previousStepRequest", type="flash.events.Event")]
+        [Event(name="continueCheckout", type="flash.events.Event")]
+        [Event(name="termsRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import AerSysCo.UI.Models.CustomerUI;
+            import AerSysCo.UI.Models.ShoppingCartShipmentUI;
+            import AerSysCo.UI.Catalog.CatalogController;
+            import AerSysCo.UI.MainController;
+            import AerSysCo.UI.Models.ShoppingCartUI;
+            import mx.controls.Alert;
+
+            [Bindable] public var currentCustomer:CustomerUI;
+
+            public function init():void 
+            {
+                if (cbAgree != null) 
+                {
+                    cbAgree.selected = false;
+                }
+            }
+            
+            private function btnPrevClickHandler():void 
+            {
+                dispatchEvent(new Event("previousStepRequest"));
+            }
+            
+            private function btnContinueClickHandler():void 
+            {
+                dispatchEvent(new Event("continueCheckout"));
+            }
+            
+            private function termsClickHandler():void 
+            {
+                dispatchEvent(new Event("termsRequest"));
+            }
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Canvas width="100%" height="100%" verticalScrollPolicy="on">
+        <mx:VBox width="100%" height="100%"
+            paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+            <mx:HBox width="100%" horizontalGap="10">
+        
+        <!-- addresses -->
+                <mx:Canvas height="100%">
+                    <mx:VBox id="boxShippingDetail" height="100%" 
+                        styleName="finalCheckOutSection">
+                        <mx:HBox>
+                            <mx:VBox width="65" verticalAlign="top">
+                                <mx:Label text="Sold To:" fontWeight="bold"/>
+                            </mx:VBox>
+            
+                            <mx:VBox styleName="finalCheckOutAddressBox">
+                                <mx:Label text="{currentCustomer.salesRepCompanyName}"/>
+                                <mx:Label text="{currentCustomer.address.address1}"/>
+                                <mx:Label text="{currentCustomer.address.address2}"
+                                    visible="{currentCustomer.address.address2.length > 0}"
+                                    includeInLayout="{currentCustomer.address.address2.length > 0}"/>
+                                <mx:Label text="{currentCustomer.address.city + ', ' + currentCustomer.address.state + ' ' + currentCustomer.address.zip}"/>
+                            </mx:VBox>
+                        </mx:HBox>
+            
+                        <mx:HBox>
+                            <mx:VBox width="65" verticalAlign="top">
+                                <mx:Label text="Ship To:" fontWeight="bold"/>
+                            </mx:VBox>
+            
+                            <mx:VBox styleName="finalCheckOutAddressBox">
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingAddress.name}"/>
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingAddress.address1}"/>
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingAddress.address2}"
+                                    visible="{currentCustomer.shoppingCart.shippingAddress.address2.length > 0}"
+                                    includeInLayout="{currentCustomer.shoppingCart.shippingAddress.address2.length > 0}"/>
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingAddress.city + ', ' 
+                                                + currentCustomer.shoppingCart.shippingAddress.state + ' ' 
+                                                + currentCustomer.shoppingCart.shippingAddress.zip}"/>
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingAddress.country}"/>
+                            </mx:VBox>
+                        </mx:HBox>
+                    </mx:VBox>
+                    
+                    <mx:Box styleName="finalCheckOutSectionLabel">
+                        <mx:Label text=" Shipping Detail: "/>
+                    </mx:Box>
+                </mx:Canvas>
+        
+        <!-- addresses -->
+        
+        <!-- order summary -->
+                <mx:Canvas height="100%">
+                    <mx:VBox id="boxOrderSummary" height="100%"
+                        styleName="finalCheckOutSection">
+                        <mx:HBox horizontalGap="0">
+                            <mx:VBox height="100%" 
+                                verticalAlign="middle" horizontalAlign="center">
+                                <mx:Label id="lblWarehouseName" text="" width="100" textAlign="right" fontWeight="bold"/>
+                            </mx:VBox>
+                            <mx:VBox height="100%" 
+                                verticalAlign="middle" horizontalAlign="center">
+                                <mx:Label id="lblSubTotal" text="SubTotal" width="100" textAlign="center" fontWeight="bold"/>
+                            </mx:VBox>
+                            <mx:VBox height="100%" 
+                                verticalAlign="middle" horizontalAlign="center" verticalGap="-3">
+                                <mx:Label id="lblShippingTotal_1" text="Shipping" width="100" textAlign="center" fontWeight="bold"/>
+                                <mx:Label id="lblShippingTotal_2" text="Total" width="100" textAlign="center" fontWeight="bold"/>
+                            </mx:VBox>
+                            <mx:VBox height="100%" 
+                                verticalAlign="middle" horizontalAlign="center" verticalGap="-3">
+                                <mx:Label id="lblWarehouseTotal_1" text="Warehouse" width="100" textAlign="center" fontWeight="bold"/>
+                                <mx:Label id="lblWarehouseTotal_2" text="Total" width="100" textAlign="center" fontWeight="bold"/>
+                            </mx:VBox>
+                            <mx:VBox height="100%" 
+                                verticalAlign="middle" horizontalAlign="center">
+                                <mx:Label id="lblPONumber" text="PONumber" width="100" textAlign="center" fontWeight="bold"/>
+                            </mx:VBox>
+                        </mx:HBox>
+            
+                        <mx:HRule width="100%"/>
+            
+                        <mx:Repeater id="rptShipments" width="100%"
+                            dataProvider="{currentCustomer.shoppingCart.shipmentsFiltered}">
+                            <mx:HBox width="100%" horizontalGap="0">
+                                <mx:Label 
+                                    text="{CatalogController.getInstance().getWarehouse(ShoppingCartShipmentUI(rptShipments.currentItem).warehouseId).warehouseName}" 
+                                    width="{lblWarehouseName.width}"
+                                    fontWeight="bold" textAlign="right"/>
+            
+                                <mx:HBox width="{lblSubTotal.width}" 
+                                    horizontalAlign="center" verticalAlign="middle" 
+                                    horizontalScrollPolicy="off">
+                                    <mx:Label text="{ShoppingCartShipmentUI(rptShipments.currentItem).total.toFixed(2)}"/>
+                                </mx:HBox>
+            
+                                <mx:HBox width="{lblShippingTotal_1.width}" 
+                                    horizontalAlign="center" verticalAlign="middle" 
+                                    horizontalScrollPolicy="off">
+                                    <mx:Label text="{ShoppingCartShipmentUI(rptShipments.currentItem).shippingTotal.toFixed(2)}"/>
+                                </mx:HBox>
+            
+                                <mx:HBox width="{lblWarehouseTotal_1.width}" 
+                                    horizontalAlign="center" verticalAlign="middle" 
+                                    horizontalScrollPolicy="off">
+                                    <mx:Label text="{ShoppingCartShipmentUI(rptShipments.currentItem).grandTotal.toFixed(2)}"/>
+                                </mx:HBox>
+            
+                                <mx:HBox width="{lblPONumber.width}" 
+                                    horizontalAlign="center" verticalAlign="middle" 
+                                    horizontalScrollPolicy="off">
+                                    <mx:Label text="{ShoppingCartShipmentUI(rptShipments.currentItem).poNumber}"/>
+                                </mx:HBox>
+                            </mx:HBox>
+                        </mx:Repeater>
+            
+                        <mx:HRule width="100%"/>
+            
+                        <mx:HBox width="100%" horizontalGap="0">
+                            <mx:Label 
+                                text="Grand Total:" 
+                                width="{lblWarehouseName.width}"
+                                fontWeight="bold" textAlign="right"/>
+            
+                            <mx:HBox width="{lblSubTotal.width}" 
+                                horizontalAlign="center" verticalAlign="middle" 
+                                horizontalScrollPolicy="off">
+                                <mx:Label text="{currentCustomer.shoppingCart.total.toFixed(2)}"/>
+                            </mx:HBox>
+            
+                            <mx:HBox width="{lblShippingTotal_1.width}" 
+                                horizontalAlign="center" verticalAlign="middle" 
+                                horizontalScrollPolicy="off">
+                                <mx:Label text="{currentCustomer.shoppingCart.shippingTotalAllWarehouses.toFixed(2)}"/>
+                            </mx:HBox>
+            
+                            <mx:HBox width="{lblWarehouseTotal_1.width}" 
+                                horizontalAlign="center" verticalAlign="middle" 
+                                horizontalScrollPolicy="off">
+                                <mx:Label text="{currentCustomer.shoppingCart.grandTotal.toFixed(2)}"/>
+                            </mx:HBox>
+                            
+                            <mx:Spacer width="100%"/>
+                        </mx:HBox>
+                    </mx:VBox>
+        
+                    <mx:Box backgroundColor="#ffffff" left="20">
+                        <mx:Label text=" Order Summary: " fontWeight="bold" fontSize="14"/>
+                    </mx:Box>
+                </mx:Canvas>
+                
+        <!-- order summary -->
+        
+            </mx:HBox>
+            
+            <mx:VBox width="100%">
+                <mx:HBox width="100%" styleName="finalCheckOutSubSection">
+                    <mx:Label text="Shipping Instructions:" fontWeight="bold"/>
+                </mx:HBox>
+        
+                <mx:HBox width="100%">
+                    <mx:Label text="Mark Order:" fontWeight="bold"/>
+                    <mx:Label text="{currentCustomer.shoppingCart.markOrder}" width="100%" minWidth="100"/>
+                    <mx:Label text="Jobsite Phone #:" fontWeight="bold"/>
+                    <mx:Label text="{currentCustomer.shoppingCart.jobsiteContactPh}" width="100%" minWidth="100" />
+                    <mx:Label text="Delivery Request:" fontWeight="bold"/>
+                    <mx:Label text="{currentCustomer.shoppingCart.deliveryRequest}" width="100%" minWidth="100"/>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:VBox width="100%">
+                <mx:HBox width="100%" styleName="finalCheckOutSubSection">
+                    <mx:Label text="Order Detail:" fontWeight="bold"/>
+                </mx:HBox>
+        
+                <mx:VBox width="100%">
+                    <mx:Repeater id="rptOrders" width="100%" dataProvider="{currentCustomer.shoppingCart.shipmentsFiltered}">
+                        <mx:VBox width="100%">
+                            <mx:HBox width="100%" fontWeight="bold">
+                                <mx:Label text="{CatalogController.getInstance().getWarehouse(ShoppingCartShipmentUI(rptOrders.currentItem).warehouseId).warehouseName}"
+                                    width="250" maxWidth="250"/>
+                                <mx:Spacer width="50"/>
+                                <mx:Label text="PO Number: {ShoppingCartShipmentUI(rptOrders.currentItem).poNumber}"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                        
+                        <mx:VBox width="100%">
+                            <mx:DataGrid dataProvider="{ShoppingCartShipmentUI(rptOrders.currentItem).details}" width="100%"
+                                rowCount="{ShoppingCartShipmentUI(rptOrders.currentItem).details.length + 1}">
+                                <mx:columns>
+                                    <mx:DataGridColumn headerText="SKU" dataField="sku" width="65" minWidth="65"/>
+                                    <mx:DataGridColumn headerText="Model" dataField="modelName" width="75" minWidth="75"/>
+                                    <mx:DataGridColumn headerText="Description" dataField="description"/>
+                                    <mx:DataGridColumn headerText="Order QTY" dataField="qtyNeeded" width="75" minWidth="75" textAlign="center"/>
+                                    <mx:DataGridColumn headerText="Unit Price" dataField="priceString" width="75" minWidth="75" textAlign="right"/>
+                                    <mx:DataGridColumn headerText="SubTotal" dataField="amountString" width="75" minWidth="75" textAlign="right"/>
+                            </mx:columns>
+                            </mx:DataGrid>
+                        </mx:VBox>
+                    </mx:Repeater>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:Canvas>
+    
+    <mx:HBox width="100%" 
+        styleName="finalCheckOutAgreeBox">
+        <mx:CheckBox id="cbAgree" label="" scaleX="1.3" scaleY="1.3"/>
+        <mx:Label text="I have read and agree to the" fontWeight="bold"/>
+        <mx:LinkButton label="Terms and Conditions" 
+            styleName="finalOrderCheckOutTermsLink"
+            click="termsClickHandler()"/>
+    </mx:HBox>
+    
+    <mx:HBox width="100%"
+        styleName="panelTopHeader">
+        <mx:Spacer width="100%"/>
+        <mx:Button id="btnPrev" 
+            height="24" label="Previous" 
+            styleName="checkOutButton"
+            click="btnPrevClickHandler()"/>
+            
+        <mx:Button id="btnContinue" 
+            height="24" label="Submit Order" 
+            enabled="{cbAgree.selected}" 
+            styleName="checkOutButton"
+            click="btnContinueClickHandler()"/>
+    </mx:HBox>
+</mx:Panel>

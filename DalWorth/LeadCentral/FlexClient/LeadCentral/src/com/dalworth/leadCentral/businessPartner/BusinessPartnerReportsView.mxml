@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			
+			[Embed(source="/assets/icons16/control.png")]
+			[Bindable]
+			private var iconControlRight:Class;
+			
+			[Embed(source="/assets/icons16/control_180.png")]
+			[Bindable]
+			private var iconControlLeft:Class;
+			
+			public function init():void 
+			{
+			}
+			
+			private function onMenuItemClick(event:ItemClickEvent):void 
+			{
+				
+			}
+
+			private var leftPanelWidth:Number;
+			private function toggleLeftPanel():void 
+			{
+				if (boxLeftPanel.width == 1)
+				{
+					boxLeftPanel.width = leftPanelWidth;
+				} else 
+				{
+					leftPanelWidth = boxLeftPanel.width;
+					boxLeftPanel.width = 1;
+				}
+					
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%" horizontalGap="-1">
+		<mx:VBox id="boxLeftPanel" height="100%" backgroundColor="#FFFFEE" width="180"
+			borderColor="#CCCCCC" borderStyle="solid">
+			<mx:LinkBar direction="vertical"  
+					dataProvider="{vsSetting}" labelField="label"
+					itemClick="onMenuItemClick(event)"/>
+		</mx:VBox>
+		
+		<mx:Button id="btnCollapseLeft" 
+			width="9" height="100%" cornerRadius="0" paddingLeft="0" paddingRight="0"
+			toggle="true" horizontalCenter="0" verticalCenter="0" label=""
+			icon="{btnCollapseLeft.selected ? iconControlRight : iconControlLeft}"
+			click="toggleLeftPanel()"/>
+
+		<mx:ViewStack id="vsSetting" width="100%" height="100%">
+			<mx:VBox width="100%" height="100%" label="Lead Report"/>
+			<mx:VBox width="100%" height="100%" label="Project Report"/>
+			<mx:VBox width="100%" height="100%" label="Customer Report"/>
+		</mx:ViewStack>
+		
+	</mx:HBox>
+</mx:VBox>

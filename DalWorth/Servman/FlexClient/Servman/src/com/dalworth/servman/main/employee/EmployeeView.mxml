@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:dashboard="com.dalworth.servman.main.employee.dashboard.*" xmlns:businessPartner="com.dalworth.servman.main.employee.businessPartner.*" xmlns:lead="com.dalworth.servman.main.employee.lead.*" xmlns:project="com.dalworth.servman.main.employee.project.*" xmlns:report="com.dalworth.servman.main.employee.report.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import com.dalworth.servman.main.MainAppModel;
+			import mx.events.ItemClickEvent;
+			
+			public static const MODEL_INITED:String = "ModelInited";
+			
+			private static const VIEW_NAME:String = "Owner View";
+			
+			[Bindable]
+			private var model:EmployeeModel = EmployeeModel.getInstance();
+			
+			[Bindable]
+			private var appModel:MainAppModel = MainAppModel.getInstance();
+			
+			private var controller:EmployeeController;
+
+			public function init():void 
+			{
+				controller = new EmployeeController(this);
+				addEventListener(MODEL_INITED, onModelInit);
+				controller.initModel();
+			}
+			
+			private function onModelInit(event:Event):void 
+			{
+				trace("Owner model inited");
+			}
+			
+			private function onBarItemClick(event:ItemClickEvent):void 
+			{
+				trace("item clicked");
+				
+				switch (event.index) 
+				{
+					case 0:
+						vsOwner.selectedChild = viewDashboard;
+						viewDashboard.init();
+						break;
+/* 						
+					case 1:
+						vsOwner.selectedChild = viewBusinessPartners;
+						viewBusinessPartners.init();
+						break;
+ */
+					case 1:
+						vsOwner.selectedChild = viewLeads;
+						viewLeads.init();
+						break;
+
+					case 2:
+						vsOwner.selectedChild = viewProjects;
+						viewProjects.init();
+						break;
+						
+					case 3:
+						vsOwner.selectedChild = viewReports;
+						viewReports.init();
+						break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#326C8E" verticalAlign="middle" paddingLeft="10" paddingRight="10">
+		<mx:LinkBar dataProvider="{vsOwner}" labelField="label" width="100%" fontSize="14" itemClick="onBarItemClick(event)"/>
+		<mx:Spacer width="100%"/>
+		<mx:Label text="{appModel.currentUser.Name}" color="#FFFF66" fontSize="13"/>
+	</mx:HBox>
+	
+	<mx:ViewStack id="vsOwner" width="100%" height="100%">
+		<dashboard:EmployeeDashboardView id="viewDashboard" width="100%" height="100%" label="Home"/>
+<!--
+		<businessPartner:BusinessPartnersView id="viewBusinessPartners" width="100%" height="100%" label="Business Partners"/>
+-->
+		<lead:EmployeeLeadsView id="viewLeads" width="100%" height="100%" label="Leads"/>
+		<project:EmployeeProjectsView id="viewProjects" width="100%" height="100%" label="Projects"/>
+		<report:EmployeeReportsView id="viewReports" width="100%" height="100%" label="Reports"/>
+	</mx:ViewStack>
+</mx:VBox>

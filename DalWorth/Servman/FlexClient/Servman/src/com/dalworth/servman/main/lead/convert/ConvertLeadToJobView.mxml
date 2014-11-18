@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreate()" xmlns:steps="com.dalworth.servman.main.lead.convert.steps.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			private var model:ConvertLeadToJobModel;
+			private var controller:ConvertLeadToJobController;
+			
+			private function onCreate():void 
+			{
+				model = ConvertLeadToJobModel.getInstance();
+				controller = new ConvertLeadToJobController(this as UIComponent);
+			}
+			
+			private function onBack():void 
+			{
+				vsConvert.selectedIndex--;
+			}
+			
+			private function onNext():void 
+			{
+				vsConvert.selectedIndex++;
+			}
+			
+			private function onCancel():void 
+			{
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:ViewStack id="vsConvert" width="100%" height="100%">
+			<steps:CustomerLookupStep width="100%" height="100%"/>
+			<steps:CustomerEditStep width="100%" height="100%"/>
+		</mx:ViewStack>
+		
+		<mx:HBox width="100%" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+			<mx:Button width="100" label="Back" click="onBack()"/>
+			<mx:Button width="100" label="Next" click="onNext()"/>
+			<mx:Button width="100" label="Cancel" click="onCancel()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

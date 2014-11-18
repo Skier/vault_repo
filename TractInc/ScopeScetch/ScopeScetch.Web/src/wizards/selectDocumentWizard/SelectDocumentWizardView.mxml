@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:startPageWizard="src.wizards.startPageWizard.*"
+    xmlns:steps="src.wizards.steps.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    title="{controller.activeStep.stepTitle}"
+    width="450" height="300" 
+    creationComplete="controller.init();">
+
+    <mx:Script>
+        <![CDATA[
+            import src.util.wizard.AbstractStep;
+            import src.AppController;
+
+            import mx.managers.PopUpManager;
+
+            public static function open(parent:DisplayObject, modal:Boolean):SelectDocumentWizardView
+            {
+                var popup:SelectDocumentWizardView = new SelectDocumentWizardView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                this.setStyle("footerColors", null); //bug arround
+
+                PopUpManager.removePopUp(this);
+            }
+            
+            [Bindable]
+            public var controller:SelectDocumentWizardController = 
+                new SelectDocumentWizardController(SelectDocumentWizardView(this));
+
+            [Bindable] public var appController:AppController;
+
+            public function getStepIndex(step:AbstractStep):int
+            {
+                return (null != step) 
+                    ? stepsVS.getChildIndex(step) 
+                    : -1;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:RemoteObject id="deedProService" 
+        destination="GenericDestination" source="TractInc.DeedPro.DeedProService" 
+        showBusyCursor="true"/>
+
+    <mx:ViewStack id="stepsVS" creationPolicy="all" 
+        selectedIndex="{getStepIndex(controller.activeStep)}"
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        width="100%" height="100%" 
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <steps:SelectDocumentStep id="selectDocumentStep" 
+            service="{deedProService}" hasNextStep="true"
+            newDocumentRequest="controller.selectDocument_newDocumentRequestHandler()"
+            stepTitle="Select Document"/>
+
+        <steps:SelectTractStep id="selectTractStep" 
+            service="{deedProService}" hasNextStep="false"
+            newTractRequest="controller.selectTract_newTractRequestHandler()"
+            stepTitle="Select Document Tract"/>
+
+        <steps:FillDocFieldsStep id="fillDocReqFieldsStep" 
+            stepTitle="Document Required Fields" hasNextStep="true"/>
+
+        <steps:FillTractFieldsStep id="fillTractReqFieldsStep" 
+            stepTitle="Tract Required Fields" hasNextStep="false"/>
+
+    </mx:ViewStack>
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button id="buttonBack"
+            label="&lt; Back" width="70" 
+            enabled="{stepsVS.selectedChild != selectDocumentStep}"
+            click="controller.goToPreviousStep()"/>
+
+        <mx:Button id="buttonNext"
+            label="{controller.activeStep.hasNextStep ? 'Next &gt;' : 'Finish'}" width="70" 
+            enabled="{controller.activeStep.formValid}"
+            click="controller.goToNextStep()"/>
+        
+        <mx:Spacer width="10"/>
+        
+        <mx:Button label="Cancel" click="controller.cancel()" width="70"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

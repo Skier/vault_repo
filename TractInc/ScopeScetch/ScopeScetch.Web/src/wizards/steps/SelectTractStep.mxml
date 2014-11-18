@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceStep 
+    xmlns="src.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="src.deedplotter.validators.*" 
+    xmlns:steps="src.wizards.steps.*"
+    creationComplete="creationCompleteHandler()">
+
+    <mx:Metadata>
+        [Event(name="newTractRequest", type="flash.events.Event")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.TractListInfo;
+            import src.deedplotter.domain.Document;
+
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.controls.Alert;
+            import mx.collections.ArrayCollection;
+
+            [Bindable] public var docum:Document;
+
+            public var tractInfo:TractListInfo;
+
+            private var isRefreshRequired:Boolean = true;
+
+            [Bindable] private var tracts:ArrayCollection;
+            
+            override public function validateForm():Boolean 
+            {
+                tractInfo = TractListInfo(tractList.selectedItem);
+
+                return (null != tractInfo);
+            }
+            
+            private function creationCompleteHandler():void
+            {
+                if (service)
+                {
+                    service.GetTractList.addEventListener(
+                        ResultEvent.RESULT, GetTractList_resultHandler);
+    
+                    service.GetTractList.addEventListener(
+                        FaultEvent.FAULT, GetTractList_faultHandler);
+                }
+            }
+            
+            override public function activate():void
+            {
+                loadTractList();
+            }
+
+            private function loadTractList():void
+            {
+                if (docum && docum.DocID)
+                {
+                    formValid = false;
+                    service.GetTractList(docum.DocID);
+                }
+            }
+
+            private function GetTractList_resultHandler(event:ResultEvent):void
+            {
+                tracts = new ArrayCollection(event.result as Array);
+
+                formValid = tracts.length > 0;
+                tractList.selectedIndex = 0;
+            }
+
+            private function GetTractList_faultHandler(event:FaultEvent):void
+            {
+                Alert.show(event.fault.faultString);
+            }
+
+            private function createNewButton_clickHandler():void
+            {
+                dispatchEvent(new Event("newTractRequest"));
+            }
+
+        ]]>
+    </mx:Script>
+
+    <steps:DocumentInfoView
+        docum="{docum}" enabled="false" paddingBottom="10"/>
+
+    <mx:List id="tractList"
+        selectedIndex="0"
+        dataProvider="{tracts}" labelField="referenceName"
+        width="100%" height="100%"/>
+
+    <mx:HBox width="100%">
+        <mx:Button label="Create New" click="createNewButton_clickHandler()"/>
+    </mx:HBox>
+
+</ServiceStep>

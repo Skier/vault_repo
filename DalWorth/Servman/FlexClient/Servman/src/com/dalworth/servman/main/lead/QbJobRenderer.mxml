@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.events.JobEvent;
+			import com.intuit.sb.cdm.v2.IDSJob;
+			import com.dalworth.servman.service.registry.QbJobRegistry;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var idsJob:IDSJob;
+			
+			[Bindable] private var phones:ArrayCollection = new ArrayCollection();
+			[Bindable] private var addresses:ArrayCollection = new ArrayCollection();
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				
+				if (value is IDSJob)
+					idsJob = value as IDSJob;
+				else 
+					idsJob = null;
+				
+				updateJobProperties();
+			}
+			
+			private function updateJobProperties():void 
+			{
+				if (idsJob != null)
+				{
+					phones = idsJob.phones;
+					addresses = idsJob.addresses;
+				}
+				
+				setBackground();
+			}
+			
+			private function setBackground():void 
+			{
+/* 
+				if (idsJob != null)
+				{
+					if (idsJob.MatchLevel == 4)
+						boxContent.setStyle("backgroundColor", 0xDDFFDD);
+					else if (idsJob.MatchLevel == 3)
+						boxContent.setStyle("backgroundColor", 0xDDDDFF);
+					else if (idsJob.MatchLevel == 2)
+						boxContent.setStyle("backgroundColor", 0xFFFFDD);
+					else if (idsJob.MatchLevel == 1)
+						boxContent.setStyle("backgroundColor", 0xFFDDDD);
+					else 
+						boxContent.setStyle("backgroundColor", 0xFFFFFF);
+				}
+ */
+			}
+			
+			private function onHide():void 
+			{
+				//dispatchEvent(new QbJobEvent(QbJobEvent.QBJOB_HIDE, qbJob, true));
+			}
+			
+			private function onConnect():void 
+			{
+				dispatchEvent(new JobEvent(JobEvent.IDS_JOB_CONNECT, idsJob, true));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox id="boxContent" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+		top="1" bottom="0" right="1" left="1">
+		<mx:VBox width="100%" verticalGap="0">
+			<mx:HBox width="100%">
+				<mx:Label text="{idsJob.showAs}" fontWeight="bold"/>
+				<mx:Label text="First Name:"/>
+				<mx:Label text="{idsJob.givenName}" fontWeight="bold"/>
+				<mx:Label text="Last Name:"/>
+				<mx:Label text="{idsJob.familyName}" fontWeight="bold"/>
+			</mx:HBox>
+
+			<mx:HBox width="100%">
+				<mx:Label text="Phones:"/>
+				
+				<mx:Repeater id="rptPhones" dataProvider="{phones}">
+					<mx:Label text="{}" fontWeight="bold"/>
+				</mx:Repeater>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:HBox height="100%" paddingBottom="4" paddingRight="4" paddingTop="4" horizontalGap="4">
+			<mx:Button height="100%" label="Hide" click="onHide()" cornerRadius="2"/>
+			<mx:Button height="100%" label="Connect" click="onConnect()" cornerRadius="2"/>
+		</mx:HBox>
+	</mx:HBox>
+</mx:Canvas>

@@ -1,0 +1,384 @@
+﻿@model Dalworth.Server.Web.Partner.Models.AccountingReport
+@using Dalworth.Server.Web.Partner.Models
+
+@{    
+    ViewBag.Title = "Partner In Profit - Accounting Report";
+    ViewBag.Header = "Accounting Report";
+    ViewBag.BodyAttribute = @MvcHtmlString.Create("onload='OnDateRangePresetChanged()'");        
+
+    ViewBag.ActiveTopMenu = "Home";
+    ViewBag.ActiveSubMenu = "Accounting Report";    
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/player/player.js")"></script>
+<script type="text/javascript">
+    var apiReadyHandler = function () {
+        YAHOO.MediaPlayer.onProgress.subscribe(onProgressHandler)
+    }
+
+    var playerFlag = false;
+
+    var onProgressHandler = function (param) {
+        if (param.elapsed < 1000 && playerFlag == true) {
+            YAHOO.MediaPlayer.stop();
+            playerFlag = false;
+        }
+
+        if (param.duration > 0 && param.elapsed > param.duration - 2000) {
+            YAHOO.MediaPlayer.play(YAHOO.MediaPlayer.controller.mediaengine.currentMedia, 0);
+            playerFlag = true;
+        }
+    }
+
+    YAHOO.MediaPlayer.onAPIReady.subscribe(apiReadyHandler);
+</script>
+
+
+<!--  date picker script -->
+<link rel="stylesheet" href="@Url.Content("~/Content/datePicker.css")" type="text/css" />
+<script src="@Url.Content("~/Scripts/date.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.datePicker.js")" type="text/javascript"></script>
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+
+        // initialise the "Select date" link
+        $('#date-pick-start')
+	.datePicker(
+        // associate the link with a date picker
+		{
+		createButton: false,
+		startDate: '01/01/2005',
+		endDate: '31/12/2020'
+}
+	).bind(
+        // when the link is clicked display the date picker
+		'click',
+		function () {
+		    if (!document.getElementById("DateStart").disabled) {
+		        var dateSeparated = $('#DateStart').attr('value').split("/")
+
+		        var date = new Date();
+		        if (dateSeparated.length == 3) {
+		            date = new Date(dateSeparated[2], dateSeparated[0] - 1, dateSeparated[1])
+		        }
+
+		        $('#date-pick-start').dpSetSelected(date.asString());
+		        $(this).dpDisplay();
+		    }
+		    return false;
+		}
+	).bind(
+        // when a date is selected update the SELECTs
+		'dateSelected',
+		function (e, selectedDate, $td, state) {
+		    updateSelects(selectedDate);
+		}
+	).bind(
+		'dpClosed',
+		function (e, selected) {
+		    updateSelects(selected[0]);
+		}
+	);
+
+        var updateSelects = function (selectedDate) {
+            var selectedDate = new Date(selectedDate);
+            if (isNaN(selectedDate))
+                $('#DateStart').attr('value', '');
+            else
+                $('#DateStart').attr('value', (selectedDate.getMonth() + 1) + '/' + selectedDate.getDate() + '/' + selectedDate.getFullYear());
+        }
+        // listen for when the selects are changed and update the picker
+        $('#DateStart')
+	.bind(
+		'change',
+		function () {
+		}
+	);
+
+    });
+
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+
+        // initialise the "Select date" link
+        $('#date-pick-end')
+	.datePicker(
+        // associate the link with a date picker
+		{
+		createButton: false,
+		startDate: '01/01/2005',
+		endDate: '31/12/2020'
+}
+	).bind(
+        // when the link is clicked display the date picker
+		'click',
+		function () {
+		    if (!document.getElementById("DateEnd").disabled) {
+		        var dateSeparated = $('#DateEnd').attr('value').split("/")
+
+		        var date = new Date();
+		        if (dateSeparated.length == 3) {
+		            date = new Date(dateSeparated[2], dateSeparated[0] - 1, dateSeparated[1])
+		        }
+
+		        $('#date-pick-end').dpSetSelected(date.asString());
+		        $(this).dpDisplay();
+		    }
+		    return false;
+		}
+	).bind(
+        // when a date is selected update the SELECTs
+		'dateSelected',
+		function (e, selectedDate, $td, state) {
+		    updateSelects(selectedDate);
+		}
+	).bind(
+		'dpClosed',
+		function (e, selected) {
+		    updateSelects(selected[0]);
+		}
+	);
+
+        var updateSelects = function (selectedDate) {
+            var selectedDate = new Date(selectedDate);
+            if (isNaN(selectedDate))
+                $('#DateEnd').attr('value', '');
+            else
+                $('#DateEnd').attr('value', (selectedDate.getMonth() + 1) + '/' + selectedDate.getDate() + '/' + selectedDate.getFullYear());
+        }
+        // listen for when the selects are changed and update the picker
+        $('#DateEnd')
+	.bind(
+		'change',
+		function () {
+		}
+	);
+
+    });
+</script>
+
+<script type="text/javascript">
+    function OnDateRangePresetChanged() {
+        if ($('#DateRangePreset').val() != "Custom") {
+            $('#DateStart').attr("disabled", "disabled");
+            $('#DateEnd').attr("disabled", "disabled");
+            $('#DateStart').val('');
+            $('#DateEnd').val('');
+        }
+        else {
+            $('#DateStart').removeAttr("disabled");
+            $('#DateEnd').removeAttr("disabled");
+        }
+
+    }
+</script>
+
+
+@using (Html.BeginForm("AccountingReport", "Home", FormMethod.Post, new { id = "AccountingReportForm" })) {
+    @Html.ValidationSummary(true)
+
+	<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
+
+	<tr>
+		<th valign="top">Partner</th>
+		<td>
+            @Html.DropDownList("CurrentPartner", Model.GetPartners(), new { @class="styledselect_form_1" })
+        </td>
+		<td colspan="2">
+            @Html.ValidationMessageFor(model => model.CurrentPartner)
+		</td>
+	</tr>
+
+	<tr>
+		<th valign="top">Date Range</th>
+		<td>
+			@Html.DropDownList("DateRangePreset", new SelectList(Model.DateRangePresets.Keys), new { @onchange="OnDateRangePresetChanged();", @class="styledselect_form_1" })
+        </td>
+		<td colspan="2"></td>
+
+	</tr>
+    
+	<tr>
+		<th valign="top">Date Start</th>
+		<td Width="202px">        
+            @Html.TextBoxFor(model => model.DateStart, new { @class="field-input" })
+		</td>
+        <td>        
+            <a href="" id="date-pick-start" class="dp-applied"><img src="@Url.Content("~/Content/images/forms/icon_calendar.jpg")" alt=""></a>
+        </td>
+		<td Width="170px">
+            @Html.ValidationMessageFor(model => model.DateStart)
+		</td>
+	</tr>
+
+	<tr>
+		<th valign="top">Date End</th>
+		<td>
+            @Html.TextBoxFor(model => model.DateEnd, new { @class="field-input" })
+        </td>
+        <td>        
+            <a href="" id="date-pick-end" class="dp-applied"><img src="@Url.Content("~/Content/images/forms/icon_calendar.jpg")" alt=""></a>
+        </td>
+		<td>
+            @Html.ValidationMessageFor(model => model.DateEnd)
+		</td>
+
+	</tr>    
+
+	<tr>
+		<th>&nbsp;</th>
+		<td valign="top">
+			<input type="submit" value="" class="form-submit" />
+		</td>
+		<td></td>
+	</tr>
+    </table>
+}
+<br>
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+    <tr>
+        <th class="table-header-repeat line-left">
+            AdSource
+        </th>
+        <th class="table-header-repeat line-left">
+            Partner
+        </th>
+        <th class="table-header-repeat line-left">
+            Incoming Phone
+        </th>
+        <th class="table-header-repeat line-left">
+            Trk
+        </th>
+        <th class="table-header-repeat line-left">
+            Ticket
+        </th>
+        <th class="table-header-repeat line-left">
+            Book Date
+        </th>
+        <th class="table-header-repeat line-left">
+            Status
+        </th>
+        <th class="table-header-repeat line-left">
+            First Call
+        </th>
+        <th class="table-header-repeat line-left">
+            $Booked
+        </th>
+        <th class="table-header-repeat line-left">
+            $Revenue
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Booked NI
+        </th>
+        <th class="table-header-repeat line-left">
+            $Revenue NI
+        </th>
+        <th class="table-header-repeat line-left">            
+        </th>
+    </tr>
+
+@if (Model.TicketItems.Count == 0){
+<tr><td colspan="100">Empty</td></tr>
+}
+@foreach (var item in Model.TicketItems) {
+    <tr>
+    <td>@item.AdsourceAcronym</td>
+    <td>@item.PartnerName</td>
+    <td>@item.IncomingDidText</td>
+    <td>@item.IsTrackingPhoneText</td>
+    <td>@item.TicketNumber</td>
+    <td>@item.BookDate.ToShortDateString()</td>
+    <td>@item.TicketStatus</td>
+    <td>@(item.FirstCallDate.HasValue ? item.FirstCallDate.Value.ToShortDateString() : string.Empty)</td>
+    <td>@(item.BookAmount.HasValue ? item.BookAmount.Value.ToString("C") : string.Empty)</td>
+    <td>@(item.CompleteAmount.HasValue ? item.CompleteAmount.Value.ToString("C") : string.Empty)</td>
+    <td>@(item.BookAmountNotIncluded.HasValue ? item.BookAmountNotIncluded.Value.ToString("C") : string.Empty)</td>
+    <td>@(item.CompleteAmountNotIncluded.HasValue ? item.CompleteAmountNotIncluded.Value.ToString("C") : string.Empty)</td>
+    <td width="60px">
+    @(item.VoiceFileName == "" ? MvcHtmlString.Empty : MvcHtmlString.Create(string.Format("<a href='{0}'>Play</a>", @item.VoiceFileName)))
+    </td>
+    </tr>     
+}
+</table>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+    <tr>
+        <th class="table-header-repeat line-left">            
+            AdSource
+        </th>
+        <th class="table-header-repeat line-left">            
+            Tkt Cnt
+        </th>
+        <th class="table-header-repeat line-left">
+            $Book
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Revenue
+        </th>
+        <th class="table-header-repeat line-left">            
+            Cnt AS
+        </th>
+        <th class="table-header-repeat line-left">            
+            Cnt NAS
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Book AS
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Book NAS
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Revenue AS
+        </th>
+        <th class="table-header-repeat line-left">            
+            $Revenue NAS
+        </th>
+    </tr>
+
+@if (Model.AdsourceItems.Count == 0){
+<tr><td colspan="100">Empty</td></tr>
+}
+@foreach (var item in Model.AdsourceItems) {
+    <tr @(item.IsGroupSummaryRow ? "class=alternate-row" : "") @(item.IsTotalSummaryRow ? "class=alternate-row-bold" : "")>
+    <td>@item.AdsourceAcronym</td>
+    <td>@item.TicketsCount</td>
+    <td>@item.TotalBookedAmount.ToString("C")</td>
+    <td>@item.TotalCompletedAmount.ToString("C")</td>
+    <td>@item.TicketsCountAssigned</td>
+    <td>@item.TicketsCountNotAssigned</td>
+    <td>@item.TotalBookedAmountAssigned.ToString("C")</td>
+    <td>@item.TotalBookedAmountNotAssigned.ToString("C")</td>
+    <td>@item.TotalCompletedAmountAssigned.ToString("C")</td>
+    <td>@item.TotalCompletedAmountNotAssigned.ToString("C")</td>
+    </tr>     
+}
+</table>
+<table>
+    <tr>
+        <td height="25px" width="300px">Total Revenue</td>
+        <td><p style="font-size:20px">@Model.TotalSummary.TotalCompletedAmountAssigned.ToString("C")</p></td>
+    </tr>
+    <tr>
+        <td height="25px">Servman Revenue</td>
+        <td><h4>@Model.PartnerAdsSummary.TotalCompletedAmount.ToString("C")</h4></td>
+    </tr>
+    <tr>
+        <td height="25px">Revenue From Tracking# / Other Ad Source</td>
+        <td><h4>@Model.OtherAdsSummary.TotalCompletedAmount.ToString("C")</h4></td>
+    </tr>
+    <tr>
+        <td height="25px">Revenue From Other Tracking# / Partner Ad source</td>
+        <td><p style="font-size:12px;font-weight:bold;color:Red">@((-Model.TotalSummary.TotalCompletedAmountNotAssigned).ToString("C"))</p></td>
+    </tr>
+    <tr>
+        <td height="25px">Check</td>
+        <td><h4>@((Model.PartnerAdsSummary.TotalCompletedAmount + Model.OtherAdsSummary.TotalCompletedAmount - Model.TotalSummary.TotalCompletedAmountNotAssigned).ToString("C"))</h4></td>
+    </tr>
+
+
+</table>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <mx:TitleWindow  xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300" title="BillItem"> 
+    <mx:Script>
+    <![CDATA[
+        import Domain.BillItem;
+        import mx.managers.PopUpManager;
+
+        [Bindable]
+        public var billItem:BillItem;
+        public var controller:ExpenseController;
+    
+        
+        private function onSubmitNewBillItem():void{
+            PopUpManager.removePopUp(this);
+        }
+        
+    ]]>
+</mx:Script>
+    <mx:Form>
+<!--
+                <mx:FormItem label="BillItemId">
+                    <mx:TextInput id="txtBillItemId" text="{billItem.idbillItem}"/>
+                </mx:FormItem>
+                <mx:FormItem label="AssetId">
+                    <mx:TextInput id="txtAssetId" text="{billItem.AssetId}"/>
+                </mx:FormItem>
+-->                
+                <mx:FormItem label="BillingDate">
+                    <mx:TextInput id="txtBillingDate" text="{billItem.BillingDate}"/>
+                </mx:FormItem>
+                <mx:FormItem label="DayQty">
+                    <mx:TextInput id="txtDayQty" text ="{billItem.DayQty}"/>
+                </mx:FormItem>
+<!--                
+                <mx:FormItem label="DateQty">
+                    <mx:TextInput id="txtDateQty" text ="{billItem.DateQty}"/>
+                </mx:FormItem>
+-->                
+                <mx:FormItem label="Status">
+                    <mx:TextInput id="txtStatus" text ="{billItem.Status}"/>
+                </mx:FormItem>
+            </mx:Form>
+            <mx:ControlBar>
+                <mx:Spacer width="100%" height="10"/>
+                <mx:Button id="btnSubmit" label="Submit"/>
+                <mx:Button id="btnCancel" label="Cancel" click="onSubmitNewBillItem()"/>
+            </mx:ControlBar>
+            
+            
+    </mx:TitleWindow>

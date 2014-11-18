@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	verticalAlign="middle"
+	horizontalAlign="center"
+	click="onClickNotes()"
+	width="100%">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.DataGrid;
+			import App.Entity.BillItemCompositionDataObject;
+			import App.Entity.BillDataObject;
+			import App.Entity.BillItemDataObject;
+			import mx.core.Application;
+			import common.notes.NotesView;
+			
+        	[Embed(source="/common/notes/note.png")]
+        	[Bindable]
+        	private var imgNotes:Class;
+        	
+        	[Bindable]
+        	public var canEditNotes:Boolean = true;
+        	
+			private function onClickNotes():void {
+				var notesCount:int = 0;
+				if (null != data.compositeRecord.Notes) {
+					notesCount = data.compositeRecord.Notes.length;
+				}
+				
+				canEditNotes = Composition(data).isEditable;
+				
+				NotesView.Open(data.compositeRecord, Application.application as DisplayObject, !canEditNotes,
+					function():void {
+						if (null != data.compositeRecord.Notes) {
+							lblNotes.text = "(" + data.compositeRecord.Notes.length.toString() + ")";
+							lblNotes.visible = 0 < data.compositeRecord.Notes.length;
+							lblNotes.includeInLayout = 0 < data.compositeRecord.Notes.length;
+							
+							if (notesCount < data.compositeRecord.Notes.length) {
+				        		Composition(data).isChanged = true;
+				        		Composition(data).isProceeded = false;
+				   			}
+						}
+					}
+				);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox>
+		
+		<mx:Image
+			source="{imgNotes}"/>
+	
+	    <mx:Label
+	    	id="lblNotes"
+	    	text="({data.compositeRecord.Notes.length})"
+	    	fontWeight="bold"
+	    	visible="{data.compositeRecord.Notes.length > 0}"
+	    	includeInLayout="{data.compositeRecord.Notes.length > 0}"
+	    	/>
+	
+		<mx:Label
+			text="notes"/>
+	
+	</mx:HBox>
+
+</mx:HBox>

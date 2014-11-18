@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+    width="100%" height="100%"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:local="*" 
+    xmlns:truetract.web="truetract.web.*"
+    xmlns:login="truetract.web.login.*"
+    xmlns:util="truetract.web.util.*"
+    xmlns:menu="truetract.web.appMenu.*"
+    xmlns:deedplotter="truetract.plotter.*" xmlns:switchApp="truetract.web.switchApp.*">
+    
+    <truetract.web:AppController id="controller" view="{this}"/>
+
+	<util:ClientIdleTimeOut id="timeOutWatcher" 
+	    listenMouseMove="true" timeOutInterval="25" confirmInterval="1" 
+	    appTimedOut="controller.app_timeOutHandler()"/>
+
+    <mx:ViewStack id="mainViewStack" width="100%" height="100%">
+        
+        <mx:Box id="loginView" 
+            width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+            <login:LoginView appController="{controller}"/>
+        </mx:Box>
+
+        <mx:VBox id="mainView">
+        	
+        	<mx:HBox width="100%" verticalAlign="middle" backgroundColor="#dddddd">
+        		<mx:LinkButton label="True Tract" 
+        			click="appsViewStack.selectedChild = plotterView"
+        			enabled="{appsViewStack.selectedChild != plotterView}"
+        			/>
+        		<mx:VRule height="15" visible="{controller.model.isBrowserIE}"/>
+        		<mx:LinkButton label="Scope Mapping"
+        			click="navigateToURL( new URLRequest('http://www.scopemapping.com/maps/index.cfm?username=' + controller.model.user.Login), '_blank')"
+        			enabled="{appsViewStack.selectedChild != scopemappingView}"
+        			visible="{controller.model.isBrowserIE}"
+        			/>
+<!--
+        			click="appsViewStack.selectedChild = scopemappingView"
+ -->
+        		<mx:Spacer width="100%"/>
+        		<mx:Label text="{controller.model.user.FirstName + ' ' + controller.model.user.LastName} :"/>
+        		<mx:LinkButton label="Logout"
+        			click="controller.logOut()"
+        			/>
+        	</mx:HBox>
+        	
+        	<mx:ViewStack id="appsViewStack" width="100%" height="100%">
+        		
+			    <mx:VBox id="plotterView" enabled="{!controller.serviceIsBusy}" label="True Tract">
+		
+		            <menu:AppMenuView id="appMenu"
+		                currentTract="{controller.model.currentTract}" width="100%"
+		                fileAttachDrawing="controller.menu_fileAttachDrawingHandler(event)"
+		                fileCreateTract="controller.menu_fileCreateTractHandler(event)"
+		                fileCreateDrawing="controller.menu_fileCreateDrawingHandler(event)"
+		                fileLogout="controller.menu_fileLogoutHandler(event)"
+		                fileOpenTract="controller.menu_fileOpenTractHandler(event)"
+		                fileOpenDrawing="controller.menu_fileOpenDrawingHandler(event)"
+		                filePrint="controller.menu_filePrintHandler(event)"
+		                fileSave="controller.menu_fileSaveHandler(event)"
+		                viewZoomIn="controller.menu_viewZoomInHandler(event)"
+		                viewZoomAll="controller.menu_viewZoomAllHandler(event)"
+		                viewZoomOut="controller.menu_viewZoomOutHandler(event)"
+		                settingsShowAnnotation="controller.menu_settingsShowAnnotationHandler(event)"
+		                settingsShowArea="controller.menu_settingsShowAreaHandler(event)"
+		                settingsMore="controller.menu_settingsMoreHandler(event)"
+		                />
+		
+		            <deedplotter:Plotter id="plotter" 
+		                currentUser="{controller.model.user}"
+		                enabled="{controller.model.currentTract != null}"
+		                width="100%" height="100%" tractViewStyleName="tractView"
+		                borderStyle="solid" horizontalCenter="0.5" backgroundColor="#c2d8fe"
+		                printRequest="controller.plotter_printRequestHandler()"
+		                pdfExportRequest="controller.plotter_pdfExportRequestHandler(event)"
+		                editTractInfoRequest="controller.plotter_editTractInfoRequestHandler()"/>
+			        
+			    </mx:VBox>
+
+ 				<mx:Box id="scopemappingView" width="100%" height="100%">
+ 					
+ 					<truetract.web:IFrame width="100%" height="100%" 
+ 						source="{AppModel.SCOPEMAPPING_BASE_URL + controller.model.user.Login}"
+ 						visible="{appsViewStack.selectedChild == scopemappingView &amp;&amp; mainViewStack.selectedChild == mainView}" />
+ 				
+ 				</mx:Box>
+        		
+        	</mx:ViewStack>
+        	
+        </mx:VBox>
+
+	</mx:ViewStack>
+    <mx:Script>
+    	<![CDATA[
+    		import flash.net.navigateToURL;
+    	]]>
+    </mx:Script>
+
+</mx:Canvas>

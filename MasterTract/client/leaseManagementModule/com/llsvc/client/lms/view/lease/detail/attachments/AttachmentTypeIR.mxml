@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center" verticalAlign="middle"
+    paddingLeft="1" paddingRight="1"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.llsvc.domain.DocumentAttachment;
+        	import com.llsvc.client.lms.events.AttachmentEvent;
+
+            [Embed(source="assets/icons20/contract.png")]
+            [Bindable]
+            private var imgCorr:Class;
+            
+            [Embed(source="assets/icons20/document.png")]
+            [Bindable]
+            private var imgUnrec:Class;
+            
+            [Embed(source="assets/icons20/document_certificate.png")]
+            [Bindable]
+            private var imgRec:Class;
+            
+            [Embed(source="assets/icons20/document_dirty.png")]
+            [Bindable]
+            private var imgOther:Class;
+            
+        ]]>
+    </mx:Script>
+
+    <mx:Image 
+    	source="{(DocumentAttachment(data).type == DocumentAttachment.RECORDED_TYPE) ? 
+    				imgRec : (DocumentAttachment(data).type == DocumentAttachment.UNRECORDED_TYPE) ? 
+    				imgUnrec : (DocumentAttachment(data).type == DocumentAttachment.CORRESPONDENCE_TYPE) ?
+    				imgCorr : imgOther}" 
+    	width="20" height="20" 
+    	toolTip="{DocumentAttachment(data).type}"/>
+</mx:HBox>

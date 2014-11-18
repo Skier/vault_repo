@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="Leads Info" 
+	verticalGap="10" borderColor="#000099" borderStyle="solid" borderThickness="1"
+	backgroundColor="#FFFFee" xmlns:daily="com.dalworth.leadCentral.owner.home.leads.daily.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.enum.LeadStatusEnum;
+			import com.dalworth.leadCentral.domain.Lead;
+			import com.dalworth.leadCentral.domain.LeadStatus;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] public var startDate:Date;
+			[Bindable] public var endDate:Date;
+
+	        [Bindable] private var leadsNewStr:String;
+	        [Bindable] private var leadsPendingStr:String;
+
+	        [Bindable] private var leadsTotalStr:String;
+	        [Bindable] private var leadsConvertedStr:String;
+	        [Bindable] private var leadsConvertedPctStr:String;
+	        [Bindable] private var leadsClosedAmtStr:String;
+
+	        [Bindable] private var isLeadsShow:Boolean = true;;
+	        [Bindable] private var isNewPendingShow:Boolean = false;
+	        [Bindable] private var isLeadsGraphShow:Boolean = true;
+	        
+	        private var leads:ArrayCollection;
+			
+			public function setLeads(value:ArrayCollection):void 
+			{
+				leads = value;
+				graphDailyLeads.setLeads(value);
+				updateUI();
+			}
+			
+			private function updateUI():void 
+			{
+				var leadsTotal:int = leads.length;
+				var leadsConverted:int = 0;
+				var leadsConvertedPct:Number = 0;
+				var leadsAmount:Number = 0;
+				
+				var leadsNew:int = 0;
+				var leadsPending:int = 0;
+			
+				for each (var lead:Lead in leads) 
+				{
+					switch (lead.LeadStatusId)
+					{
+						case LeadStatusEnum.NEW :
+							leadsNew++;
+							break;
+							
+						case LeadStatusEnum.PENDING :
+							leadsPending++;
+							break;
+							
+						case LeadStatusEnum.CONVERTED :
+							leadsConverted++;
+							break;
+					}
+				}
+				
+				if (leadsNew > 0 || leadsPending > 0)
+					isNewPendingShow = true;
+				else 
+					isNewPendingShow = false;
+				
+				if (leadsTotal > 0)
+					isLeadsGraphShow = true;
+				else 
+					isLeadsGraphShow = false;
+				
+				leadsNewStr = leadsNew.toString();
+				leadsPendingStr = leadsPending.toString();
+				leadsTotalStr = leadsTotal.toString();
+				leadsConvertedStr = leadsConverted.toString();
+				leadsConvertedPctStr = ((leadsConverted / leadsTotal)*100).toFixed(2);
+				leadsClosedAmtStr = cf.format(0);
+			}
+			
+			private function onLeadsDetail():void 
+			{
+				dispatchEvent(new Event("selectLeadsDetail", true));
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="cf" precision="2"/>
+	
+	<mx:Text width="100%" fontSize="14" text="Leads Info for current month:" color="#666666"/>
+	<mx:HBox width="100%">
+		<mx:Grid fontSize="12">
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="Total Leads:"/>
+				</mx:GridItem>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="{leadsTotalStr}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="Converted:"/>
+				</mx:GridItem>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="{leadsConvertedStr}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="%:"/>
+				</mx:GridItem>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="{leadsConvertedPctStr}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="Closed Amount:"/>
+				</mx:GridItem>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Label text="{leadsClosedAmtStr}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+
+		<daily:LeadsDailyView id="graphDailyLeads" width="100%" height="100%" startDate="{startDate}" endDate="{endDate}"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%" backgroundColor="#990000" 
+		visible="{isNewPendingShow}" includeInLayout="{isNewPendingShow}"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" horizontalAlign="right">
+		<mx:Label fontSize="14" text="Currently you have" color="#FFFFFF"/>
+		<mx:Label fontSize="14" text="{leadsNewStr}" color="#FFFF66"/>
+		<mx:Label fontSize="14" text="new and" color="#FFFFFF"/>
+		<mx:Label fontSize="14" text="{leadsPendingStr}" color="#FFFF66"/>
+		<mx:Label fontSize="14" text="pending Leads" color="#FFFFFF"/>
+	</mx:HBox>
+
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="Details" click="onLeadsDetail()" fontSize="12"/>
+	</mx:ControlBar>
+</mx:Panel>

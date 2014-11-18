@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.client.lms.events.ProjectWrapperEvent;
+
+            private function changeStatus():void 
+            {
+                var item:ProjectWrapper = ProjectWrapper(data);
+            	
+                if (cbIsActive.selected != item.project.isActive) 
+                {
+                	item.setMemento();
+                	
+                    item.project.isActive = cbIsActive.selected;
+                    dispatchEvent(new ProjectWrapperEvent(ProjectWrapperEvent.PROJECT_CHANGE, item, true));
+                }
+            }
+            
+            private function cbIsActiveChangeHandler():void 
+            {
+            	changeStatus();
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<mx:CheckBox id="cbIsActive"
+		label=""
+		verticalCenter="0" horizontalCenter="0"
+		enabled="{!ProjectWrapper(data).isLoading}" 
+		selected="{ProjectWrapper(data).project.isActive}" change="cbIsActiveChangeHandler()"/>
+</mx:Box>

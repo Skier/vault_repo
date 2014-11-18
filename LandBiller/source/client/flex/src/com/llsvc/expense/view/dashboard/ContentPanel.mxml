@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:company="com.llsvc.expense.view.company.*" xmlns:client="com.llsvc.expense.view.client.*" xmlns:project="com.llsvc.expense.view.project.*" xmlns:dashboard="com.llsvc.expense.view.dashboard.*">
+	
+    <mx:Metadata>
+        [Event(name="addCompanyRequest", type="com.llsvc.domain.events.UserEvent")]
+        [Event(name="selectCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+
+        [Event(name="editCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="deleteCompanyRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="addClientRequest", type="com.llsvc.domain.events.CompanyEvent")]
+        [Event(name="selectClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+
+        [Event(name="editClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="deleteClientRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="addProjectRequest", type="com.llsvc.domain.events.ClientEvent")]
+        [Event(name="selectProjectRequest", type="com.llsvc.domain.events.ProjectEvent")]
+
+        [Event(name="editProjectRequest", type="com.llsvc.domain.events.ProjectEvent")]
+        [Event(name="deleteProjectRequest", type="com.llsvc.domain.events.ProjectEvent")]
+    </mx:Metadata>
+    
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.User;
+			import com.llsvc.domain.Project;
+			import com.llsvc.domain.Client;
+			import com.llsvc.domain.Company;
+			
+			[Bindable] public var user:User;
+
+			[Bindable] private var company:Company;
+			[Bindable] private var client:Client;
+			[Bindable] private var project:Project;
+			
+			private var _content:Object;
+			[Bindable]
+			public function get content():Object { return _content; }
+			public function set content(value:Object):void 
+			{
+				_content = value;
+				
+				company = null;
+				client = null;
+				project = null;
+				
+				if (value is Company) 
+				{
+					company = value as Company;
+					vsContent.selectedChild = panelCompany;
+				}
+				else if (value is Client) 
+				{
+					client = value as Client;
+					vsContent.selectedChild = panelClient;
+				}
+				else if (value is Project) 
+				{
+					project = value as Project;
+					vsContent.selectedChild = panelProject;
+				} else 
+				{
+					vsContent.selectedChild = panelSummary;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:ViewStack id="vsContent" width="100%" height="100%" creationPolicy="all">
+		<dashboard:SummaryPanel id="panelSummary" 
+			width="100%" height="100%" 
+			user="{user}"
+			addCompanyRequest="dispatchEvent(event)"
+			selectCompanyRequest="dispatchEvent(event)"/>
+			
+		<company:CompanyPanel id="panelCompany" 
+			width="100%" height="100%" 
+			company="{company}"
+			editCompanyRequest="dispatchEvent(event)"
+			deleteCompanyRequest="dispatchEvent(event)"
+			addClientRequest="dispatchEvent(event)"
+			selectClientRequest="dispatchEvent(event)"/>
+			
+		<client:ClientPanel id="panelClient" 
+			width="100%" height="100%" 
+			client="{client}"
+			editClientRequest="dispatchEvent(event)"
+			deleteClientRequest="dispatchEvent(event)"
+			addProjectRequest="dispatchEvent(event)"
+			selectProjectRequest="dispatchEvent(event)"/>
+			
+		<project:ProjectPanel id="panelProject" 
+			width="100%" height="100%" 
+			project="{project}"
+			editProjectRequest="dispatchEvent(event)"
+			deleteProjectRequest="dispatchEvent(event)"/>
+	</mx:ViewStack>
+	
+</mx:Canvas>

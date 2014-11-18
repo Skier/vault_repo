@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    close="Controller.OnClose(event);" 
+    creationComplete="Controller.OnCreationComplete();" 
+    title="Select Ftp Directorry" 
+    showCloseButton="true"
+    width="400" height="500"
+    >
+    <mx:Script>
+        <![CDATA[
+        	import UI.ConnectionManager.FtpConnection.DirTreeDataDescriptor;
+        	import UI.ConnectionManager.FtpConnection.FtpConnectionController;
+
+            [Bindable]
+            public var Controller:SelectDirectoryController;
+            
+            public function set ParentController(parent:FtpConnectionController):void
+            {
+            	 Controller = new SelectDirectoryController( SelectDirectoryView(this), parent)
+            }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Tree 
+        id="directoryTree" labelField="Name"  
+        width="100%" height="100%" showRoot="true"
+        dataProvider="{Controller.Parent.Model.Root}" 
+        change="Controller.Parent.OnPopUpTreeChange(event)"
+        dataDescriptor="{new DirTreeDataDescriptor()}"
+        />
+    <mx:ControlBar width="100%">
+        <mx:Spacer width="100%" height="10"/>
+        <mx:Button id="btnMove" label="Move" click="Controller.OnMove(event)" enabled="{directoryTree.selectedItem != null}"/>
+        <mx:Button id="btnCancel" label="Cancel" click="Controller.OnClose(event)"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

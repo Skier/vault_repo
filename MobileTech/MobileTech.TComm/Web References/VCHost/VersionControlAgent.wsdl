@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://10.0.0.77/VersionControl" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://10.0.0.77/VersionControl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://10.0.0.77/VersionControl">
+      <s:element name="getVCList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="locationNumber" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="routeNumber" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="packageVersion" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getVCListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getVCListResult" type="tns:VCListInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="VCListInfo">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInfo">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="VCList" type="tns:ArrayOfVCInfo" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseInfo" abstract="true" />
+      <s:complexType name="VCPackageInfo">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInfo">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="PackageVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NetworkServerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NetworkAuthentication" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NetworkLogin" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="NetworkPassword" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="FTPAddress" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="FTPAuthentication" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="FTPLogin" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="FTPPassword" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBChange" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBServerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBDatabase" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBAuthentication" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBLogin" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="DBPassword" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="VCInfo">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseInfo">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="LocationNumber" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="RouteNumber" nillable="true" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="PackageVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PackageFile" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="PrevPackageVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="TCommStatus" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="TCommDelay" nillable="true" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="SessionId" nillable="true" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="PackageVersionList" type="tns:ArrayOfVCPackageInfo" />
+              <s:element minOccurs="0" maxOccurs="1" name="PrevPackageVersionList" type="tns:ArrayOfVCPackageInfo" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfVCPackageInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="VCPackageInfo" nillable="true" type="tns:VCPackageInfo" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfVCInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="VCInfo" nillable="true" type="tns:VCInfo" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="getVCListSoapIn">
+    <wsdl:part name="parameters" element="tns:getVCList" />
+  </wsdl:message>
+  <wsdl:message name="getVCListSoapOut">
+    <wsdl:part name="parameters" element="tns:getVCListResponse" />
+  </wsdl:message>
+  <wsdl:portType name="VersionControlAgentSoap">
+    <wsdl:operation name="getVCList">
+      <wsdl:input message="tns:getVCListSoapIn" />
+      <wsdl:output message="tns:getVCListSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="VersionControlAgentSoap" type="tns:VersionControlAgentSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getVCList">
+      <soap:operation soapAction="http://10.0.0.77/VersionControl/getVCList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="VersionControlAgentSoap12" type="tns:VersionControlAgentSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getVCList">
+      <soap12:operation soapAction="http://10.0.0.77/VersionControl/getVCList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="VersionControlAgent">
+    <wsdl:port name="VersionControlAgentSoap" binding="tns:VersionControlAgentSoap">
+      <soap:address location="http://10.0.0.77/VersionControl/VersionControlAgent.asmx" />
+    </wsdl:port>
+    <wsdl:port name="VersionControlAgentSoap12" binding="tns:VersionControlAgentSoap12">
+      <soap12:address location="http://10.0.0.77/VersionControl/VersionControlAgent.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

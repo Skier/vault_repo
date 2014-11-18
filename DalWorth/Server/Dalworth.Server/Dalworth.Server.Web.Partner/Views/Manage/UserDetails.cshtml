@@ -1,0 +1,99 @@
+﻿@model Dalworth.Server.Web.Partner.Models.User
+
+@{
+
+if (Model.IsEdit){
+    ViewBag.Title = "Partner In Profit - Edit User";
+    ViewBag.Header = "Edit User";
+} else {
+    ViewBag.Title = "Partner In Profit - Create User";
+    ViewBag.Header = "Create User";
+}
+
+    ViewBag.ActiveTopMenu = "Manage";
+
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("UserDetails", "Manage", FormMethod.Post, new { id = "UserForm" })) {
+    if (!MvcHtmlString.IsNullOrEmpty(Html.ValidationSummary(true))){
+		<div id="message-red">
+		<table border="0" width="500px" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="red-left">
+                @Html.ValidationSummary(true)
+			<td class="red-right"><a class="close-red"><img src="../Content/images/table/icon_close_red.gif"   alt="" /></a></td>
+		</tr>
+		</table>
+		</div>        
+    }   
+
+    if (TempData["SuccessMessage"] != null){
+		<div id="message-green">
+		<table border="0" width="500px" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="green-left">
+                @Html.Encode(TempData["SuccessMessage"])
+			<td class="green-right"><a class="close-green"><img src="../Content/images/table/icon_close_green.gif"   alt="" /></a></td>
+		</tr>
+		</table>
+		</div>        
+    }
+
+	<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
+
+	<tr>
+		<th valign="top">Email</th>
+		<td>
+            @Html.TextBoxFor(model => model.Email, new { @class="field-input" })
+        </td>
+		<td>
+            @Html.ValidationMessageFor(model => model.Email)
+        </td>
+	</tr>	
+
+    <tr>
+		<th valign="top">First Name</th>
+		<td>
+            @Html.TextBoxFor(model => model.FirstName, new { @class="field-input" })            
+        </td>
+		<td>
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </td>
+	</tr>
+
+    <tr>
+		<th valign="top">Last Name</th>
+		<td>
+            @Html.TextBoxFor(model => model.LastName, new { @class="field-input" })            
+        </td>
+		<td>
+            @Html.ValidationMessageFor(model => model.LastName)
+        </td>
+	</tr>
+
+	<tr>
+		<th>&nbsp;</th>
+		<td valign="top">
+			<input type="submit" value="" class="form-submit"/>
+		</td>
+		<td></td>
+	</tr>
+
+    </table>
+}
+<br>
+<br>
+<br>
+<p>
+@if (Model.IsEdit){
+if (Model.StatusText == "Active"){
+@Html.ActionLink("Send password reset instructions", "ResetPassword", new { @UserId=Model.Id }, new { @class = "back-link" });
+} else {
+@Html.ActionLink("Re-send invitation", "ResetPassword", new { @UserId=Model.Id }, new { @class = "back-link" });
+}}
+</p>
+<br>
+<p><a href="@Model.BackLink" class='back-link'>@Model.BackLinkText</a></p>

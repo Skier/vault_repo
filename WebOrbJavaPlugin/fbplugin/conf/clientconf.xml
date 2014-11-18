@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config name="main">
+    <waspClassSpace>root.wasp-impl</waspClassSpace>
+    <preferences name="main">
+        <!-- application directory -->
+        <applicationDirectory>app_classpath</applicationDirectory>
+        <!-- system context -->
+        <systemContext>system</systemContext>
+        <!-- Default XML protocol, possible values are
+             "soap11" (default), "soap12" and "httpget",
+             can be space-separated list of values
+             e.g. "soap11 httpget" -->
+        <defaultXMLProtocol>soap11</defaultXMLProtocol>
+        <!-- Default SOAP binding style, possible  values:
+            "document", "wrapped" ("wrapped" document style) or "rpc"
+        -->
+        <defaultBindingStyle>wrapped</defaultBindingStyle>
+        <!-- Default encoding style, possible values:
+             "literal" (default) or "encoded" -->
+        <defaultEncodingStyle>literal</defaultEncodingStyle>
+        <!-- Default attachments type, possible values:
+            "mime" (default) for MIME, "dime" for DIME -->
+        <defaultAttachmentType>mime</defaultAttachmentType>
+        <!-- See WS-I Attachments Profile 1.0 section 3.8:
+             "A valid domain name under the authority of the entity constructing the message." -->
+        <defaultAttachmentContentIdDomain>systinet.com</defaultAttachmentContentIdDomain>
+        <!-- Setting for MIME attachments that have corresponding part in WSDL.
+             Value "always" chooses backward compatible mode that always references the attachment
+             with value of href attibute in a body. Value "never" will always use WS-I Attachments
+             Profile 1.0 compliant way, a part can be recognized based on MIME Content-Id header.
+             Default value is "auto" - one of previous modes is choosen per operation based on WSDL.
+        -->
+        <useHrefInBodyForMime>auto</useHrefInBodyForMime>
+        <!-- Setting for base64Binary schema types -->
+        <useMtomXop>auto</useMtomXop>
+        <!--Used to distinguish Systinet Server instances-->
+        <defaultInstanceName>client</defaultInstanceName>
+        <!-- Default WS-I compliancy mode -->
+        <wsiCompliant>true</wsiCompliant>
+        <!--
+          Preferred way how to map the Java members with reference (non-primitive) data type into XML schema -
+          either using 'nillable' or 'optional' elements. If 'true', 'nillable' is preferred.
+        -->
+        <defaultUseNillable>true</defaultUseNillable>
+        <!-- Default deployment descriptor namespaces and locations -->
+        <schema namespaceURI="http://systinet.com/wasp/package/1.2" schemaLocation="conf/package12.xsd"/>
+        <schema namespaceURI="http://systinet.com/wasp/package/1.3" schemaLocation="conf/package13.xsd"/>
+    </preferences>
+    <serviceDefaultParentClassSpace>root.services</serviceDefaultParentClassSpace>
+    <ignoredSection>type</ignoredSection>
+    <ignoredSection>messageHeader</ignoredSection>
+    <ignoredSection>encodingInstance</ignoredSection>
+    <ignoredSection>class</ignoredSection>
+    <ignoredSection>field</ignoredSection>
+    <ignoredSection>method</ignoredSection>
+    <classSpace name="root">
+        <classSpace name="wasp-impl"/>
+        <classSpace name="services"/>
+    </classSpace>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.wsdl.WSDLRepositoryImpl" name="WSDLRepository"/>
+        <!-- this is com.* module, it should'nt be used by users -->
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.WASPConfigurationImpl" name="WASPConfigurationImpl"/>
+        <!-- this is deprecated module, will be moved to core_bc -->
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.WASPConfigurationImpl" name="WASPConfiguration"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.tools.ToolsModule" name="ToolsModule"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xml.ReaderWriterFactory" name="XmlToolsFactory"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.transport.TransportRepositoryImpl" name="TransportRepository">
+        <transport class="com.idoox.transport.jdk.client.JdkClient" classSpace="root.wasp-impl" name="default_client" preload="false" scheme="default"/>
+        <transport class="com.idoox.transport.file.client.FileClient" classSpace="root.wasp-impl" name="file_client" preload="false" scheme="file"/>
+        <transport class="com.idoox.transport.jar.client.JarClient" classSpace="root.wasp-impl" name="jar_client" preload="false" scheme="jar"/>
+        <transport class="com.idoox.transport.http.client.HttpClient" classSpace="root.wasp-impl" defaultTimeout="40000" name="http_client" preload="false" scheme="http"/>
+        <transport class="com.idoox.transport.smtp.client.SmtpClient" classSpace="root.wasp-impl" defaultTimeout="40000" name="smtp_client" preload="false" scheme="smtp"/>
+        <transport class="com.idoox.transport.pop.client.PopClient" classSpace="root.wasp-impl" defaultTimeout="60000" name="pop_client" preload="false" scheme="pop" updateInterval="60000"/>
+        <transport class="com.idoox.transport.http.server.Jetty" classSpace="root.wasp-impl" defaultServer="true" maxIdleTime="2000" maxReadTime="40000" maxThreads="255" minThreads="1" name="http_server" port="7070" preload="false" scheme="http"/>
+        <transport class="com.idoox.transport.mail.Mail" classSpace="root.wasp-impl" defaultServer="true" name="mail" preload="false" scheme="mailto">
+            <output>
+                <server/>
+                <from/>
+            </output>
+            <input>
+                <server/>
+                <password/>
+                <sleepInterval>10000</sleepInterval>
+            </input>
+        </transport>
+        <transport class="com.idoox.transport.resource.client.ResourceTransport" classSpace="root.wasp-impl" name="resource" preload="false" scheme="resource"/>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.interceptor.InterceptorRepositoryImpl" name="InterceptorRepository">
+        <interceptor class="com.idoox.wasp.interceptor.DIMEInterceptor" classSpace="root.wasp-impl" name="dimeInterceptor"/>
+        <interceptor class="com.idoox.wasp.interceptor.MultipartInterceptor" classSpace="root.wasp-impl" name="multipartInterceptor">
+            <transport schemes="http https">
+                <includeMimeVersion>false</includeMimeVersion>
+            </transport>
+            <transport schemes="mailto smtp">
+                <contentTransferEncoding default="base64">
+                    <exception contentType="text/plain" encoding="quoted-printable"/>
+                    <exception contentType="text/xml" encoding="quoted-printable"/>
+                </contentTransferEncoding>
+            </transport>
+        </interceptor>
+        <interceptor class="com.idoox.wasp.interceptor.DebugInterceptor" classSpace="root.wasp-impl" name="debugInterceptor"/>
+        <InterceptorChain class="com.idoox.wasp.interceptor.TransportInterceptorChainImpl" classSpace="root.wasp-impl" name="serverTransportInterceptors">
+            <interceptor in="true" out="true">
+                <instance>dimeInterceptor</instance>
+            </interceptor>
+            <interceptor in="true" out="true">
+                <instance>multipartInterceptor</instance>
+            </interceptor>
+        </InterceptorChain>
+        <InterceptorChain class="com.idoox.wasp.interceptor.TransportInterceptorChainImpl" classSpace="root.wasp-impl" name="clientTransportInterceptors">
+            <interceptor in="true" out="true">
+                <instance>dimeInterceptor</instance>
+            </interceptor>
+            <interceptor in="true" out="true">
+                <instance>multipartInterceptor</instance>
+            </interceptor>
+        </InterceptorChain>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.serialization.SerializationRepositoryImpl" name="SerializationRepository" serializePrivateFields="false">
+        <defaultFaultSerializer class="com.idoox.wasp.serialization.DefaultFaultSerializer" classSpace="root.wasp-impl"/>
+        <defaultFaultDeserializer class="com.idoox.wasp.serialization.DefaultFaultDeserializer" classSpace="root.wasp-impl"/>
+        <defaultSerialization encodingURI="http://schemas.xmlsoap.org/soap/encoding/" serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][EncodedSerialization]"/>
+        <defaultSerialization encodingURI="http://www.w3.org/2003/05/soap-encoding" serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][EncodedSerialization]"/>
+        <defaultSerialization serializationId="[system][http://systinet.com/wasp/app/builtin_serialization][XmlSerialization]"/>
+        <defaultFaultSerialization>defaultFaultSerialization</defaultFaultSerialization>
+    </module>
+    <faultSerialization name="defaultFaultSerialization">
+        <faultSerializationInstance>
+            <serializer class="com.idoox.wasp.serialization.GenericSOAPSpecFaultSerializer">
+                <exception class="com.idoox.soap.MustUnderstandException"/>
+                <exception class="com.idoox.soap.VersionMismatchException"/>
+                <exception class="org.idoox.xmlrpc.encoding.NoSuchEncodingException"/>
+                <exception class="com.idoox.soap.BadArgumentsException"/>
+                <exception class="com.idoox.soap.ProcedureNotPresentException"/>
+                <exception class="com.idoox.wasp.serialization.DeserializationException"/>
+                <exception class="com.idoox.soap.RootNotEnvelopeException"/>
+            </serializer>
+        </faultSerializationInstance>
+        <faultSerializationInstance>
+            <serializer class="com.idoox.wasp.serialization.SoapFaultSerializer">
+                <exception class="org.idoox.wasp.SoapFaultException"/>
+            </serializer>
+        </faultSerializationInstance>
+    </faultSerialization>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.ProtocolRepositoryImpl" name="ProtocolRepository"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.EncodingRepository" name="EncodingRepository">
+        <defaultEncoding>http://schemas.xmlsoap.org/soap/encoding/</defaultEncoding>
+        <defaultEncodingId>defaultEnc</defaultEncodingId>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xmlrpc.header.HeaderProcessorRepositoryImpl" name="HeaderProcessorRepository"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.rpc.handler.HandlerRepositoryImpl" name="HandlerRepository"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.ListenerRepositoryImpl" name="ListenerRepository"/>
+    <module xmlns:wasp="http://systinet.com/wasp/policy/1.0" xmlns:wsa200303="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:wsa200403="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsa200408="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsu="http://schemas.xmlsoap.org/ws/2002/07/utility" classSpace="root.wasp-impl" defaultPolicy="policy.xml" loader="com.systinet.wasp.policy.PolicyManagerImpl" name="PolicyManager">
+        <domainExpression class="org.systinet.wasp.policy.DefaultDomainExpression" classSpace="root.wasp-impl" name="wasp:DefaultDomainExpression"/>
+        <domainExpression class="org.systinet.wasp.addressing.EndpointReference" classSpace="root.wasp-impl" name="wsa200303:EndpointReference"/>
+        <domainExpression class="org.systinet.wasp.addressing.EndpointReference" classSpace="root.wasp-impl" name="wsa200403:EndpointReference"/>
+        <domainExpression class="org.systinet.wasp.addressing.EndpointReference" classSpace="root.wasp-impl" name="wsa200408:EndpointReference"/>
+        <domainExpression class="org.systinet.wasp.webservice.ServiceEndpointReference" classSpace="root.wasp-impl" name="wasp:ServiceEndpointReference"/>
+        <policyAssertion class="org.systinet.wasp.policy.assertion.ExpirationAssertion" classSpace="root.wasp-impl" name="wsu:Expires"/>
+        <policyAssertion class="org.systinet.wasp.policy.assertion.SpecVersionAssertion" classSpace="root.wasp-impl" name="wsu:SpecVersion"/>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.admin.PackageRepositoryImpl" name="PackageRepository" useCache="true" useClasspath="true"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.WsdlFromUrlListener" name="WsdlFromUrl"/>
+    <module classSpace="root.wasp-impl" loader="com.systinet.wasp.webservice.RegistryImpl" name="Registry">
+        <defaultServiceTTL>600</defaultServiceTTL>
+        <cleanerSweepInterval>60</cleanerSweepInterval>
+        <referenceQueueCleanerInterval>60</referenceQueueCleanerInterval>
+        <!-- COMMENTED
+    <parameterHandler>
+      <selectValue>session_manager</selectValue>
+      <serviceBindingName>/internal/security/SessionManager</serviceBindingName>
+    </parameterHandler>
+    -->
+        <AdaptorTemplate name="RawAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate name="XmlAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate encodingAdaptorClass="com.idoox.wasp.server.adaptor.EncodingAdaptorImpl" encodingAdaptorClassSpace="root.wasp-impl" name="EncodingAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+        <AdaptorTemplate encodingAdaptorClass="com.idoox.wasp.server.adaptor.EncodingAdaptorImpl" encodingAdaptorClassSpace="root.wasp-impl" javaAdaptorClass="com.idoox.wasp.server.adaptor.JavaAdaptorImpl" javaAdaptorClassSpace="root.wasp-impl" name="JavaAdaptor" rawAdaptorClass="com.idoox.wasp.server.adaptor.RawAdaptorImpl" rawAdaptorClassSpace="root.wasp-impl" xmlAdaptorClass="com.idoox.wasp.server.adaptor.XMLAdaptorImpl" xmlAdaptorClassSpace="root.wasp-impl"/>
+    </module>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.server.ServiceManager" name="ServiceManager"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.client.WebServiceLookupImpl" name="ServiceLookup"/>
+    <classSpace name="SOAP">
+        <parentClassSpace>root.wasp-impl</parentClassSpace>
+    </classSpace>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap.SOAP11ProtocolHandler" name="soap"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap.SOAP11ProtocolHandler" name="soap11"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.soap12.SOAP12ProtocolHandler" name="soap12"/>
+    <protocol classSpace="root.wasp-impl.SOAP" handler="com.systinet.saaj.get.GETProtocolHandler" name="httpget"/>
+    <encoding name="defaultEnc">
+        <encodingInstance name="http://schemas.xmlsoap.org/soap/encoding/">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAPEncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAPEncodingTokenWriter"/>
+        </encodingInstance>
+        <encodingInstance name="http://www.w3.org/2003/05/soap-encoding">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAP12EncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAP12EncodingTokenWriter"/>
+        </encodingInstance>
+    </encoding>
+    <encoding name="1999Enc">
+        <encodingInstance name="http://schemas.xmlsoap.org/soap/encoding/">
+            <poolClassName>com.idoox.util.ObjectPool</poolClassName>
+            <poolSize>10</poolSize>
+            <classSpace>root.wasp-impl.SOAP</classSpace>
+            <tokenizer class="com.idoox.soap.encoding.SOAPEncodingTokenizer"/>
+            <writer class="com.idoox.soap.encoding.SOAPEncoding1999TokenWriter"/>
+        </encodingInstance>
+    </encoding>
+    <module classSpace="root.wasp-impl" loader="com.idoox.xml.schema.SchemaFactoryImpl" name="SchemaFactory"/>
+    <module classSpace="root.wasp-impl" loader="com.idoox.wasp.interrefs.PortTypeMappingRegistryImpl" name="PortTypeMappingRegistry"/>
+    <HeaderInstance name="InstanceID_HP">
+        <class>com.idoox.wasp.InstanceIDHandler</class>
+        <header xmlns:ns="http://idoox.com/interface" direction="inout" qname="ns:instance" use="literal"/>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HeaderInstance name="VersionMismatchFault_HP" needsBody="false">
+        <class>com.idoox.soap.VersionMismatchFaultHeaderProcessor</class>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HeaderInstance name="MustUnderstandFault_HP" needsBody="false">
+        <class>com.idoox.soap.MustUnderstandFaultHeaderProcessor</class>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <HandlerInstance class="com.systinet.wsaddressing.WSAddressingHandler" classSpace="root.wasp-impl" direction="in out fault" name="WSAddressingHandler">
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing" direction="" qname="ns:Recipient" type="ns:EndpointReferenceType" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2003/03/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200303.xsd"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/03/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2004/03/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200403.xsd"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:MessageID" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:RelatesTo" type="ns:Relationship" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:ReplyTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:From" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:FaultTo" type="ns:EndpointReferenceType" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:To" type="ns:AttributedURI" use="literal"/>
+        <header xmlns:ns="http://schemas.xmlsoap.org/ws/2004/08/addressing" direction="" qname="ns:Action" type="ns:AttributedURI" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-addressing200408.xsd"/>
+    </HandlerInstance>
+    <HeaderInstance name="WSRouting_HP">
+        <class>com.idoox.wasp.routing.WSRoutingHandler</class>
+        <header xmlns:ns="http://schemas.xmlsoap.org/rp" direction="" qname="ns:path" use="literal"/>
+        <schema namespaceURI="http://schemas.xmlsoap.org/rp" schemaLocation="resource:/com/idoox/xml/schema/known_schemas/ws-routing.xsd"/>
+        <classSpace>root.wasp-impl</classSpace>
+    </HeaderInstance>
+    <Handlers name="DefaultClientHandlers">
+        <in>
+            <instance>InstanceID_HP</instance>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </in>
+        <out>
+            <instance>InstanceID_HP</instance>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </out>
+        <fault>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+        </fault>
+    </Handlers>
+    <Handlers name="DefaultServerHandlers">
+        <in>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>InstanceID_HP</instance>
+        </in>
+        <out>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>InstanceID_HP</instance>
+        </out>
+        <fault>
+            <instance>WSAddressingHandler</instance>
+            <!-- instance>WSRouting_HP</instance -->
+            <instance>VersionMismatchFault_HP</instance>
+            <instance>MustUnderstandFault_HP</instance>
+        </fault>
+    </Handlers>
+    <java2Type name="main">
+        <excludedClass>java.io.*</excludedClass>
+        <excludedClass>java.lang.ClassLoader</excludedClass>
+        <excludedClass>java.lang.Compiler</excludedClass>
+        <excludedClass>java.lang.ThreadLocal</excludedClass>
+        <excludedClass>java.lang.Process</excludedClass>
+        <excludedClass>java.lang.Runtime</excludedClass>
+        <excludedClass>java.lang.RuntimePermission</excludedClass>
+        <excludedClass>java.lang.SecurityManager</excludedClass>
+        <excludedClass>java.lang.System</excludedClass>
+        <excludedClass>java.lang.Thread</excludedClass>
+        <excludedClass>java.lang.ThreadGroup</excludedClass>
+        <excludedClass>java.lang.Throwable</excludedClass>
+        <excludedClass>java.lang.Exception</excludedClass>
+        <excludedClass>java.net.*</excludedClass>
+        <excludedClass>java.text.*</excludedClass>
+        <excludedClass>org.idoox.webservice.server.Initializable</excludedClass>
+        <excludedClass>org.idoox.webservice.server.Startable</excludedClass>
+        <excludedClass>org.idoox.webservice.server.LifeCycleService</excludedClass>
+        <excludedClass>org.idoox.webservice.server.WebServiceContext</excludedClass>
+        <excludedClass>org.systinet.wasp.webservice.*</excludedClass>
+        <!-- Remote references -->
+        <internalSchema fileName="com/idoox/wasp/interrefs/interrefsEncoded.xsd" targetNamespace="http://idoox.com/interface" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/interrefs/interrefsLiteral.xsd" targetNamespace="http://idoox.com/interface" use="literal"/>
+            <!-- Security -->
+        <internalSchema fileName="com/idoox/wasp/security/securityEncoded.xsd" targetNamespace="http://idoox.com/security" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/security/securityLiteral.xsd" targetNamespace="http://idoox.com/security" use="literal"/>
+            <!-- IDOOX containers -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/idooxContainers.xsd" targetNamespace="http://idoox.com/containers" use="encoded"/>
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/apacheContainers.xsd" targetNamespace="http://idoox.com/containers" use="encoded"/>
+            <!-- Apache compatible containers -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/apacheContainers.xsd" targetNamespace="http://xml.apache.org/xml-soap" use="encoded"/>
+            <!-- MS .NET compatible containers for RPC/ENC -->
+        <internalSchema fileName="com/idoox/wasp/serialization/javabuiltin/msnet/msnetEncodedContainers.xsd" targetNamespace="http://systinet.com/containers/encoded/ms.net" use="encoded"/>
+            <!-- MS .NET compatible containers for DOC/LIT -->
+        <internalSchema fileName="com/idoox/wasp/serialization/xml/msnet/msnetLiteralContainers.xsd" targetNamespace="http://systinet.com/containers/literal/ms.net" use="literal"/>
+            <!-- Sparse Arrays -->
+        <internalSchema fileName="com/idoox/wasp/serialization/idooxbuiltin/array.xsd" targetNamespace="http://idoox.com/sparse-array" use="encoded"/>
+            <!-- reference schema is used in DIME ReferencedBinary types -->
+        <internalSchema fileName="com/idoox/xml/schema/known_schemas/reference.xsd" targetNamespace="http://schemas.xmlsoap.org/ws/2002/04/reference/" use="literal"/>
+            <!-- reference schema is used in DIME ReferencedBinary types -->
+        <internalSchema fileName="com/idoox/xml/schema/known_schemas/reference.xsd" targetNamespace="http://schemas.xmlsoap.org/ws/2002/04/reference/" use="encoded"/>
+    </java2Type>
+    <securityPreferences name="main">
+        <!--
+        <initiatingSecurityProvider>HttpBasic</initiatingSecurityProvider>
+        <acceptingSecurityProvider>HttpBasic</acceptingSecurityProvider>
+        -->
+        <securityProvider providerClass="com.idoox.wasp.security.ssl.SSLServerProvider" providerName="SSL"/>
+        <securityProvider providerClass="com.idoox.wasp.security.http.basic.HttpBasicServerProvider" providerName="HttpBasic"/>
+        <securityProvider providerClass="com.idoox.wasp.security.http.digest.HttpDigestServerProvider" providerName="HttpDigest"/>
+        <securityProvider providerClass="com.idoox.wasp.security.kerberos.KrbServerProvider" providerName="Kerberos"/>
+            <!--
+removed since Wasp46
+        <securityProvider
+            providerClass="com.idoox.wasp.security.signature.SignatureServerProvider"
+            providerName="SoapDSig"/>
+-->
+        <securityProvider providerClass="com.systinet.wasp.security.ws.provider.WSSecurityServerProvider" providerName="WS-Security"/>
+        <accessController/>
+        <updateablePolicy/>
+    </securityPreferences>
+    <httpsPreferences name="https">
+        <defaultTimeout>40000</defaultTimeout>
+        <maxIdleTime>500</maxIdleTime>
+        <maxReadTime>40000</maxReadTime>
+        <maxThreads>10</maxThreads>
+        <minThreads>1</minThreads>
+        <needsClientAuth>false</needsClientAuth>
+        <password>changeit_client</password>
+        <port>7443</port>
+        <alias>sslalias_client</alias>
+    </httpsPreferences>
+    <xmlmime name="resolved_xmlmime_specifications">
+        <resolve namespace="http://www.w3.org/2004/11/xmlmime">
+            <descriptionAttribute>contentType</descriptionAttribute>
+            <annotationAttribute>expectedMediaType</annotationAttribute>
+        </resolve>
+        <resolve namespace="http://www.w3.org/2005/05/xmlmime">
+            <descriptionAttribute>contentType</descriptionAttribute>
+            <annotationAttribute>expectedContentTypes</annotationAttribute>
+        </resolve>
+    </xmlmime>
+    <PStore name="main">
+        <keyStore>
+            <record alias="EmailAddress=premium-server@thawte.com, CN=Thawte Premium Server CA, OU=Certification Services Division, O=Thawte Consulting cc, L=Cape Town, ST=Western Cape, C=ZA">
+                <certificate type="X.509">
+                    <encoded>MIIDJzCCApCgAwIBAgIBATANBgkqhkiG9w0BAQQFADCBzjELMAkGA1UEBhMCWkExFTATBgNVBAgT
+DFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMR0wGwYDVQQKExRUaGF3dGUgQ29uc3Vs
+dGluZyBjYzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEhMB8GA1UE
+AxMYVGhhd3RlIFByZW1pdW0gU2VydmVyIENBMSgwJgYJKoZIhvcNAQkBFhlwcmVtaXVtLXNlcnZl
+ckB0aGF3dGUuY29tMB4XDTk2MDgwMTAwMDAwMFoXDTIwMTIzMTIzNTk1OVowgc4xCzAJBgNVBAYT
+AlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNVBAcTCUNhcGUgVG93bjEdMBsGA1UEChMU
+VGhhd3RlIENvbnN1bHRpbmcgY2MxKDAmBgNVBAsTH0NlcnRpZmljYXRpb24gU2VydmljZXMgRGl2
+aXNpb24xITAfBgNVBAMTGFRoYXd0ZSBQcmVtaXVtIFNlcnZlciBDQTEoMCYGCSqGSIb3DQEJARYZ
+cHJlbWl1bS1zZXJ2ZXJAdGhhd3RlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA0jY2
+aovXwlue2oFBYo847kkEVdbQ7xwblRZH7xhINTpS9CtqBo87L+pW46+GjZ4X9560ZXUCTe/LCaIh
+Udib0GfQug2SBhRz1JPLlyoAnFxODLz6FVL88kRu2hFKbgifLy3j+ao6hnO2RlNYyIkFvYMRuHM/
+qgeN9EJN50CdHDcCAwEAAaMTMBEwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQAm
+SCwWwlj66BZ0DKqqX1Q/8tfJeGBeXm43YyJ3Nn6yF8Q0ufUIhfzJATj/Tb7yFkJD57taRvvBxhEf
+8UqwKEbJw8RCfbz6q1lu1bdRiBHjpIUZa4JMpAwSremkrj/xw0llmozFyD4lt5SZu5IycQfwhl7t
+UCemDaYj+bvLpgcUQg==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="OU=Class 1 Public Primary Certification Authority, O=&quot;VeriSign, Inc.&quot;, C=US">
+                <certificate type="X.509">
+                    <encoded>MIICPDCCAaUCEDJQM89Q0VbzXIGtZVxPyCUwDQYJKoZIhvcNAQECBQAwXzELMAkGA1UEBhMCVVMx
+FzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAxIFB1YmxpYyBQcmltYXJ5
+IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTk2MDEyOTAwMDAwMFoXDTIwMDEwNzIzNTk1OVow
+XzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAx
+IFB1YmxpYyBQcmltYXJ5IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQDlGb9to1ZhLZlIcfZn3rmN67eehoAKkQ76OCWvRoiC5XOooJskXQ0fzGVuDLDQ
+VoQYh5oGmxChc9+0WDlrbsH2FdWoqD+qEgaNMax/sDTXjzRniAnNFBHiTkVWaR94AoDa3EeRKbs2
+yWNcxeDXLYd7obcysHswuiovMaruo2fa2wIDAQABMA0GCSqGSIb3DQEBAgUAA4GBAEtEZmBoZOSY
+G/OwcuaViXzde7OVwB0u2NgZ0C00PcZQmhCGjKo/O6gE/DdSlcPZydvN8oYGxLEb8IKIMEKOF1Ac
+ZHq4PplJdJf8rAJD+5YMVgQlDHx8h50kp9jwMim1pN9dokzFFjKoQvZFprY2ueC/ZTaTwtLXa9ze
+WdaiNfhF
+</encoded>
+                </certificate>
+            </record>
+            <record alias="OU=Secure Server Certification Authority, O=&quot;RSA Data Security, Inc.&quot;, C=US">
+                <certificate type="X.509">
+                    <encoded>MIICNDCCAaECEAKtZn5ORf5eV288mBle3cAwDQYJKoZIhvcNAQECBQAwXzELMAkGA1UEBhMCVVMx
+IDAeBgNVBAoTF1JTQSBEYXRhIFNlY3VyaXR5LCBJbmMuMS4wLAYDVQQLEyVTZWN1cmUgU2VydmVy
+IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTk0MTEwOTAwMDAwMFoXDTEwMDEwNzIzNTk1OVow
+XzELMAkGA1UEBhMCVVMxIDAeBgNVBAoTF1JTQSBEYXRhIFNlY3VyaXR5LCBJbmMuMS4wLAYDVQQL
+EyVTZWN1cmUgU2VydmVyIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGbMA0GCSqGSIb3DQEBAQUA
+A4GJADCBhQJ+AJLOesGugz5aqomDV6wlAXYMra6OLDfO6zV4ZFQD5YRAUcm/jwjiioII0haGN1Xp
+sSECrXZogZoFokvJSyVmIlZsiAeP94FZbYQHZXATcXY+m3dM41CJVphIuR2nKRoTLkoRWZweFdVJ
+VCxzOmmCsZc5nG1wZ0jl3S3WyB57AgMBAAEwDQYJKoZIhvcNAQECBQADfgBl3X7hsuyw4jrg7HFG
+mhkRuNPHoLQDQCYCPgmc4RKz0Vr2N6W3YQO2WxZpO8ZECAyIUwxrl0nHPjXcbLm7qt9cuzovk2C2
+qUtN8iD3zV9/ZHuO3ABc1/p3yjkWWW8O6tO1g39NTUJWdrTJXwT4OPjr0l91X817/OWOgHz8UA==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="EmailAddress=server-certs@thawte.com, CN=Thawte Server CA, OU=Certification Services Division, O=Thawte Consulting cc, L=Cape Town, ST=Western Cape, C=ZA">
+                <certificate type="X.509">
+                    <encoded>MIIDEzCCAnygAwIBAgIBATANBgkqhkiG9w0BAQQFADCBxDELMAkGA1UEBhMCWkExFTATBgNVBAgT
+DFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMR0wGwYDVQQKExRUaGF3dGUgQ29uc3Vs
+dGluZyBjYzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEZMBcGA1UE
+AxMQVGhhd3RlIFNlcnZlciBDQTEmMCQGCSqGSIb3DQEJARYXc2VydmVyLWNlcnRzQHRoYXd0ZS5j
+b20wHhcNOTYwODAxMDAwMDAwWhcNMjAxMjMxMjM1OTU5WjCBxDELMAkGA1UEBhMCWkExFTATBgNV
+BAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMR0wGwYDVQQKExRUaGF3dGUgQ29u
+c3VsdGluZyBjYzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEZMBcG
+A1UEAxMQVGhhd3RlIFNlcnZlciBDQTEmMCQGCSqGSIb3DQEJARYXc2VydmVyLWNlcnRzQHRoYXd0
+ZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANOkUG7I/1Zr5s9dtuoMaHVHoqrC2oQl
+/Kj0R1HahbUgdJSGHg91yekIYfUGbTBuFRkC6VLAYttNmZ7iagxEOM3+vuNkCXDF/rFrKbYvScg7
+1CcEJRCXL+eQbcAoQpnXTEPew/UhbVSfXcNY4cDk2VuwuNy0e982OsK1ZiIS1ocNAgMBAAGjEzAR
+MA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEEBQADgYEAB/pMaVz7lcxG7oWDTSEwjsrZqG9J
+GubaUeNgcGyEYRGhGshIPllDfU+VPaGLtwtimHp1it2ITk6eQNuozDJ0uW8NxuOzRAvZim+aKZuZ
+GCg70eNAKJpaPNW15yAbi8qkq43pUdniTCxZqdq5snUb9kLy78fyGPmJvKP/iiMucEc=
+</encoded>
+                </certificate>
+            </record>
+            <record alias="EmailAddress=personal-premium@thawte.com, CN=Thawte Personal Premium CA, OU=Certification Services Division, O=Thawte Consulting, L=Cape Town, ST=Western Cape, C=ZA">
+                <certificate type="X.509">
+                    <encoded>MIIDKTCCApKgAwIBAgIBADANBgkqhkiG9w0BAQQFADCBzzELMAkGA1UEBhMCWkExFTATBgNVBAgT
+DFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUgQ29uc3Vs
+dGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEjMCEGA1UEAxMa
+VGhhd3RlIFBlcnNvbmFsIFByZW1pdW0gQ0ExKjAoBgkqhkiG9w0BCQEWG3BlcnNvbmFsLXByZW1p
+dW1AdGhhd3RlLmNvbTAeFw05NjAxMDEwMDAwMDBaFw0yMDEyMzEyMzU5NTlaMIHPMQswCQYDVQQG
+EwJaQTEVMBMGA1UECBMMV2VzdGVybiBDYXBlMRIwEAYDVQQHEwlDYXBlIFRvd24xGjAYBgNVBAoT
+EVRoYXd0ZSBDb25zdWx0aW5nMSgwJgYDVQQLEx9DZXJ0aWZpY2F0aW9uIFNlcnZpY2VzIERpdmlz
+aW9uMSMwIQYDVQQDExpUaGF3dGUgUGVyc29uYWwgUHJlbWl1bSBDQTEqMCgGCSqGSIb3DQEJARYb
+cGVyc29uYWwtcHJlbWl1bUB0aGF3dGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJ
+Ztn4B0TPuYwu8KHvE0VsBd/eJxZRNkERbGw77f4QfRKe5ZtCmv5gMcNmt3M6SK5O0DI3lIi1DbbZ
+8/JE2dWIEt12TfIa/G8jHnrx2JhFTgcQ7xZC0EN1bUre4qrJMf8fAHB8Zs8QJQi6+u4A6UYDZicR
+FTuqW/KY3TZCstqIdQIDAQABoxMwETAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBBAUAA4GB
+AGk2ifc0KjNyL2071CKyuG+axTZmDhs8obF1Wub9NdP4qPIHb4Vnjt4rueIXsDqg8A6iAJrf8xQV
+brvIhVqYgPn/vnQdPfP+MCXRNzRn+qVxeTBhKXLA4CxM+1bkOqhv5TJZUtt1KFBZDPgLGeSs2a+W
+jS9Q2wfD6h+rM+D1KzGJ
+</encoded>
+                </certificate>
+            </record>
+            <record alias="EmailAddress=personal-basic@thawte.com, CN=Thawte Personal Basic CA, OU=Certification Services Division, O=Thawte Consulting, L=Cape Town, ST=Western Cape, C=ZA">
+                <certificate type="X.509">
+                    <encoded>MIIDITCCAoqgAwIBAgIBADANBgkqhkiG9w0BAQQFADCByzELMAkGA1UEBhMCWkExFTATBgNVBAgT
+DFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUgQ29uc3Vs
+dGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEhMB8GA1UEAxMY
+VGhhd3RlIFBlcnNvbmFsIEJhc2ljIENBMSgwJgYJKoZIhvcNAQkBFhlwZXJzb25hbC1iYXNpY0B0
+aGF3dGUuY29tMB4XDTk2MDEwMTAwMDAwMFoXDTIwMTIzMTIzNTk1OVowgcsxCzAJBgNVBAYTAlpB
+MRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNVBAcTCUNhcGUgVG93bjEaMBgGA1UEChMRVGhh
+d3RlIENvbnN1bHRpbmcxKDAmBgNVBAsTH0NlcnRpZmljYXRpb24gU2VydmljZXMgRGl2aXNpb24x
+ITAfBgNVBAMTGFRoYXd0ZSBQZXJzb25hbCBCYXNpYyBDQTEoMCYGCSqGSIb3DQEJARYZcGVyc29u
+YWwtYmFzaWNAdGhhd3RlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAvLyTU23AUE+C
+FeZIlDWmWr5vQvoPR+53dXLdjUmbllegeNTKP1GzaQuRdhciB5dqxFGTS+CN7zeVoQxN2jSQHReJ
+l+A1OFdKwPQIcOk8RHtQfmGakOMj04gRRif1CwcOu93RfyAKiLlWCy4cgNrx454p7xS9CkT7G1sY
+0b8jkyECAwEAAaMTMBEwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQQFAAOBgQAt4plrsD16
+iddZopQBHyvdEktTwq1/qqcAXJFAVyVKOKqEcLnZgA+le1z7c8a914phXAPjLSeoF+CEhULcXpvG
+t7Jtu3Sv5D/Lp7ew4F2+eIMllNLbgQ95B21P9DkVWlIBe94y1k049hJcBlDfBVu9FEuh3ym6O0GN
+92NWod8isQ==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="EmailAddress=personal-freemail@thawte.com, CN=Thawte Personal Freemail CA, OU=Certification Services Division, O=Thawte Consulting, L=Cape Town, ST=Western Cape, C=ZA">
+                <certificate type="X.509">
+                    <encoded>MIIDLTCCApagAwIBAgIBADANBgkqhkiG9w0BAQQFADCB0TELMAkGA1UEBhMCWkExFTATBgNVBAgT
+DFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3duMRowGAYDVQQKExFUaGF3dGUgQ29uc3Vs
+dGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBTZXJ2aWNlcyBEaXZpc2lvbjEkMCIGA1UEAxMb
+VGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENBMSswKQYJKoZIhvcNAQkBFhxwZXJzb25hbC1mcmVl
+bWFpbEB0aGF3dGUuY29tMB4XDTk2MDEwMTAwMDAwMFoXDTIwMTIzMTIzNTk1OVowgdExCzAJBgNV
+BAYTAlpBMRUwEwYDVQQIEwxXZXN0ZXJuIENhcGUxEjAQBgNVBAcTCUNhcGUgVG93bjEaMBgGA1UE
+ChMRVGhhd3RlIENvbnN1bHRpbmcxKDAmBgNVBAsTH0NlcnRpZmljYXRpb24gU2VydmljZXMgRGl2
+aXNpb24xJDAiBgNVBAMTG1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBDQTErMCkGCSqGSIb3DQEJ
+ARYccGVyc29uYWwtZnJlZW1haWxAdGhhd3RlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC
+gYEA1GnX1LCUZFtx6UfYDFG26nKRsIRefS0Nj3sS34UldSh0OkIsYyeflXtL734Zhx2G6qPduc6W
+ZBrCFG5ErHzmj+hND3EfQDimAKOHePb5lIZererAXnbr2RSjXW56fAylS1V/Bhkpf56aJtVquzgk
+CGqYx7Hao5iR/Xnb5VrEHLkCAwEAAaMTMBEwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQQF
+AAOBgQDH7JJ+Tvj1lqVnYiqk8E0RYNBvjWBYYawmu1I1XAjPMPuoSpaKH2JCI4wXD/S6ZJwXrEcp
+352YXtJsYHFcoqzceePnbgBHH7UNKOgCneSa/RP0ptl8sfjcXyMmCZGAc9AUG95DqYMl8uacLxXK
+/qarigd1iwzdUYRr5PjRzneigQ==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="OU=Class 2 Public Primary Certification Authority, O=&quot;VeriSign, Inc.&quot;, C=US">
+                <certificate type="X.509">
+                    <encoded>MIICPDCCAaUCEC0b/EoXjaOR6+f/9YtFvgswDQYJKoZIhvcNAQECBQAwXzELMAkGA1UEBhMCVVMx
+FzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAyIFB1YmxpYyBQcmltYXJ5
+IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTk2MDEyOTAwMDAwMFoXDTI4MDgwMTIzNTk1OVow
+XzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAy
+IFB1YmxpYyBQcmltYXJ5IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQC2WoujDWojg4BrzzmH9CETMwZMJaLtVRKXxaeAufqDwSCg+i8VDXyhYGt+eSz6
+Bg86rvYbb7HS/y8oUl+DfUvEerf4Zh+AVPy3wo5ZShRXRtGak75BkQO7FYCTXOvnzAhsPz6zSvz/
+S2wj1VCCJkQZjiPDceoZJEcEnnW/yKYAHwIDAQABMA0GCSqGSIb3DQEBAgUAA4GBAIobK/o5wXTX
+XtgZZKJYSi034DNHD6zt96rbHuSLBlxgJ8pFUs4W7z8GZOeUaHxgMxURaa+dYo2jA1Rrpr7l7gUY
+YAS/QoD90KioHgE796Ncr6Pc5iaAIzy4RHT3Cq5Ji2F4zCS/iIqnDupzGUH9TQPwiNHleI2lKk/2
+lw0Xd8rY
+</encoded>
+                </certificate>
+            </record>
+            <record alias="OU=Class 3 Public Primary Certification Authority, O=&quot;VeriSign, Inc.&quot;, C=US">
+                <certificate type="X.509">
+                    <encoded>MIICPDCCAaUCEHC65B0Q2Sk0tjjKewPMur8wDQYJKoZIhvcNAQECBQAwXzELMAkGA1UEBhMCVVMx
+FzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAzIFB1YmxpYyBQcmltYXJ5
+IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTk2MDEyOTAwMDAwMFoXDTI4MDgwMTIzNTk1OVow
+XzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMTcwNQYDVQQLEy5DbGFzcyAz
+IFB1YmxpYyBQcmltYXJ5IENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQDJXFme8huKARS0EN8EQNvjV69qRUCPhAwL0TPZ2RHP7gJYHyX3KqhEBarsAx94
+f56TuZoAqiN91qyFomNFx3InzPRMxnVx0jnvT0Lwdd8KkMaOIG+YD/isI19wKTakyYbnsZogy1Ol
+hec9vn2a/iRFM9x2Fe0PonFkTGUugWhFpwIDAQABMA0GCSqGSIb3DQEBAgUAA4GBALtMEivPLCYA
+TxQT3ab7/AoRhIzzKBxnki98tsX63/Dolbwdj2wsqFHMc9ikwFPwTtYmwHYBV4GSXiHx0bH/59Ah
+WM1pF+NEHJwZRDmJXNycAA9WjQKZ7aKQRUzkuxCkPfAyAw7xzvjoyVGM5mKf5p/AfbdynMk2Omuf
+Tqj/ZA1k
+</encoded>
+                </certificate>
+            </record>
+            <record alias="CN=midnightlaptop1, OU=Systinet Server for Java 6.5.2">
+                <certificate type="X.509">
+                    <encoded>MIIB9jCCAV8CBgEMzWKtqTANBgkqhkiG9w0BAQQFADBDMScwJQYDVQQLEx5TeXN0aW5ldCBTZXJ2
+ZXIgZm9yIEphdmEgNi41LjIxGDAWBgNVBAMTD21pZG5pZ2h0bGFwdG9wMTAaFwswNjA4MDIwNTM3
+WhcLMDgwODAxMDUzN1owQzEnMCUGA1UECxMeU3lzdGluZXQgU2VydmVyIGZvciBKYXZhIDYuNS4y
+MRgwFgYDVQQDEw9taWRuaWdodGxhcHRvcDEwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAIfc
+907bcG+Nn4R3BZmOTtgApqI7dIH8K+czoXK2bteh3RLAADS2du3iKDu/1wdmWF5nxHoq8AYbRQ2W
+lpfvQCxt8S4D4DFqIZcrY19+tIFL4kycZsYTsktLU+Y4HtiNTzwUUq1ByCoAnD4M/ayFI2N/k7Gb
+/IMhGj2ZzFtUC2t1AgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAAtG5s+fQrxdJUy1iZUz5c7MyvRey
+qLW7DI+if+U8zc8pj+3lw2ESWDhgRuJMOwowbpYXvNVQakwb4+eWTlfJvj5tyzkLRbhHb5IxEShh
+AyE57CgjS1Qe4yfI5lh6gArOCLRQ9AEXZLmQEpLaaZU6P0HgKvSwu7/ktpgkkcsj00U=
+</encoded>
+                </certificate>
+            </record>
+            <record alias="sslalias_client">
+                <key>
+                    <algorithm>3sBFSj0IEQA=
+</algorithm>
+                    <encoded>1turWenRuLmcSu/Ssg3Vr//WQqf1F0Vv3ZeiyS4D3s5uQBUn+qT7rez5DDqSpBH25wcXU7J2aYrK
+naLJC+/Qavw1S+j+ocIg4i46NF/jD80gJB9DW2/3M9WBuoj2hjwMwsK5VTxuU3sZcmRUCebLFUcR
+dXE2/mQLrY/SftLReBxMzHC1NofVbRx72+QuZXyTZu//BwdHBOinEn/opgWLM+mKZvMjJ/tpRa8h
+bTbIg08ooMmmHrLjETZBWIP+k85J9qPguhW6eZ8KGqPViBZRYgUygo4N9qXeVC0xFF3Q7Rxl0fka
+9ZpTPmGANbumaubTHvm5xVuMUt0RIShnc52+23Rpfbakugo4lZ5Rlm3HqEMDKbO6JkW/VpY6mVDh
+saa8EeodfMdrz+fIwGU0AaGqk3WTZ8nRni8aNpgSv63SN5QVSE1x/mSD6QzrR1KuanVDwQIzmuSu
+D9cn36KAt8ArP1b4a5eChxaqYo6r8Uen6cutlHKjd115W0vapHvrkw5DPCLaL1ap/XhCpn8pYYth
+M6zPwz7igB+bvdQZ7AoOqu5zTAvZMVTymhwPlAuGto+I4dSyhPOar7DDi5iHNzjyy9RMnljgAyUI
+a1BKFlMdCEGNRgT7sHDhRDd+uRdNqY7ZIOYYLHl8ucgwzDgsQwNnafo7ooCiG0IC0C5Fa9OLW7wq
+CI4w2cTtsggqY49OaVgRjbEzjMXjJfCKhn8lHQT16M3v9CWdghEsZ04lrBaO4rOKpMJjlOjG3d3w
+HdvrkpINWrPvso1gS0Uh7lRhtfsSxI/aEgK4tGtkOUmSbCcFKS1oTRJ8NKb3q2FuHHHwvJoDZUWc
+lsFqjLu3GzVRONagMQ==
+</encoded>
+                    <format>fZuP27mK3Mc=
+</format>
+                    <salt>DbdYuP9el1E=
+</salt>
+                </key>
+                <certificate type="X.509">
+                    <encoded>MIICBDCCAW0CBgEMzWLCajANBgkqhkiG9w0BAQQFADBKMS4wLAYDVQQLEyVTeXN0aW5ldCBTZXJ2
+ZXIgZm9yIEphdmEgNi41LjIgQ2xpZW50MRgwFgYDVQQDEw9taWRuaWdodGxhcHRvcDEwGhcLMDYw
+ODAyMDUzN1oXCzA4MDgwMTA1MzdaMEoxLjAsBgNVBAsTJVN5c3RpbmV0IFNlcnZlciBmb3IgSmF2
+YSA2LjUuMiBDbGllbnQxGDAWBgNVBAMTD21pZG5pZ2h0bGFwdG9wMTCBnzANBgkqhkiG9w0BAQEF
+AAOBjQAwgYkCgYEAlmTNjwEPfjv2AjSVQcLKEBuVk+tQLgjaTaVZ1tkamu1tkcFeOFi3oG/VZD62
+kAlkDSJ8/2cP2EoYxdUizl5c8V4KCOTGjEQH0JCpLNLt3DHDPDqYOXh9cuZbFnuBX5KkTL97zcyT
+521fr9GCjk4yKAwzzmREZ0KwNebSaYhe+A0CAwEAATANBgkqhkiG9w0BAQQFAAOBgQCO0i6E2KNP
+K1r8zHwrHU+9xGuEm3nmezvTSnzvAvfX6NjfAsNHbQp8jqiC7bp6OGIEtdWuh8TwauuwPodI0GVz
+eVE1o1Irs7a1Ll2kis6LU8+9Ud7wo7LMtSn5egIQSbtsiwwa367FdfvmxxCCFaT9YMg5LS1bWICh
+KSkTyj/bfw==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="CN=midnightlaptop1, OU=Systinet Server for Java 6.5.2 Client">
+                <certificate type="X.509">
+                    <encoded>MIICBDCCAW0CBgEMzWLCajANBgkqhkiG9w0BAQQFADBKMS4wLAYDVQQLEyVTeXN0aW5ldCBTZXJ2
+ZXIgZm9yIEphdmEgNi41LjIgQ2xpZW50MRgwFgYDVQQDEw9taWRuaWdodGxhcHRvcDEwGhcLMDYw
+ODAyMDUzN1oXCzA4MDgwMTA1MzdaMEoxLjAsBgNVBAsTJVN5c3RpbmV0IFNlcnZlciBmb3IgSmF2
+YSA2LjUuMiBDbGllbnQxGDAWBgNVBAMTD21pZG5pZ2h0bGFwdG9wMTCBnzANBgkqhkiG9w0BAQEF
+AAOBjQAwgYkCgYEAlmTNjwEPfjv2AjSVQcLKEBuVk+tQLgjaTaVZ1tkamu1tkcFeOFi3oG/VZD62
+kAlkDSJ8/2cP2EoYxdUizl5c8V4KCOTGjEQH0JCpLNLt3DHDPDqYOXh9cuZbFnuBX5KkTL97zcyT
+521fr9GCjk4yKAwzzmREZ0KwNebSaYhe+A0CAwEAATANBgkqhkiG9w0BAQQFAAOBgQCO0i6E2KNP
+K1r8zHwrHU+9xGuEm3nmezvTSnzvAvfX6NjfAsNHbQp8jqiC7bp6OGIEtdWuh8TwauuwPodI0GVz
+eVE1o1Irs7a1Ll2kis6LU8+9Ud7wo7LMtSn5egIQSbtsiwwa367FdfvmxxCCFaT9YMg5LS1bWICh
+KSkTyj/bfw==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="admin">
+                <key>
+                    <algorithm>em6nXeV7X/A=
+</algorithm>
+                    <encoded>o3If4c2s9GQAc7XArMrw/lL2uliTLWgxNFBeIATrYir6Q9FOfiziv9mELEORqyPhj4RzDXHCLmRK
+ss/xq/qOOSBb38XyptDAp6aNMzxIyTZdpg62/WrhYVFFenmsM90y15tanbRDgoWY896SSfsMVVq7
+Vp5vDQQuIadDHQAun806YjIW+dFHPDaXzV0zEUZfCXVYbuI+uWKivi+dw6uRNtlcfwnLigGDcrC5
+qLqCZArgFiaw7qqVDPu+DVkVSoBQvLXk9WpcMSTQOdSJdcjLeFx29+755BJmtjl++MS9uxhtVqOx
+irYABhr7oQVBHZMsn0W5NBWGC+9s2XcDFUjHrC13jWWlKs93guuPL0rRfBc+kq7tMU/bSkT+YMDs
+RK2yP+Gs7ltzpWgQMfu1ZaPP1WHNKpstvj9t+CjGdemHpXG1K6cnp5hROFIim8t8iaZZ+R6cSJwW
+4ubJ8V8BwriHp2TiNezkKnbNr63hc3DIElL74M2HZVhqI6oGCapYWm73cJDoRWjKSHAR/ENpEqG+
+VIELHBBUDEUBPGjKtARNIZXHv9/IxN/gadu30qyeNmAwxQyiYtWWQi9mnZsyZgF3tD6stVgTqUZ3
+LExNieudVIy0twrLWmvTjmapmvXnRy7EJRWDSb5RcQ0QiKEbfG/ls6rruUnVggb7T0Dh4KmkqPUk
+aAUgGhhbRlYDW9oyTdK5y4DTCYSM2sCnsRxjuIT1b6yqsbYkM8ayQshveLZDfInCvdK9/UP4jmXY
+stG9m885krmZZ/hxyUXQ7sk8VGuOiwbwEmTJB+GCF5tdSXqC1HfiS9ctXYNt1uO2s2Y9tcwcg9DR
+U0Fjr/zjR0GmA8n1BA==
+</encoded>
+                    <format>DkI3hAJM6kQ=
+</format>
+                    <salt>dPWFvhi1Kyw=
+</salt>
+                </key>
+                <certificate type="X.509">
+                    <encoded>MIIBjzCB+QIGAQzNYtKmMA0GCSqGSIb3DQEBBAUAMBAxDjAMBgNVBAMTBWFkbWluMBoXCzA2MDgw
+MjA1MzdaFwswODA4MDEwNTM3WjAQMQ4wDAYDVQQDEwVhZG1pbjCBnzANBgkqhkiG9w0BAQEFAAOB
+jQAwgYkCgYEA7wYtXs0Xm8qDS2di7UjkkJRUP2beNYACvyULb6AcUWQHqM22uw8booxJrmRraBIR
+73fxPQe9dOA8WgalTFvB/Iz60mAWS5uH1yLDc1GXIYoyC4mcWvnXZUOOo1dIT5BtWO4VITXYOinM
+zjwwh3IBVtQNanrJxxYOPrPlLRXh0h0CAwEAATANBgkqhkiG9w0BAQQFAAOBgQA0yZ93W8gjV0aR
+Oa8LRmMe46OjEWAdsCBf+KatJFb8vHzcPKvMs49wRuMh7Pi7dwnghmPSCKWvpXgq6SyZG5hsFMEY
+OyGWCb/T+R1lFtDcXnL5dsFyKvqjTaNH7s+2XBDrMfjezuOXcukzvZlORSJegx79L84giQZruMBI
+t4BqQg==
+</encoded>
+                </certificate>
+            </record>
+            <record alias="CN=WASP">
+                <certificate type="X.509">
+                    <encoded>MIIBjTCB9wIGAQzNYuRKMA0GCSqGSIb3DQEBBAUAMA8xDTALBgNVBAMTBFdBU1AwGhcLMDYwODAy
+MDUzN1oXCzA4MDgwMTA1MzdaMA8xDTALBgNVBAMTBFdBU1AwgZ8wDQYJKoZIhvcNAQEBBQADgY0A
+MIGJAoGBAJZHAg+C1GQX/Xiwa40fSG4xXhAU4AsOFGnCiwHS56c/M26Mksd9ryx4nX0jLXb6sPOf
+QcxkoLnSrRe22xVK9+JM1WeK92jcHT925SkcsTB+7ve1aE1zNGyJS99N07U8w2qJdKY8iutsHfJ3
+wvW7c11X7sF8mZ8dnoEgamQMNHzLAgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAHrldruKANBrq04XX
+IF+AU946LilkHOltFiPc5zX7XWGeIsu6vwhCHrlXznaB1VF4ETbRLeyQJRloiD0Z8o57KU2pzUN+
+HzkzOEx5VGvWpmK+ZZBLHcpEPzs23DgaXR/32nbnzHy2qWjtf/7r7OSlL2Ti8Eug3oqoedx8FC5k
+ztg=
+</encoded>
+                </certificate>
+            </record>
+        </keyStore>
+        <userStore/>
+    </PStore>
+</config>

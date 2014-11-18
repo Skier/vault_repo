@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    creationComplete="OnCreationComplete();" 
+    title="AsNamed Seller reservations" 
+    width="480" height="340"
+    xmlns:components="components.*">
+    <mx:Script>
+        <![CDATA[
+        	import mx.controls.dataGridClasses.DataGridColumn;
+        	import mx.collections.ArrayCollection;
+        	import mx.managers.PopUpManager;
+        	import UI.Document.DocumentController;
+        	import Domain.Participantreservation;
+
+            [Bindable]
+            public var reservations:ArrayCollection;
+            
+            [Bindable]
+            private var currentReservation:Participantreservation;
+
+            [Bindable]
+			private var currentDetails:String;
+            
+	        public function OnCreationComplete():void {
+	            PopUpManager.centerPopUp(this);
+	            if (reservations.length == 0) {
+	            	onClickAddNew();
+	            }
+	        }
+	
+	        public function OnClose(event:Event):void {
+				if (currentReservation != null  && currentReservation.isNew) {
+					var idx:int = reservations.getItemIndex(currentReservation);
+					reservations.removeItemAt(idx);
+				}
+	            PopUpManager.removePopUp(this);
+	        }
+	        
+	        private function onDataGridChanged():void {
+	        	currentReservation = dgReservations.selectedItem as Participantreservation;
+	        	currentDetails = currentReservation.Details;
+	        }
+
+			private function onClickAddNew():void {
+				currentReservation = new Participantreservation();
+				currentReservation.isNew = true;
+				currentReservation.Details = "**New**";
+				reservations.addItem(currentReservation);
+				currentDetails = "";
+				dgReservations.selectedItem = currentReservation;
+				dgReservations.scrollToIndex(dgReservations.selectedIndex);
+				focusManager.setFocus(details);
+
+				var p:Point = dgReservations.getItemPosition(dgReservations.selectedItem);
+				
+				if ( (p.y + popUpPanel.height) < dgReservations.height ) {
+					popUpPanel.move( dgReservations.x + p.x, dgReservations.y + p.y + dgReservations.rowHeight);
+				} else {
+					popUpPanel.move( dgReservations.x + p.x, dgReservations.y + p.y - popUpPanel.height);
+				}
+	
+				popUpPanel.visible = true;
+			}
+
+			private function onClickChange():void {
+
+				var p:Point = dgReservations.getItemPosition(dgReservations.selectedItem);
+				
+				if ( (p.y + popUpPanel.height) < dgReservations.height ) {
+					popUpPanel.move( dgReservations.x + p.x, dgReservations.y + p.y + dgReservations.rowHeight);
+				} else {
+					popUpPanel.move( dgReservations.x + p.x, dgReservations.y + p.y - popUpPanel.height);
+				}
+	
+				popUpPanel.visible = true;
+				focusManager.setFocus(details);
+			}
+
+			private function onClickSave():void {
+				if (currentReservation.isNew) {
+					currentReservation.isNew = false;
+				}
+				currentReservation.Details = currentDetails;
+				dgReservations.selectedItem = currentReservation;
+				onDataGridChanged();
+				popUpPanel.visible = false;
+			}
+			
+			private function onClickCancel():void {
+				if (currentReservation.isNew) {
+					var idx:int = reservations.getItemIndex(currentReservation);
+					reservations.removeItemAt(idx);
+					currentDetails = "";
+					currentReservation = null;
+				} else {
+					currentDetails = currentReservation.Details;
+				}
+				popUpPanel.visible = false;
+			}
+
+			private function onClickRemove():void {
+				var reservation:Participantreservation = dgReservations.selectedItem as Participantreservation;
+				var idx:int = reservations.getItemIndex(reservation);
+				reservation.remove();
+				if (idx != -1) {
+					reservations.removeItemAt(idx);
+				}
+				if (idx > 0) {
+					dgReservations.selectedIndex = idx - 1;
+					onDataGridChanged();
+				} else {
+					currentReservation = null;
+					currentDetails = "";
+				}
+			}
+	        
+        ]]>
+    </mx:Script>
+	
+	<mx:Canvas id="content" width="100%" height="100%" >
+
+		<mx:VBox id="gridPanel" width="100%" height="100%" enabled="{!popUpPanel.visible}">
+			<components:DataGridEx id="dgReservations" width="100%" height="100%"
+				dataProvider="{reservations}"
+				showHeaders="false" 
+				change="onDataGridChanged()"
+				>
+				<components:columns>
+					<mx:DataGridColumn dataField="Details"/>
+				</components:columns>
+			</components:DataGridEx>
+			<mx:HBox width="100%" horizontalAlign="right" enabled="{!popUpPanel.visible}">
+				<mx:Button label="Add New" click="onClickAddNew()"/>
+				<mx:Button label="Change" click="onClickChange()" enabled="{dgReservations.selectedItem != null}"/>
+				<mx:Button label="Remove" click="onClickRemove()" enabled="{dgReservations.selectedItem != null}"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox id="popUpPanel" width="100%" height="90" visible="false"
+			paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			backgroundColor="#dddddd" borderColor="#999999" borderStyle="solid" cornerRadius="0"
+			>
+			<mx:TextArea id="details" enabled="{currentReservation != null &amp;&amp; currentDetails != null}"
+				text="{currentDetails}" maxChars="350"
+				change="currentDetails = details.text.toUpperCase()"
+				width="100%" height="100%"/>
+			<mx:HBox id="textAreaPanel" width="100%" horizontalAlign="right">
+				<mx:Button label="Ok" click="onClickSave()" 
+					enabled="{ currentReservation != null 
+						&amp;&amp; currentDetails != null &amp;&amp; currentDetails != ''
+						&amp;&amp; currentDetails != currentReservation.Details }"/>
+				<mx:Button label="Cancel" click="onClickCancel()"
+					enabled="{ currentReservation != null &amp;&amp; currentDetails != null}"/>
+			</mx:HBox>
+
+		</mx:VBox>
+		
+	</mx:Canvas>
+
+    <mx:ControlBar width="100%">
+        <mx:Spacer width="100%" height="10"/>
+        <mx:Button id="btnCancel" label="Close" 
+        	click="OnClose(event)" 
+        	enabled="{!popUpPanel.visible}"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

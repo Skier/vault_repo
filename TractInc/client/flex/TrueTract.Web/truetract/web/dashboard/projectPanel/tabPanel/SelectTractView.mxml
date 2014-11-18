@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	title="Select Tract"
+	width="400" height="300">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.ChangeWatcher;
+			import mx.managers.PopUpManager;
+			import truetract.domain.Tract;
+			import truetract.domain.Document;
+			
+			[Bindable] private var doc:Document;
+			
+			[Bindable] public var selectedTract:Tract;
+			
+            public static function open(parent:DisplayObject, doc:Document, modal:Boolean):SelectTractView
+            {
+                var popup:SelectTractView = new SelectTractView();
+                popup.doc = doc;
+                popup.addWatcher();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+            
+            public function close():void 
+            {
+				PopUpManager.removePopUp(this);
+            }
+            
+            private function addWatcher():void 
+            {
+				ChangeWatcher.watch(dgTracts, "selectedItem", selectedTractChangeHandler);
+            }
+            
+            private function selectedTractChangeHandler(e:*):void 
+            {
+            	if (dgTracts.selectedItem && dgTracts.selectedItem is Tract) 
+            	{
+            		selectedTract = dgTracts.selectedItem as Tract;
+            	} else 
+            	{
+            		selectedTract = null;
+            	}
+            }
+            
+			private function submitClickHandler():void 
+			{
+				dispatchEvent(new Event("submit"));
+			}
+			
+			private function cancelClickHandler():void 
+			{
+				dispatchEvent(new Event("cancel"));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Binding source="Tract(dgTracts.selectedItem)" destination="selectedTract"/>
+	
+	<mx:DataGrid id="dgTracts" dataProvider="{doc.TractsList}" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Reference Name" dataField="RefName"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="Submit" label="Select" click="submitClickHandler()" enabled="{selectedTract != null}"/>
+		<mx:Button id="Cancel" label="Cancel" click="cancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

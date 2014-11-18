@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+    title="File Download">
+    <mx:Script>
+        <![CDATA[
+            import com.tmnc.mail.business.messages.BodyPartInfo;
+            import mx.managers.PopUpManager;
+            
+            [Bindable]
+            private var file:BodyPartInfo;
+            
+            private var fr:FileReference;
+                
+            public function downloadFile(file:BodyPartInfo):void {
+                this.file = file;
+
+                fr = new FileReference();
+                fr.addEventListener(Event.OPEN, openHandler);
+                fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+                fr.addEventListener(Event.COMPLETE, completeHandler);
+                
+                var request:URLRequest = new URLRequest();
+                request.url = file.FileUrl;
+                fr.download(request);
+            }
+            
+            private function openHandler(event:Event):void {
+                pb.visible = true;
+                pb.label = "DOWNLOADING %3%%";
+            }
+
+            private function progressHandler(event:ProgressEvent):void {
+                pb.setProgress(event.bytesLoaded, event.bytesTotal);
+            }
+
+            private function completeHandler(event:Event):void {
+                pb.label = "DOWNLOAD COMPLETE";
+                PopUpManager.removePopUp(this);                
+            }
+
+            public function doCancel():void {
+                fr.cancel();
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Form>
+        <mx:FormItem label="File Name :" width="100%">
+            <mx:Text fontWeight="bold" text="{file.FileName}"/>
+        </mx:FormItem> 
+        <mx:FormItem label="Size :" width="100%">
+            <mx:Text fontWeight="bold" text="{file.Size} b"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:ProgressBar id="pb" label="" visible="false" mode="manual" width="100%" />
+    
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button click="doCancel()" label="Cancel"/> 
+    </mx:ControlBar>
+    
+</mx:TitleWindow>
+

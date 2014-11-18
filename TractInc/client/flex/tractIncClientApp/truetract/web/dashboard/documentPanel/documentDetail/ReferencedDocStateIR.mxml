@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    verticalAlign="middle" horizontalAlign="left"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    paddingLeft="2" paddingRight="2" horizontalGap="2">
+	<mx:Script>
+		<![CDATA[
+			import truetract.web.dashboard.documentPanel.DocumentPanel;
+			import truetract.web.dashboard.events.DocumentEvent;
+			import truetract.domain.Document;
+			import truetract.domain.DocumentReference;
+
+        	[Embed(source="/assets/key.png")]
+        	[Bindable]
+        	private var imgKey:Class;
+        	
+        	[Embed(source="/assets/key_disable.png")]
+        	[Bindable]
+        	private var imgKeyDisable:Class;
+        	
+        	[Embed(source="/assets/shape.png")]
+        	[Bindable]
+        	private var imgTract:Class;
+        	
+        	[Embed(source="/assets/shape_disable.png")]
+        	[Bindable]
+        	private var imgTractDisable:Class;
+        	
+        	[Embed(source="/assets/page_white_acrobat.png")]
+        	[Bindable]
+        	private var imgPdf:Class;
+        	
+        	[Embed(source="/assets/page_white_acrobat_disable.png")]
+        	[Bindable]
+        	private var imgPdfDisable:Class;
+        	
+        	[Embed(source="/assets/page_link.png")]
+        	[Bindable]
+        	private var imgLink:Class;
+        	
+        	[Embed(source="/assets/page_link_disable.png")]
+        	[Bindable]
+        	private var imgLinkDisable:Class;
+        	
+        	private function imgKeyClickHandler():void 
+        	{
+        		var event:DocumentEvent = 
+        			new DocumentEvent(DocumentEvent.OPEN_DOCUMENT,
+        				DocumentReference(data).ReferencedDoc, DocumentReference(data), DocumentPanel.EDIT_MODE);
+
+        		DocumentDetailView(parentDocument).dispatchEvent(event);
+        	}
+        	
+        	private function imgTractClickHandler():void 
+        	{
+        		var event:DocumentEvent = 
+        			new DocumentEvent(DocumentEvent.OPEN_DOCUMENT,
+        				DocumentReference(data).ReferencedDoc, DocumentReference(data), DocumentPanel.TRACTS_MODE);
+
+        		DocumentDetailView(parentDocument).dispatchEvent(event);
+        	}
+        	
+        	private function imgPdfClickHandler():void 
+        	{
+        		var event:DocumentEvent = 
+        			new DocumentEvent(DocumentEvent.OPEN_DOCUMENT,
+        				DocumentReference(data).ReferencedDoc, DocumentReference(data), DocumentPanel.ATTACHMENT_MODE);
+
+        		DocumentDetailView(parentDocument).dispatchEvent(event);
+        	}
+        	
+        	private function imgLinkClickHandler():void 
+        	{
+        		var event:DocumentEvent = 
+        			new DocumentEvent(DocumentEvent.OPEN_DOCUMENT,
+        				DocumentReference(data).ReferencedDoc, DocumentReference(data), DocumentPanel.REFERENCES_MODE);
+
+        		DocumentDetailView(parentDocument).dispatchEvent(event);
+        	}
+        	
+		]]>
+	</mx:Script>
+ 	
+	<mx:Image 
+		source="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.isRequiredFieldsFilled()) 
+			? imgKey : imgKeyDisable}"
+		toolTip="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.isRequiredFieldsFilled()) 
+			? 'All required fields are filled' : 'Click to edit referenced document'}"
+		click="imgKeyClickHandler()"/>
+	
+	<mx:Image 
+		source="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.TractsList.length > 0) 
+			? imgTract : imgTractDisable}"
+		toolTip="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.TractsList.length > 0)
+			? 'Has ' + DocumentReference(data).ReferencedDoc.TractsList.length.toString() + ' tract(s)' : null}"
+		click="imgTractClickHandler()"/>
+
+	<mx:Image 
+		source="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.PdfCopy != null) 
+			? imgPdf : imgPdfDisable}"
+		toolTip="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.PdfCopy != null) 
+			? 'Click to open PDF copy of the document' : 'Pdf copy not found'}"
+		click="imgPdfClickHandler()"/>
+
+	<mx:Image 
+		source="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.ReferencesList.length > 0) 
+			? imgLink : imgLinkDisable}"
+		toolTip="{
+			(DocumentReference(data).ReferencedDoc != null &amp;&amp; DocumentReference(data).ReferencedDoc.ReferencesList.length > 0) 
+			? 'Has ' + DocumentReference(data).ReferencedDoc.ReferencesList.length + ' reference(s) to another document(s)' : 'No references'}"
+		click="imgLinkClickHandler()"/>
+</mx:HBox>
+

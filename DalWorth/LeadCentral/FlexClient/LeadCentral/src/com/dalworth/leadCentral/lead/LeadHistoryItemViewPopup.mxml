@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+    title="History Item Detail" width="400" xmlns:controls="com.affilia.controls.*">
+    
+    <mx:Script>
+        <![CDATA[
+        	import com.affilia.util.DateUtil;
+        	import com.dalworth.leadCentral.domain.User;
+        	import com.dalworth.leadCentral.service.registry.UserRegistry;
+        	import com.dalworth.leadCentral.domain.LeadChangeHistory;
+        	import com.dalworth.leadCentral.service.LeadTypeService;
+        	import com.dalworth.leadCentral.events.LeadTypeEvent;
+        	import mx.collections.SortField;
+        	import mx.collections.Sort;
+        	import com.dalworth.leadCentral.service.IdsService;
+        	import com.dalworth.leadCentral.domain.LeadType;
+        	import mx.utils.StringUtil;
+        	import mx.collections.ArrayCollection;
+        	import mx.controls.Alert;
+        	import mx.managers.PopUpManager;
+        	import mx.core.UIComponent;
+        	import mx.rpc.events.ResultEvent;
+        	import mx.rpc.events.FaultEvent;
+        	import mx.events.CloseEvent;
+        	import mx.events.ValidationResultEvent;
+        	import mx.rpc.Responder;
+            
+            [Bindable]
+            private var historyItem:LeadChangeHistory;
+            
+            [Bindable]
+            private var userName:String;
+            
+            [Bindable]
+            private var jobTypes:ArrayCollection;
+            
+            public static function open(parent:DisplayObject, historyItem:LeadChangeHistory, modal:Boolean = true):LeadHistoryItemViewPopup
+            {
+                var popup:LeadHistoryItemViewPopup = new LeadHistoryItemViewPopup();
+                
+                popup.historyItem = historyItem;
+                popup.init();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	var user:User = UserRegistry.getInstance().getLocal(historyItem.UserId) as User;
+            	if (user)
+            		userName = user.FirstName + " " + user.LastName;
+            	else
+            		"";
+            }
+            
+            private function btnCloseClickHandler(event:CloseEvent):void 
+            {
+                close();
+            }
+            
+			private function onOkClick():void 
+			{
+				close();
+			}
+			
+        ]]>
+    </mx:Script>
+
+	<mx:Form width="100%" 
+		paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20">
+		<mx:FormItem label="Action" width="100%" required="true" fontSize="12">
+			<mx:TextInput width="100%" text="{historyItem.Action}" editable="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="Entry" width="100%" required="true" fontSize="12">
+			<mx:TextInput width="100%" text="{historyItem.Description}" editable="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="User" width="100%" required="true" fontSize="12">
+			<mx:TextInput width="100%" text="{userName}" editable="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="Time" width="100%" required="true" fontSize="12">
+			<mx:TextInput width="100%" text="{DateUtil.getDateTimeStr(historyItem.DateChanged)}" editable="false"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+    <mx:ControlBar horizontalAlign="center" width="100%">
+		<mx:Button label="Ok" click="onOkClick()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

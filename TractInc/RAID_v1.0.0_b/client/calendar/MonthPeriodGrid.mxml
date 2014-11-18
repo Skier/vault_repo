@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Grid
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="initControls()"
+	horizontalGap="0"
+	verticalGap="1"
+	borderColor="#D0D0D0"
+	borderThickness="1"
+	backgroundColor="#D0D0D0">
+
+	<mx:Metadata>
+		[Event(name="eventClick", type="mx.events.DynamicEvent")]
+		[Event(name="eventDragEnter", type="mx.events.DynamicEvent")]
+		[Event(name="eventDragDrop", type="mx.events.DynamicEvent")]
+		[Event(name="eventDragOver", type="mx.events.DynamicEvent")]
+	</mx:Metadata>
+
+	<mx:Script>
+        <![CDATA[
+        	import mx.events.DragEvent;
+        import mx.events.DynamicEvent;
+       	import mx.events.PropertyChangeEvent;
+       	import mx.collections.ArrayCollection;
+        import mx.controls.Label;
+        import mx.containers.GridItem;
+        import mx.containers.GridRow;
+        import mx.binding.utils.ChangeWatcher;
+        
+        private var dayNames:Object = {1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat"};
+        
+        [Bindable]
+        public var startDate:Date = null;
+        [Bindable]
+        public var endDate:Date = null;
+        
+        public var dataProvider:ArrayCollection = new ArrayCollection();
+        
+        private var cells:ArrayCollection;
+        
+        private var startDateWatcher:ChangeWatcher = null;
+        private var endDateWatcher:ChangeWatcher = null;
+        
+        public function getDateUnderMouse():Date {
+        	for each (var obj:Object in cells) {
+        		var cell:MonthPeriodCell = MonthPeriodCell(obj);
+        		if (cell.isCursorOverCell()) {
+        			return cell.date;
+        		}
+        	}
+        	return null;
+        }
+
+        public function addEvent(event:MonthPeriodEvent):void {
+        	var cell:MonthPeriodCell = MonthPeriodCell(cells.getItemAt(event.date.date - startDate.date));
+        	cell.eventsBox.addChild(event);
+			dataProvider.addItem(event);
+        }
+        
+        public function getCell(date:Date):MonthPeriodCell {
+        	return MonthPeriodCell(cells.getItemAt(date.date - startDate.date));
+        }
+        
+        public function removeEvent(event:MonthPeriodEvent):void {
+        	var cell:MonthPeriodCell = MonthPeriodCell(cells.getItemAt(event.date.date - startDate.date));
+			dataProvider.removeItemAt(dataProvider.getItemIndex(event));
+			try {
+        		cell.eventsBox.removeChild(event);
+			} catch (e:Error) {
+				//
+			}
+        }
+        
+        protected function initControls():void {
+        	startDateWatcher = ChangeWatcher.watch(this, ["startDate"], onDateChanged);
+        	endDateWatcher = ChangeWatcher.watch(this, ["endDate"], onDateChanged);
+        	buildWeeks();
+        }
+        
+        protected function onDateChanged(event:PropertyChangeEvent):void {
+        	startDateWatcher.unwatch();
+        	endDateWatcher.unwatch();
+        	initControls();
+        }
+        
+        public function eventClickHandler(event:MonthPeriodEvent):void {
+        	var e:DynamicEvent = new DynamicEvent("eventClick");
+        	e.data = event;
+        	dispatchEvent(e);
+        }
+
+        public function eventDragEnterHandler(event:DragEvent):void {
+        	var e:DynamicEvent = new DynamicEvent("eventDragEnter");
+        	e.data = event;
+        	dispatchEvent(e);
+        }
+
+        public function eventDragDropHandler(event:DragEvent):void {
+        	var e:DynamicEvent = new DynamicEvent("eventDragDrop");
+        	e.data = event;
+        	dispatchEvent(e);
+        }
+
+        public function eventDragOverHandler(event:DragEvent):void {
+        	var e:DynamicEvent = new DynamicEvent("eventDragOver");
+        	e.data = event;
+        	dispatchEvent(e);
+        }
+
+        private function buildWeeks():void {
+        	this.removeAllChildren();
+        	cells = new ArrayCollection();
+        	
+        	var i:int;
+        	var row:GridRow;
+        	var label:Label;
+        	var item:MonthPeriodCell;
+       		row = new GridRow();
+   	    	row.percentWidth = 100;
+       		row.height = 18;
+        	
+        	for (i = 1; i <= 7; i ++) {
+        		var weekItem:GridItem = new GridItem();
+        		weekItem.percentWidth = 100;
+   	    		weekItem.percentHeight = 100;
+   	    		
+				label = new Label();
+				label.text = dayNames[i];
+				label.percentWidth = 100;
+				label.setStyle("textAlign", "center");
+				weekItem.addChild(label);
+				weekItem.setStyle("backgroundColor", 0xFFFFFF);
+				row.addChild(weekItem);
+        	}
+        	addChild(row);
+	
+        	if ((null == startDate) || (null == endDate)) {
+        		return;
+        	}
+        	
+        	var started:Boolean = (0 == startDate.day);
+        	var days:int = startDate.day + endDate.date - startDate.date + 1;
+        	var weeks:int = (days / 7) + ((0 == days % 7)? 0: 1);
+        	
+        	var current:Date = startDate;
+        	var finished:Boolean = false;
+        	for (var week:int = 0; week < weeks; week ++) {
+	        	row = new GridRow();
+    	    	row.percentWidth = 100;
+        		row.percentHeight = 100;
+        	
+        		for (i = 0; i < 7; i ++) {
+        			if (i == current.day) {
+        				started = true;
+        			}
+        			item = new MonthPeriodCell();
+
+    	    		if (started && !finished) {
+	        			item.included = true;
+	        			item.date = current;
+	    	    		
+		        		if (current.date == endDate.date) {
+		        			finished = true;
+	    	    		}
+	    	    		current = getNextDay(current);
+	    	    		cells.addItem(item);
+	    	    		item.grid = this;
+	    	    	} else {
+	    	    		item.included = false;
+	    	    	}
+	        		row.addChild(item);
+    	    	}
+
+	        	this.addChild(row);
+        	}
+        }
+        
+        private function getNextDay(date:Date):Date {
+        	try {
+        		return new Date(date.fullYear, date.month, date.date + 1);
+        	} catch (ex:Error) {
+        		try {
+        			return new Date(date.fullYear, date.month + 1, 1);
+        		} catch (ex:Error) {
+        			return new Date(date.fullYear + 1, 0, 1);
+        		}
+        	}
+        	return null;
+        }
+        
+        ]]>
+	</mx:Script>
+
+</mx:Grid>

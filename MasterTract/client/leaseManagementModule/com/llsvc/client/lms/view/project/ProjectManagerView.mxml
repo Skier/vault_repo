@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	width="400" height="300"
+	showCloseButton="true" close="close()"
+	xmlns:project="com.llsvc.client.lms.view.project.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+            public static function open(parent:DisplayObject, modal:Boolean):ProjectManagerView
+            {
+                var popup:ProjectManagerView = new ProjectManagerView();
+                
+                PopUpManager.addPopUp(popup, parent, modal);
+                PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+		]]>
+	</mx:Script>
+	
+	<project:ProjectsPanel width="100%" height="100%"/>	
+	
+</mx:TitleWindow>

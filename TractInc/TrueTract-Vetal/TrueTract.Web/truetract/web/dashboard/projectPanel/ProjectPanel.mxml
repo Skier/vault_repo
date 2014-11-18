@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectPanel_code 
+    xmlns="truetract.web.dashboard.projectPanel.*" 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:tabPanel="truetract.web.dashboard.projectPanel.tabPanel.*"
+    paddingBottom="5" paddingLeft="5" paddingTop="5" paddingRight="5"
+    label="{project.ShortName}" verticalScrollPolicy="on" verticalGap="2">
+
+    <mx:Metadata>
+        [Event(name="openDocument", type="truetract.web.dashboard.events.DocumentEvent")]
+    </mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+
+        ]]>
+    </mx:Script>
+
+    <mx:HBox width="100%" verticalAlign="middle">
+
+        <mx:Button 
+            icon="@Embed(source='/assets/tab_add.png')" width="20" height="20" 
+            styleName="toolButton" toolTip="Add New Tab"
+            click="addNewTab_handler()"/>
+
+        <mx:Button 
+            icon="@Embed(source='/assets/collapse_all.png')" width="20" height="20" 
+            styleName="toolButton" toolTip="Collapse All"
+            click="collapseAll(true)"/>
+
+        <mx:Button 
+            icon="@Embed(source='/assets/expand_all.png')" width="20" height="20" 
+            styleName="toolButton" toolTip="Expand All"
+            click="collapseAll(false)"/>
+
+    </mx:HBox>
+
+    <WellPlanSection id="wellPlanPanel" project="{this.project}"
+        width="100%" collapsed="false"/>
+
+    <CollapsiblePanel id="projectMapPanel" 
+        title="Project Maps" width="100%" collapsed="true">
+        <mx:Form width="100%" 
+            paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="-3"
+            verticalScrollPolicy="off">
+            <mx:FormItem label="File :" width="100%">
+                <mx:LinkButton label="Map1.doc" width="100%" textAlign="left" height="16"/>
+            </mx:FormItem>
+            <mx:FormItem label="Created :" width="100%">
+                <mx:HBox>
+                    <mx:Label text="01.01.2007" fontWeight="bold"/>
+                    <mx:Label text="Added By :"/>
+                    <mx:Label text="Steave Jobs" fontWeight="bold"/>
+                </mx:HBox>
+            </mx:FormItem>
+        </mx:Form>
+
+        <mx:HRule width="100%"/>
+
+        <mx:Form width="100%" 
+            paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0" verticalGap="-3"
+            verticalScrollPolicy="off">
+            <mx:FormItem label="File :" width="100%">
+                <mx:LinkButton label="ContractSheet.doc" width="100%" textAlign="left" height="16"/>
+            </mx:FormItem>
+            <mx:FormItem label="Created :" width="100%">
+                <mx:HBox>
+                    <mx:Label text="01.01.2007" fontWeight="bold"/>
+                    <mx:Label text="Added By :"/>
+                    <mx:Label text="Steave Jobs" fontWeight="bold"/>
+                </mx:HBox>
+            </mx:FormItem>
+        </mx:Form>
+    </CollapsiblePanel>
+
+    <mx:Repeater id="tabRepeater" dataProvider="{project.TabsList}">
+        <tabPanel:ProjectTabPanel id="tabPanel" 
+            collapsed="true" width="100%"
+            title="{tabRepeater.currentItem.Name}"
+            projectTab="{tabRepeater.currentItem}"
+            openDocument="dispatchEvent(event)"/>
+    </mx:Repeater>
+
+</ProjectPanel_code>

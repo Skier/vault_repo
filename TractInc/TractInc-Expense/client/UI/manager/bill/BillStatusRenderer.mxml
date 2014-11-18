@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	verticalAlign="middle"
+	paddingLeft="10" paddingRight="10" paddingBottom="2" paddingTop="2" height="24"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.remoting.RemoteObject;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import App.Entity.BillDataObject;
+			import App.Entity.BillItemDataObject;
+			import common.notes.NotesView;
+			import mx.collections.ArrayCollection;
+			import weborb.data.DynamicLoadEvent;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import common.StatusesRegistry;
+			
+			private function Confirm():void 
+			{
+				updateItems(BillItemDataObject.BILL_ITEM_STATUS_CONFIRMED);
+			}
+			
+			private function Decline():void 
+			{
+				updateItems(BillItemDataObject.BILL_ITEM_STATUS_DECLINED);
+				
+				NotesView.Open(data, parentDocument as SummaryView, false);
+			}
+			
+			private function updateItems(status:String):void 
+			{
+				if (null == data.BillItems) {
+					enabled = false;
+					
+		          	var userService:RemoteObject = new RemoteObject("GenericDestination");
+	    			userService.source = "TractInc.Expense.UserService";
+		       		userService.GetBill.addEventListener(ResultEvent.RESULT,
+       					function(result:ResultEvent):void {
+		       				var filledBill:BillDataObject = BillDataObject(result.result);
+       						data.BillItems = filledBill.BillItems;
+       						processUpdateItems(status);
+       						enabled = true;
+       					}
+       				);
+       				userService.GetBill.addEventListener(FaultEvent.FAULT,
+       					function(fault:FaultEvent):void {
+       						Alert.show("Please contact administrator", "System Error");
+       					}
+       				);
+       				userService.GetBill(data.BillId);
+				} else {
+					processUpdateItems(status);
+				}
+			}
+			
+			private function processUpdateItems(status:String):void {
+				data.statusTemp = status;
+
+				for each (var item:BillItemDataObject in data.BillItems) {
+					item.Status = status;
+					item.toTempFields();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Button width="70" height="20" label="confirm" click="Confirm()" enabled="{data.statusTemp != BillDataObject.BILL_STATUS_CONFIRMED}"/>
+
+	<mx:Button width="70" height="20" label="decline" click="Decline()" enabled="{data.statusTemp != BillDataObject.BILL_STATUS_DECLINED}"/>
+	
+</mx:HBox>

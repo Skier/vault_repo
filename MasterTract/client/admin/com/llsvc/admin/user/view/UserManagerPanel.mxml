@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.framework.storage.Storage;
+			import mx.events.ListEvent;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.llsvc.domain.User;
+			import com.llsvc.domain.events.UserEvent;
+			import mx.core.Application;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.Responder;
+			
+			[Bindable] public var dataProvider:ArrayCollection;
+			
+			private var userEditor:UserEditView;
+
+			private function openUser(user:User):void 
+			{
+				if (user.isLoading)
+					return;
+					
+				if (userEditor != null) 
+				{
+					userEditor.close();
+					userEditor = null;
+				}
+
+				userEditor = UserEditView.open(Application.application as DisplayObject, user, true);
+				userEditor.addEventListener(UserEvent.USER_CHANGED, 
+					function (event:UserEvent):void 
+					{
+						saveUser(event.user);
+					}); 
+			}
+			
+			private function saveUser(user:User):void 
+			{
+				user.isLoading = true;
+				
+				Storage.instance.storeUser(user,
+	                new mx.rpc.Responder(
+	                    function (event:ResultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        var newUser:User = event.result as User;
+	                        user.populate(newUser);
+	                        
+	                        if (!user.client.users.contains(user)) 
+	                        {
+	                        	user.client.users.addItem(user);
+	                        }
+
+	                        if (userEditor != null) 
+	                        {
+	                        	userEditor.close();
+	                        	userEditor = null;
+	                        }
+	                    },
+	                    function (event:FaultEvent):void 
+	                    {
+	                        user.isLoading = false;
+	                        
+	                        user.getMemento();
+	                        Alert.show("Can not save User: " + event.fault.faultString, "Save fault");
+	                    }
+	                )
+	            );
+			}
+			
+			private function dgUsersDoubleClickHandler(event:ListEvent):void 
+			{
+				var user:User = ArrayCollection(dgUsers.dataProvider).getItemAt(event.rowIndex) as User;
+				openUser(user);
+			}
+			
+			private function btnOpenUserClickHandler():void 
+			{
+				var user:User = dgUsers.selectedItem as User;
+				if (user != null) 
+				{
+					openUser(user);
+				}
+			}
+			
+			private function btnAddUserClickHandler():void 
+			{
+				var user:User = new User();
+				openUser(user);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%"
+		paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		>
+		<mx:HBox width="100%" backgroundColor="#eeeeee">
+			<mx:Label text="Clients users:" fontWeight="bold"/>
+		</mx:HBox>
+		
+		<mx:DataGrid id="dgUsers" 
+			width="100%" height="100%"
+			dataProvider="{dataProvider}"
+			doubleClickEnabled="true" itemDoubleClick="dgUsersDoubleClickHandler(event)">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Client" dataField="clientName"/>
+				<mx:DataGridColumn headerText="Login" dataField="login"/>
+				<mx:DataGridColumn headerText="Password" dataField="password"/>
+				<mx:DataGridColumn headerText="Is Active" dataField="isActive"/>
+				<mx:DataGridColumn headerText="Hacks" dataField="hackingAttempts"/>
+				<mx:DataGridColumn headerText="Is Admin" dataField="isAdmin"/>
+				<mx:DataGridColumn headerText="Is PM" dataField="isProjectManager"/>
+				<mx:DataGridColumn headerText="First Name" dataField="firstName"/>
+				<mx:DataGridColumn headerText="Middle Name" dataField="middleName"/>
+				<mx:DataGridColumn headerText="Last Name" dataField="lastName"/>
+				<mx:DataGridColumn headerText="Primary Phone No" dataField="primaryPhoneNumber"/>
+				<mx:DataGridColumn headerText="Secondary Phone No" dataField="secondaryPhoneNumber"/>
+				<mx:DataGridColumn headerText="E-mail" dataField="email"/>
+				<mx:DataGridColumn headerText="SSN" dataField="ssn"/>
+				<mx:DataGridColumn headerText="Birth Date" dataField="birthDay"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:HBox horizontalAlign="right" width="100%">
+<!--
+			<mx:Button id="btnAddUser" 
+				height="28" label="Add New" 
+				click="btnAddUserClickHandler()"/>
+-->				
+			<mx:Button id="btnOpenUser" 
+				height="28" label="Edit" enabled="{dgUsers.selectedItem != null}"
+				click="btnOpenUserClickHandler()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

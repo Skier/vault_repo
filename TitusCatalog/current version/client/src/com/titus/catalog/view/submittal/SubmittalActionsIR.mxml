@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    horizontalAlign="center"
+    verticalAlign="middle"
+    horizontalGap="2"
+    paddingLeft="2"
+    paddingRight="2"
+    horizontalScrollPolicy="off"
+    verticalScrollPolicy="off">
+
+    <mx:Script>
+        <![CDATA[
+        	import com.titus.catalog.storage.DBStorage;
+        	import flash.net.sendToURL;
+        	import com.titus.catalog.model.Submittal;
+        	
+            [Embed(source="assets/icons16/add.png")]
+            [Bindable]
+            private var imgAdd:Class;
+            
+            private function onAddSubmittal():void {
+            	DBStorage.getInstance().addToCart(Submittal(data));
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Image
+    	source="{imgAdd}"
+    	width="16"
+    	height="16"
+    	toolTip="Add to cart"
+    	click="onAddSubmittal()"
+    	visible="{!Submittal(data).isInCart}"
+    	/>
+    	
+</mx:HBox>

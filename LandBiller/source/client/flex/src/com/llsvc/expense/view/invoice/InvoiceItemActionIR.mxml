@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.events.InvoiceItemEvent;
+			import com.llsvc.domain.InvoiceItem;
+            [Embed(source="assets/icons16/add.png")]
+            [Bindable]
+            private var imgAdd:Class;
+
+            [Embed(source="assets/icons16/delete.png")]
+            [Bindable]
+            private var imgDelete:Class;
+
+			private function imgClickHandler():void 
+			{
+				var item:InvoiceItem = data as InvoiceItem;
+				if (item.invoiceid == 0) 
+				{
+					dispatchEvent(new InvoiceItemEvent(InvoiceItemEvent.INVOICE_ITEM_ACTION_ADD, item, true));
+				} else {
+					dispatchEvent(new InvoiceItemEvent(InvoiceItemEvent.INVOICE_ITEM_ACTION_REMOVE, item, true));
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{InvoiceItem(data).invoiceid == 0 ? imgAdd : imgDelete}"
+		click="imgClickHandler()"/>
+	
+</mx:VBox>

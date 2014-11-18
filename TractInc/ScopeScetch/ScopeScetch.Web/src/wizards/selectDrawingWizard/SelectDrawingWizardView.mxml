@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    xmlns:tract="src.tract.*"
+    xmlns:steps="src.wizards.steps.*"
+    title="{selectDrawingStep.stepTitle}"
+    layout="vertical" width="400" height="250" >
+
+    <mx:Script>
+        <![CDATA[
+            import src.deedplotter.domain.TractWO;
+            import src.AppController;
+
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.Responder;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            public static function open(parent:DisplayObject, modal:Boolean = false):SelectDrawingWizardView
+            {
+                var dialog:SelectDrawingWizardView = new SelectDrawingWizardView();
+                
+                PopUpManager.addPopUp(dialog, parent, modal);
+                PopUpManager.centerPopUp(dialog);
+                
+                return dialog;
+            }
+
+            [Bindable] public var appController:AppController;
+
+            public function close():void 
+            {
+                this.setStyle("footerColors", null); //bug workarround
+                PopUpManager.removePopUp(this);
+            }
+
+            private function okButton_clickHandler():void
+            {
+                if (!selectDrawingStep.validateForm()) return;
+
+                var tractId:int = selectDrawingStep.tractInfo.tractId;
+
+                var loadTractResponder:mx.rpc.Responder = new mx.rpc.Responder(
+                    function (event:ResultEvent):void
+                    {
+                        var tract:TractWO = TractWO(event.result);
+                        appController.openTract(tract.ToTract());
+                        close();
+                    },
+
+                    function (event:FaultEvent):void
+                    {
+                        Alert.show("Unable to open Tract. Error: " + event.fault.faultString);
+                    }
+                );
+    
+                appController.loadTract(tractId).addResponder(loadTractResponder);
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:RemoteObject id="deedProService" 
+        destination="GenericDestination" source="TractInc.DeedPro.DeedProService" 
+        showBusyCursor="true"/>
+
+    <mx:Box
+        width="100%" height="100%"
+        paddingLeft="20" paddingTop="20" paddingRight="20" paddingBottom="20"
+        backgroundColor="#ffffff" borderStyle="solid" borderColor="#000000">
+
+        <steps:SelectDrawingStep id="selectDrawingStep" 
+            stepTitle="Select Drawing" createNewAllowed="false"
+            service="{deedProService}" width="100%" height="100%"
+            creationComplete="selectDrawingStep.activate()"/>
+
+    </mx:Box>
+
+    <mx:ControlBar horizontalAlign="right">
+        <mx:Button 
+            label="Ok" enabled="{selectDrawingStep.formValid}" 
+            click="okButton_clickHandler()"/>
+
+        <mx:Button label="Cancel" click="close()"/>
+    </mx:ControlBar>
+
+</mx:TitleWindow>

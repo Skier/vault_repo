@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.DocumentActor;
+			
+			private var _actor:DocumentActor;
+			[Bindable]
+			public function get actor():DocumentActor {return _actor;}
+			public function set actor(value:DocumentActor):void 
+			{
+				_actor = value;
+			}
+			
+			[Bindable] private var expanded:Boolean = false;
+			
+			private function actorClickHandler():void 
+			{
+				toggleState();
+			}
+			
+			public function collapse():void 
+			{
+				expanded = false;
+			}
+			
+			public function expand():void 
+			{
+				expanded = true;
+			}
+			
+			public function toggleState():void 
+			{
+				expanded = !expanded;
+			}
+			
+			private function removeActor():void 
+			{
+			
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{expanded ? '-' : '+'}" click="actorClickHandler()"/>
+		<mx:Label text="{actor.name}" click="actorClickHandler()" fontWeight="bold"/>
+        <mx:Button toolTip="Remove" icon="@Embed('/assets/icon_close.png')" click="removeActor()"/>
+	</mx:HBox>
+	
+	<mx:VBox width="100%" left="30" visible="{expanded}" includeInLayout="{expanded}">
+		<mx:HBox width="100%">
+			<mx:Label width="100" text="Address:" textAlign="right"/>
+
+			<mx:VBox width="100%">
+				<mx:Text width="100%" text="{actor.address.address1 + ' ' + actor.address.address2}"/>
+				<mx:Text width="100%" text="{actor.address.city + ' ' + actor.address.state.name + ', ' + actor.address.zip}"/>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:HBox width="100%">
+			<mx:Label width="100" text="Phones:" textAlign="right"/>
+
+			<mx:VBox width="100%">
+<!--
+				<mx:Repeater id="rptPhones" dataProvider="{actor.phones}">
+					<mx:Label width="100%" text="{ActorPhone(rptPhones.currentItem).phone}"/>
+				</mx:Repeater>
+-->
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

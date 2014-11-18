@@ -1,0 +1,135 @@
+﻿@using Dalworth.Server.Web.Partner.Models
+@model Dalworth.Server.Web.Partner.Models.Order
+
+@{
+    ViewBag.Title = "Partner In Profit - Ticket Details";
+    ViewBag.Header = "Ticket Details";
+    ViewBag.ActiveTopMenu = "Home";
+}
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/player/player.js")"></script>
+<script type="text/javascript">
+    var apiReadyHandler = function () {
+        YAHOO.MediaPlayer.onProgress.subscribe(onProgressHandler)
+    }
+
+    var playerFlag = false;
+
+    var onProgressHandler = function (param) {
+        if (param.elapsed < 1000 && playerFlag == true) {
+            YAHOO.MediaPlayer.stop();
+            playerFlag = false;
+        }
+
+        if (param.duration > 0 && param.elapsed > param.duration - 2000) {
+            YAHOO.MediaPlayer.play(YAHOO.MediaPlayer.controller.mediaengine.currentMedia, 0);
+            playerFlag = true;
+        }
+    }
+
+    YAHOO.MediaPlayer.onAPIReady.subscribe(apiReadyHandler);
+</script>
+
+
+<table>
+    <tr>
+        <td width="120px" height="25px"><h4>Ticket Number</h4></td>
+        <td>@Model.TicketNumber</td>
+    </tr>
+
+    <tr>
+        <td height="25px"><h4>Customer</h4></td>
+        <td>@Model.CustomerName</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Home Phone</h4></td>
+        <td>@Model.HomePhone</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Business Phone</h4></td>
+        <td>@Model.BusinessPhone</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Closed Amount</h4></td>
+        <td>@Model.ClosedAmountText</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Ticket Status</h4></td>
+        <td>@Model.TicketStatus</td>
+    </tr>
+    <tr>
+        <td height="25px"><h4>Order Source</h4></td>
+        <td>@Model.OrderSource</td>
+    </tr>
+
+</table>
+<br><br>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+    <tr>    
+        <th class="table-header-repeat line-left">
+            Date
+        </th>
+@if (PartnerMembershipProvider.GetCurrentUser().IsOwner){
+        <th class="table-header-repeat line-left">
+            User
+        </th>
+}
+        <th class="table-header-repeat line-left">
+            Caller Id
+        </th>
+        <th class="table-header-repeat line-left">
+            Caller Number
+        </th>
+        <th class="table-header-repeat line-left">
+            @(PartnerMembershipProvider.GetCurrentUser().IsOwner ? "Incoming Did" : "Tracking Phone")
+        </th>
+        <th class="table-header-repeat line-left">
+            Call Source
+        </th>
+        <th class="table-header-repeat line-left">
+            Action
+        </th>
+        <th class="table-header-repeat line-left">
+            
+        </th>
+    </tr>
+
+@if (Model.OrderCalls.Count == 0){
+<tr><td colspan="100">Empty</td></tr>
+}
+
+@foreach (var item in Model.OrderCalls) {
+    <tr>
+        <td>
+            @String.Format("{0:g}", item.CallDate)
+        </td>        
+@if (PartnerMembershipProvider.GetCurrentUser().IsOwner){
+        <td>
+            @item.UserName
+        </td>
+}
+        <td>
+            @item.CallerIdName
+        </td>
+        <td>
+            @item.CallerNumberText
+        </td>
+        <td>
+            @item.IncomingDidText
+        </td>
+        <td>
+            @item.CallSource
+        </td>
+        <td>
+            @item.Action
+        </td>
+        <td>
+            @(item.WavFileUrl == "" ? MvcHtmlString.Empty : MvcHtmlString.Create(string.Format("<a href='{0}'>Play</a>", @item.WavFileUrl)))
+        </td>
+    </tr>
+}
+
+</table>
+<a href='@("CallLog" + Model.BackLinkQueryString)' class='back-link'>Back to Call Log</a>
+

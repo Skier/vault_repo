@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="controller.OnCreationComplete()" xmlns:UI="UI.*" currentState="{controller.model.currentState}">
+    <mx:states>
+        <mx:State name="Login">
+            <mx:RemoveChild target="{datagrid1}"/>
+            <mx:RemoveChild target="{applicationcontrolbar1}"/>
+            <mx:AddChild relativeTo="{vbox1}" position="lastChild">
+                <UI:LoginView controller="{controller}"/>
+            </mx:AddChild>
+            <mx:RemoveChild target="{canvas1}"/>
+            <mx:RemoveChild target="{hbox1}"/>
+        </mx:State>
+    </mx:states>
+<mx:Script>
+        <![CDATA[
+            
+            [Bindable]
+            public var controller:ExpenseController = new ExpenseController(Expense(this));
+            
+        ]]>
+    </mx:Script>
+
+        <mx:VBox width="100%" height="100%" verticalCenter="0" horizontalCenter="0" id="vbox1">     
+            <mx:ApplicationControlBar right="10" left="10" top="10" width="100%" visible="{controller.model.isLoggedIn}" id="applicationcontrolbar1">
+                <mx:Button label="Sync" click="controller.onSyncSubmit()"/>
+                <mx:Button label="Clear" click="controller.onClickSharedObjectClear()"/>
+                <mx:Button label="Logout" click="controller.OnLogoutSubmit()"/>
+            </mx:ApplicationControlBar>
+            <mx:DataGrid visible="{controller.model.isLoggedIn}" width="100%" height="70%" id="datagrid1" itemClick="controller.onItemClickEvent(event)" dataProvider="{controller.model.billItems}">
+                <mx:columns>
+                    <mx:DataGridColumn headerText="BillItemId" dataField="idbillItem"/>
+                    <mx:DataGridColumn headerText="AssetId" dataField="AssetId"/>
+                    <mx:DataGridColumn headerText="BillingDate" dataField="BillingDate"/>
+                    <mx:DataGridColumn headerText="DateQty" dataField="DateQty"/>
+                    <mx:DataGridColumn headerText="Status" dataField="Status"/>
+                </mx:columns>
+            </mx:DataGrid>
+            <mx:HBox width="100%" height="10%" id="hbox1">
+                <mx:Canvas width="100%" height="100%" id="canvas1">
+                    <mx:Button label="Add New" verticalCenter="-4" horizontalCenter="451" id="btnAddNewBillItem" click="controller.onAddNewBillItemClick()"/>
+                    
+                </mx:Canvas>
+                
+            </mx:HBox>
+        
+        </mx:VBox >
+            
+
+</mx:Application>

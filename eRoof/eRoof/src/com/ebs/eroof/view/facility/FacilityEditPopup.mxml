@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:widgets="com.quickbase.idn.widgets.*"
+	title="Facility Editor">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.ebs.eroof.dto.Facilities_DTO;
+			import com.ebs.eroof.model.wrapper.Facility;
+			import com.quickbase.idn.control.events.KingussieEventCallBack;
+			import com.quickbase.idn.control.events.QuickBaseEventStoreRecord;
+
+			import mx.managers.PopUpManager;
+			import com.ebs.eroof.model.wrapper.Segment;
+			
+			[Bindable]
+			private var provinces:ArrayCollection;
+			
+			[Bindable]
+			private var countries:ArrayCollection;
+			
+			[Bindable]
+			public var facility:Facility;
+			
+            public static function open(parent:DisplayObject, facility:Facility, modal:Boolean = true):FacilityEditPopup
+            {
+                var popup:FacilityEditPopup = new FacilityEditPopup();
+                
+                popup.facility = facility;
+                popup.init();
+
+                PopUpManager.addPopUp(popup, parent, modal);
+                popup.x = 10;
+                popup.y = 10;
+                //PopUpManager.centerPopUp(popup);
+                
+                return popup;
+            }
+
+            public function close():void
+            {
+                PopUpManager.removePopUp(this);
+            }
+            
+            private function init():void 
+            {
+            	provinces = facility.facilityDTO.Province_Info.choiceArray;
+            	countries = facility.facilityDTO.Country_Info.choiceArray;
+            	
+            	populateFields();
+            }
+            
+            private function populateFields():void 
+            {
+            	comboCountry.selectedItem = facility.facilityDTO.Country;
+            	comboProvince.selectedItem = facility.facilityDTO.Province;
+            }
+            
+            private function isFormValid():Boolean 
+            {
+            	var result:Boolean = true;
+            	
+            	if (vFacilityName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vBriefName.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vAddress.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vCity.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vProvince.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vPostalCode.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+
+            	if (vCountry.validate().type == ValidationResultEvent.INVALID)
+            		result = false;
+            	
+            	return result;
+            }
+            
+            private function populateDTO():void 
+            {
+            	facility.facilityDTO.FacilityName = txtFacilityName.text;
+            	facility.facilityDTO.BriefName = txtBriefName.text;
+            	facility.facilityDTO.Address = txtAddress.text;
+            	facility.facilityDTO.City = txtCity.text;
+            	facility.facilityDTO.PostalCode = txtPostalCode.text;
+            	facility.facilityDTO.Province = comboProvince.selectedItem as String;
+            	facility.facilityDTO.Country = comboCountry.selectedItem as String;
+            }
+            
+            private function storeModel():void 
+            {
+            	populateDTO();
+            	var callBackEvent:KingussieEventCallBack = new KingussieEventCallBack(onStoreModel, facility.facilityDTO);
+            	var ev:QuickBaseEventStoreRecord = new QuickBaseEventStoreRecord(facility.facilityDTO, callBackEvent);
+            	ev.dispatch();
+            }
+            
+            private function onStoreModel(storedObject:Facilities_DTO):void 
+            {
+            	facility.facilityDTO = storedObject;
+            	facility.addToClient();
+            	
+            	close();
+            }
+            
+            private function btnSubmitClickHandler():void 
+            {
+            	storeModel();
+            }
+			
+            private function btnCancelClickHandler():void 
+            {
+            	close();
+            }
+			
+            private function comboProvinceChangeHandler():void 
+            {
+            }
+			
+            private function comboCountryChangeHandler():void 
+            {
+            }
+			
+		]]>
+	</mx:Script>
+
+	<mx:StringValidator id="vFacilityName" source="{txtFacilityName}" property="text" required="true"/>
+	<mx:StringValidator id="vBriefName" source="{txtBriefName}" property="text" required="true"/>
+	<mx:StringValidator id="vAddress" source="{txtAddress}" property="text" required="true"/>
+	<mx:StringValidator id="vCity" source="{txtCity}" property="text" required="true"/>
+	<mx:StringValidator id="vProvince" source="{comboProvince}" property="selectedLabel" required="true"/>
+	<mx:StringValidator id="vPostalCode" source="{txtPostalCode}" property="text" required="true"/>
+	<mx:StringValidator id="vCountry" source="{comboCountry}" property="selectedLabel" required="true"/>
+	
+	<mx:Form id="facilityForm">
+		<mx:FormItem label="Facility Name" required="true">
+			<mx:TextInput id="txtFacilityName" text="{facility.facilityDTO.FacilityName}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Brief Name" required="true">
+			<mx:TextInput id="txtBriefName" text="{facility.facilityDTO.BriefName}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Address" required="true">
+			<mx:TextArea id="txtAddress" text="{facility.facilityDTO.Address}" width="100%" height="50"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="City" required="true">
+			<mx:TextInput id="txtCity" text="{facility.facilityDTO.City}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Province" required="true">
+			<mx:ComboBox id="comboProvince" dataProvider="{provinces}" change="comboProvinceChangeHandler()"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Postal Code" required="true">
+			<mx:TextInput id="txtPostalCode" text="{facility.facilityDTO.PostalCode}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Country" required="true">
+			<mx:ComboBox id="comboCountry" dataProvider="{countries}" change="comboCountryChangeHandler()"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+
+<!--	
+	<widgets:IDNForm id="facilityForm" dto="{facility.facilityDTO}">
+		<widgets:IDNField fieldName="FacilityName" fieldLabel="Facility Name" required="true"/>
+		<widgets:IDNField fieldName="BriefName" fieldLabel="Brief Name" required="true"/>
+		<widgets:IDNField fieldName="Address" fieldLabel="Address" required="true"/>
+		<widgets:IDNField fieldName="City" fieldLabel="City" required="true"/>
+		<widgets:IDNField fieldName="Province" fieldLabel="Province" required="true"/>
+		<widgets:IDNField fieldName="PostalCode" fieldLabel="Postal Code" required="true"/>
+		<widgets:IDNField fieldName="Country" fieldLabel="Country" required="true"/>
+	</widgets:IDNForm>
+-->	
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button id="btnSubmit" label="Submit" click="btnSubmitClickHandler()"/>
+		<mx:Button id="btnCancel" label="Cancel" click="btnCancelClickHandler()"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

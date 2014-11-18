@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.leadCentral.domain.Transaction;
+			import com.dalworth.leadCentral.domain.TransactionType;
+			
+			private function getTypeName(obj:Object):String
+			{
+				if (obj is Transaction)
+					return cf.format(Transaction(obj).CurrentBalance);
+				
+				return "";
+			}
+			
+			private function getColor(obj:Object):uint
+			{
+				if (obj is Transaction && Transaction(obj).CurrentBalance < 0)
+					return 0xCC0000;
+				
+				return 0x000099;
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:CurrencyFormatter id="cf" precision="2" useNegativeSign="false"/>
+
+	<mx:HBox width="100%" height="100%" verticalAlign="middle">
+		<mx:Label width="100%" text="{getTypeName(data)}" color="{getColor(data)}" textAlign="right"/>
+	</mx:HBox>
+</mx:Canvas>

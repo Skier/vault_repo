@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+    close="Controller.CloseWin();" 
+    creationComplete="Controller.Init();" 
+ 	title="Connect to FTP server" 
+ 	showCloseButton="true"
+ 	>
+ 	<mx:Script>
+ 		<![CDATA[
+ 			private var Controller:LoginController = new LoginController( LoginView(this) );
+ 		]]>
+ 	</mx:Script>
+
+    <mx:StringValidator id="checkHost" source="{hostname}" 
+        property="text" required="true" minLength="4"/>
+
+	<mx:Form>
+		<mx:FormItem label="Hostname">
+			<mx:TextInput id="hostname"/>
+			<mx:CheckBox id="isAnonymous" label="Anonymous ?" change="Controller.DoAnonym()"/>
+		</mx:FormItem>
+		<mx:FormItem label="Username" enabled="{!isAnonymous.selected}">
+			<mx:TextInput id="username"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password" enabled="{!isAnonymous.selected}">
+			<mx:TextInput id="password" displayAsPassword="true"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar>
+		<mx:Spacer width="100%" height="10"/>
+		<mx:Button id="btnCancel" label="Cancel" click="Controller.CloseWin()"/>
+		<mx:Button id="btnConnect" label="Connect" click="Controller.DoConnect()"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

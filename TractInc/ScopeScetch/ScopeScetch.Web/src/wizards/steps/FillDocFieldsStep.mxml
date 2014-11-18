@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbstractStep 
+    xmlns="src.util.wizard.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="src.deedplotter.validators.*" 
+    xmlns:steps="src.wizards.steps.*"
+    verticalScrollPolicy="off" verticalGap="6" xmlns:components="src.deedplotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.DateField;
+            import src.deedplotter.domain.Participant;
+            import src.deedplotter.domain.Document;
+            import src.deedplotter.domain.dictionary.DictionaryRegistry;
+
+            [Bindable] public var docum:Document;
+
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            
+            override public function validateForm():Boolean 
+            {
+                var result:Boolean = super.validateForm();
+
+                if (result)
+                {
+                    if (!docum)
+                        docum = new Document();
+
+                    docum.Buyer = new Participant();
+                    docum.Buyer.AsNamed = buyerName.text;
+                    docum.Seller = new Participant();
+                    docum.Seller.AsNamed = sellerName.text;
+                    docum.DateFiled = DateField.stringToDate(filledDate.actualText, "MM/DD/YYYY");
+                    docum.DateSigned = DateField.stringToDate(signedDate.actualText, "MM/DD/YYYY");
+                }
+
+                return result;
+            }
+            
+            override public function clean():void
+            {
+                signedDate.text ="";
+                filledDate.text ="";
+                sellerName.text = "";
+                buyerName.text = "";
+            }
+        ]]>
+    </mx:Script>
+
+    <validators:ValidatorsGroup id="formValidator">
+        
+        <mx:DateValidator
+            source="{filledDate}" property="actualText" required="false"/>
+
+        <mx:DateValidator
+            source="{signedDate}" property="actualText" required="false"/>
+        
+        <mx:StringValidator source="{sellerName}" property="text" required="true"/>
+        <mx:StringValidator source="{buyerName}" property="text" required="true"/>
+
+    </validators:ValidatorsGroup>
+
+    <steps:DocumentInfoView docum="{docum}" enabled="false" width="100%"/>
+
+    <mx:HRule width="100%" strokeColor="#000000"/>
+
+    <mx:Form width="100%" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="3">
+
+        <mx:FormItem label="Date Signed :">
+            <components:MaskedInput id="signedDate" inputMask="##/##/####"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Date Filled :">
+            <components:MaskedInput id="filledDate" inputMask="##/##/####"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Seller Name :" width="100%">
+            <mx:TextInput id="sellerName" width="100%"/>
+        </mx:FormItem>
+        
+        <mx:FormItem label="Buyer Name :" width="100%">
+            <mx:TextInput id="buyerName" width="100%"/>
+        </mx:FormItem>
+        
+    </mx:Form>
+
+</AbstractStep>

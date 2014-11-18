@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.Lease;
+			import mx.collections.ArrayCollection;
+			
+			private var _leases:ArrayCollection;
+			[Bindable]
+			public function get leases():ArrayCollection {return _leases;}
+			public function set leases(value:ArrayCollection):void 
+			{
+				_leases = value;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" backgroundColor="#B9B9B9">
+		<mx:Label text="Check List"/>
+	</mx:HBox>
+
+	<mx:VBox width="100%" height="100%">
+		<mx:Repeater id="rptLeases" dataProvider="{leases}">
+			<mx:Label width="100%" text="{Lease(rptLeases.currentItem).prospectName}"/>
+		</mx:Repeater>
+	</mx:VBox>
+
+</mx:VBox>

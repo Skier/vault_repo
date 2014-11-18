@@ -1,0 +1,62 @@
+﻿@model Dalworth.Server.Web.Partner.Models.TrackingPhones
+
+@{
+    ViewBag.Title = "Partner In Profit - Manage Tracking Phones";
+    ViewBag.Header = "Manage Tracking Phones";
+
+    ViewBag.ActiveTopMenu = "Manage";
+    ViewBag.ActiveSubMenu = "Tracking Phones";
+}
+
+<p>
+@Html.ActionLink("Add Tracking Phone", "AddTrackingPhone", new { controller = "Manage" }, new { @class="back-link" })    
+</p>
+<br/>
+
+<table>
+<tr>    
+    <td valign="top">
+    
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" id="product-table">
+            <tr>
+                <th class="table-header-repeat line-left">Phones</th>
+                <th class="table-header-repeat line-left">Partner</th>
+                <th class="table-header-repeat line-left"></th>
+            </tr>
+
+        @if (Model.Phones.Count == 0){
+        <tr><td colspan="100">Empty</td></tr>
+        }
+
+        @foreach (var item in Model.Phones) {
+            <tr>
+                <td width="100px">
+                    @item.PhoneNumberText        
+                </td>
+                <td @(!item.OrderSourceId.HasValue ? "class=red-content" : "")>
+                    @(item.OrderSourceId != null ? 
+                        Html.ActionLink(item.OrderSourceText, "Partner", new { @PartnerId=item.OrderSourceId }) 
+                        : MvcHtmlString.Create(item.OrderSourceText))
+                </td>
+                <td>
+                    @(item.OrderSourceId == null ? Html.ActionLink(" ", "TrackingPhoneDelete", new { TrackingPhoneId=item.Id }, new { @class = "icon-2 info-tooltip" })
+                        : MvcHtmlString.Empty)
+                </td>
+            </tr>
+        }
+        </table>
+    </td>
+    <td width="100px"></td>
+    <td valign="top">
+    </td>
+</tr>
+</table>
+
+
+<p></p>
+
+
+
+
+
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    paddingLeft="2" paddingRight="2" verticalAlign="middle"
+    horizontalGap="2"
+    >
+    
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import TractInc.Domain.Role;
+            
+            [Embed(source="/assets/delete2.png")]
+            [Bindable]
+            private var imgDelete:Class;
+            
+            [Embed(source="/assets/page_go.png")]
+            [Bindable]
+            private var imgDocOpen:Class;
+            
+            private function openRoleClickHandler():void 
+            {
+                trace("RoleGridActionIR.openRoleClickHandler: data=" + data);
+                UserManagerController.getInstance().openRole(data as Role);
+            }
+            
+            private function removeRoleClickHandler():void 
+            {
+                trace("RoleGridActionIR.removeRoleClickHandler: data=" + data);
+                if ( UserManagerController.getInstance().model.userManagerPackage.canManageRoles ) {
+                    UserManagerController.getInstance().removeRole(data as Role);
+                } else {
+                    Alert.show("No permissions to manage Roles");
+                }
+            }
+            
+        ]]>
+    </mx:Script>
+    
+    <mx:Image source="{imgDocOpen}" 
+        toolTip="Open Role" 
+        click="openRoleClickHandler()"/>
+
+    <mx:Image source="{imgDelete}"
+        toolTip="Remove Selected Role" 
+        click="removeRoleClickHandler()"/>
+</mx:HBox>

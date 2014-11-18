@@ -1,0 +1,248 @@
+﻿@using Dalworth.LeadCentral.Domain
+@model Dalworth.LeadCentral.Web.Models.Lead.LeadEdit
+
+@{
+    ViewBag.Title = "Lead Details";
+}
+
+@using (Html.BeginForm())
+{
+  <div class="box">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="heading">
+      <div style="float:right;padding: 8px 0px 8px 0px;">
+        <button type="submit" class="primary">Save</button>
+        @Html.ActionLink("Cancel", "LeadDetails", "Leads", new { @Model.CurrentLead.Id }, new { @class = "button" })
+      </div>
+      <h1>Lead [@Model.CurrentLead.Name]</h1>
+    </div>
+    <div class="content">
+      @if (Model.CurrentLead.QbInvoices != null && Model.CurrentLead.QbInvoices.Count > 0)
+      {
+        <div class="details" style="margin-top:5px; margin-bottom:5px;text-align:right;padding:5px;background-color:#DDF">
+          <span>Lead matched to <b>@Model.CurrentLead.QbInvoices.Count</b> Invoices. Closed Amount: <b>@string.Format("{0:C}", Model.CurrentLead.Amount)</b></span> 
+        </div>
+      }
+        @Html.HiddenFor(model => model.CurrentLead.DateCreated)
+        @Html.HiddenFor(model => model.CurrentLead.Id)
+        @Html.HiddenFor(model => model.CurrentLead.SourceId)
+        <div class="details">
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">Lead Status</td>
+              <td>@Html.DropDownList("LeadStatusId", new SelectList(Model.LeadStatusList, "Id", "StatusName", Model.CurrentLead.LeadStatusId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Campaign</td>
+              <td>@Html.DropDownList("CampaignId", new SelectList(Model.CampaignList, "Id", "CampaignName", Model.CurrentLead.CampaignId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Business Partner</td>
+              <td>@Html.DropDownList("BusinessPartnerId", new SelectList(Model.BusinessPartnerList, "Id", "PartnerName", Model.CurrentLead.BusinessPartnerId))</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">First Name</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.FirstName, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Last Name</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.LastName, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone</td>
+              <td>@Html.TextBoxFor(model => model.CurrentLead.Phone, new { @class="field-input" })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Address</td>
+              <td>@Html.TextAreaFor(model => model.CurrentLead.Address, new { @cols=40, @rows=4 })</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Customer Notes</td>
+              <td>@Html.TextAreaFor(model => model.CurrentLead.CustomerNotes, new { @cols=40, @rows=6 })</td>
+            </tr>
+          </table>
+        </div>
+
+        <br/>
+@if (Model.CurrentLead.RelatedSource != null)
+{
+        <div style="background: #547C96; color: #FFF; border-bottom: 1px solid #8EAEC3; padding: 5px; font-size: 14px; font-weight: bold;">Source Details</div>
+    switch (Model.CurrentLead.RelatedSource.Type)
+    {
+        case SourceEnum.PhoneCall:
+        <script type="text/javascript">        //<![CDATA[
+            var call_url = "@Model.CurrentLead.RelatedSource.RelatedPhoneCall.FullRecordingUrl";
+
+            $(document).ready(function () {
+                $("#jquery_jplayer").jPlayer({
+                    ready: function () {
+                        $("#jquery_jplayer").jPlayer("setMedia", { mp3: call_url });
+                    },
+                    swfPath: "/Scripts"
+                });
+            });
+        //]]>        </script>        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>Lead created by Phone Call</h3>
+            <div id="player" style="float:right;">
+                <div id="jquery_jplayer" class="jp-jplayer"></div>                <div class="jp-audio">                    <div class="jp-type-single">                    <div id="jp_interface_1" class="jp-interface">                        <ul class="jp-controls">                        <li><a href="#" class="jp-play" tabindex="1">play</a></li>                        <li><a href="#" class="jp-pause" tabindex="1">pause</a></li>                        <li><a href="#" class="jp-stop" tabindex="1">stop</a></li>                        <li><a href="#" class="jp-mute" tabindex="1">mute</a></li>                        <li><a href="#" class="jp-unmute" tabindex="1">unmute</a></li>                        </ul>                        <div class="jp-progress">                        <div class="jp-seek-bar">                            <div class="jp-play-bar"></div>                        </div>                        </div>                        <div class="jp-volume-bar">                        <div class="jp-volume-bar-value"></div>                        </div>                        <div class="jp-current-time"></div>                        <div class="jp-duration"></div>                    </div>                    </div>                </div>            </div>
+          <div style="margin-right: 430px;">
+              <table class="form">
+                <tr>
+                  <td style="text-align:right;">From number:</td>
+                  <td>@Model.CurrentLead.RelatedSource.RelatedPhoneCall.FromPhone</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;">To tracking phone:</td>
+                  <td>@Model.CurrentLead.RelatedSource.RelatedPhoneCall.TrackingPhoneId</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;">Call Duration</td>
+                  <td>@Model.CurrentLead.RelatedSource.RelatedPhoneCall.CallDuration</td>
+                </tr>
+                <tr>
+                  <td style="text-align:right;">Caller ID</td>
+                  <td>@Model.CurrentLead.RelatedSource.RelatedPhoneCall.CallerName</td>
+                </tr>
+              </table>
+          </div>
+
+
+          @if (Model.CurrentLead.RelatedSource.RelatedPhoneCall.TrackingPhoneRotations != null
+              && Model.CurrentLead.RelatedSource.RelatedPhoneCall.TrackingPhoneRotations.Count > 0)
+          {
+              <h4>Possible related phone web rotations:</h4>
+
+              <table class="list">
+                <thead>
+                  <tr>
+                    <td class="left">Page URI</td>
+                    <td class="left">Showed Number</td>
+                    <td class="left">Time</td>
+                    <td class="left">Referral URI</td>
+                  </tr>
+                </thead>
+                <tbody>
+                @foreach (var rotation in Model.CurrentLead.RelatedSource.RelatedPhoneCall.TrackingPhoneRotations)
+                {
+                  <tr>
+                    <td class="left">@rotation.RotationPageUri</td>
+                    <td class="left">@rotation.ShowedPhoneNumber</td>
+                    <td class="left">@String.Format("{0:g}", rotation.TimeRotation)</td>
+                    <td class="left">@rotation.ReferralUri</td>
+                  </tr>
+                }
+                </tbody>
+              </table>
+          }
+
+        </div>
+          break;
+        case SourceEnum.PhoneSms:
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>Lead created by Phone SMS</h3>
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">From number:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedPhoneSms.FromPhone</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">To tracking phone:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedPhoneSms.TrackingPhoneId</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">SMS message</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedPhoneSms.Message</td>
+            </tr>
+          </table>
+
+          @if (Model.CurrentLead.RelatedSource.RelatedPhoneSms.TrackingPhoneRotations != null
+              && Model.CurrentLead.RelatedSource.RelatedPhoneSms.TrackingPhoneRotations.Count > 0)
+          {
+              <h4>Possible related phone web rotations:</h4>
+
+              <table class="list">
+                <thead>
+                  <tr>
+                    <td class="left">Page URI</td>
+                    <td class="left">Showed Number</td>
+                    <td class="left">Time</td>
+                    <td class="left">Referral URI</td>
+                  </tr>
+                </thead>
+                <tbody>
+                @foreach (var rotation in Model.CurrentLead.RelatedSource.RelatedPhoneSms.TrackingPhoneRotations)
+                {
+                  <tr>
+                    <td class="left">@rotation.RotationPageUri</td>
+                    <td class="left">@rotation.ShowedPhoneNumber</td>
+                    <td class="left">@String.Format("{0:g}", rotation.TimeRotation)</td>
+                    <td class="left">@rotation.ReferralUri</td>
+                  </tr>
+                }
+                </tbody>
+              </table>
+          }
+
+        </div>
+             break;
+        case SourceEnum.WebForm:
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>Lead created by Web Form</h3>
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">First Name:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedWebForm.FirstName</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Last Name:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedWebForm.LastName</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedWebForm.Phone</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Message:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedWebForm.Message</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Web Page:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedWebForm.WebPageUri</td>
+            </tr>
+          </table>
+        </div>
+             break;
+        case SourceEnum.User:
+        <div style="background: #FCFCFC; border: 1px solid #8EAEC3; padding: 10px;">
+          <h3>Lead created by User</h3>
+          <table class="form">
+            <tr>
+              <td style="text-align:right;">First Name:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedUser.FirstName</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Last Name:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedUser.LastName</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Phone:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedUser.Phone</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Email:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedUser.Email</td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Address:</td>
+              <td>@Model.CurrentLead.RelatedSource.RelatedUser.Address</td>
+            </tr>
+          </table>
+        </div>
+             break;
+    }
+}
+        <br/>
+        </div>
+      </div>
+}

@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{894FF9E8-4DBF-4472-8AE2-1A6A988E105B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Twilio</RootNamespace>
+    <AssemblyName>TwilioApi</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FRAMEWORK</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;FRAMEWORK</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="RestSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accounts.cs" />
+    <Compile Include="Calls.cs" />
+    <Compile Include="Conference.cs" />
+    <Compile Include="AvailablePhoneNumbers.cs" />
+    <Compile Include="Core.cs" />
+    <Compile Include="IncomingPhoneNumbers.cs" />
+    <Compile Include="Model\Account.cs" />
+    <Compile Include="Model\AvailablePhoneNumber.cs" />
+    <Compile Include="Model\Call.cs" />
+    <Compile Include="Model\CallList.cs" />
+    <Compile Include="Model\CallListRequest.cs" />
+    <Compile Include="Model\CallOptions.cs" />
+    <Compile Include="Model\ComparisonType.cs" />
+    <Compile Include="Model\Conference.cs" />
+    <Compile Include="Model\ConferenceList.cs" />
+    <Compile Include="Model\ConferenceListRequest.cs" />
+    <Compile Include="Model\HangupStyle.cs" />
+    <Compile Include="Model\HttpMethod.cs" />
+    <Compile Include="Model\IfMachine.cs" />
+    <Compile Include="Model\IncomingPhoneNumber.cs" />
+    <Compile Include="Model\IncomingPhoneNumberList.cs" />
+    <Compile Include="Model\Notification.cs" />
+    <Compile Include="Model\NotificationList.cs" />
+    <Compile Include="Model\OutgoingCallerId.cs" />
+    <Compile Include="Model\OutgoingCallerIdList.cs" />
+    <Compile Include="Model\Participant.cs" />
+    <Compile Include="Model\ParticipantList.cs" />
+    <Compile Include="Model\PhoneNumber.cs" />
+    <Compile Include="Model\PhoneNumberOptions.cs" />
+    <Compile Include="Model\Recording.cs" />
+    <Compile Include="Model\RecordingList.cs" />
+    <Compile Include="Model\RestException.cs" />
+    <Compile Include="Model\SmsMessage.cs" />
+    <Compile Include="Model\SmsMessageList.cs" />
+    <Compile Include="Model\Transcription.cs" />
+    <Compile Include="Model\TranscriptionList.cs" />
+    <Compile Include="Model\TwilioBase.cs" />
+    <Compile Include="Model\TwilioListBase.cs" />
+    <Compile Include="Model\ValidationRequest.cs" />
+    <Compile Include="Notifications.cs" />
+    <Compile Include="OutgoingCallerIds.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recordings.cs" />
+    <Compile Include="Sms.cs" />
+    <Compile Include="Transcriptions.cs" />
+    <Compile Include="TwiML\Conference.cs" />
+    <Compile Include="TwiML\Dial.cs" />
+    <Compile Include="TwiML\Gather.cs" />
+    <Compile Include="TwiML\Hangup.cs" />
+    <Compile Include="TwiML\Number.cs" />
+    <Compile Include="TwiML\Pause.cs" />
+    <Compile Include="TwiML\Play.cs" />
+    <Compile Include="TwiML\Record.cs" />
+    <Compile Include="TwiML\Redirect.cs" />
+    <Compile Include="TwiML\Say.cs" />
+    <Compile Include="TwiML\Sms.cs" />
+    <Compile Include="TwiML\TwiMLException.cs" />
+    <Compile Include="TwiML\TwiMLResponse.cs" />
+    <Compile Include="TwiML\Verb.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="libs\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' ">
+    <Exec Command="&quot;c:\Program Files (x86)\Microsoft\ILMerge\ilmerge.exe&quot; /lib:$(OutDir) /internalize /ndebug /v2 /out:$(MSBuildProjectDirectory)\..\..\download\TwilioApi.dll TwilioApi.dll RestSharp.dll Newtonsoft.Json.dll" />
+  </Target>
+</Project>

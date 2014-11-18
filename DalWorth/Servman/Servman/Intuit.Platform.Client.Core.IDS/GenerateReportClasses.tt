@@ -1,0 +1,159 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ assembly name = "System.Xml" #>
+<#@ assembly name= "System.Data" #>
+<#@ import namespace = "System.Data" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Collections" #> 
+<#@ import namespace="System.Collections.Generic" #> 
+
+<#+
+///<summary>
+/// Generates report classes and adds it to project file.
+///</summary>
+void GenerateReportClasses(string className, Dictionary<string, List<string>> operationList , string NameSpace, DataTable filterMetaData)
+{
+	
+#>
+
+/*
+ * Copyright (c) 2009-2010 Intuit, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * Contributors:
+ *    Intuit Partner Platform – initial contribution
+ */
+
+using System;
+using System.Collections.Generic;
+using Intuit.Sb.Cdm;
+using Intuit.Platform.Client.Core;
+using System.Diagnostics;
+using Intuit.Platform.Client.Core.IDS;
+
+
+namespace Intuit.Sb.Cdm.<#=NameSpace#>
+{
+	/// <summary>
+	/// Provides Method to perform CRUD operations on <#= className #> Resource of QuickBooks
+	/// </summary>
+	public class <#= className#>Service : IDSReportBaseService
+	{
+<#+
+	//Read List of Operations for specified class
+	foreach(KeyValuePair<string, List<string>> operation in operationList)
+	{
+
+		//OperationList contains a list of operations and supported platforms for each operation.
+		//OperationList Key contains the name of the operation
+		//While Operation list value contains the list of supported platforms for particular operation.
+		
+		string returnType = className;
+		string resourceType = className.ToLower();
+		string listClassName = "Report";
+				
+		//Form warning message text for common objects and whose operation support is different for QB and QBO.
+		string warningText = className + " " + operation.Key +" operation is supported by ";
+		foreach (string plat in operation.Value)
+        {
+            warningText += plat +", ";
+        }
+		char[] trimChar = new char[] {','};
+        warningText = warningText.Trim();
+        warningText = warningText.Trim(trimChar);
+		
+		
+		//Handle CustomTxnDetail entiry resource Type.
+		if(string.Compare( className ,"CustomTxnDetail")==0)
+		{
+			resourceType = "advancedreport";
+		}
+		
+		if(string.Compare( operation.Key ,"Get")==0)
+		{
+			string inputQueryType = className;
+			
+#>
+		
+		/// <summary>
+        /// Query on <#= className#> object basis on the search criteria and company Id.
+        /// </summary>
+        /// <param name="context">Session information</param>
+        /// <param name="realmId">Company, for which search query to be executed.</param>        
+        /// <param name="searchQuery">Criteria for the search
+		///</param>
+        /// <returns>Returns Search result.</returns>
+<#+
+			string queryReturnType = string.Empty;
+			
+			queryReturnType = "Report";
+			string typeOfQuery = "string.Empty";
+			if(string.Compare(className ,"CustomTxnDetail")==0)
+			{
+				typeOfQuery = "AdvancedReportQuery";
+			}
+			else
+			{
+				typeOfQuery = "Report"+inputQueryType; 
+			
+			}
+#>		
+		public <#=queryReturnType#> Get<#= listClassName#>(PlatformSessionContext context, string realmId, <#=typeOfQuery#> searchQuery)
+        {
+			Logger.WriteToLog(TraceLevel.Info,"Realm Id: " +realmId);
+			
+			<#= listClassName#> search<#= listClassName#> = null;
+
+			IDSOperationContext operationContext = new IDSOperationContext(IDSResource.<#= resourceType#>,realmId);
+
+			if(searchQuery != null)
+			{
+            	search<#= listClassName#> = (<#= listClassName#>)base.GetResourcesForQuery(context,operationContext,searchQuery);
+			}
+			else
+			{
+				search<#= listClassName#> = (<#= listClassName#>)base.GetResources(context, operationContext, typeof(<#= listClassName#>));
+			}
+                    
+           
+            return search<#= listClassName#>;
+
+		}
+		
+		/// <summary>
+        /// Query on <#= className#> object basis on the search criteria and company Id.
+        /// </summary>
+        /// <param name="context">Session information</param>
+        /// <param name="realmId">Company, for which search query to be executed.</param>        
+        /// <returns>Returns Search result.</returns>
+		public <#=queryReturnType#> Get<#= listClassName#>(PlatformSessionContext context, string realmId)
+        {
+			Logger.WriteToLog(TraceLevel.Info,"Realm Id: " +realmId);
+
+			<#= listClassName#> search<#= listClassName#> = null;
+
+			IDSOperationContext operationContext = new IDSOperationContext(IDSResource.<#= resourceType#>,realmId);
+
+			search<#= listClassName#> = (<#= listClassName#>)base.GetResources(context, operationContext, typeof(<#= listClassName#>));
+			
+            return search<#= listClassName#>;
+
+		}
+
+<#+
+		
+		}
+	}
+#>
+
+	}
+}
+
+<#+ 
+} 
+#>

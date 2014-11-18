@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema targetNamespace="http://systinet.com/wasp/policy/1.0" xmlns:wasp="http://systinet.com/wasp/policy/1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing"
+           xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy" elementFormDefault="qualified">
+
+    <xs:import namespace="http://schemas.xmlsoap.org/ws/2002/12/policy" schemaLocation="http://schemas.xmlsoap.org/ws/2002/12/policy"/>
+    <xs:import namespace="http://schemas.xmlsoap.org/ws/2004/03/addressing" schemaLocation="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+
+    <!-- policy document -->
+    <xs:element name="PolicyDocument" type="wasp:PolicyDocumentType"/>
+    <xs:complexType name="PolicyDocumentType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="wsp:PolicyAttachment"/>
+            <xs:element ref="wsp:Policy"/>
+            <xs:any namespace="##other" processContents="lax"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- default domain expression -->
+    <xs:element name="DefaultDomainExpression" type="wasp:DefaultDomainExpressionType"/>
+    <xs:complexType name="DefaultDomainExpressionType">
+        <xs:sequence>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+
+    <!-- service endpoint reference -->
+    <xs:element name="ServiceEndpointReference" type="wasp:ServiceEndpointReferenceType"/>
+    <xs:complexType name="ServiceEndpointReferenceType">
+        <xs:sequence>
+            <xs:element name="Path" type="wsa:AttributedURI"/>
+            <xs:element name="PortType" type="wsa:AttributedQName" minOccurs="0"/>
+            <xs:element name="ServiceName" type="wsa:ServiceNameType" minOccurs="0"/>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:complexType>
+</xs:schema>

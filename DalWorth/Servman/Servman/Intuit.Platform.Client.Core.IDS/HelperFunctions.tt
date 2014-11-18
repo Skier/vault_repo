@@ -1,0 +1,110 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ assembly name = "System.Core" #>
+<#@ assembly name = "System.Xml" #>
+<#@ assembly name = "System.Data" #>
+<#@ import namespace = "System" #>
+<#@ import namespace = "System.Xml" #>
+<#@ import namespace = "System.Data" #>
+<#@ import namespace = "System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Diagnostics" #>
+
+<#+
+/// <summary>
+/// Get data table for query node
+/// </summary>
+/// <param name="filterNodes">Node for Query objects</param>
+/// <returns>Data table for Query filters</returns>
+DataTable GetFilters(XmlNodeList filterNodes)
+{
+	DataTable dt = new DataTable();
+    
+	DataColumn columnName = new DataColumn();
+	columnName.DataType = System.Type.GetType("System.String");
+	columnName.ColumnName = "FilterName";
+    dt.Columns.Add(columnName);
+	
+	DataColumn columnPlatform = new DataColumn();
+	columnPlatform.DataType = System.Type.GetType("System.Object");
+	columnPlatform.ColumnName = "SupportedPlatforms";
+    dt.Columns.Add(columnPlatform);
+	
+	
+	DataColumn columnOperand = new DataColumn();
+	columnOperand.DataType = System.Type.GetType("System.Object");
+	columnOperand.ColumnName = "Operands";
+    dt.Columns.Add(columnOperand);
+	
+	foreach (XmlNode filter in filterNodes)
+    {
+		string filterName = filter.Attributes["Name"].Value;
+				
+        List<string> supportedPlatfromsForFilter = new List<string>();
+        List<string> supportedPlatfromsForOperands = new List<string>();
+		Dictionary<string,List<string>> operands = new Dictionary<string,List<string>>();
+
+		string xpathForSupportedPlatform = string.Format("SupportedPlatforms/Platform");
+		string xpathForOperands = string.Format("Operands/Operand");
+		
+		XmlNodeList filterPlatformNodes = filter.SelectNodes(xpathForSupportedPlatform);
+		foreach (XmlNode platform in filterPlatformNodes)
+		{
+			supportedPlatfromsForFilter.Add(platform.InnerText);
+		}
+		
+		XmlNodeList operandsSupported = filter.SelectNodes(xpathForOperands);
+		foreach (XmlNode operand in operandsSupported)
+        {
+			string operandName = operand.Attributes["Name"].Value;
+            XmlNodeList operandPlatformNodes = operand.SelectNodes(xpathForSupportedPlatform);
+		
+			foreach (XmlNode platform in operandPlatformNodes)
+			{
+				supportedPlatfromsForOperands.Add(platform.InnerText);
+			}
+			operands.Add(operandName,supportedPlatfromsForOperands);
+        }
+		
+        DataRow filterEntry = dt.NewRow();
+		filterEntry["FilterName"] = filterName;
+		filterEntry["SupportedPlatforms"] = (object)supportedPlatfromsForFilter;
+		filterEntry["Operands"] = (object)operands;
+		dt.Rows.Add(filterEntry);
+	}
+	
+	return dt;
+}
+
+/// <summary>
+/// Create list of classes and supported operations
+/// </summary>
+/// <param name="aClass"></param>
+/// <returns>Dictionary for Operations of Class</returns>
+ Dictionary<string, List<string>> GetOperationListForClass(XmlNode aClass)
+{
+	Dictionary<string, List<string>> operationList = new Dictionary<string, List<string>>();
+
+    string xpathForOperations = string.Format("Operations/Operation");
+
+	XmlNodeList operationNodes = aClass.SelectNodes(xpathForOperations);
+
+    foreach (XmlNode op in operationNodes)
+    {
+		string opName = op.Attributes["Name"].Value;
+        List<string> supportedPlatfroms = new List<string>();
+        
+		string xpathForSupportedPlatform = string.Format("SupportedPlatforms/Platform");
+
+		XmlNodeList platformNodes = op.SelectNodes(xpathForSupportedPlatform);
+
+		
+        foreach (XmlNode platform in platformNodes)
+        {
+            supportedPlatfroms.Add(platform.InnerText);
+        }
+        operationList.Add(opName,supportedPlatfroms);
+    }
+	
+	return operationList;
+}
+#>

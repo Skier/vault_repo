@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="initComponent()">
+    
+	<mx:Script>
+		<![CDATA[
+		    import mx.collections.XMLListCollection;
+		    import mx.collections.ArrayCollection;
+		    import mx.rpc.events.ResultEvent;
+		    import flash.utils.Timer;
+		    
+		    private var _voiceFileUrl:String;
+		    [Bindable] 
+		    public function get voiceFileUrl():String { return _voiceFileUrl; }
+		    public function set voiceFileUrl(value:String):void 
+		    {
+		    	_voiceFileUrl = value;
+		    	loadVoice();
+		    }
+			
+			[Bindable] private var isLoading:Boolean = false;
+			[Bindable] private var isPlaying:Boolean = false;
+			
+			private var s:SoundFacade;
+			
+			private var positionTimer:Timer;
+            			
+			private function initComponent():void
+			{
+                SoundMixer.bufferTime = 5000;
+			}
+			
+			private function loadVoice():void
+			{
+				if (voiceFileUrl && voiceFileUrl.length > 0)
+				{
+					boxContent.enabled = true;
+
+				    pbVoice.setProgress(0, 1);
+				    pbVoice.label = "Loading";
+
+					if (s != null && s.isPlaying)
+					{
+					    s.stop();
+					}
+					
+    				btnPlay.enabled = false;
+    				btnPause.enabled = false;
+    				btnStop.enabled = false;
+
+					s = new SoundFacade(voiceFileUrl, true, false, true, 100000);
+					
+					s.addEventListener(flash.events.ProgressEvent.PROGRESS, onLoadProgress);
+					s.addEventListener(flash.events.Event.COMPLETE, onLoadComplete);
+
+					s.addEventListener("playProgress", onPlayProgress);
+					s.addEventListener(flash.events.Event.SOUND_COMPLETE, onPlayComplete);
+				} else 
+				{
+					boxContent.enabled = false;
+				}
+			}
+
+			private function onLoadProgress(evt:ProgressEvent):void
+			{
+				pbVoice.setProgress(evt.bytesLoaded, evt.bytesTotal);
+			}
+			
+			private function onLoadComplete(evt:Event):void
+			{
+   				btnPlay.enabled = true;
+			    pbVoice.setProgress(0, 1);
+			    pbVoice.label = "";
+			}
+			
+			private function onPlayProgress(evt:ProgressEvent):void
+			{
+				pbVoice.setProgress(evt.bytesLoaded, evt.bytesTotal);
+			}
+			
+			private function onPlayComplete(evt:Event):void
+			{
+				btnPlay.enabled = true;
+				btnPause.enabled = false;
+				btnStop.enabled = false;
+				pbVoice.setProgress(0, 1);
+			}
+				
+			private function onPlayBtn(evt:Event):void
+			{
+				if (s.isPaused) 
+					s.resume();
+				else 
+					s.play();
+
+   				btnPlay.enabled = false;
+   				btnPause.enabled = true;
+   				btnStop.enabled = true;
+			}
+
+			private function onPauseBtn(evt:Event):void
+			{
+				s.pause();
+				
+   				btnPlay.enabled = true;
+   				btnPause.enabled = false;
+   				btnStop.enabled = true;
+			}
+			
+			public function stopPlaying():void 
+			{
+				if (s != null && s.isPlaying)
+				    s.stop();
+				pbVoice.setProgress(0, 1);
+			}
+			
+			private function onStopBtn(evt:Event):void
+			{
+				stopPlaying();
+				
+				btnPlay.enabled = true;
+				btnPause.enabled = false;
+				btnStop.enabled = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox id="boxContent" width="100%" height="100%" verticalAlign="middle"
+		paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"
+		borderColor="#dddddd" borderStyle="solid" cornerRadius="2" backgroundColor="#f5f5f5"
+		enabled="false">
+		<mx:ProgressBar id="pbVoice"  
+		    width="100%" mode="manual" labelPlacement="center"/>
+		
+		<mx:Spacer width="5"/>
+	
+		<mx:HBox horizontalAlign="center" height="100%">
+			<mx:Button id="btnPlay" label="Play" height="100%" width="65" click="onPlayBtn(event)"/>
+	        <mx:Button id="btnPause" label="Pause" height="100%" width="65" click="onPauseBtn(event)"/>
+			<mx:Button id="btnStop" label="Stop" height="100%" width="65" click="onStopBtn(event)"/>
+		</mx:HBox>
+	</mx:HBox>
+	
+</mx:HBox>

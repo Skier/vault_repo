@@ -1,0 +1,50 @@
+<?
+    if (isset($_SESSION["location"])) {
+        echo(LocationInfo::getPath($_SESSION["location"], $this->getLanguage()));
+        echo("<hr />");
+    }
+?>
+
+<b><? echo(MSG_SPECIFY_BASEINFO) ?>:</b>
+
+<form action="OwnerSelectBaseInfo.php" method="get">
+    <table>
+        <tr>
+            <td><b><? echo(MSG_RENTAL_NAME) ?>: </b></td>
+            <td><input type="text" name="rentalName" value="<? echo($this->rentalName) ?>" /><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_RENTAL_ADDRESS) ?>: </b></td>
+            <td><textarea name="rentalAddress" cols="30" rows="4"><? echo($this->rentalAddress) ?></textarea><span class="required">*</span>
+                <span class="tip"><? echo(MSG_NOT_DISPLAYED) ?></span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_BEDROOMS_NUMBER) ?>: </b></td>
+            <td><input type="text" name="bedroomsNumber" value="<? echo($this->bedroomsNumber) ?>" /><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_ADDITIONAL_SLEEPING) ?>: </b></td>
+            <td><input type="text" name="additionalSleeping" value="<? echo($this->additionalSleeping) ?>" /></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_BATHS_NUMBER) ?>: </b></td>
+            <td><input type="text" name="bathsNumber" value="<? echo($this->bathsNumber) ?>" /><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_SLEEPING_PLACES_NUMBER) ?>: </b></td>
+            <td><input type="text" name="sleepingPlacesNumber" value="<? echo($this->sleepingPlacesNumber) ?>" /><span class="required">*</span></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_PET_FRIENDLY) ?>: </b></td>
+            <td><input type="checkbox" name="isPetFriendly" "<? echo(($this->isPetFriendly)? "checked": "") ?>" /></td>
+        </tr>
+        <tr>
+            <td><b><? echo(MSG_NO_SMOKING) ?></b>: </td>
+            <td><input type="checkbox" name="isNoSmoking" "<? echo(($this->isNoSmoking)? "checked": "") ?>" /></td>
+        </tr>
+        <tr>
+            <td colspan=2 align=right><input type="submit" name="submit" value="<? echo(MSG_NEXT)?>" /></td>
+        </tr>
+    </table>
+    <span class="required">*</span><? echo(MSG_FIELDS_MARKED_WITH_ASTERISK) ?>
+</form>

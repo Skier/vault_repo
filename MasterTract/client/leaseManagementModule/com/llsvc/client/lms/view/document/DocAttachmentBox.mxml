@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalAlign="middle" xmlns:component="com.llsvc.component.*">
+
+    <mx:Metadata>
+        [Event(name="removeOriginalAttachmentRequest", type="flash.events.Event")]
+        [Event(name="addOriginalAttachmentRequest", type="flash.events.Event")]
+        [Event(name="changeFileName", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import flash.net.navigateToURL;
+			import mx.controls.Alert;
+			import com.llsvc.domain.DocumentAttachment;
+			import com.llsvc.client.lms.LocalCash;
+			import com.llsvc.domain.File;
+			
+			[Bindable] public var editable:Boolean = true;
+			public var fileType:String; 
+
+			[Bindable] public var fileName:String;
+			[Bindable] private var isEditMode:Boolean = false;
+			
+			[Bindable] public var inProcess:Boolean = false;
+			private var fileRef:FileReference;
+			
+			private var _file:File;
+			[Bindable]
+			public function get file():File {return _file;}
+			public function set file(value:File):void 
+			{
+				_file = value;
+			}
+			
+            private function onAdd():void 
+            {
+            	if (inProcess)
+            		return;
+            		
+            	if (fileRef == null)
+	            	fileRef = new FileReference();
+
+                fileRef.addEventListener(Event.SELECT, onFileSelected); 
+
+				var docFilter:FileFilter = new FileFilter("PDF Documents", "*.pdf");
+        		fileRef.browse([docFilter]);
+            }
+            
+            private function onOpen():void 
+            {
+		        var request:URLRequest = new URLRequest("download?id=" + file.id.toString());
+        		navigateToURL(request, "_blank");
+            }
+            
+            private function onRemove():void 
+            {
+                Alert.show("Do you really want to remove attached file ?", 
+                   "Remove file", Alert.YES | Alert.NO | Alert.CANCEL, null, 
+                   function (event:CloseEvent):void 
+                   {
+                        if (event.detail == Alert.YES)
+                        {
+			            	this.file = null;
+			            	dispatchEvent(new Event("removeOriginalAttachmentRequest"));
+                        }
+                    });
+            }
+            
+            private function onCancel():void 
+            {
+            	fileRef.cancel();
+            	
+            	inProcess = false;
+            }
+            
+        	private function onFileSelected(e:Event):void 
+        	{
+        		var userId:int = LocalCash.getInstance().getCurrentUser().id;
+        		var request:URLRequest = new URLRequest("upload?userId=" + userId + "&description=" + fileType);
+		        try {
+		        	inProcess = true;
+		        	
+		            fileRef.upload(request);
+		            fileRef.addEventListener(ProgressEvent.PROGRESS, onFileProgress);
+	                fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onFileUploadComplete);
+	                fileRef.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+	                fileRef.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+		        } catch (error:Error) {
+		            Alert.show("Unable to upload file.");
+		        }
+        	}
+
+            private function onFileProgress(event:ProgressEvent):void 
+            {
+            	pbLoad.setProgress(event.bytesLoaded, event.bytesTotal);
+            }
+            
+		    private function onFileUploadComplete(event:DataEvent):void 
+		    {
+		    	inProcess = false;
+		    	
+		    	if (file == null) 
+		    		file = new File();
+
+		    	file.id = int(Number(event.data));
+		    	file.origFilename = fileRef.name;
+		    	file.mimeType = "PDF";
+		    	file.user = LocalCash.getInstance().getCurrentUser();
+		    	
+		    	fileName = fileRef.name;
+				//Alert.show(fileName);
+				dispatchEvent(new Event("addOriginalAttachmentRequest"));
+		    }
+		    
+		    private function onIoError(e:IOErrorEvent):void 
+		    {
+            	inProcess = false;
+		    	Alert.show(e.text);
+		    }
+		    
+		    private function onSecurityError(e:SecurityErrorEvent):void 
+		    {
+            	inProcess = false;
+		    	Alert.show(e.text);
+		    }
+		    
+		    private function onEdit():void 
+		    {
+		    	isEditMode = true;
+		    }
+		    
+		    private function onAccept():void 
+		    {
+		    	fileName = txtFileName.text;
+		    	isEditMode = false;
+				dispatchEvent(new Event("changeFileName"));
+		    }
+		    
+		    private function onDecline():void 
+		    {
+		    	txtFileName.text = fileName;
+		    	isEditMode = false;
+		    }
+		    
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="@Embed('assets/icons16/attach.png')"/>
+	
+	<mx:Canvas width="100%" height="100%">
+		<mx:HBox id="boxEmpty" width="100%" height="100%"
+			visible="{file == null &amp;&amp; !inProcess}">
+			<mx:Spacer width="100%"/>
+			<mx:Button width="30" height="24" icon="@Embed('assets/icons16/add.png')" click="onAdd()"/>
+		</mx:HBox>
+		
+		<mx:HBox id="boxAdded" width="100%" height="100%"
+			visible="{file != null &amp;&amp; !inProcess}" horizontalGap="2">
+			<mx:Canvas width="100%" height="100%" horizontalScrollPolicy="off">
+				<mx:HBox width="100%" height="100%" verticalAlign="middle" visible="{!isEditMode}" horizontalGap="1">
+					<mx:Label width="100%" text="{fileName}" toolTip="{fileName}" fontWeight="bold" minWidth="100"/>
+					<mx:Button icon="@Embed('assets/icons16/pencil.png')" width="20" height="20" click="onEdit()"/>
+				</mx:HBox>
+
+				<mx:HBox width="100%" height="100%" verticalAlign="middle" visible="{isEditMode}" horizontalGap="1">
+					<component:SelectableInput id="txtFileName" width="100%" text="{fileName}" enter="onAccept()"/>
+					<mx:Button icon="@Embed('assets/icons16/accept.png')" width="20" height="20" click="onAccept()"/>
+					<mx:Button icon="@Embed('assets/icons16/cancel.png')" width="20" height="20" click="onDecline()"/>
+				</mx:HBox>
+			</mx:Canvas>
+
+			<mx:Button width="30" height="24" icon="@Embed('assets/icons16/attach.png')" click="onOpen()" enabled="{!isEditMode}"/>
+
+			<mx:Button width="30" height="24" icon="@Embed('assets/icons16/delete.png')" click="onRemove()" enabled="{!isEditMode}"/>
+		</mx:HBox>
+		
+		<mx:HBox id="boxProcess" width="100%" height="100%" verticalAlign="middle"
+			visible="{inProcess}">
+			<mx:ProgressBar id="pbLoad" width="100%" labelPlacement="center" mode="manual"/> 
+			<mx:Button width="30" height="24" icon="@Embed('assets/icons16/cancel.png')" click="onCancel()"/>
+		</mx:HBox>
+	</mx:Canvas>
+</mx:HBox>

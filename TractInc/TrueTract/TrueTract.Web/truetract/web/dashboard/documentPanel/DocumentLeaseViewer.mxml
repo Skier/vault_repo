@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:validators="truetract.plotter.validators.*" 
+    xmlns:components="truetract.plotter.components.*">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.binding.utils.ChangeWatcher;
+            import mx.utils.ObjectUtil;
+            import truetract.domain.*;
+            
+            [Bindable] private var dictionary:DictionaryRegistry = DictionaryRegistry.getInstance();
+            [Bindable] public var docum:Document;
+        ]]>
+    </mx:Script>
+
+    <mx:DateFormatter id="df" formatString="MMM DD YYYY"/>
+    <mx:NumberFormatter id="nf16" precision="16"/>
+    <mx:NumberFormatter id="nf3" precision="3"/>
+
+    <mx:VBox width="100%">
+        <mx:Label width="100%" textAlign="center" fontWeight="bold" fontSize="14"
+            text="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@Name}"/>
+
+        <mx:HBox width="100%" horizontalGap="-1">
+            <mx:Form borderStyle="solid" borderColor="#666666"
+            	height="100%"
+                paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" 
+                verticalGap="3" indicatorGap="3">
+                <mx:FormItem label="State:">
+                    <mx:Label fontWeight="bold"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).@Name}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="County:">
+                    <mx:Label fontWeight="bold"
+                        text="{dictionary.statesAndCounties.state.(@StateId == docum.State).county.(@CountyId == docum.County).@Name}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="Doc/File No:">
+                    <mx:Label fontWeight="bold"
+                        text="{docum.DocumentNo}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Vol/BK :">
+                    <mx:Label fontWeight="bold"
+                        text="{docum.Volume}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="PG:">
+                    <mx:Label fontWeight="bold"
+                        text="{docum.Page}" />
+                </mx:FormItem>
+
+                <mx:FormItem label="Total Tract Acres :">
+                    <mx:Label fontWeight="bold" 
+                        text="{nf3.format(docum.TractsAcres)}"/>
+                </mx:FormItem>
+            </mx:Form>    
+            <mx:VBox height="100%" width="100%" verticalGap="-1">
+            	<mx:Form borderStyle="solid" borderColor="#666666" 
+	            	paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" width="100%" height="100%">
+	                <mx:FormItem label="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName != ''
+	                    ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@GiverRoleName : 'Seller'}:" width="100%">
+	                    <mx:Text fontWeight="bold" 
+	                        width="100%" text="{docum.Seller.AsNamed}"/>
+	                </mx:FormItem>
+	        
+	                <mx:FormItem label="{dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName != ''
+	                    ? dictionary.documentTypes.DocumentType.(@DocTypeID == docum.DocTypeId).@ReceiverRoleName : 'Buyer'}:" width="100%">
+                        <mx:Text fontWeight="bold"
+                            width="100%" text="{docum.Buyer.AsNamed}"/>
+	                </mx:FormItem>
+	
+	                <mx:FormItem visible="{null != docum.Lease}" includeInLayout="{null != docum.Lease}" 
+	                	label="Alias Leasee:">
+	                    <mx:Label fontWeight="bold"
+	                        text="{docum.Lease.AliasGrantee}" />
+	                </mx:FormItem>
+            	</mx:Form>
+                
+                <mx:HBox borderStyle="solid" borderColor="#666666" 
+                	visible="{null != docum.Lease}" includeInLayout="{null != docum.Lease}" 
+                	paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" width="100%">
+                    <mx:Form paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" width="100%">
+                        <mx:FormItem label="Acreage:">
+                            <mx:Label fontWeight="bold"
+                                text="{nf3.format(docum.Lease.Acreage)}" />
+                        </mx:FormItem>
+                        <mx:FormItem label="Tract Qty:">
+                            <mx:Label fontWeight="bold"
+                                text="{docum.TractsCount}" />
+                        </mx:FormItem>
+                    </mx:Form>
+                    <mx:Form paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0" width="100%">
+                        <mx:FormItem label="Term:">
+                            <mx:Label fontWeight="bold"
+                                text="{docum.Lease.Term} (Months)" />
+                        </mx:FormItem>
+                        <mx:FormItem label="Royalty:">
+                            <mx:Label fontWeight="bold"
+                                text="{docum.Lease.Royalty}" />
+                        </mx:FormItem>
+                    </mx:Form>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:Form borderStyle="solid" borderColor="#666666" 
+            	paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" height="100%">
+            	<mx:Label text="Dates:" fontWeight="bold"/>
+            	
+                <mx:FormItem label="Signed:">
+                    <mx:Label fontWeight="bold"
+                        text="{df.format(docum.DateSigned)}"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Effective:">
+                    <mx:Label fontWeight="bold" 
+                        text="{df.format(docum.Lease.EffectiveDate)}"/>
+                </mx:FormItem>
+                
+                <mx:FormItem label="Filed:">
+                    <mx:Label fontWeight="bold" 
+                        text="{df.format(docum.DateFiled)}"/>
+                </mx:FormItem>
+                <mx:FormItem label="Expiration:">
+                    <mx:Label fontWeight="bold" 
+                        text="{df.format(docum.Lease.ExpirationDate)}"/>
+                </mx:FormItem>
+                <mx:FormItem label="HBP:">
+                    <mx:Label fontWeight="bold" 
+                            text="{docum.Lease.HBP ? 'Yes' : 'No'}"/>
+                </mx:FormItem>
+            </mx:Form>
+        </mx:HBox>
+    </mx:VBox>
+    
+</mx:VBox>

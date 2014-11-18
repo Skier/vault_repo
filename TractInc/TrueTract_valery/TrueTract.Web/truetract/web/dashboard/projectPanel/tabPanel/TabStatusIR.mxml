@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+    xmlns:mx="http://www.adobe.com/2006/mxml" 
+    toolTip="{!(ProjectTab(data).ActiveTabDocument == null || ProjectTab(data).ContactsList.length &lt; 1) ? null : 'Tab is incomplete. Open Tab for detail information.' }"
+    verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import truetract.domain.ProjectTab;
+			import truetract.domain.Document;
+
+        	[Embed(source="/assets/warning.png")]
+        	[Bindable]
+        	private var imgWarning:Class;
+        	
+        	private function onClickHandler():void 
+        	{
+//        		ProjectTabDetailView(parentDocument).documentDG_doubleClickHandler();
+        	}
+        	
+		]]>
+	</mx:Script>
+ 	
+ 	<mx:Image id="imgWarn" 
+ 		source="{imgWarning}" 
+ 		visible="{ProjectTab(data).ActiveTabDocument == null || ProjectTab(data).ContactsList.length &lt; 1}"/>
+	
+</mx:Box>

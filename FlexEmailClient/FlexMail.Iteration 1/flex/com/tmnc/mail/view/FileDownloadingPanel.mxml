@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+    styleName="fileDownloadingPanel"
+    title="Downloading File" width="278" verticalScrollPolicy="off" horizontalScrollPolicy="off" height="187">
+    <mx:Script>
+        <![CDATA[
+            import com.tmnc.mail.vo.FileInfo;
+
+            import mx.managers.PopUpManager;
+            
+            [Bindable]
+            private var file:FileInfo;
+            
+            private var fr:FileReference;
+                
+            public function showDownloadProgress(fileReference:FileReference, file:FileInfo):void {
+                this.fr = fileReference;
+                this.file = file;
+                                
+                fr.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+                fr.addEventListener(Event.COMPLETE, completeHandler);
+                
+                pb.visible = true;
+                pb.label = "DOWNLOADING %3%%";
+            }
+            
+            private function progressHandler(event:ProgressEvent):void {
+                pb.setProgress(event.bytesLoaded, event.bytesTotal);
+            }
+
+            private function completeHandler(event:Event):void {
+                pb.setProgress(1, 1);                
+                pb.label = "DOWNLOAD COMPLETE";
+                cancelButton.label = "Close";
+//                PopUpManager.removePopUp(this);
+            }
+
+            public function doCancel():void {
+                fr.cancel();
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:Form horizontalScrollPolicy="off" verticalScrollPolicy="off" height="100%" width="100%">
+        <mx:FormItem label="File Name :" width="100%">
+            <mx:Text fontWeight="bold" text="{file.Name}"/>
+        </mx:FormItem> 
+        <mx:FormItem label="Size :" width="100%">
+            <mx:Text fontWeight="bold" text="{file.SizeDisplayValue}"/>
+        </mx:FormItem>
+        
+        <mx:ProgressBar id="pb" label="" visible="true" mode="manual" width="100%"  height="21"/>
+    </mx:Form>
+
+    <mx:ControlBar horizontalAlign="right" verticalAlign="middle">
+        <mx:Button id="cancelButton" click="doCancel()" label="Cancel"/> 
+    </mx:ControlBar>
+    
+</mx:Panel>
+

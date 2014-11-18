@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.dalworth.servman.main.lead.convert.steps.IWizardStep"
+	creationComplete="onCreate()">
+
+	<mx:Metadata>
+		[Event(name="stepCustomerLookupChange", type="flash.events.Event")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.dalworth.servman.domain.Job;
+			import com.dalworth.servman.main.lead.convert.ConvertLeadToJobModel;
+			import com.dalworth.servman.domain.Lead;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.main.customer.CustomerFilter;
+			import com.dalworth.servman.service.IDSCustomerService;
+			import Intuit.Platform.Client.Core.IDS.CustomerService;
+			import Intuit.Sb.Cdm.vo.Customer;
+			import mx.collections.ArrayCollection;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.rpc.Responder;
+			
+			[Bindable]
+			private var customers:ArrayCollection;
+			
+			[Bindable]
+			private var model:ConvertLeadToJobModel = ConvertLeadToJobModel.getInstance();
+			
+			public function get isValid():Boolean 
+			{
+				if (dgCustomers.selectedItem != null || cbNewCustomer.selected)
+					return true;
+				else 
+					return false;
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			public function updateModel():void 
+			{
+				if (cbNewCustomer.selected)
+					model.currentJob.RelatedIdsCustomer = getNewCustomer();
+				else if (dgCustomers.selectedItem != null) 
+					model.currentJob.RelatedIdsCustomer = dgCustomers.selectedItem as Customer;
+				else 
+					model.currentJob.RelatedIdsCustomer = getNewCustomer();
+			}
+			
+			private function getNewCustomer():Customer 
+			{
+				var customer:Customer = new Customer();
+				customer.GivenName = model.currentLead.FirstName;
+				customer.FamilyName = model.currentLead.LastName;
+				customer.ShowAs = model.currentLead.LastName + " " + model.currentLead.FirstName;
+				customer.Address = new Array();
+				customer.Phone = new Array();
+				
+				return customer;
+			}
+			
+			public function init(model:ConvertLeadToJobModel):void 
+			{
+				txtSearchString.text = model.currentLead.FirstName + " " + model.currentLead.LastName;
+				onSearchClick();					
+			}
+			
+			private function onCreate():void 
+			{
+				ChangeWatcher.watch(dgCustomers, "selectedItem", 
+					function(event:*):void 
+					{
+						dispatchEvent(new Event("stepCustomerLookupChange"));
+					});
+			}
+			
+			private function onSearchClick():void 
+			{
+				if (txtSearchString.text.length < 3)
+					return;
+				
+				if (customers == null)
+					customers = new ArrayCollection();
+				
+				customers.removeAll();
+				
+				var filter:CustomerFilter = new CustomerFilter();
+				filter.Name = txtSearchString.text;
+				
+				startRemoting();
+				IDSCustomerService.getInstance().getFilteredCustomers(filter).addResponder(
+					new mx.rpc.Responder(
+						function (event:ResultEvent):void 
+						{
+							stopRemoting();
+							customers.source = event.result as Array;
+						},
+						function (event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						} 
+					));
+				
+			} 
+			
+			private function onCheckBoxChange():void 
+			{
+				dispatchEvent(new Event("stepCustomerLookupChange"));
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%" height="100%">
+	
+		<mx:VBox width="100%" 
+			paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5"
+			borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2"
+			backgroundColor="#EEEEEE" verticalGap="0">
+			<mx:Label text="Customer lookup" fontSize="12" fontWeight="bold" color="#999999"/>
+			<mx:Label text="Please select existing customer or selec check box for create new" fontSize="9"/>
+		</mx:VBox>
+		 
+		<mx:VBox width="100%" height="100%"
+			paddingLeft="8" paddingRight="8" paddingBottom="8">
+			<mx:HBox width="100%" horizontalGap="-1" verticalAlign="middle">
+				<mx:TextInput id="txtSearchString" width="100%" fontSize="14" height="25" enter="onSearchClick()"/>
+				<mx:Button id="btnSearch" label="Search" fontSize="12" click="onSearchClick()" enabled="{txtSearchString.text.length &gt; 2}"
+					height="100%" cornerRadius="2"/>
+			</mx:HBox>
+			
+			<mx:DataGrid id="dgCustomers" width="100%" height="100%" dataProvider="{customers}" fontSize="12"
+				sortableColumns="false" draggableColumns="false" enabled="{!cbNewCustomer.selected}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="ShowAs" headerText="Show As" width="150"/>
+					<mx:DataGridColumn dataField="PhonesStr" headerText="Phones" width="150"/>
+					<mx:DataGridColumn dataField="AddressStr" headerText="Address"/>
+				</mx:columns>
+			</mx:DataGrid>
+			
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:CheckBox id="cbNewCustomer" label="create new Customer" fontSize="12" change="onCheckBoxChange()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Canvas>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:voice="com.affilia.voice.*">
+
+	<mx:Metadata>
+		[Event(name="leadUpdate", type="flash.events.Event")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.dalworth.servman.service.LeadService;
+			import com.dalworth.servman.main.MainAppModel;
+			import com.dalworth.servman.domain.LeadStatus;
+			import com.dalworth.servman.domain.LeadChangeHistory;
+			import com.dalworth.servman.domain.Lead;
+			import mx.rpc.Responder;
+			
+			private const labelWidth:Number = 120;
+			
+			private var _lead:Lead;
+			[Bindable]
+			public function get lead():Lead	{ return _lead; }
+			public function set lead(value:Lead):void 
+			{
+				_lead = value;
+			}
+			
+			private function startRemoting():void 
+			{
+				this.enabled = false;
+			}
+			
+			private function stopRemoting():void 
+			{
+				this.enabled = true;
+			}
+			
+			private function saveLead(lead:Lead, historyItems:Array):void 
+			{
+				var newLead:Lead = lead.prepareToSend();
+					newLead.FirstName = txtFirstName.text;
+					newLead.LastName = txtLastName.text;
+					newLead.Phone = txtPhone.text;
+					newLead.CustomerNotes = txtCustomerNotes.text;
+				
+				startRemoting();
+				LeadService.getInstance().saveLeadChangeHistory(newLead, historyItems).addResponder(
+					new mx.rpc.Responder(
+						function(event:ResultEvent):void 
+						{
+							stopRemoting();
+							lead.applyFields(event.result as Lead);
+							dispatchEvent(new Event("leadUpdate"));
+						},
+						function(event:FaultEvent):void 
+						{
+							stopRemoting();
+							Alert.show(event.fault.message);
+						}))
+			}
+			
+			private function onCancelLead():void 
+			{
+				var historyItems:Array = new Array();
+				
+				var historyItem:LeadChangeHistory = new LeadChangeHistory();
+					historyItem.Action = "Change status";
+					historyItem.DateChanged = new Date();
+					historyItem.Description = "to " + LeadStatus.STATUS_CANCELLED;
+					historyItem.LeadId = lead.Id;
+					historyItem.UserId = MainAppModel.getInstance().currentUser.Id;
+					historyItem.LeadStatusId = LeadStatus.STATUS_CANCELLED_ID;
+
+				historyItems.push(historyItem);
+
+				lead.LeadStatusId = LeadStatus.STATUS_CANCELLED_ID;
+				
+				saveLead(lead, historyItems);	
+			}
+			
+			private function onUpdate():void 
+			{
+				var historyItems:Array = new Array();
+				
+				var historyItem:LeadChangeHistory = new LeadChangeHistory();
+				historyItem.Action = "Update";
+				historyItem.DateChanged = new Date();
+				historyItem.Description = "Update Lead Detail ";
+				historyItem.LeadId = lead.Id;
+				historyItem.UserId = MainAppModel.getInstance().currentUser.Id;
+
+				historyItems.push(historyItem);
+
+				saveLead(lead, historyItems);	
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%"
+		 paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+		 backgroundColor="#FFFFEE">
+		<mx:VBox width="100%" height="100%" verticalGap="1">
+			<mx:HBox width="100%" verticalAlign="top">
+				<mx:Label text="First Name" textAlign="right" width="{labelWidth}"/>
+				<mx:TextInput id="txtFirstName" text="{lead.FirstName}" width="100%"/>
+			</mx:HBox>
+	
+			<mx:HBox width="100%" verticalAlign="top">
+				<mx:Label text="Last Name" textAlign="right" width="{labelWidth}"/>
+				<mx:TextInput id="txtLastName" text="{lead.LastName}" width="100%"/>
+			</mx:HBox>
+	
+			<mx:HBox width="100%" verticalAlign="top">
+				<mx:Label text="Phone" textAlign="right" width="{labelWidth}"/>
+				<mx:TextInput id="txtPhone" text="{lead.Phone}" width="100%"/>
+			</mx:HBox>
+<!--	
+			<mx:HBox width="100%" height="100%" verticalAlign="top">
+				<mx:Label text="Address" textAlign="right" width="{labelWidth}"/>
+				<mx:TextInput text="{lead.Address}" width="100%" height="100%"/>
+			</mx:HBox>
+-->	
+			<mx:HBox width="100%" height="100%" verticalAlign="top">
+				<mx:Label text="Notes" textAlign="right" width="{labelWidth}"/>
+				<mx:TextArea id="txtCustomerNotes" text="{lead.CustomerNotes}" width="100%" height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<voice:VoicePlayer width="100%" layout="horizontal" showHeader="false" 
+			voiceFileUrl="{lead.RelatedPhoneCall.RecordingUrl != null ? (lead.RelatedPhoneCall.RecordingUrl + '.mp3') : null}"
+			visible="{lead.RelatedPhoneCall != null &amp;&amp; lead.RelatedPhoneCall.RecordingUrl != null &amp;&amp; lead.RelatedPhoneCall.RecordingUrl.length &gt; 0}" 
+			includeInLayout="{lead.RelatedPhoneCall != null &amp;&amp; lead.RelatedPhoneCall.RecordingUrl != null &amp;&amp; lead.RelatedPhoneCall.RecordingUrl.length &gt; 0}"/>
+		
+		<mx:HBox width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
+			backgroundColor="#FFFFDD" borderColor="#CCCCCC" borderStyle="solid" cornerRadius="2">
+			<mx:Button label="Cancel Lead" click="onCancelLead()"/>
+			<mx:Spacer width="100%"/>
+			<mx:Button label="Update" click="onUpdate()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+</mx:Canvas>

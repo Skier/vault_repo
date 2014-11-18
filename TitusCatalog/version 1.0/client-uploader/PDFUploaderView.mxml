@@ -1,0 +1,93 @@
+<mx:Application
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+    backgroundGradientColors="[#ffffff, #ffffff]"
+    xmlns:local="*"
+	layout="absolute"
+    pageTitle="PDF Uploader"
+    initialize="application_initializeHandler()"
+    enabled="false">
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+            
+            [Bindable]
+            public var controller:PDFUploaderController;
+            
+            private function application_initializeHandler():void {
+            	controller = new PDFUploaderController(this);
+            }
+            
+            private function onClickAddLink():void {
+            	ModelView.Open(this, new ModelDataObject());
+            }
+            
+            private function onClickRemoveLink():void {
+            	controller.model.links.removeItemAt(dgLinks.selectedIndex);
+            }
+        ]]>
+    </mx:Script>
+    
+    <mx:TitleWindow
+    	width="100%"
+    	height="100%"
+    	horizontalAlign="center"
+    	title="PDF Uploader">
+    	<mx:HBox>
+    		<mx:VBox>
+    			<mx:DataGrid
+    				dataProvider="{controller.model.documents}">
+    				<mx:columns>
+    					<mx:DataGridColumn
+    						dataField="abcd"
+    						/>
+    					<mx:DataGridColumn
+    						dataField="efgh"
+    						/>
+    				</mx:columns>
+    			</mx:DataGrid>
+    		</mx:VBox>
+    		<mx:VBox width="100%">
+    			<mx:ControlBar>
+        			<mx:HBox width="100%">
+        	    		<mx:ProgressBar id="pbUpload" labelPlacement="right" mode="manual" width="100%"/>
+    	        		<mx:VBox>
+	                		<mx:Button
+	                			id="btnLoad"
+	                			label="Load"
+	                			click="controller.onClickUpload()"
+	                			enabled="{!controller.model.uploadingInProgress}"
+	                			/>
+	                		<mx:Button
+	                			id="btnCancel"
+	                			label="Cancel"
+	                			click="controller.onClickCancelUpload()"
+	                			enabled="{controller.model.uploadingInProgress}"
+	                			/>
+    	        		</mx:VBox>
+        			</mx:HBox>
+    			</mx:ControlBar>
+    		</mx:VBox>
+    		<mx:VBox width="100%" height="100%">
+    			<mx:DataGrid
+    				id="dgLinks"
+    				dataProvider="{controller.model.links}">
+    				<mx:columns>
+    					<mx:DataGridColumn
+    						dataField="PageId"
+    						editable="true" />
+    					<mx:DataGridColumn
+    						dataField="ModelId"
+    						editable="true" />
+    				</mx:columns>
+    			</mx:DataGrid>
+    			<mx:HBox width="100%" height="100%">
+    				<mx:Button label="Add" click="onClickAddLink()" />
+    				<mx:Button label="Remove" click="onClickRemoveLink()" />
+    			</mx:HBox>
+    		</mx:VBox>
+    	</mx:HBox>
+    </mx:TitleWindow>
+    
+</mx:Application>

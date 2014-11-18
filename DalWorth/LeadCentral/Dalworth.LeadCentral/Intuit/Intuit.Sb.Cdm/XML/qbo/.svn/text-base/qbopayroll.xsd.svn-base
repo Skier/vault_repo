@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sb="http://www.intuit.com/sb/cdm/v2" 
+xmlns:qbo="http://www.intuit.com/sb/cdm/qbo"
+xmlns="http://www.intuit.com/sb/cdm/qbopayroll/v1" targetNamespace="http://www.intuit.com/sb/cdm/qbopayroll/v1" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+    
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../finance/Finance.xsd"/>
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../customer/PartyCdmTypes.xsd"/>
+  <xs:import namespace="http://www.intuit.com/sb/cdm/v2" schemaLocation="../common/IntuitCdmBaseTypes.xsd"/>
+  <xs:import namespace="http://www.intuit.com/sb/cdm/qbo" schemaLocation="qbo.xsd"/>
+  
+	<xs:element name="PayrollTxnHeader" type="PayrollTxnHeader"/>
+	<xs:element name="PayrollTxnLine" type="PayrollTxnLine"/>
+	<xs:element name="PayrollTxnBase" type="PayrollTxnBase"/>
+	<xs:element name="PayrollAdjustment" type="PayrollAdjustment"/>
+	<xs:element name="PayrollCheck" type="PayrollCheck"/>
+	<xs:element name="TaxPayment" type="TaxPayment"/>
+	<xs:element name="PayrollRefund" type="PayrollRefund"/>
+	<xs:element name="PayrollCompany" type="PayrollCompany"/>
+	<xs:element name="PayrollTerminationInfo" type="PayrollTerminationInfo"/>
+	<xs:element name="PayrollDateRange" type="PayrollDateRange"/>
+	<xs:element name="PayrollEmployee" type="PayrollEmployee"/>
+  
+    <!-- Type definitions -->    <xs:complexType name="PayrollTxnHeader">
+        <xs:annotation>
+            <xs:documentation>Financial Transaction information that pertains to the entire Payroll transaction.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="sb:HeaderBase">
+                <xs:sequence>
+                    <xs:group ref="PayrollAccountReferenceGroup" minOccurs="0"/>
+                    <xs:group ref="sb:EntityReferenceGroup" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Specifies the party to whom a check is sent.</xs:documentation>
+                        </xs:annotation>
+                    </xs:group>
+                    <xs:element name="PayeeAddr" type="sb:PhysicalAddress" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Address to which the payment should be sent.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TotalAmt" type="xs:decimal" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>The total amount due, determined by taking the sum of all lines associated.  This includes all charges, allowances, taxes, discounts, etc...</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ToBePrinted" type="xs:boolean" minOccurs="0"/>
+                    <xs:group ref="sb:TxnReferenceGroup" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>The reference to the purchase transaction which is being paid by this check.</xs:documentation>
+                        </xs:annotation>
+                    </xs:group>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PayrollTxnLine">
+        <xs:annotation>
+            <xs:documentation>Payroll transaction line detail information</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="sb:LineBase">
+                <xs:sequence>
+                	<xs:element name="Amount" type="xs:decimal" minOccurs="0" />
+                	<xs:group ref="PayrollAccountReferenceGroup" minOccurs="0" />
+                	<xs:group ref="sb:EntityReferenceGroup" minOccurs="0" />
+                	<xs:group ref="sb:ClassReferenceGroup" minOccurs="0" />
+                	<xs:element name="DocNum" type="xs:string" maxOccurs="1" minOccurs="0" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PayrollTxnBase">
+        <xs:annotation>
+            <xs:documentation>Basic Payroll Transaction Structure</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="sb:CdmBase">
+                <xs:sequence>
+                    <xs:element name="Header" type="PayrollTxnHeader" minOccurs="0"/>
+                    <xs:element name="Line" type="PayrollTxnLine" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PayrollAdjustment">
+        <xs:annotation>
+            <xs:documentation>Provides the definition of Payroll Adjustment transactions specific to Payroll</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="PayrollTxnBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PayrollCheck">
+        <xs:annotation>
+            <xs:documentation>Provides the definition of Paycheck transactions specific to Payroll</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="PayrollTxnBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="TaxPayment">
+        <xs:annotation>
+            <xs:documentation>Provides the definition of Tax Payment transactions specific to Payroll</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="PayrollTxnBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="PayrollRefund">
+        <xs:annotation>
+            <xs:documentation>Payroll tax refund transactions</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="PayrollTxnBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="TaxFormTypeEnum">
+        <xs:annotation>
+            <xs:documentation>enumeration of Tax form type for the company</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SoleProprietor"/>
+            <xs:enumeration value="Partnership"/>
+            <xs:enumeration value="SCorporation"/>
+            <xs:enumeration value="Corporation"/>
+            <xs:enumeration value="Organization"/>
+            <xs:enumeration value="Other"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="PayrollCompany">
+        <xs:annotation>
+            <xs:documentation>Provides the definition of company information specific to Payroll</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="qbo:QboCompany">
+                <xs:sequence>
+                    <xs:element name="TaxFormType" type="TaxFormTypeEnum" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Specified the tax form type for the company</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="UseClasses" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Specifies whether or not the company use classes for transactions.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="WarnIfNoClass" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Specifies whether or not user would like a warning if transactions are entered without classes when classes setting is turned on.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="QboAccountTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Bank" />
+            <xs:enumeration value="AR" />
+            <xs:enumeration value="OtherCurrentAssets" />
+            <xs:enumeration value="FixedAssets" />
+            <xs:enumeration value="OtherAssets" />
+            <xs:enumeration value="AP" />
+            <xs:enumeration value="CreditCard" />
+            <xs:enumeration value="OtherCurrentLiabilities" />
+            <xs:enumeration value="LongTermLiabilities" />
+            <xs:enumeration value="Equity" />
+            <xs:enumeration value="Income" />
+            <xs:enumeration value="CostOfGoodsSold" />
+            <xs:enumeration value="Expense" />
+            <xs:enumeration value="OtherIncome" />
+            <xs:enumeration value="OtherExpense" />
+            <xs:enumeration value="NonPosting" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PayrollSubscriptionTerminationReasonEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="None" />
+            <xs:enumeration value="NoMoreEeC" />
+            <xs:enumeration value="SeasonalC" />
+            <xs:enumeration value="OtherC" />
+            <xs:enumeration value="NoMoreEe" />
+            <xs:enumeration value="Seasonal" />
+            <xs:enumeration value="Features" />
+            <xs:enumeration value="Fraud" />
+            <xs:enumeration value="BadBilling" />
+            <xs:enumeration value="PartnerReq" />
+            <xs:enumeration value="Other" />
+            <xs:enumeration value="FundsHold" />
+            <xs:enumeration value="AutoTerm" />
+            <xs:enumeration value="AutoClose" />
+            <xs:enumeration value="AutoInacct" />
+            <xs:enumeration value="OpsTest" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="PayrollTerminationInfo">
+        <xs:annotation>
+            <xs:documentation>Provides the definition to hold all required information needed when canceling Payroll.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="CompanyId" type="sb:IdType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Unique QBO company ID.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TerminationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The date of termination. If null is passed, the current date/time is used.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PayrollSubscriptionTerminationReason" type="PayrollSubscriptionTerminationReasonEnum" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The reason for the termination</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TerminationDetails" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The text the user typed in for the termination reason if they picked "other".</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReferralRating" type="xs:int" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The ranking the user gave us (0 to 10 inclusive).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReferralReason" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The text the user typed in for the reason they gave us the ranking.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+     <xs:complexType name="PayrollDateRange">
+        <xs:annotation>
+            <xs:documentation>Provides the definition to hold all required information needed for a Date Range object</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="BeginDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The Begin Date.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EndDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The End Date.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PayrollEmployee">
+        <xs:annotation>
+            <xs:documentation>Provides the definition of payroll employee information</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="sb:Employee">
+                <xs:sequence>
+                    <xs:element name="ShowInNonPayrollLists" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Specifies whether or not the company use classes for transactions.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ==============================================================================-->
+    <!-- Reusable Groups definitions                                                   -->
+    <!-- ==============================================================================-->
+    <xs:group name="PayrollAccountReferenceGroup">
+        <xs:annotation>
+            <xs:documentation>Reference to an account with detail sub account type.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="AccountId" type="sb:IdType" minOccurs="0"/>
+            <xs:element name="AccountName" type="xs:string" minOccurs="0"/>
+            <xs:element name="AccountType" type="QboAccountTypeEnum" minOccurs="0">
+	           <xs:annotation>
+	               <xs:documentation>The account type specified is used to look for matching account of this type, accounting only really cares about this type</xs:documentation>
+	           </xs:annotation>
+            </xs:element>
+            <xs:element name="DetailAccountType" type="sb:QboAccountDetailTypeEnum" minOccurs="0">
+                <xs:annotation>
+                   <xs:documentation>The detail account type is sub category of account type, it is used to create account if we cannot find out matching the specified account name</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+</xs:schema>
+

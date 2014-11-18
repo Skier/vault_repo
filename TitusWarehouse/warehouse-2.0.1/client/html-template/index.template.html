@@ -1,0 +1,149 @@
+<!-- saved from url=(0014)about:internet -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script src="AC_OETags.js" language="javascript"></script>
+<style>
+body { margin: 0px}
+</style>
+<script language="JavaScript" type="text/javascript">
+<!--
+// -----------------------------------------------------------------------------
+// Globals
+// Major version of Flash required
+var requiredMajorVersion = 9;
+// Minor version of Flash required
+var requiredMinorVersion = 0;
+// Minor version of Flash required
+var requiredRevision = 0;
+// -----------------------------------------------------------------------------
+// -->
+</script>
+
+<script>
+<!--
+
+var lastX;
+var lastY;
+var lastW;
+var lastH;
+
+function init() {
+    window.onresize = onResize;
+    setAppSize();
+}
+
+function onResize(e) {
+    moveIFrame(lastX,lastY,lastW,lastH);
+    setAppSize();
+}
+
+function setAppSize() 
+{
+    var appBox = document.getElementById("appBox");
+    var newHeight = document.body.offsetHeight - 225;
+    if (newHeight < 400) 
+        appBox.height = 400;
+    else 
+        appBox.height = newHeight;
+}
+
+function moveIFrame(x,y,w,h) {
+    lastX = x - 0;
+    lastY = y - 0;
+    lastW = w;
+    lastH = h;
+
+    var frameRef = document.getElementById("brandHomeFrame");
+
+    var offsetTrail = document.getElementById("WarehouseApplication");
+    var offsetLeft = 0;
+    var offsetTop = 0;
+    while (offsetTrail){
+        offsetLeft += offsetTrail.offsetLeft;
+        offsetTop += offsetTrail.offsetTop;
+        offsetTrail = offsetTrail.offsetParent;
+    }
+    
+    var left = String(offsetLeft + lastX);
+    var top = String(offsetTop + lastY);
+    frameRef.style.left = String(left) + "px";
+    frameRef.style.top = 177 + lastY + "px";
+    frameRef.style.width = w + "px";
+    frameRef.style.height = h + "px";
+    frameRef.style.zIndex = 999;
+}
+
+function hideIFrame(){
+    document.getElementById("brandHomeFrame").style.visibility="hidden";
+}
+
+function showIFrame(){
+    document.getElementById("brandHomeFrame").style.visibility="visible";
+}
+
+function loadIFrame(url){
+    brandHomeFrame.location = url;
+}
+
+function isMSIE(){
+    agent = navigator.userAgent;
+    opera = (agent.indexOf('Opera')!=-1);
+    return navigator.userAgent;
+//    return ((agent.indexOf('MSIE')!=-1) && !opera);
+}
+-->
+</script>
+
+</head>
+
+<body onLoad="init()">
+
+<!-- test header  -->
+<table align="center" width="980" background="assets/html/content_bg.png" 
+    cellSpacing="0" cellPadding="0" border="0">
+  <tr><td colspan="3"><img src="assets/html/header.png"></td></tr>
+  <tr><td colspan="3"></td></tr>
+  <tr>
+    <td width="12">&nbsp;</td>
+    <td id="appBox" name="appBox" width="956" height="550">
+<!-- test header  -->
+
+     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+            id="WarehouseApplication" width="100%" height="100%"
+            codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+            <param name="wmode" value="transparent">
+            <param name="movie" value="main.swf" />
+            <param name="quality" value="high" />
+            <param name="bgcolor" value="#869ca7" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <param name="flashvars" value="u=djackson&p=New2day1&b=1" />
+            <embed src="main.swf" quality="high" bgcolor="#869ca7"
+                width="100%" height="100%" name="WarehouseApplication" align="middle"
+                wmode="transparent"
+                flashvars="u=mwalker&p=jordan2166&s=http://titus-hvac.demo.logicland.com.ua/asc_warehouse/WarehouseService.asmx&b=1&a=true"
+                play="true"
+                loop="false"
+                quality="high"
+                allowScriptAccess="sameDomain"
+                type="application/x-shockwave-flash"
+                pluginspage="http://www.adobe.com/go/getflashplayer">
+            </embed>
+    </object> 
+
+    <iframe id="brandHomeFrame" name="brandHomeFrame" frameborder="0" 
+         style="position:absolute;background-color:transparent;border:0px;visibility:hidden;">
+    </iframe>
+
+<!-- test footer  -->
+    </td>
+    <td width="12">&nbsp;</td>
+  </tr>
+  <tr><td colspan="3"></td></tr>
+  <tr><td colspan="3"><img src="assets/html/footer.png"></td></tr>
+</table>
+<!-- test footer  -->
+
+</body>
+</html>

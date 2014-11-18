@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="10" 
+	paddingRight="10" 
+	paddingTop="10" 
+	paddingBottom="10"
+	dropShadowEnabled="true"
+	borderColor="#cccccc" 
+	borderStyle="solid"
+	backgroundColor="#ccffcc" 
+	backgroundAlpha="0.3" 
+	shadowDistance="1" 
+	shadowDirection="center"
+	xmlns:project="tractIncClientApp.project.*">
+
+    <mx:Metadata>
+        [Event(name="applyProjectFilter", type="truetract.events.ProjectFilterEvent")]
+    </mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import truetract.events.ProjectFilterEvent;
+			
+			[Bindable] public var filterEnabled:Boolean = false;
+			
+			private function setFilter():void 
+			{
+				filterEnabled = true;
+
+				resetForm();
+
+				dispatchEvent(new ProjectFilterEvent(ProjectFilterEvent.APPLY_PROJECT_FILTER, filter));
+			}
+			
+			private function removeFilter():void 
+			{
+				filterEnabled = false;
+
+				dispatchEvent(new ProjectFilterEvent(ProjectFilterEvent.APPLY_PROJECT_FILTER, null));
+			}
+			
+			private function applyFilter():void 
+			{
+				if (filterEnabled) 
+				{
+					dispatchEvent(new ProjectFilterEvent(ProjectFilterEvent.APPLY_PROJECT_FILTER, filter));
+				}
+			}
+			
+			private function resetForm():void 
+			{
+				chkIsProjectActive.selected = true;
+				chkIsProjectComplete.selected = true;
+				dateFrom.selectedDate = null;
+				dateTo.selectedDate = null;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<project:ProjectFilter id="filter">
+		<project:isProjectActive>{chkIsProjectActive.selected}</project:isProjectActive>
+		<project:isProjectComplete>{chkIsProjectComplete.selected}</project:isProjectComplete>
+		<project:lastChangeFrom>{dateFrom.selectedDate}</project:lastChangeFrom>
+		<project:lastChangeTo>{dateTo.selectedDate}</project:lastChangeTo>
+	</project:ProjectFilter>
+	
+	<mx:HBox width="100%" verticalAlign="bottom">
+		<mx:Label text="Filter:" fontWeight="bold"/>
+		<mx:Button 
+			fontWeight="normal"
+			enabled="{!filterEnabled}"
+			label="set" click="setFilter()"/>
+		<mx:Button 
+			fontWeight="normal"
+			enabled="{filterEnabled}"
+			label="remove" click="removeFilter()"/>
+	</mx:HBox>
+	
+	<mx:VBox width="100%" visible="{filterEnabled}" includeInLayout="{filterEnabled}">
+		<mx:Form width="100%" labelWidth="35" backgroundColor="#ffffff" borderColor="#999999" borderStyle="solid">
+			<mx:VBox width="100%" verticalGap="0">
+				<mx:Label text="Project:" fontWeight="bold"/>
+				<mx:HRule width="100%"/>
+			</mx:VBox>
+			<mx:FormItem>
+				<mx:CheckBox id="chkIsProjectActive" label="is active" click="applyFilter()"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:CheckBox id="chkIsProjectComplete" label="is complete" click="applyFilter()"/>
+			</mx:FormItem>
+			<mx:VBox width="100%" verticalGap="0">
+				<mx:Label text="Last changes:" fontWeight="bold"/>
+				<mx:HRule width="100%"/>
+			</mx:VBox>
+			<mx:FormItem label="from:">
+				<mx:DateField id="dateFrom" change="applyFilter()"/>
+			</mx:FormItem>
+			<mx:FormItem label="to:">
+				<mx:DateField id="dateTo" change="applyFilter()"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:VBox>
+	
+</mx:VBox>

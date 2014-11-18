@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="dsProduct" targetNamespace="http://tempuri.org/dsProduct.xsd" elementFormDefault="qualified"
+	attributeFormDefault="qualified" xmlns="http://tempuri.org/dsProduct.xsd" xmlns:mstns="http://tempuri.org/dsProduct.xsd"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="dsProduct" msdata:IsDataSet="true">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Product">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Id" msdata:ReadOnly="true" msdata:AutoIncrement="true" type="xs:int" />
+							<xs:element name="ProdType" type="xs:string" />
+							<xs:element name="ProdName" type="xs:string" />
+							<xs:element name="BillText" type="xs:string" minOccurs="0" />
+							<xs:element name="ProdCode" type="xs:string" minOccurs="0" />
+							<xs:element name="OldPriceCode" type="xs:string" minOccurs="0" />
+							<xs:element name="ProdSubClass" type="xs:string" minOccurs="0" />
+							<xs:element name="IsComponentOnly" type="xs:string" />
+							<xs:element name="IsBillable" type="xs:string" />
+							<xs:element name="IsProvisionable" type="xs:string" />
+							<xs:element name="IsProvViaMapping" type="xs:string" />
+							<xs:element name="Description" type="xs:string" minOccurs="0" />
+							<xs:element name="EligibilityCriteria" type="xs:string" minOccurs="0" />
+							<xs:element name="ProvCategory" type="xs:string" />
+							<xs:element name="Supplier" type="xs:int" />
+							<xs:element name="Vendor" type="xs:int" minOccurs="0" />
+							<xs:element name="TaxCode" type="xs:string" minOccurs="0" />
+							<xs:element name="IsTaxExempt" type="xs:string" minOccurs="0" />
+							<xs:element name="Status" type="xs:string" minOccurs="0" />
+							<xs:element name="StartDate" type="xs:dateTime" minOccurs="0" />
+							<xs:element name="EndDate" type="xs:dateTime" minOccurs="0" />
+							<xs:element name="AcctCode" type="xs:string" minOccurs="0" />
+							<xs:element name="CompCode" type="xs:string" minOccurs="0" />
+							<xs:element name="DeptCode" type="xs:string" minOccurs="0" />
+							<xs:element name="StartServMon" type="xs:int" minOccurs="0" />
+							<xs:element name="EndServMon" type="xs:int" minOccurs="0" />
+							<xs:element name="PredId" type="xs:int" minOccurs="0" />
+							<xs:element name="MappingProd" type="xs:int" minOccurs="0" />
+							<xs:element name="IsAgentVisible" type="xs:string" minOccurs="0" />
+							<xs:element name="WebDescription" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+		<xs:unique name="dsProductKey1" msdata:PrimaryKey="true">
+			<xs:selector xpath=".//mstns:Product" />
+			<xs:field xpath="mstns:Id" />
+		</xs:unique>
+	</xs:element>
+</xs:schema>

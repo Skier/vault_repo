@@ -1,0 +1,259 @@
+﻿<%@ Master Language="C#" AutoEventWireup="True" CodeBehind="RugCleaningMasterPage.Master.cs" Inherits="Dalworth.Server.Web.RugCleaning.RugCleaningMasterPage"%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ Import Namespace="Dalworth.Server.Web.RugCleaning" %>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<asp:contentplaceholder id="titlePlaceHolder" runat="server"/>
+<asp:contentplaceholder id="descriptionPlaceHolder" runat="server"/>
+<asp:contentplaceholder id="keywordsPlaceHolder" runat="server"/>
+<meta name="ROBOTS" content="INDEX, FOLLOW" />
+<meta name="google-site-verification" content="6Mbp3LhqeA4T5x9qatleIRCfktjpHzDSabv9V-Zd8yc" />
+<meta name="y_key" content="865bffc2d5f99a09"/>
+<link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+<link rel="stylesheet" href="style.css" type="text/css" media="screen"  />
+
+<script type="text/javascript" src="swfobject.js"></script>
+<%if (SlideshowType == SlideshowTypeEnum.Home)
+  { %> 
+<script type="text/javascript">
+   var flashvars = {};
+   var params = { wmode: "opaque" };
+   var attributes = {};
+	swfobject.embedSWF("ss.swf", "slideshow", "590", "360", "9.0.0", "expressinstall.swf", flashvars, params, attributes);
+</script>
+<%} %>
+<%if (SlideshowType == SlideshowTypeEnum.Process)
+  { %> 
+<script type="text/javascript">
+   var flashvars = {};
+   var params = { wmode: "opaque" };
+   var attributes = {};
+	swfobject.embedSWF("process.swf", "slideshow", "590", "360", "9.0.0", "expressinstall.swf", flashvars, params, attributes);
+</script>
+<%} %>
+<%if (SlideshowType == SlideshowTypeEnum.Video_Rug_Cleaning)
+  { %> 
+<script type="text/javascript">
+<!--
+   var flashvars = {};
+   var params = { wmode: "opaque" };
+   var attributes = {};
+         		 
+	swfobject.embedSWF("http://www.youtube.com/v/Pxrd74yA3vU&hl=en&fs=0&rel=0&color1=0x5d1719&color2=0xcd311b&border=1", "slideshow", "580", "360", "7.0.0", "expressinstall.swf", flashvars, params, attributes);// -->
+</script>
+<%} %>
+<style type="text/css"></style>
+<!--[if IE 6]><link href="css/ie.css" type="text/css" rel="stylesheet" media="screen" /><![endif]-->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try{
+var pageTracker = _gat._getTracker("UA-9504153-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</head>
+<body>
+<div class="wrapper">
+  <div id="header"> 
+			 <a id="logo" href="Index.html">
+			 		<img src="i/oriental_rug_cleaning_header.png" alt="Professional Oriental Rug Cleaning by Dalworth" />
+			 </a> 
+			 <a id="underlogo" href="/"><img src="i/cleaning_fine_textile.png" alt="Area Rug Cleaners"/></a> 
+			 <div class="phonenumber">
+                <p class="pickup"><span>FREE</span> Pickup and Delivery in DFW</p>
+                <p class="phone"><span>CALL NOW&nbsp;&nbsp;&nbsp;</span><%Response.Write(PhoneNumber);%></p>
+            </div>
+    <div class="padding_10"><a href="<%Response.Write(Link.SITE_MAP);%>">Sitemap</a></div>
+    <div id="pimp"></div>
+  </div>
+  <div id="menu">
+    <ul class="sf-menu sf-shadow">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#">New Customers</a>
+        <ul>
+          <li><a href="<%Response.Write(Link.HOME);%>#why-professional-cleaning">Why Dalworth Rug Cleaning</a></li>
+          <li><a href="<%Response.Write(Link.PROCESS);%>">Our Process</a></li>
+          <li><a href="<%Response.Write(Link.HOME_CARE);%>">How to maintain your rugs at home</a></li>
+          <li><a href="<%Response.Write(Link.FAQ);%>">FAQ</a></li>
+          <li><a href="<%Response.Write(Link.CUSTOMER_REVIEWS);%>">Customer Reviews</a></li>
+          <li><a href="<%Response.Write(Link.FAQ);%>">Our Prices</a></li>
+        </ul>
+      </li>
+      <li><a href="#">Services</a>
+        <ul>
+          <li><a href="<%Response.Write(Link.PROCESS);%>">Rug Cleaning</a></li>
+          <li><a href="<%Response.Write(Link.REPAIRS);%>">Rug Repairs</a></li>
+          <li><a href="<%Response.Write(Link.PROTECTION);%>">Moth Repellent</a></li>
+          <li><a href="<%Response.Write(Link.PROTECTION);%>">Fiber Protector</a></li>
+          <li><a href="<%Response.Write(Link.PROTECTION);%>">Rug Pad</a></li>
+          <li><a href="<%Response.Write(Link.PROTECTION);%>">Storage</a></li>
+          <li><a href="<%Response.Write(Link.FAQ);%>">Our Prices</a></li>
+        </ul>
+      </li>
+      <li><a href="<%Response.Write(Link.FAQ);%>">FAQ</a></li>
+      <li><a href="<%Response.Write(Link.CUSTOMER_REVIEWS);%>">Customer Reviews</a></li>
+      <li><a href="<%Response.Write(Link.CONTACT_US);%>">Contact Us</a></li>
+      <li class="right"><a href="<%Response.Write(Link.REFERRAL);%>">Service Partners</a></li>
+    </ul>
+  </div>
+  <div id="content">
+    <div class="content_col">
+       <%if (IsSlideShowRequired)
+        {
+            if (SlideshowType == SlideshowTypeEnum.Video_Rug_Cleaning)
+            {%>
+        <div class="slide" style="width:580px;">
+            <%
+            }
+            else
+            { %>
+        <div class="slide">
+            <%
+            } 
+       %>
+        <div id="slideshow"> <img src="photo/oriental-rug-cleaning.jpg" alt="oriental rug cleaning" /></div>
+      </div>
+      <% 
+        }
+      %>
+      
+      <%if (IsBookmarkingRequired)
+        {
+      %>
+      <div class="bookmark"> 
+        <b>Bookmark share site:</b> 
+        <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4ac490e71dad3c02"><img src="http://s7.addthis.com/static/btn/v2/lg-bookmark-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>
+        <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?pub=xa-4ac490e71dad3c02"></script>
+        <!-- AddThis Button END -->
+        <a name="fb_share" type="button" class="facebook" href="http://www.facebook.com/sharer.php">Share</a><script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
+      </div>
+       <%
+       }
+
+       if (IsVideoRequired)
+       {
+       %>
+      <div class="video"> <b>View our YouTube Video:</b><a href="<%Response.Write(Link.VIDEO_DALWORTH_RUG_CLEANING);%>">Dalworth Rug Cleaning Video</a> </div>
+      <%
+       } 
+      %>
+      <asp:contentplaceholder id="articlePlaceholder" runat="server"/>
+    </div>
+   
+    <div class="right_col">
+      <% if (IsShortFormRequired)
+         {
+      %>
+      <div class="form_s">
+        <form id="m_formShortQuote" runat="server" class="short">
+          <h3>Get a Free Quote Now!</h3>
+          <div class="row">
+            <label class="optional">Call: </label>
+            <strong><%Response.Write(PhoneNumber);%></strong> </div>
+          <asp:Label id="m_txtErrorMessage" runat="server"  style="display:block;" Visible="false"/>
+          <div class="row">
+            <label>First Name:</label>
+            <input id="m_txtFirstName"  runat="server" name="txtFirstName" runat="server" type="text"  maxlength="40" tabindex="1" size="20" value="" />
+            <asp:Label ID="m_lblErrorFirstName" runat="server" Visible = "false"/>
+          </div>
+          <div class="row">
+            <label>Last Name: </label>
+            <input id="m_txtLastName" runat="server" name="txtLastName" type="text" tabindex="2" size="20"  value="" />
+            <asp:Label ID="m_lblErrorLastName" runat="server" style="color:Red;" Visible = "false"></asp:Label>
+          </div>
+          <div class="row">
+            <label>Phone:</label>
+            <input id="m_txtPhone1" runat="server" name="txtPhone1" type="text" maxlength="14"   tabindex="3" size="20" value="" />
+            <asp:Label ID="m_lblErrorPhone1" runat="server" style="color:Red;" Visible = "false"></asp:Label>
+          </div>
+          <div class="row">
+            <label>E-mail:</label>
+            <input  id="m_txtEmail" runat="server" name="txtEmail" type="text" maxlength="50" tabindex="4" size="20" value="" />
+            <asp:Label ID="m_lblErrorEmail" runat="server" style="color:Red;" Visible="false"></asp:Label>
+          </div>
+          <div class="row">
+            <label class="optional">Promo Code:</label>
+            <input id="m_txtPromoCode" runat="server" name="txtPromoCode" size="20" maxlength="6" type="text" tabindex="5" value="" />
+            <asp:Label ID="m_lblErrorPromoCode" runat="server" style="color:Red;" Visible="false"></asp:Label>
+          </div>
+          <div class="row">
+            <label class="optional">Comment:</label>
+            <textarea id="m_txtCustomerNotes" runat="server" name="comments" rows="4" cols="15" tabindex="6"></textarea>                               
+          </div>
+          <div class="row">
+            <label class="optional">&nbsp; </label>
+            <input id="m_btn_Submit" runat="server" type="submit" tabindex="7" name="" value="Submit" />
+          </div>
+          <div class="center">
+            <%Response.Write(CallbackMessage);%>
+            <br />
+            We respect your privacy! <a href="<%Response.Write(Link.PRIVACY_POLICY);%>">Our privacy policy</a>
+        </div>
+        </form>
+      </div>
+      <%
+        } 
+      %>
+      
+      <div id="m_dvTestinonial" runat="server" visible="false" class="testimon mini">
+            <div class="name"><asp:Literal ID="m_txtTestimonialDate"  runat="server"/> &nbsp; &nbsp;<asp:Literal ID="m_txtTestimonialFirstLastName" runat="server" />, <span class="city"><asp:Literal ID="m_txtTestimonialCity" runat="server"/></span></div>
+            <div class="comment"> 
+                <asp:Literal ID="m_txtTestomonialCustomerNote" runat="server" /> 
+            </div>
+            
+            <asp:HyperLink id="m_lnkTestimonialReadMore" runat ="server" CssClass="more">Read more customer's reviews</asp:HyperLink>
+      </div>
+      
+      <div id="m_dvLinks" runat="server" visible="true" class="links">
+         <h3>Rug Cleaning Links</h3>
+         <ul>
+          <li id ="m_lnkProcess" runat="server" visible="true"><a href="<%Response.Write(Link.PROCESS);%>">10 Step Cleaning Process</a></li>
+          <li id ="m_lnkRepairs" runat="server" visible="true"><a href="<%Response.Write(Link.REPAIRS);%>">Oriental Rug Repairs</a></li>
+          <li id ="m_lnkEmergency" runat="server" visible="true"><a href="<%Response.Write(Link.EMERGENCY);%>">Rug Emergency</a></li>
+          <li id ="m_lnkHomeCare" runat="server" visible="true"><a href="<%Response.Write(Link.HOME_CARE);%>">Rug Home Care</a></li>
+          <li id ="m_lnkRugPad" runat="server" visible="true"><a href="<%Response.Write(Link.RUG_PAD);%>">Custom Rug Pads</a></li>
+          <li id ="m_lnkFiberProtector" runat="server" visible="true"><a href="<%Response.Write(Link.PROTECTION);%>">Fiber Protector</a></li>
+          <li id ="m_lnkMothRepellent" runat="server" visible="true"><a href="<%Response.Write(Link.PROTECTION);%>">Moth Repellent</a></li>
+          <li id ="m_lnkRugStorage" runat="server" visible="true"><a href="<%Response.Write(Link.PROTECTION);%>">Rug Storage</a></li>
+          <li id ="m_lnkInteresting" runat="server" visible="true"><a href="<%Response.Write(Link.INTERESTING_LINKS);%>">Interesting Links</a></li>
+          <li id ="m_lnkAreaRugCleaning" runat="server" visible="true"><a href="<%Response.Write(Link.AREA_RUG_CLEANING);%>">Area Rug Cleaning</a></li>
+          <li id ="m_lnkOrientalRugCleaning" runat="server" visible="true"><a href="<%Response.Write(Link.ORIENTAL_RUG_CLEANING);%>">Oriental Rug Cleaning</a></li>
+          <li id ="m_lnkPersianRugCleaning" runat="server" visible="true"><a href="<%Response.Write(Link.PERSIAN_RUG_CLEANING);%>">Persian Rug Cleaning</a></li>
+          <li id ="m_lnkKarastanRugCleaning" runat="server" visible="true"><a href="<%Response.Write(Link.KARASTAN_RUG_CLEANING);%>">Karastan Rug Cleaning</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="clearboth"></div>
+  </div>
+  <div id="prefooter" class="clearboth"></div>
+  <div id="footer">
+    <div class="cert"><img src="i/institute.png" alt="in" /> <a href="https://www.bbb.org/online/consumer/cks.aspx?ID=10207261352825094" target="_blank" title="Better Business Bureaus"><img src="i/bbb.png" alt="Better Business Bureaus" /></a> </div>
+    <div class="copyright">© Copyright 2009 - Oriental Rug Cleaning by Dalworth</div>
+    <div class="contact">Dalworth Rug Cleaning <br />
+      12750 South Pipeline Road,<br />
+      Euless, Texas, 76040<br />
+      <%Response.Write(PhoneNumber);%> </div>
+    <div class="clearboth"></div>
+    <div class="addserv">
+      <h3>Free shipping is available in the following cities and zip codes</h3>
+      <p><a href="<%Response.Write(Link.PLANO_RUG_CLEANING);%>">Plano Texas</a>: 75093, 75025, 75023, 75024, 75075, 75074 | 
+        <a href="<%Response.Write(Link.SOUTHLAKE_RUG_CLEANING);%>">Southlake Texas</a>: 76092, 76362 |  <a href="<%Response.Write(Link.COLLEYVILLE_RUG_CLEANING);%>">Colleyville Texas </a>: 76034, 76051 | 
+        <a href="<%Response.Write(Link.FRISCO_RUG_CLEANING);%>"> Frisco Texas </a>: 75034,75035 | <a href="<%Response.Write(Link.KELLER_RUG_CLEANING);%>">Keller Texas</a>: 76248, 76262, 76180 |<a href="<%Response.Write(Link.DALLAS_RUG_CLEANING);%>"> Dallas Texas:</a> 75214, 75230,
+        75225, 75248, 75229, 75219, 75201, 75206, 75218, 75252, 75209, 75238,
+        75243, 75204, 75244, 75228, 75287 | <a href="<%Response.Write(Link.MCKINNEY_RUG_CLEANING);%>">McKinney Texas</a>: 75070, 75071 | <a href="<%Response.Write(Link.COPPELL_RUG_CLEANING);%>">Coppell
+        Texas</a>: 75019 |<a href="<%Response.Write(Link.FLOWER_MOUND_RUG_CLEANING);%>">Flower Mound Texas</a>: 75022, 75028 | <a href="<%Response.Write(Link.GRAPEVINE_RUG_CLEANING);%>">Grapevine Texas</a>: 76051
+        | <a href="<%Response.Write(Link.HIGHLAND_PARK_RUG_CLEANING);%>">Highland Park</a> Texas: 75205 | Park Cities | <a href="<%Response.Write(Link.CARROLLTON_RUG_CLEANING);%>">Carrollton Texas</a>: 75006,
+        75007, 75010 |  <a href="<%Response.Write(Link.ALLEN_RUG_CLEANING);%>">Allen Texas</a>: 75013, 75002 | <a href="<%Response.Write(Link.RICHARDSON_RUG_CLEANING);%>">Richardson Texas</a>: 75080, 75082,
+        75081 |<a href="<%Response.Write(Link.FORT_WORTH_RUG_CLEANING);%>"> Fort Worth Texas</a>: 76107, 76110, 76109, 76132, 76123, 76243, 76133,
+        76040 | <a href="<%Response.Write(Link.ARLINGTON_RUG_CLEANING);%>">Arlington Texas</a>: 76016, 76012, 76017, 76001, 76013 | <a href="<%Response.Write(Link.MANSFIELD_RUG_CLEANING);%>">Mansfield
+        Texas</a>: 76063 “And all other surrounding zip codes in DFW area” </p>
+    </div>
+    <div class="clearboth"></div>
+  </div>
+</div>
+</body>
+</html>

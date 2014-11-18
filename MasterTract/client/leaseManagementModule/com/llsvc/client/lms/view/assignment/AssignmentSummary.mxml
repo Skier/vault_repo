@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:assignment="com.llsvc.client.lms.view.assignment.*"
+	paddingLeft="5" paddingRight="5" xmlns:document="com.llsvc.client.lms.view.document.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.llsvc.domain.LeaseAssignment;
+			
+			private var _assignment:LeaseAssignment;
+			[Bindable]
+			public function get assignment():LeaseAssignment {return _assignment;}
+			public function set assignment(value:LeaseAssignment):void 
+			{
+				_assignment = value;
+			}
+			
+			public function getResult():Boolean
+			{
+				var result:Boolean = true;
+				
+				if (!viewGeneralInfo.getResult())
+					result = false;
+				
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HDividedBox width="100%" height="100%" horizontalGap="5">
+		<mx:VBox width="300" height="100%">
+			<document:DocActors id="viewDocActors" width="100%" height="100%" docum="{assignment.document}"/>
+			<document:DocNotes id="viewDocNotes" width="100%" height="100" docum="{assignment.document}"/>
+		</mx:VBox>
+
+		<mx:VBox width="100%" height="100%">
+			<assignment:AssignmentRecording id="viewRecording" width="100%" assignment="{assignment}"/>
+			<assignment:AssignmentGeneralInfo id="viewGeneralInfo" width="100%" assignment="{assignment}"/>
+			<assignment:AssignmentAttachments id="viewAttachments" width="100%" height="100%" assignment="{assignment}"/>
+		</mx:VBox>
+	</mx:HDividedBox>
+</mx:HBox>
