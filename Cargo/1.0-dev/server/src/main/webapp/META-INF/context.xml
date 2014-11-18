@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context path="/cargo">
+
+<!-- for demo.logicland.com.ua
+    <Resource name="jdbc/cargo" auth="Container"
+        factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+        type="javax.sql.DataSource" 
+        username="cargo" 
+        password="cargo"
+        driverClassName="org.postgresql.Driver" 
+        url="jdbc:postgresql://192.168.1.5:5432/cargo-demo"
+        maxActive="100" maxIdle="30" maxWait="10000"/> 
+-->
+
+<!-- for local development -->
+    <Resource name="jdbc/cargo" auth="Container"
+        factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+        type="javax.sql.DataSource" 
+        username="sys" 
+        password="sys"
+        driverClassName="org.postgresql.Driver" 
+        url="jdbc:postgresql://localhost:5432/cargo"
+        maxActive="100" maxIdle="30" maxWait="10000"/> 
+
+    <Realm resourceName="jdbc/cargo" debug="99"
+        className="org.apache.catalina.realm.DataSourceRealm"
+        localDataSource="true" 
+        dataSourceName="jdbc/cargo"
+        userTable="cargo_user" 
+        userNameCol="user_name" 
+        userCredCol="password"
+        userRoleTable="cargo_role" 
+        roleNameCol="user_role"/>
+
+</Context>
+

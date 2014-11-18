@@ -1,0 +1,60 @@
+<!--
+$Id: build.xml 7010 2007-03-21 14:14:48Z alex $
+-->
+<project name="cargo-web-app" default="compile" basedir=".">
+
+    <property name="build.dir" value="target/gwt"/>
+
+    <taskdef resource="org/apache/maven/artifact/ant/antlib.xml"/>
+
+    <dependencies filesetId="gwt.dependencies.id" useScope="runtime">
+        <dependency 
+            groupId="com.google"
+            artifactId="gwt-user"
+            version="1.4.10">
+        </dependency>
+        <dependency 
+            groupId="com.google"
+            artifactId="gwt-dev-local"
+            version="1.4.10">
+        </dependency>
+        <dependency
+            groupId="com.mapitz"
+            artifactId="gwt-googlemaps"
+            version="2.2.1">
+        </dependency>
+        <dependency
+            groupId="org.gwtwidgets"
+            artifactId="gwtwidgets"
+            version="0.1.4">
+        </dependency>
+        <dependency 
+            groupId="com.logicland.gwt"
+            artifactId="gwt-helper-client"
+            version="2.0-SNAPSHOT">
+        </dependency>
+    </dependencies>
+
+    <path id="project.class.path">
+        <pathelement path="src/main/java"/>
+        <fileset refid="gwt.dependencies.id"/>
+    </path>
+    <property name="project.classpath" refid="project.class.path"/>
+    <echo>
+        project.class.path=${project.classpath}
+    </echo>
+    <target name="compile">
+        <java failonerror="true" 
+                fork="true"
+                classname="com.google.gwt.dev.GWTCompiler">
+            <arg line="-style PRETTY"/>
+            <arg line="-logLevel WARN"/>
+            <arg line="-out ${build.dir}"/>
+            <arg line="com.affilia.cargo.Cargo"/>
+            <jvmarg value="-Xmx256M"/>
+            <classpath refid="project.class.path" />
+        </java>
+    </target>
+
+</project>
+

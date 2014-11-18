@@ -1,0 +1,192 @@
+<!--
+$Id: build.xml 6194 2007-01-10 09:36:03Z logogin $
+-->
+<project name="network" default="build" basedir=".">
+
+    <property file="../build.properties"/>
+
+    <property name="src.dir" value="src/main/c"/>
+    <property name="board.lib.name" value="lib${chip}.a"/>
+    <property name="uart.lib.name" value="libuart.a"/>
+
+    <target name="prepare" >
+        <echo>
+               CARGO-NETWORK
+        </echo>
+        <mkdir dir="${target.dir}"/>
+        <mkdir dir="${obj.dir}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${target.dir}"/>
+    </target>
+
+    <target name="build" depends="dummy-coordinator,coordinator,router,end-device">
+    </target>
+
+    <!-- ============= Chip Library ====================== -->
+    <target name="chip-library" depends="prepare"> 
+        <property name="lib.src.dir" value="${jennic.root}/Platform/Common/Source"/>
+
+        <c-compile src.file="${lib.src.dir}/LcdDriver.c" obj.file="LcdDriver.o" />
+        <c-compile src.file="${lib.src.dir}/LcdDraw.c" obj.file="LcdDraw.o"     />
+        <c-compile src.file="${lib.src.dir}/LcdFont.c" obj.file="LcdFont.o"     />
+        <c-compile src.file="${lib.src.dir}/HtsDriver.c" obj.file="HtsDriver.o" />  
+        <c-compile src.file="${lib.src.dir}/AlsDriver.c" obj.file="AlsDriver.o" />
+        <c-compile src.file="${lib.src.dir}/Button.c" obj.file="Button.o"       />
+
+        <exec dir="." executable="or32-elf-ar"> 
+            <arg value="rcs"/>
+            <arg value="${target.dir}/${board.lib.name}" />
+            <arg value="${obj.dir}/LcdDriver.o" />
+            <arg value="${obj.dir}/LcdDraw.o" />
+            <arg value="${obj.dir}/LcdFont.o" /> 
+            <arg value="${obj.dir}/HtsDriver.o" /> 
+            <arg value="${obj.dir}/AlsDriver.o" /> 
+            <arg value="${obj.dir}/Button.o" /> 
+        </exec>
+
+
+    </target>
+
+    <!-- ============= Uart Library ====================== -->
+    <target name="uart-library" depends="prepare"> 
+        <c-compile src.file="${src.dir}/printf.c" obj.file="printf.o" />  
+        <c-compile src.file="${src.dir}/serial.c" obj.file="serial.o" />  
+        <c-compile src.file="${src.dir}/serialq.c" obj.file="serialq.o" />  
+        <c-compile src.file="${src.dir}/uart.c" obj.file="uart.o" />  
+        <c-compile src.file="${src.dir}/toggle.c" obj.file="toggle.o" />  
+
+        <exec dir="." executable="or32-elf-ar"> 
+            <arg value="rcs"/>
+            <arg value="${target.dir}/${uart.lib.name}" />
+            <arg value="${obj.dir}/printf.o" />
+            <arg value="${obj.dir}/serial.o" />
+            <arg value="${obj.dir}/serialq.o" /> 
+            <arg value="${obj.dir}/uart.o" /> 
+            <arg value="${obj.dir}/toggle.o" /> 
+        </exec>
+
+    </target>
+
+    <!-- ============= dummy-coordinator  ====================== -->
+    <target name="dummy-coordinator" depends="chip-library,uart-library">
+         <c-compile src.file="${src.dir}/dummy-coordinator.c" obj.file="dummy-coordinator.o" />  
+         <exec dir="." executable="or32-elf-ld">
+             <arg value="-L/jennic/SDK/Chip/JN5121/Build"/>
+             <arg value="-TAppBuild_JN5121.ld"/> 
+             <arg value="-o"/> 
+             <arg value="${target.dir}/dummy-coordinator.or32"/>   
+             <arg value="${obj.dir}/dummy-coordinator.o"/> 
+             <arg value="${jennic.root}/Zigbee/Library/JZ_CoordLib.a"/>
+             <arg value="${target.dir}/${board.lib.name}"/> 
+             <arg value="${target.dir}/${uart.lib.name}"/> 
+             <arg value="${jennic.root}/Chip/JN${chip}/Library/ChipLib.a"/> 
+             <arg value="${jennic.root}/Common/Library/libc.a"/> 
+         </exec>
+         <exec dir="${target.dir}" executable="or32-elf-objcopy">
+             <arg value="-S"/> 
+             <arg value="-O"/> 
+             <arg value="binary"/> 
+             <arg value="dummy-coordinator.or32"/> 
+             <arg value="dummy-coordinator.bin"/>
+         </exec> 
+    </target>
+
+    <!-- ============= Coordinator  ====================== -->
+    <target name="coordinator" depends="chip-library,uart-library">
+         <c-compile src.file="${src.dir}/coordinator.c" obj.file="coordinator.o" />  
+         <exec dir="." executable="or32-elf-ld">
+             <arg value="-L/jennic/SDK/Chip/JN5121/Build"/>
+             <arg value="-TAppBuild_JN5121.ld"/> 
+             <arg value="-o"/> 
+             <arg value="${target.dir}/coordinator.or32"/>   
+             <arg value="${obj.dir}/coordinator.o"/> 
+             <arg value="${jennic.root}/Zigbee/Library/JZ_CoordLib.a"/>
+             <arg value="${target.dir}/${board.lib.name}"/> 
+             <arg value="${target.dir}/${uart.lib.name}"/> 
+             <arg value="${jennic.root}/Chip/JN${chip}/Library/ChipLib.a"/> 
+             <arg value="${jennic.root}/Common/Library/libc.a"/> 
+         </exec>
+         <exec dir="${target.dir}" executable="or32-elf-objcopy">
+             <arg value="-S"/> 
+             <arg value="-O"/> 
+             <arg value="binary"/> 
+             <arg value="coordinator.or32"/> 
+             <arg value="coordinator.bin"/>
+         </exec> 
+    </target>
+
+    <!-- ============= Router ====================== -->
+    <target name="router" depends="chip-library,uart-library">
+         <c-compile src.file="${src.dir}/router.c" obj.file="router.o" />  
+         <exec dir="." executable="or32-elf-ld">
+             <arg value="-L/jennic/SDK/Chip/JN5121/Build"/>
+             <arg value="-TAppBuild_JN5121.ld"/> 
+             <arg value="-o"/> 
+             <arg value="${target.dir}/router.or32"/>   
+             <arg value="${obj.dir}/router.o"/> 
+             <arg value="${obj.dir}/printf.o"/> 
+             <arg value="${obj.dir}/serial.o"/> 
+             <arg value="${obj.dir}/serialq.o"/> 
+             <arg value="${obj.dir}/uart.o"/> 
+             <arg value="${jennic.root}/Zigbee/Library/JZ_RouterLib.a"/>
+             <arg value="${target.dir}/${board.lib.name}"/> 
+             <arg value="${target.dir}/${uart.lib.name}"/> 
+             <arg value="${jennic.root}/Chip/JN${chip}/Library/ChipLib.a"/> 
+             <arg value="${jennic.root}/Common/Library/libc.a"/> 
+         </exec>
+         <exec dir="${target.dir}" executable="or32-elf-objcopy">
+             <arg value="-S"/> 
+             <arg value="-O"/> 
+             <arg value="binary"/> 
+             <arg value="router.or32"/> 
+             <arg value="router.bin"/>
+         </exec> 
+    </target>
+
+
+    <!-- ============= End Device   ====================== -->
+    <target name="end-device" depends="chip-library">      
+    </target>
+
+
+    <macrodef name="c-compile">
+        <attribute name="src.file" default="-" /> 
+        <attribute name="obj.file" default="-" /> 
+        <sequential> 
+            <echo>Compile @{src.file} </echo>
+            <exec dir="." executable="or32-elf-gcc" failOnError="true"> 
+                <arg value="-c"/>
+                <arg value="-o"/>
+                <arg value="${obj.dir}/@{obj.file}"/>
+                <arg value="-DOR1K"/> 
+                <arg value="-Wall"/> 
+                <arg value="-Wstrict-prototypes"/> 
+                <arg value="-Werror-implicit-function-declaration"/> 
+                <arg value="-fomit-frame-pointer"/> 
+                <arg value="-fno-strength-reduce"/> 
+                <arg value="-g"/> 
+                <arg value="-pipe"/> 
+                <arg value="-fno-builtin"/> 
+                <arg value="-nostdlib"/> 
+                <arg value="-DEMBEDDED"/> 
+                <arg value="-DLEAN_N_MEAN"/> 
+                <arg value="-DSINGLE_CONTEXT"/> 
+                <arg value="-Os"/> 
+                <arg value="-DPCB_DEVKIT1"/> 
+                <arg value="-DCHIP_RELEASE_3"/> 
+                <arg value="-DJN${chip}"/> 
+                <arg value="-I${src.dir}"/> 
+                <arg value="-I${jennic.root}/Common/Include"/> 
+                <arg value="-I${jennic.root}/Chip/JN${chip}/Include"/> 
+                <arg value="-I${jennic.root}/Chip/Common/Include"/> 
+                <arg value="-I${jennic.root}/Platform/DK1/Include"/> 
+                <arg value="-I${jennic.root}/Platform/Common/Include"/> 
+                <arg value="-I${jennic.root}/Zigbee/Include"/> 
+                <arg value="@{src.file}"/> 
+            </exec>
+        </sequential> 
+    </macrodef>
+
+</project>

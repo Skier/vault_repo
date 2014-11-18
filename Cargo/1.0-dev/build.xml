@@ -1,0 +1,24 @@
+<!--
+$Id: build.xml 6194 2007-01-10 09:36:03Z logogin $
+-->
+<project name="cargo" default="compile" basedir=".">
+
+    <property file="build.properties"/>
+
+    <property name="" value=""/>
+
+    <target name="prepare" >
+        <echo>
+               CARGO
+        </echo>
+    </target>
+
+    <target name="network">
+        <ant dir="./network" inheritAll="true" inheritRefs="true"/>
+    </target>
+
+    <target name="clean">
+        <ant dir="./network" target="clean" inheritAll="true" inheritRefs="true"/>
+    </target>
+    
+</project>

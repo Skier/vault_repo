@@ -1,0 +1,22 @@
+1. Unit status message, field separator ";", message separator "*"
+----------------------------------
+1 byte   | header
+8 bytes  | End device MAC ADDRESS
+10 bytes | Time stamp 
+9 bytes  | Latitude
+1 byte   | Latitude N/S
+10 bytes | Longitude 
+1 byte   | Longitude W/E
+6  bytes | Humidity 
+6  bytes | Temperature
+6  bytes | BattVoltage
+6  bytes | Освещенность
+
+I;01:02:03:04:05:06:07:08;hhmmss.sss;ddmmm.mmmm;N;dddmm.mmmm;W;-12345;-12345;-12345;-2342*
+----------------------------------
+2. Unit join network message
+----------------------------------
+J;01:02:03:04:05:06:07:08;hhmmss.sss;ddmmm.mmmm;N;dddmm.mmmm;W*
+----------------------------------
+
+
